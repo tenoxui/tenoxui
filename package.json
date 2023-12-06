@@ -1,0 +1,25 @@
+{
+  "name": "tenoxui",
+  "version": "0.0.1",
+  "description": "Tenox UI is a Utiliy-First CSS Framework with small and lightweight size and fast, most of its class is builded in Javascript.",
+  "main": "./dist/js/index.min.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo 'TenoxUI Always Ready'"
+  },
+  "keywords": [
+    "framework",
+    "css",
+    "utility-first"
+  ],
+  "author": "nousantx",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nousantx/tenoxui.git"
+  },
+  "bugs": {
+    "url": "https://github.com/nousantx/tenoxui/issues"
+  },
+  "homepage": "https://github.com/nousantx/tenoxui#readme"
+}
