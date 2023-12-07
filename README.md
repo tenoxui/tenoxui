@@ -2,7 +2,7 @@
 
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-## Overview
+## About
 
 TenoxUI is a lightweight Utility-First CSS framework designed to make web development faster and more efficient. It provides a set of customizable styles and utility first to streamline the styling process.
 
