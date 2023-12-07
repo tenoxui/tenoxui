@@ -24,6 +24,10 @@ npm i tenoxui@latest
 
 Using CDN :
 
+```html
+<script defer type="module" src="https://cdn.jsdelivr.net/npm/tenoxui@0.0.4"></script>
+```
+
 ### Documentation
 
 Cooming soon :)
