@@ -1,6 +1,13 @@
+/**
+ * TenoxUI Utility-First CSS Framework | https://tenoxui.web.app
+ * copyright (c) 2023 nousantx
+ * license : https://github.com/nousantx/tenoxui/blob/main/LICENSE
+ */
+
 function Styler(element) {
   this.element = element;
   this.styles = {
+    // Mapping the type and the property
     p: ["padding"],
     pt: ["paddingTop"],
     pb: ["paddingBottom"],
@@ -60,7 +67,6 @@ function Styler(element) {
     ],
     blur: ["filter"],
     opa: ["opacity"],
-    // Add more mappings as needed...
   };
 }
 
@@ -92,75 +98,88 @@ Styler.prototype.applyStyles = function (className) {
   }
 };
 
-// Usage
+// All possible class
 const AllClasses = document.querySelectorAll(
   '[class*="p-"], [class*="pt-"], [class*="pb-"], [class*="pr-"], [class*="pl-"], [class*="m-"], [class*="mt-"], [class*="mb-"], [class*="mr-"], [class*="ml-"], [class*="fs-"], [class*="fw-"], [class*="z-"], [class*="t-"], [class*="b-"], [class*="r-"], [class*="l-"], [class*="br-"], [class*="bw-"], [class*="w-"], [class*="w-mx-"], [class*="w-mn-"], [class*="h-"], [class*="h-mx-"], [class*="h-mn-"], [class*="fx-"], [class*="gap-"], [class*="ti-"], [class*="rt-"], [class*="backdrop-blur-"], [class*="ph-"], [class*="pv-"], [class*="mv-"], [class*="mh-"], [class*="text-space-"], [class*="word-space-"], [class*="line-height-"], [class*="radius-tl-"], [class*="radius-tr-"], [class*="radius-bl-"], [class*="radius-br-"], [class*="radius-top-"], [class*="radius-bottom-"], [class*="radius-left-"], [class*="radius-right-"], [class*="radius-top-"], [class*="radius-bottom-"], [class*="radius-left-"], [class*="radius-right-"], [class*="gs-"], [class*="blur-"], [class*="opa-"], [class*="x-"], [class*="bw-left-"], [class*="bw-right-"], [class*="bw-top-"], [class*="bw-bottom-"], [class*="scale-"]'
 );
 
+// Apply thr styles
+export function TenoxUI() {
+  AllClasses.forEach((element) => {
+    const classes = element.classList;
+    const styler = new Styler(element);
+    classes.forEach((className) => {
+      styler.applyStyles(className);
+    });
+  });
+}
+
 function TenoxColor() {
-  const setColor = (element, pattern, property, format) => {
+  // Make and Match new class
+  const newColor = (element, pattern, property, format) => {
     const match = element.className.match(pattern);
     if (match) {
       element.style[property] = format(match);
     }
   };
-  // Class
+
+  // Color CLass
   const ColorableClass = document.querySelectorAll(
     '[class*="bg-"], [class*="tc-"], [class*="border-"]'
   );
   ColorableClass.forEach((element) => {
     // For CSS variables
-    setColor(
+    newColor(
       element,
       /bg-([a-zA-Z0-9-]+)/,
       "background",
       (match) => `var(--${match[1]})`
     );
-    setColor(
+    newColor(
       element,
       /tc-([a-zA-Z0-9-]+)/,
       "color",
       (match) => `var(--${match[1]})`
     );
-    setColor(
+    newColor(
       element,
       /border-([a-zA-Z0-9-]+)/,
       "borderColor",
       (match) => `var(--${match[1]})`
     );
     // For RGB colors
-    setColor(
+    newColor(
       element,
       /bg-rgb\((\d+),(\d+),(\d+)\)/,
       "background",
       (match) => `rgb(${match.slice(1, 4).join(",")})`
     );
-    setColor(
+    newColor(
       element,
       /tc-rgb\((\d+),(\d+),(\d+)\)/,
       "color",
       (match) => `rgb(${match.slice(1, 4).join(",")})`
     );
-    setColor(
+    newColor(
       element,
       /border-rgb\((\d+),(\d+),(\d+)\)/,
       "borderColor",
       (match) => `rgb(${match.slice(1, 4).join(",")})`
     );
     // For RGBA colors
-    setColor(
+    newColor(
       element,
       /bg-rgba\((\d+),(\d+),(\d+),([01](\.\d+)?)\)/,
       "background",
       (match) => `rgba(${match.slice(1, 5).join(",")})`
     );
-    setColor(
+    newColor(
       element,
       /tc-rgba\((\d+),(\d+),(\d+),([01](\.\d+)?)\)/,
       "color",
       (match) => `rgba(${match.slice(1, 5).join(",")})`
     );
-    setColor(
+    newColor(
       element,
       /border-rgba\((\d+),(\d+),(\d+),([01](\.\d+)?)\)/,
       "borderColor",
@@ -168,33 +187,33 @@ function TenoxColor() {
     );
 
     // For HEX colors
-    setColor(
+    newColor(
       element,
       /bg-([0-9a-fA-F]{3,6})/,
       "background",
       (match) => `#${match[1]}`
     );
-    setColor(
+    newColor(
       element,
       /tc-([0-9a-fA-F]{3,6})/,
       "color",
       (match) => `#${match[1]}`
     );
-    setColor(
+    newColor(
       element,
       /border-([0-9a-fA-F]{3,6})/,
       "borderColor",
       (match) => `#${match[1]}`
     );
     // All Posible Color In Css
-    setColor(
+    newColor(
       element,
       /bg-([a-zA-Z0-9-]+)/,
       "background",
       (match) => `${match[1]}`
     );
-    setColor(element, /tc-([a-zA-Z0-9-]+)/, "color", (match) => `${match[1]}`);
-    setColor(
+    newColor(element, /tc-([a-zA-Z0-9-]+)/, "color", (match) => `${match[1]}`);
+    newColor(
       element,
       /border-([a-zA-Z0-9-]+)/,
       "borderColor",
@@ -203,12 +222,5 @@ function TenoxColor() {
   });
 }
 
-AllClasses.forEach((element) => {
-  const classes = element.classList;
-  const styler = new Styler(element);
-  classes.forEach((className) => {
-    styler.applyStyles(className);
-  });
-});
-
 TenoxColor();
+TenoxUI();

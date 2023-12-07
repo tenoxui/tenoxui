@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.0.4] - 7-12-2023
+
+- In this patch, `property` in `property.js` will declared as arrays, because there may be `type` that have more than 2 `property`.
+
 ## [0.0.3] - 7-12-2023
 
 - Preparing to migrate from using `switch case` to `proptotype` instead.

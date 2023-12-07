@@ -1,3 +1,9 @@
+/**
+ * TenoxUI Utility-First CSS Framework | https://tenoxui.web.app
+ * copyright (c) 2023 nousantx
+ * license : https://github.com/nousantx/tenoxui/blob/main/LICENSE
+ */
+
 :root {
   /* Material Icons: Theme Toggle Icon */
   --__theme_dark_icon: "nights_stay";
