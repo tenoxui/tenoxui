@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Grid System</title>
+    <link rel="stylesheet" href="../css/default.css" />
+    <link rel="stylesheet" href="../../src/css/index.css" />
+    <style>
+      :root {
+        --cl1: linear-gradient(to right, #1688ca, #2cece2);
+      }
+    </style>
+  </head>
+  <body
+    class="bg-0d0d0d w-100% h-100svh fx-ctr p-2rem fd-column tc-white gap-1rem"
+  >
+    <h1>Simple Grid System</h1>
+    <div class="w-100% grid auto-grid-col-200px grid-gap-1rem">
+      <div
+        class="grid-item-row-2 grid-item-col-2 h-mn-120px bg-cl1 br-8px p-1rem"
+      >
+        Just Item
+      </div>
+      <div class="bg-lightgreen br-8px p-1rem tc-black">Item 2</div>
+      <div class="bg-pink br-8px p-1rem tc-black">Item 3</div>
+      <div class="tc-black bg-chartreuse br-8px p-1rem">Item 4</div>
+      <div class="grid-item-row-2 bg-222 br-8px p-1rem">Item 5</div>
+      <div class="bg-tomato br-8px p-1rem tc-black">Item 6</div>
+      <div class="bg-lightcoral br-8px p-1rem tc-black">Item 7</div>
+      <div class="bg-khaki br-8px p-1rem tc-black">Item 8</div>
+    </div>
+    <script src="../../src/js/color.js"></script>
+    <script type="module" src="../../dist/js/index.min.js"></script>
+  </body>
+</html>

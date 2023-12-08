@@ -8,144 +8,12 @@
   margin: 0;
   padding: 0;
 }
-.bdr-dashed {
-  border-style: dashed;
-}
-.bdr-dotted {
-  border-style: dotted;
-}
-.bdr-double {
-  border-style: double;
-}
-.bdr-groove {
-  border-style: groove;
-}
-.bdr-ridge {
-  border-style: ridge;
-}
-.bdr-solid {
-  border-style: solid;
-}
-.bdr-right-dashed {
-  border-right-style: dashed;
-}
-.bdr-right-dotted {
-  border-right-style: dotted;
-}
-.bdr-right-double {
-  border-right-style: double;
-}
-.bdr-right-ridge {
-  border-right-style: ridge;
-}
-.bdr-right-groove {
-  border-right-style: groove;
-}
-.bdr-right-solid {
-  border-right-style: solid;
-}
-.bdr-bottom-dashed {
-  border-bottom-style: dashed;
-}
-.bdr-bottom-dotted {
-  border-bottom-style: dotted;
-}
-.bdr-bottom-double {
-  border-bottom-style: double;
-}
-.bdr-bottom-ridge {
-  border-bottom-style: ridge;
-}
-.bdr-bottom-groove {
-  border-bottom-style: groove;
-}
-.bdr-bottom-solid {
-  border-bottom-style: solid;
-}
-.bdr-left-dashed {
-  border-left-style: dashed;
-}
-.bdr-left-dotted {
-  border-left-style: dotted;
-}
-.bdr-left-double {
-  border-left-style: double;
-}
-.bdr-left-ridge {
-  border-left-style: ridge;
-}
-.bdr-left-groove {
-  border-left-style: groove;
-}
-.bdr-left-solid {
-  border-left-style: solid;
-}
-.bdr-top-dashed {
-  border-top-style: dashed;
-}
-.bdr-top-dotted {
-  border-top-style: dotted;
-}
-.bdr-top-double {
-  border-top-style: double;
-}
-.bdr-top-ridge {
-  border-top-style: ridge;
-}
-.bdr-top-groove {
-  border-top-style: groove;
-}
-.bdr-top-solid {
-  border-top-style: solid;
-}
-.overflow {
-  overflow: visible;
-  overflow: auto;
-}
-.over-hidden {
-  overflow: hidden;
-}
-.over-scroll {
-  overflow: scroll;
-}
-.over-auto {
-  overflow: auto;
-}
-.over-visible {
-  overflow: visible;
-}
-.x-over-hidden {
-  overflow-x: hidden;
-}
-.x-over-scroll {
-  overflow-x: scroll;
-}
-.x-over-auto {
-  overflow-x: auto;
-}
-.x-over-visible {
-  overflow-x: visible;
-}
-.y-over-hidden {
-  overflow-y: hidden;
-}
-.y-over-scroll {
-  overflow-y: scroll;
-}
-.y-over-auto {
-  overflow-y: auto;
-}
-.y-over-visible {
-  overflow-y: visible;
-}
+
 .rounded {
   border-radius: 50%;
 }
 .w-mx {
   width: 100%;
-}
-.w-half {
-  width: 50%;
 }
 .w-mn {
   width: 0%;
@@ -174,18 +42,6 @@
 .i {
   font-style: italic;
 }
-.ta-c {
-  text-align: center;
-}
-.ta-l {
-  text-align: left;
-}
-.ta-r {
-  text-align: right;
-}
-.ta-j {
-  text-align: justify;
-}
 .absolute {
   position: absolute;
 }
@@ -209,12 +65,6 @@
 }
 .fx-wrap {
   flex-wrap: wrap;
-}
-.d-ib {
-  display: inline-block;
-}
-.d-b {
-  display: block;
 }
 .fx-ctr {
   display: flex;

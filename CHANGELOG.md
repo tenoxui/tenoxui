@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.0] - 8-12-2023
+
+- Update to v0.1.0
+- Adding `%` unit to match pattern
+- Change match Regex pattern
+- Add Grid System and simple example
+- Added new property: `overflow`, `border-style`, `filter`, `cursor`, `position`, `scale`, and `rotate`
+
 ## [0.0.5] - 8-12-2023
 
 - Currently, the value can just recognize numerical value, like `10px`, `3.4s`, or `45deg`. and now, it can recognize alphabetical value.

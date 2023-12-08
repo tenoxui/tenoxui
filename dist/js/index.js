@@ -1,62 +1,11 @@
 /**
  * copyright (c) 2023 nousantx
- */
+ */ import property from "./property.js";
 
+const property = property;
 function makeTenoxUI(element) {
   this.element = element;
-  this.styles = {
-    // Mapping type and its Property
-    p: ["padding"],
-    pt: ["paddingTop"],
-    pb: ["paddingBottom"],
-    pr: ["paddingRight"],
-    pl: ["paddingLeft"],
-    m: ["margin"],
-    mt: ["marginTop"],
-    mb: ["marginBottom"],
-    mr: ["marginRight"],
-    ml: ["marginLeft"],
-    fs: ["fontSize"],
-    fw: ["fontWeight"],
-    z: ["zIndex"],
-    t: ["top"],
-    b: ["bottom"],
-    r: ["right"],
-    l: ["left"],
-    br: ["borderRadius"],
-    bw: ["borderWidth"],
-    "bw-left": ["borderLeftWidth"],
-    "bw-right": ["borderRightWidth"],
-    "bw-top": ["borderTopWidth"],
-    "bw-bottom": ["borderBottomWidth"],
-    w: ["width"],
-    "w-mx": ["maxWidth"],
-    "w-mn": ["minWidth"],
-    h: ["height"],
-    "h-mx": ["maxHeight"],
-    "h-mn": ["minHeight"],
-    fx: ["flex"],
-    gap: ["gap"],
-    ti: ["textIndent"],
-    "backdrop-blur": ["backdropFilter"],
-    ph: ["paddingLeft", "paddingRight"],
-    pv: ["paddingTop", "paddingBottom"],
-    mv: ["marginTop", "marginBottom"],
-    mh: ["marginLeft", "marginRight"],
-    "text-space": ["letterSpacing"],
-    "word-space": ["wordSpacing"],
-    "line-height": ["lineHeight"],
-    "radius-tl": ["borderTopLeftRadius"],
-    "radius-tr": ["borderTopRightRadius"],
-    "radius-bl": ["borderBottomLeftRadius"],
-    "radius-br": ["borderBottomRightRadius"],
-    "radius-top": ["borderTopLeftRadius", "borderTopRightRadius"],
-    "radius-bottom": ["borderBottomLeftRadius", "borderBottomRightRadius"],
-    "radius-left": ["borderTopLeftRadius", "borderBottomLeftRadius"],
-    "radius-right": ["borderTopRightRadius", "borderBottomRightRadius"],
-    opa: ["opacity"],
-    // Other mapping here
-  };
+  this.styles = property;
 }
 
 makeTenoxUI.prototype.applyStyle = function (type, value, unit) {
@@ -64,9 +13,32 @@ makeTenoxUI.prototype.applyStyle = function (type, value, unit) {
 
   if (properties) {
     properties.forEach((property) => {
+      // Filter Custom Property
+      if (property === "filter") {
+        const existingFilter = this.element.style[property];
+        this.element.style[property] = existingFilter
+          ? `${existingFilter} ${type}(${value}${unit})`
+          : `${type}(${value}${unit})`;
+      }
       // Make custom property for flex
-      if (property === "flex") {
+      else if (property === "flex") {
         this.element.style[property] = `1 1 ${value}${unit}`;
+      } // Grid System Property
+      else if (
+        property === "gridRow" ||
+        property === "gridColumn" ||
+        property === "gridRowStart" ||
+        property === "gridColumnStart" ||
+        property === "gridRowEnd" ||
+        property === "gridColumnEnd"
+      ) {
+        this.element.style[property] = `span ${value}${unit}`;
+      } else if (type === "grid-row" || type === "grid-col") {
+        this.element.style[property] = `repeat(${value}${unit}, 1fr))`;
+      } else if (type === "auto-grid-row" || type === "auto-grid-col") {
+        this.element.style[
+          property
+        ] = `repeat(auto-fit, minmax(${value}${unit}, 1fr))`;
       }
       // Default value and unit
       else {
@@ -79,7 +51,7 @@ makeTenoxUI.prototype.applyStyle = function (type, value, unit) {
 makeTenoxUI.prototype.applyStyles = function (className) {
   // Match all type and
   const match = className.match(
-    /(p|pt|pb|pr|pl|m|mt|mb|mr|ml|fs|fw|z|t|b|r|l|br|bw|bw-left|bw-right|bw-top|bw-bottom|w|w-mx|w-mn|h|h-mx|h-mn|fx|gap|ti|rt|backdrop-blur|ph|pv|mv|mh|text-space|word-space|line-height|radius-tl|radius-tr|radius-bl|radius-br|radius-top|radius-bottom|radius-left|radius-right|gs|blur|opa|scale|x|y)-(-?(?:\d+(\.\d+)?)|(?:[a-zA-Z]+(?:-[a-zA-Z]+)*(?:-[a-zA-Z]+)*)|(?:\[[^\]]+\]))([a-zA-Z%]*)/
+    /([a-zA-Z]+(?:-[a-zA-Z]+)*)-(-?(?:\d+(\.\d+)?)|(?:[a-zA-Z]+(?:-[a-zA-Z]+)*(?:-[a-zA-Z]+)*)|(?:\[[^\]]+\]))([a-zA-Z%]*)/
   );
 
   if (match) {
@@ -96,8 +68,16 @@ makeTenoxUI.prototype.applyStyles = function (className) {
 
 // TenoxUI Selector
 const AllClasses = document.querySelectorAll(
-  '[class*="p-"], [class*="pt-"], [class*="pb-"], [class*="pr-"], [class*="pl-"], [class*="m-"], [class*="mt-"], [class*="mb-"], [class*="mr-"], [class*="ml-"], [class*="fs-"], [class*="fw-"], [class*="z-"], [class*="t-"], [class*="b-"], [class*="r-"], [class*="l-"], [class*="br-"], [class*="bw-"], [class*="w-"], [class*="w-mx-"], [class*="w-mn-"], [class*="h-"], [class*="h-mx-"], [class*="h-mn-"], [class*="fx-"], [class*="gap-"], [class*="ti-"], [class*="rt-"], [class*="backdrop-blur-"], [class*="ph-"], [class*="pv-"], [class*="mv-"], [class*="mh-"], [class*="text-space-"], [class*="word-space-"], [class*="line-height-"], [class*="radius-tl-"], [class*="radius-tr-"], [class*="radius-bl-"], [class*="radius-br-"], [class*="radius-top-"], [class*="radius-bottom-"], [class*="radius-left-"], [class*="radius-right-"], [class*="radius-top-"], [class*="radius-bottom-"], [class*="radius-left-"], [class*="radius-right-"], [class*="gs-"], [class*="blur-"], [class*="opa-"], [class*="x-"], [class*="bw-left-"], [class*="bw-right-"], [class*="bw-top-"], [class*="bw-bottom-"], [class*="scale-"]'
+  '[class*="p-"], [class*="pt-"], [class*="pb-"], [class*="pr-"], [class*="pl-"], [class*="m-"], [class*="mt-"], [class*="mb-"], [class*="mr-"], [class*="ml-"], [class*="fs-"], [class*="fw-"], [class*="z-"], [class*="t-"], [class*="b-"], [class*="r-"], [class*="l-"], [class*="br-"], [class*="bw-"], [class*="w-"], [class*="w-mx-"], [class*="w-mn-"], [class*="h-"], [class*="h-mx-"], [class*="h-mn-"], [class*="fx-"], [class*="gap-"], [class*="ti-"], [class*="rt-"], [class*="backdrop-blur-"], [class*="ph-"], [class*="pv-"], [class*="mv-"], [class*="mh-"], [class*="text-space-"], [class*="word-space-"], [class*="line-height-"], [class*="radius-tl-"], [class*="radius-tr-"], [class*="radius-bl-"], [class*="radius-br-"], [class*="radius-top-"], [class*="radius-bottom-"], [class*="radius-left-"], [class*="radius-right-"], [class*="radius-top-"], [class*="radius-bottom-"], [class*="radius-left-"], [class*="radius-right-"], [class*="gs-"], [class*="blur-"], [class*="opa-"], [class*="x-"], [class*="bw-left-"], [class*="bw-right-"], [class*="bw-top-"], [class*="bw-bottom-"], [class*="scale-"], [class*="grid-row-"], [class*="grid-col-"], [class*="grid-item-row-"], [class*="grid-item-col-"]'
 );
+
+AllClasses.forEach((element) => {
+  const classes = element.classList;
+  const makeTx = new makeTenoxUI(element);
+  classes.forEach((className) => {
+    makeTx.applyStyles(className);
+  });
+});
 
 function TenoxColor() {
   const setColor = (element, pattern, property, format) => {
@@ -111,7 +91,7 @@ function TenoxColor() {
     '[class*="bg-"], [class*="tc-"], [class*="border-"]'
   );
   ColorableClass.forEach((element) => {
-    // Recognize CSS Variable names. Variables name is defined first because in the last part is extended css color recognize.
+    // For CSS variables
     setColor(
       element,
       /bg-([a-zA-Z0-9-]+)/,
@@ -168,6 +148,7 @@ function TenoxColor() {
       "borderColor",
       (match) => `rgba(${match.slice(1, 5).join(",")})`
     );
+
     // For HEX colors
     setColor(
       element,
@@ -203,13 +184,4 @@ function TenoxColor() {
     );
   });
 }
-
-AllClasses.forEach((element) => {
-  const classes = element.classList;
-  const makeTx = new makeTenoxUI(element);
-  classes.forEach((className) => {
-    makeTx.applyStyles(className);
-  });
-});
-
 TenoxColor();
