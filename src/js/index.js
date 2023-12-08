@@ -1,3 +1,7 @@
+/**
+ * copyright (c) 2023 nousantx
+ */
+
 function makeTenoxUI(element) {
   this.element = element;
   this.styles = {
@@ -60,9 +64,12 @@ makeTenoxUI.prototype.applyStyle = function (type, value, unit) {
 
   if (properties) {
     properties.forEach((property) => {
+      // Make custom property for flex
       if (property === "flex") {
         this.element.style[property] = `1 1 ${value}${unit}`;
-      } else {
+      }
+      // Default value and unit
+      else {
         this.element.style[property] = `${value}${unit}`;
       }
     });
@@ -70,8 +77,9 @@ makeTenoxUI.prototype.applyStyle = function (type, value, unit) {
 };
 
 makeTenoxUI.prototype.applyStyles = function (className) {
+  // Match all type and
   const match = className.match(
-    /(p|pt|pb|pr|pl|m|mt|mb|mr|ml|fs|fw|z|t|b|r|l|br|bw|bw-left|bw-right|bw-top|bw-bottom|w|w-mx|w-mn|h|h-mx|h-mn|fx|gap|ti|rt|backdrop-blur|ph|pv|mv|mh|text-space|word-space|line-height|radius-tl|radius-tr|radius-bl|radius-br|radius-top|radius-bottom|radius-left|radius-right|gs|blur|opa|scale|x|y)-(-?\d+(\.\d+)?)([a-zA-Z]*)/
+    /(p|pt|pb|pr|pl|m|mt|mb|mr|ml|fs|fw|z|t|b|r|l|br|bw|bw-left|bw-right|bw-top|bw-bottom|w|w-mx|w-mn|h|h-mx|h-mn|fx|gap|ti|rt|backdrop-blur|ph|pv|mv|mh|text-space|word-space|line-height|radius-tl|radius-tr|radius-bl|radius-br|radius-top|radius-bottom|radius-left|radius-right|gs|blur|opa|scale|x|y)-(-?(?:\d+(\.\d+)?)|(?:[a-zA-Z]+(?:-[a-zA-Z]+)*(?:-[a-zA-Z]+)*)|(?:\[[^\]]+\]))([a-zA-Z%]*)/
   );
 
   if (match) {
@@ -86,7 +94,7 @@ makeTenoxUI.prototype.applyStyles = function (className) {
   }
 };
 
-// Usage
+// TenoxUI Selector
 const AllClasses = document.querySelectorAll(
   '[class*="p-"], [class*="pt-"], [class*="pb-"], [class*="pr-"], [class*="pl-"], [class*="m-"], [class*="mt-"], [class*="mb-"], [class*="mr-"], [class*="ml-"], [class*="fs-"], [class*="fw-"], [class*="z-"], [class*="t-"], [class*="b-"], [class*="r-"], [class*="l-"], [class*="br-"], [class*="bw-"], [class*="w-"], [class*="w-mx-"], [class*="w-mn-"], [class*="h-"], [class*="h-mx-"], [class*="h-mn-"], [class*="fx-"], [class*="gap-"], [class*="ti-"], [class*="rt-"], [class*="backdrop-blur-"], [class*="ph-"], [class*="pv-"], [class*="mv-"], [class*="mh-"], [class*="text-space-"], [class*="word-space-"], [class*="line-height-"], [class*="radius-tl-"], [class*="radius-tr-"], [class*="radius-bl-"], [class*="radius-br-"], [class*="radius-top-"], [class*="radius-bottom-"], [class*="radius-left-"], [class*="radius-right-"], [class*="radius-top-"], [class*="radius-bottom-"], [class*="radius-left-"], [class*="radius-right-"], [class*="gs-"], [class*="blur-"], [class*="opa-"], [class*="x-"], [class*="bw-left-"], [class*="bw-right-"], [class*="bw-top-"], [class*="bw-bottom-"], [class*="scale-"]'
 );
@@ -103,7 +111,7 @@ function TenoxColor() {
     '[class*="bg-"], [class*="tc-"], [class*="border-"]'
   );
   ColorableClass.forEach((element) => {
-    // For CSS variables
+    // Recognize CSS Variable names. Variables name is defined first because in the last part is extended css color recognize.
     setColor(
       element,
       /bg-([a-zA-Z0-9-]+)/,
@@ -198,9 +206,9 @@ function TenoxColor() {
 
 AllClasses.forEach((element) => {
   const classes = element.classList;
-  const makeTenoxUI = new makeTenoxUI(element);
+  const makeTx = new makeTenoxUI(element);
   classes.forEach((className) => {
-    makeTenoxUI.applyStyles(className);
+    makeTx.applyStyles(className);
   });
 });
 

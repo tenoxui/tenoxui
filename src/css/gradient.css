@@ -1,0 +1,129 @@
+/**!
+ * copyright (c) 2023 nousantx
+ */
+
+.tg-purple-blue {
+  background: linear-gradient(331deg, #9a29ed, #a300af, #4e3cfe, #3cd5fe);
+}
+.tg-fire {
+  background: linear-gradient(331deg, #b82320, #ff7200, #ff3d31, #ffa029);
+}
+.tg-pink-blue {
+  background: linear-gradient(331deg, #8dfffa, #f923d3, #297bff, #df8dff);
+}
+.tg-gold {
+  background: linear-gradient(331deg, #c0622c, #ffc55a, #f4b355);
+}
+.tg-blue {
+  background: linear-gradient(331deg, #4e3cfe, #3cd5fe);
+}
+.tg-pink {
+  background: linear-gradient(331deg, #e56ab3, #f9a3cb, #ef87be, #d00062);
+}
+.tg-green {
+  background: linear-gradient(331deg, #127610, #83d475, #3ddc04);
+}
+.tg-light-green {
+  background: linear-gradient(
+    331deg,
+    #c7f2b4,
+    #96e390,
+    #63d471,
+    #39c258,
+    #0e9a35
+  );
+}
+.tg-light-blue {
+  background: linear-gradient(331deg, #3c84fe, #3cd5fe);
+}
+.tg-blue-ocean {
+  background: linear-gradient(331deg, #3376b9, #2968db, #06c, #0080ff, #1a8cff);
+}
+.tg-red {
+  background: linear-gradient(
+    331deg,
+    #ad0000,
+    #8b0000,
+    #780000,
+    #a30000,
+    #ac0000
+  );
+}
+.tg-light-red {
+  background: linear-gradient(331deg, #ad0000, #ff2121, #ff7474, #ea0000);
+}
+.tg-purple {
+  background: linear-gradient(331deg, #6a0dad, #9c27b0, #b898f4);
+}
+.tg-yellow {
+  background: linear-gradient(331deg, #ffeb3b, #ffc107, #ffa000);
+}
+.tg-orange {
+  background: linear-gradient(331deg, #ed7f00, #ff9107, #f3b755);
+}
+.tg-lime {
+  background: linear-gradient(331deg, #00ed9d, #0eb78e, #57ffb6);
+}
+.tg-bronze {
+  background: linear-gradient(331deg, #7b4711, peru, #c0703c, #a15f1a);
+}
+.tg-grey {
+  background: linear-gradient(331deg, #f5f5f5, #f0f0f0, silver, #a6a6a6, grey);
+}
+.tg-platinum {
+  background: linear-gradient(331deg, #f2f2f2, #e5e4e2, silver, #a6a6a6);
+}
+.tg-white {
+  background: linear-gradient(331deg, #fff, #f2f2f2, #e5e5e5, #d9d9d9, #ccc);
+}
+.tg-black {
+  background: linear-gradient(331deg, #000, #1a1a1a, #333, #4d4d4d);
+}
+.tg-instagram {
+  background: linear-gradient(331deg, #833ab4, #fd1d1d, #f56040, #833ab4);
+}
+@keyframes upDown5px {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+@-webkit-keyframes gradientG {
+  0%,
+  100% {
+    background-position: 0 18%;
+  }
+  50% {
+    background-position: 100% 83%;
+  }
+}
+@-moz-keyframes gradientG {
+  0%,
+  100% {
+    background-position: 0 18%;
+  }
+  50% {
+    background-position: 100% 83%;
+  }
+}
+@-o-keyframes gradientG {
+  0%,
+  100% {
+    background-position: 0 18%;
+  }
+  50% {
+    background-position: 100% 83%;
+  }
+}
+@keyframes gradientG {
+  0%,
+  100% {
+    background-position: 0 18%;
+  }
+  50% {
+    background-position: 100% 83%;
+  }
+}

@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.0.5] - 8-12-2023
+
+- Currently, the value can just recognize numerical value, like `10px`, `3.4s`, or `45deg`. and now, it can recognize alphabetical value.
+
 ## [0.0.4] - 7-12-2023
 
 - In this patch, `property` in `property.js` will declared as arrays, because there may be `type` that have more than 2 `property`.
