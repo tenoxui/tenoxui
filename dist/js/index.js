@@ -1,8 +1,57 @@
 /**
+ * TenoxUI CSS Framework v0.1.2
+ *
  * copyright (c) 2023 nousantx
- */ import property from "./property.js";
+ *
+ * license: https://github.com/nousantx/tenoxui/blob/main/LICENSE
+ */
 
-const property = property;
+import property from "./property.js";
+
+let Classes = Object.keys(property).map(
+  (className) => `[class*="${className}-"]`
+);
+
+// Merge all `Classes` into one selector. Example : '[class*="p-"]', '[class*="m-"]', '[class*="justify-"]'
+let AllClasses = document.querySelectorAll(Classes.join(", "));
+
+function newProp(name, values) {
+  if (typeof name !== "string" || !Array.isArray(values)) {
+    console.warn(
+      "Invalid arguments for newProp. Please provide a string for name and an array for values."
+    );
+    return;
+  } else {
+    console.log("added new type and property to property");
+  }
+
+  this[name] = values;
+  Classes.push(`[class*="${name}-"]`);
+  AllClasses = document.querySelectorAll(Classes.join(", "));
+}
+
+newProp.prototype.tryAdd = function () {
+  if (!this || Object.keys(this).length === 0) {
+    console.warn("Invalid newProp instance:", this);
+    return;
+  }
+  Object.assign(property, this);
+};
+
+export function MakeProp(Types, Property) {
+  // Check if 'Types' is a string
+  if (typeof Types !== "string") {
+    throw new Error("Types must be a string");
+  }
+
+  // Check if 'Property' is an array
+  if (!Array.isArray(Property)) {
+    throw new Error("Property must be an array");
+  }
+
+  new newProp(Types, Property).tryAdd();
+}
+
 function makeTenoxUI(element) {
   this.element = element;
   this.styles = property;
@@ -66,122 +115,13 @@ makeTenoxUI.prototype.applyStyles = function (className) {
   }
 };
 
-// TenoxUI Selector
-const AllClasses = document.querySelectorAll(
-  '[class*="p-"], [class*="pt-"], [class*="pb-"], [class*="pr-"], [class*="pl-"], [class*="m-"], [class*="mt-"], [class*="mb-"], [class*="mr-"], [class*="ml-"], [class*="fs-"], [class*="fw-"], [class*="z-"], [class*="t-"], [class*="b-"], [class*="r-"], [class*="l-"], [class*="br-"], [class*="bw-"], [class*="w-"], [class*="w-mx-"], [class*="w-mn-"], [class*="h-"], [class*="h-mx-"], [class*="h-mn-"], [class*="fx-"], [class*="gap-"], [class*="ti-"], [class*="rt-"], [class*="backdrop-blur-"], [class*="ph-"], [class*="pv-"], [class*="mv-"], [class*="mh-"], [class*="text-space-"], [class*="word-space-"], [class*="line-height-"], [class*="radius-tl-"], [class*="radius-tr-"], [class*="radius-bl-"], [class*="radius-br-"], [class*="radius-top-"], [class*="radius-bottom-"], [class*="radius-left-"], [class*="radius-right-"], [class*="radius-top-"], [class*="radius-bottom-"], [class*="radius-left-"], [class*="radius-right-"], [class*="gs-"], [class*="blur-"], [class*="opa-"], [class*="x-"], [class*="bw-left-"], [class*="bw-right-"], [class*="bw-top-"], [class*="bw-bottom-"], [class*="scale-"], [class*="grid-row-"], [class*="grid-col-"], [class*="grid-item-row-"], [class*="grid-item-col-"]'
-);
-
-AllClasses.forEach((element) => {
-  const classes = element.classList;
-  const makeTx = new makeTenoxUI(element);
-  classes.forEach((className) => {
-    makeTx.applyStyles(className);
-  });
-});
-
-function TenoxColor() {
-  const setColor = (element, pattern, property, format) => {
-    const match = element.className.match(pattern);
-    if (match) {
-      element.style[property] = format(match);
-    }
-  };
-  // Class
-  const ColorableClass = document.querySelectorAll(
-    '[class*="bg-"], [class*="tc-"], [class*="border-"]'
-  );
-  ColorableClass.forEach((element) => {
-    // For CSS variables
-    setColor(
-      element,
-      /bg-([a-zA-Z0-9-]+)/,
-      "background",
-      (match) => `var(--${match[1]})`
-    );
-    setColor(
-      element,
-      /tc-([a-zA-Z0-9-]+)/,
-      "color",
-      (match) => `var(--${match[1]})`
-    );
-    setColor(
-      element,
-      /border-([a-zA-Z0-9-]+)/,
-      "borderColor",
-      (match) => `var(--${match[1]})`
-    );
-    // For RGB colors
-    setColor(
-      element,
-      /bg-rgb\((\d+),(\d+),(\d+)\)/,
-      "background",
-      (match) => `rgb(${match.slice(1, 4).join(",")})`
-    );
-    setColor(
-      element,
-      /tc-rgb\((\d+),(\d+),(\d+)\)/,
-      "color",
-      (match) => `rgb(${match.slice(1, 4).join(",")})`
-    );
-    setColor(
-      element,
-      /border-rgb\((\d+),(\d+),(\d+)\)/,
-      "borderColor",
-      (match) => `rgb(${match.slice(1, 4).join(",")})`
-    );
-    // For RGBA colors
-    setColor(
-      element,
-      /bg-rgba\((\d+),(\d+),(\d+),([01](\.\d+)?)\)/,
-      "background",
-      (match) => `rgba(${match.slice(1, 5).join(",")})`
-    );
-    setColor(
-      element,
-      /tc-rgba\((\d+),(\d+),(\d+),([01](\.\d+)?)\)/,
-      "color",
-      (match) => `rgba(${match.slice(1, 5).join(",")})`
-    );
-    setColor(
-      element,
-      /border-rgba\((\d+),(\d+),(\d+),([01](\.\d+)?)\)/,
-      "borderColor",
-      (match) => `rgba(${match.slice(1, 5).join(",")})`
-    );
-
-    // For HEX colors
-    setColor(
-      element,
-      /bg-([0-9a-fA-F]{3,6})/,
-      "background",
-      (match) => `#${match[1]}`
-    );
-    setColor(
-      element,
-      /tc-([0-9a-fA-F]{3,6})/,
-      "color",
-      (match) => `#${match[1]}`
-    );
-    setColor(
-      element,
-      /border-([0-9a-fA-F]{3,6})/,
-      "borderColor",
-      (match) => `#${match[1]}`
-    );
-    // All Posible Color In Css
-    setColor(
-      element,
-      /bg-([a-zA-Z0-9-]+)/,
-      "background",
-      (match) => `${match[1]}`
-    );
-    setColor(element, /tc-([a-zA-Z0-9-]+)/, "color", (match) => `${match[1]}`);
-    setColor(
-      element,
-      /border-([a-zA-Z0-9-]+)/,
-      "borderColor",
-      (match) => `${match[1]}`
-    );
+export default function TenoxUI() {
+  AllClasses.forEach((element) => {
+    const classes = element.classList;
+    const makeTx = new makeTenoxUI(element);
+    classes.forEach((className) => {
+      makeTx.applyStyles(className);
+    });
   });
 }
-TenoxColor();
+TenoxUI();
