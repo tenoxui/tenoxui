@@ -9,6 +9,13 @@
   padding: 0;
 }
 
+[class*="fx"],
+[class*="flex"] {
+  display: flex;
+}
+[class*="grid"] {
+  display: grid;
+}
 .rounded {
   border-radius: 50%;
 }
@@ -54,7 +61,7 @@
 .none {
   display: none !important;
 }
-.d-fx {
+.flex {
   display: flex;
 }
 .fx-clm {

@@ -1,11 +1,11 @@
 /**
  * copyright (c) 2023 nousantx
  */
-export const property = {
-  "p-": "padding",
-  "m-": "margin",
-  "fs-": "fontSize",
-  "fs-": "fontSize",
+let property = {
+  p: "padding",
+  m: "margin",
+  fs: "fontSize",
+  w: "width",
 };
 
-console.log(property);
+export default property;

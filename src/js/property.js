@@ -5,20 +5,35 @@ let property = {
   pb: ["paddingBottom"],
   pr: ["paddingRight"],
   pl: ["paddingLeft"],
+  ph: ["paddingLeft", "paddingRight"],
+  pv: ["paddingTop", "paddingBottom"],
   // Margin
   m: ["margin"],
   mt: ["marginTop"],
   mb: ["marginBottom"],
   mr: ["marginRight"],
   ml: ["marginLeft"],
+  mv: ["marginTop", "marginBottom"],
+  mh: ["marginLeft", "marginRight"],
   // Text and font
   fs: ["fontSize"],
   fw: ["fontWeight"],
+  lh: ["lineHeight"],
+  ls: ["letterSpacing"],
+  ta: ["text-align"],
+  ts: ["textStyle"],
+  td: ["textDecoration"],
+  ti: ["textIndent"],
+  tn: ["textReansform"],
+  ws: ["wordSpacing"],
+  "white-space": ["whiteSpace"],
+  // Positioning
   z: ["zIndex"],
   t: ["top"],
   b: ["bottom"],
   r: ["right"],
   l: ["left"],
+  // Width and Height
   w: ["width"],
   "w-mx": ["maxWidth"],
   "w-mn": ["minWidth"],
@@ -45,7 +60,6 @@ let property = {
   "grid-row-end": ["gridRowEnd"],
   "grid-row-start": ["gridRowStart"],
   "grid-col-end": ["gridColumnEnd"],
-
   "grid-col-start": ["gridColumnStart"],
   "grid-area": ["gridArea"],
   "item-place": ["placeArea"],
@@ -66,13 +80,7 @@ let property = {
   gap: ["gap"],
   ti: ["textIndent"],
   "backdrop-blur": ["backdropFilter"],
-  ph: ["paddingLeft", "paddingRight"],
-  pv: ["paddingTop", "paddingBottom"],
-  mv: ["marginTop", "marginBottom"],
-  mh: ["marginLeft", "marginRight"],
-  "text-space": ["letterSpacing"],
-  "word-space": ["wordSpacing"],
-  "line-height": ["lineHeight"],
+
   // Filter
   filter: ["filter"],
   blur: ["filter"],
@@ -100,10 +108,17 @@ let property = {
   "radius-bottom": ["borderBottomLeftRadius", "borderBottomRightRadius"],
   "radius-left": ["borderTopLeftRadius", "borderBottomLeftRadius"],
   "radius-right": ["borderTopRightRadius", "borderBottomRightRadius"],
+  // Additional
+  curs: ["cursor"],
+  scale: ["scale"],
+  rt: ["rotate"],
   // Overflow
   over: ["overflow"],
   overY: ["overflowY"],
   overX: ["overflowX"],
+  // Custom
+  box: ["width", "height"],
+  "flex-parent": ["justifyContent", "alignItems"],
 };
 
 export default property;

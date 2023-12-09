@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.1] - 9-12-2023
+
+- New text property
+- Flexbox optimize
+- Add new type `box` which will set the `width` and `height` at the same time
+
 ## [0.1.0] - 8-12-2023
 
 - Update to v0.1.0
