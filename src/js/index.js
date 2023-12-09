@@ -1,8 +1,56 @@
-/**!
+/**
+ * TenoxUI CSS Framework v0.1.2
+ * 
  * copyright (c) 2023 nousantx
+ * 
+ * license: https://github.com/nousantx/tenoxui/blob/main/LICENSE
  */
-
 import property from "./property.js";
+
+let Classes = Object.keys(property).map(
+  (className) => `[class*="${className}-"]`
+);
+
+// Merge all `Classes` into one selector. Example : '[class*="p-"]', '[class*="m-"]', '[class*="justify-"]'
+let AllClasses = document.querySelectorAll(Classes.join(", "));
+
+function newProp(name, values) {
+  if (typeof name !== "string" || !Array.isArray(values)) {
+    console.warn(
+      "Invalid arguments for newProp. Please provide a string for name and an array for values."
+    );
+    return;
+  } else {
+    console.log("added new type and property to property");
+  }
+
+  this[name] = values;
+  Classes.push(`[class*="${name}-"]`);
+  AllClasses = document.querySelectorAll(Classes.join(", "));
+}
+
+newProp.prototype.tryAdd = function () {
+  if (!this || Object.keys(this).length === 0) {
+    console.warn("Invalid newProp instance:", this);
+    return;
+  }
+  Object.assign(property, this);
+};
+
+export function MakeProp(Types, Property) {
+  // Check if 'Types' is a string
+  if (typeof Types !== "string") {
+    throw new Error("Types must be a string");
+  }
+
+  // Check if 'Property' is an array
+  if (!Array.isArray(Property)) {
+    throw new Error("Property must be an array");
+  }
+
+  new newProp(Types, Property).tryAdd();
+}
+
 function makeTenoxUI(element) {
   this.element = element;
   this.styles = property;
@@ -66,15 +114,13 @@ makeTenoxUI.prototype.applyStyles = function (className) {
   }
 };
 
-// TenoxUI Selector
-const AllClasses = document.querySelectorAll(
-  '[class*="p-"], [class*="pt-"], [class*="pb-"], [class*="pr-"], [class*="pl-"], [class*="m-"], [class*="mt-"], [class*="mb-"], [class*="mr-"], [class*="ml-"], [class*="fs-"], [class*="fw-"], [class*="z-"], [class*="t-"], [class*="b-"], [class*="r-"], [class*="l-"], [class*="br-"], [class*="bw-"], [class*="w-"], [class*="w-mx-"], [class*="w-mn-"], [class*="h-"], [class*="h-mx-"], [class*="h-mn-"], [class*="fx-"], [class*="gap-"], [class*="ti-"], [class*="rt-"], [class*="backdrop-blur-"], [class*="ph-"], [class*="pv-"], [class*="mv-"], [class*="mh-"], [class*="text-space-"], [class*="word-space-"], [class*="line-height-"], [class*="radius-tl-"], [class*="radius-tr-"], [class*="radius-bl-"], [class*="radius-br-"], [class*="radius-top-"], [class*="radius-bottom-"], [class*="radius-left-"], [class*="radius-right-"], [class*="radius-top-"], [class*="radius-bottom-"], [class*="radius-left-"], [class*="radius-right-"], [class*="gs-"], [class*="blur-"], [class*="opa-"], [class*="x-"], [class*="bw-left-"], [class*="bw-right-"], [class*="bw-top-"], [class*="bw-bottom-"], [class*="scale-"], [class*="grid-row-"], [class*="grid-col-"], [class*="grid-item-row-"], [class*="grid-item-col-"]'
-);
-
-AllClasses.forEach((element) => {
-  const classes = element.classList;
-  const makeTx = new makeTenoxUI(element);
-  classes.forEach((className) => {
-    makeTx.applyStyles(className);
+export default function TenoxUI() {
+  AllClasses.forEach((element) => {
+    const classes = element.classList;
+    const makeTx = new makeTenoxUI(element);
+    classes.forEach((className) => {
+      makeTx.applyStyles(className);
+    });
   });
-});
+}
+TenoxUI();

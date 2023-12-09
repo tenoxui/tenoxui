@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Custom Proeprty Test</title>
+    <style>
+      :root {
+        --primary: #4169e0;
+      }
+    </style>
+    <link rel="stylesheet" href="../../src/css/index.css" />
+  </head>
+  <body>
+    <!-- The 'tx-' will give padding to your element -->
+    <div class="box-100px bg-red tx-2rem">Text</div>
+    <!-- You can make new -->
+    <div class="makeBox-300px bg-0d0d0d tc-primary tx-2rem">Text</div>
+
+    <script src="../../src/js/color.js"></script>
+    <script type="module">
+      import TenoxUI, { MakeProp } from "../../src/js/index.js";
+      import AllProperty from "../../src/js/property.js";
+
+      // 'tx-' will automatically added to class selector and `AllProperty`
+      MakeProp("tx", ["padding"]);
+
+      /* You can define more that one property, like this.
+       * The value you defined in your element will applied to-
+       * both property, width and height.
+       * */
+      MakeProp("makeBox", ["width", "height"]);
+
+      console.log(AllProperty);
+      // reapplying the styles after make new property
+      TenoxUI();
+    </script>
+  </body>
+</html>

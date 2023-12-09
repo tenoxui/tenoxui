@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.2] - 9-12-2023
+
+- Add new feature: `Custom Property`
+- `AllClasses` now is more optimized. The className is taken from type name on `property` and combined it to previous class selector.
+- The example of custom property will on `test/html/custom-property.html`
+
 ## [0.1.1] - 9-12-2023
 
 - New text property

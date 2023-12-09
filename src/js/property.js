@@ -1,3 +1,11 @@
+/**
+ * TenoxUI CSS Framework v0.1.2
+ *
+ * copyright (c) 2023 nousantx
+ *
+ * license: https://github.com/nousantx/tenoxui/blob/main/LICENSE
+ */
+
 let property = {
   // Mapping type and its Property
   p: ["padding"],
@@ -43,7 +51,6 @@ let property = {
   // Flex
   fx: ["flex"],
   "flex-parent": ["justifyContent", "alignItems"],
-  fx: ["flex"],
   fd: ["flexDirection"],
   "fx-wrap": ["flexWrap"],
   "item-order": ["order"],
@@ -116,7 +123,7 @@ let property = {
   over: ["overflow"],
   overY: ["overflowY"],
   overX: ["overflowX"],
-  // Custom
+  // TenoxUI Custom property.
   box: ["width", "height"],
   "flex-parent": ["justifyContent", "alignItems"],
 };

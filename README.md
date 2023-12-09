@@ -25,7 +25,13 @@ npm i tenoxui@latest
 Using CDN :
 
 ```html
-<script defer type="module" src="https://cdn.jsdelivr.net/npm/tenoxui@0.1.0/dist/js/index.min.js" integrity="sha256-5G02cajm5lQwd0lFbRogVCXn8qsANy+5elreXO/I4fs=" crossorigin="anonymous"></script>
+<script
+  defer
+  type="module"
+  src="https://cdn.jsdelivr.net/npm/tenoxui@0.1.0/dist/js/index.min.js"
+  integrity="sha256-5G02cajm5lQwd0lFbRogVCXn8qsANy+5elreXO/I4fs="
+  crossorigin="anonymous"
+></script>
 ```
 
 ### Documentation
@@ -40,4 +46,4 @@ This code will make a box with 200px width and 200px height with 2rem padding an
 </div>
 ```
 
-Full documentation? coming soon :)
+Full documentation? coming soon... ( under developement )
