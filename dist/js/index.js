@@ -78,6 +78,11 @@ makeTenoxUI.prototype.applyStyle = function (type, value, unit) {
         this.element.style[
           property
         ] = `repeat(auto-fit, minmax(${value}${unit}, 1fr))`;
+      } // CSS Variables support
+      else if (value.startsWith("[") && value.endsWith("]")) {
+        // Check if the value is a CSS variable enclosed in square brackets
+        const cssVariable = value.slice(1, -1);
+        this.element.style[property] = `var(--${cssVariable})`;
       }
       // Default value and unit
       else {

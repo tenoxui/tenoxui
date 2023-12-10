@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.5] - 10-12-2023
+
+- Added `css variable` for all property and type, not just color property.
+- Added `aspect-ratio` property.
+- Adding some `css variable` for value that has two word or separated by hyphen, such as `flex-start` and `column-reverse`
+
 ## [0.1.4] - 10-12-2023
 
 - Fixing versioning from v0.1.3

@@ -1,6 +1,6 @@
 /*!
  *
- * TenoxUI CSS Framework v0.1.4
+ * TenoxUI CSS Framework v0.1.5
  *
  * copyright (c) 2023 nousantx
  *
@@ -144,7 +144,8 @@ let property = {
   overX: ["overflowX"],
   // Float
   float: ["float"],
-
+  // Aspect Ratio
+  ratio: ["aspectRatio"],
   // TenoxUI Custom property.
   box: ["width", "height"],
   "flex-parent": ["justifyContent", "alignItems"],
