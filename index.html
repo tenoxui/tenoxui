@@ -8,18 +8,29 @@
     <link rel="stylesheet" href="src/css/index.css" />
     <!-- Tenk7css by nousantx -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tenk7css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cabin:wght@400;500;600;700&family=Figtree:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
     <style>
       :root {
+        font-family: "figtree", sans-serif;
         --text-light: #fafafa;
-        --primary: #4def25;
+        --primary: #d2e603;
       }
     </style>
   </head>
-  <body class="w-mx h-100svh fx-ctr bg-0d0d0d tc-text-light fx-clm p-2rem">
-    <main class="w-mx fx-ctr al-str">
-      <div class="w-mx w-mx-1000px fx-ctr fx-clm">
-        <h1 class="fw-500">
-          TenoxUI CSS Framework <span class="fs-1rem tc-primary"> v0.0.3 </span>
+  <body
+    class="w-mx h-100svh flex-parent-center bg-0d0d0d tc-text-light fd-column p-2rem"
+  >
+    <main class="w-mx flex-parent-center al-str">
+      <div class="w-mx w-mx-1000px flex-parent-center fd-column">
+        <h1 class="fw-600 tc-bbb">
+          <span class="tc-white">Tenox</span
+          ><span class="tc-primary">UI</span> CSS Framework
+          <span class="fs-1rem tc-primary">v<span class="v"></span></span>
         </h1>
         <p class="ta-center w-mx-1000px tc-aaa">
           TenoxUI is a lightweight Utility-First CSS Framework with no
@@ -29,16 +40,12 @@
         </p>
       </div>
     </main>
-    <footer class="absolute b-1rem fs-12px">
+    <footer class="post-fixed b-1rem fs-12px">
       Copyright &copy; 2023 nousantx. All Rights Reserved.
     </footer>
     <!-- Script -->
+    <script defer src="./version.js"></script>
     <script defer src="./src/js/color.js"></script>
     <script defer type="module" src="./src/js/index.js"></script>
-    <!-- <script
-      defer
-      type="module"
-      src="https://cdn.jsdelivr.net/npm/tenoxui@0.0.4"
-    ></script> -->
   </body>
 </html>

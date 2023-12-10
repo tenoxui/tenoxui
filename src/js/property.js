@@ -1,9 +1,11 @@
-/**
+/*!
+ *
  * TenoxUI CSS Framework v0.1.2
  *
  * copyright (c) 2023 nousantx
  *
  * license: https://github.com/nousantx/tenoxui/blob/main/LICENSE
+ *
  */
 
 let property = {
@@ -29,18 +31,26 @@ let property = {
   lh: ["lineHeight"],
   ls: ["letterSpacing"],
   ta: ["text-align"],
+  tc: ["color"],
   ts: ["textStyle"],
   td: ["textDecoration"],
   ti: ["textIndent"],
   tn: ["textReansform"],
   ws: ["wordSpacing"],
+  "text-style": ["fontStyle"],
   "white-space": ["whiteSpace"],
   // Positioning
+  position: ["position"],
+  post: ["position"],
   z: ["zIndex"],
   t: ["top"],
   b: ["bottom"],
   r: ["right"],
   l: ["left"],
+
+  // Display
+  display: ["display"],
+
   // Width and Height
   w: ["width"],
   "w-mx": ["maxWidth"],
@@ -48,6 +58,15 @@ let property = {
   h: ["height"],
   "h-mx": ["maxHeight"],
   "h-mn": ["minHeight"],
+  // Background
+  bg: ["background"],
+  "bg-size": ["backgroundSize"],
+  "bg-clip": ["backgroundClip"],
+  "bg-repeat": ["backgroundRepeat"],
+  "bg-loc": ["backgroundPosition"],
+  "bg-loc-x": ["backgroundPositionX"],
+  "bg-loc-y": ["backgroundPositionY"],
+  "bg-blend": ["backgroundBlendMode"],
   // Flex
   fx: ["flex"],
   "flex-parent": ["justifyContent", "alignItems"],
@@ -86,8 +105,8 @@ let property = {
   js: ["justifySelf"],
   gap: ["gap"],
   ti: ["textIndent"],
+  // backdrop [ under developement ]
   "backdrop-blur": ["backdropFilter"],
-
   // Filter
   filter: ["filter"],
   blur: ["filter"],
@@ -123,9 +142,13 @@ let property = {
   over: ["overflow"],
   overY: ["overflowY"],
   overX: ["overflowX"],
+  // Float
+  float: ["float"],
+
   // TenoxUI Custom property.
   box: ["width", "height"],
   "flex-parent": ["justifyContent", "alignItems"],
 };
 
+// export default property;
 export default property;

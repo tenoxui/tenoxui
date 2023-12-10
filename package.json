@@ -5,7 +5,9 @@
   "main": "./dist/js/index.min.js",
   "type": "module",
   "scripts": {
-    "test": "echo 'TenoxUI Always Ready'"
+    "test": "echo 'TenoxUI Always Ready'",
+    "mini-js": "terser src/js/index.js src/js/color.js -o dist/js/index.min.js --mangle && terser src/js/property.js -o dist/js/property.js && cp src/js/index.js dist/js/",
+    "mini-css": "cleancss src/css/index.css -o dist/css/index.min.css && cp src/css/index.css dist/css/"
   },
   "keywords": [
     "framework",

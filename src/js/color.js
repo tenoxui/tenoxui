@@ -1,6 +1,3 @@
-/**
- * copyright (c) 2023 nousantx
- */
 function TenoxColor() {
   const setColor = (element, pattern, property, format) => {
     const match = element.className.match(pattern);
@@ -70,7 +67,6 @@ function TenoxColor() {
       "borderColor",
       (match) => `rgba(${match.slice(1, 5).join(",")})`
     );
-
     // For HEX colors
     setColor(
       element,

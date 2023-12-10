@@ -1,6 +1,37 @@
-/**
- * copyright (c) 2023 nousantx
+/*!
+ *
+ * TenoxUI CSS Framework v0.1.2
+ *
+ * copyright (c) 2023 NOuSantx
+ *
+ * license: https://github.com/nousantx/tenoxui/blob/main/LICENSE
+ *
  */
+:root {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --flex-start: flex-start;
+  --flex-end: flex-end;
+  --sb: space-between;
+  --sa: space-around;
+  --se: space-evenly;
+  --row-rev: row-reverse;
+  --col-rev: column-reverse;
+  --wrap-rev: wrap-reverse;
+  --repeat-x: repeat-x;
+  --repeat-y: repeat-y;
+  --match-parent: match-parent;
+  --lower-roman: lower-roman;
+  --upper-roman: upper-roman;
+  --lower-alpha: lower-alpha;
+  --upper-alpha: upper-alpha;
+  --pre-line: pre-line;
+  --pre-wrap: pre-wrap;
+  --small-caps: small-caps;
+  --break-word: break-word;
+  --break-all: break-all;
+  --keep-all: keep-all;
+  --line-through: line-through;
+}
 *,
 *::before,
 *::after {
@@ -8,27 +39,59 @@
   margin: 0;
   padding: 0;
 }
-
+[class*="fx"],
+[class*="flex"] {
+  display: flex;
+}
+[class*="grid"] {
+  display: grid;
+}
+blockquote,
+q {
+  quotes: none;
+}
+blockquote:after,
+blockquote:before,
+q:after,
+q:before {
+  content: "";
+  content: none;
+}
+h1 {
+  font-size: clamp(2rem, 5vw, 3rem);
+}
+h2 {
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+}
+h3 {
+  font-size: clamp(1.2rem, 3vw, 2rem);
+}
+h4 {
+  font-size: clamp(1rem, 2.5vw, 1.5rem);
+}
+h5 {
+  font-size: clamp(0.9rem, 2vw, 1.2rem);
+}
+h6 {
+  font-size: clamp(0.8rem, 1.5vw, 1rem);
+}
+p {
+  font-size: clamp(1rem, 2vw, 1.5rem);
+}
+a {
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
 .rounded {
   border-radius: 50%;
 }
 .w-mx {
   width: 100%;
 }
-.w-mn {
-  width: 0%;
-}
 .h-mx {
   height: 100%;
-}
-.fx-mx {
-  flex: 1 1 100%;
-}
-.fx-half {
-  flex: 1 1 50%;
-}
-.fx-zero {
-  flex: 1 1 0%;
 }
 .uppercase {
   text-transform: uppercase;
@@ -39,9 +102,6 @@
 .nowrap {
   white-space: nowrap;
 }
-.i {
-  font-style: italic;
-}
 .absolute {
   position: absolute;
 }
@@ -51,66 +111,11 @@
 .fixed {
   position: fixed;
 }
+:where([hidden]),
 .none {
   display: none !important;
 }
-.d-fx {
-  display: flex;
-}
-.fx-clm {
-  flex-direction: column;
-}
-.fx-row {
-  flex-direction: row;
-}
-.fx-wrap {
-  flex-wrap: wrap;
-}
-.fx-ctr {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.grid {
-  display: grid;
-}
-.al-ctr {
-  align-items: center;
-}
-.al-str {
-  align-items: flex-start;
-}
-.al-end {
-  align-items: flex-end;
-}
-.al-full {
-  align-items: stretch;
-}
-.j-ctr {
-  justify-content: center;
-}
-.j-full {
-  justify-content: stretch;
-}
-.j-sb {
-  justify-content: space-between;
-}
-.j-sa {
-  justify-content: space-around;
-}
-.j-se {
-  justify-content: space-evenly;
-}
-.j-str {
-  justify-content: flex-start;
-}
-.j-end {
-  justify-content: flex-end;
-}
-.text-normal {
-  font-style: normal;
-  font-weight: 400;
-  font-variant: normal;
-  text-transform: none;
-  line-height: 1;
+a,
+button {
+  cursor: pointer;
 }

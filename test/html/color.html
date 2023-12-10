@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Color and Variable Test</title>
+    <style>
+      :root {
+        --primary: #4169e0;
+      }
+    </style>
+    <link rel="stylesheet" href="../../src/css/index.css" />
+  </head>
+  <body class="h-100svh flex-parent-center fd-column gap-1rem">
+    <h1>Color and CSS Variable Lab</h1>
+    <script src="../../src/js/color.js"></script>
+    <script type="module">
+      import TenoxUI, { MakeProp } from "../../src/js/index.js";
+      import AllProperty from "../../src/js/property.js";
+
+      console.log(AllProperty);
+      // reapplying the styles after make new property
+      TenoxUI();
+    </script>
+  </body>
+</html>

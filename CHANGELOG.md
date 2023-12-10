@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.3] - 10-12-2023
+
+- Add `background` feature, `-size`, `-clip`, `-repeat`, and more.
+- Add `float` property
+- Patch `position` and `display
+- Upcoming feature: `css variable` compability for all property and type
+- Some change on CSS file
+
 ## [0.1.2] - 9-12-2023
 
 - Add new feature: `Custom Property`
