@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.1.4] - 10-12-2023
+
+- Fixing versioning from v0.1.3
+
 ## [0.1.3] - 10-12-2023
 
 - Add `background` feature, `-size`, `-clip`, `-repeat`, and more.
