@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0] - 10-12-2023
+
+- Added new feature `MakeStyles` that allow you apply multi styles with classes into element using desired selector.
+- Optimizing `color` feature, and-
+- Removing non-bracket `CSS Variable` for `color` related type.
+- Fixing versioning from `v0.1.4` still appear on `v0.1.5`
+
 ## [0.1.5] - 10-12-2023
 
 - Added `css variable` for all property and type, not just color property.

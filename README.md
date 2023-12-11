@@ -4,13 +4,15 @@
 
 ## About
 
-TenoxUI is a lightweight Utility-First CSS framework designed to make web development faster and more efficient. It provides a set of customizable styles and utility first to streamline the styling process.
+TenoxUI stands as a nimble Utility-First CSS framework meticulously crafted to elevate web development by enhancing speed and efficiency. It delivers a curated collection of customizable styles and embraces a utility-first approach, simplifying and expediting the styling process for developers.
 
 ## Features
 
-- **Lightweight and Fast:** Most of our classes is handled by javascript.
-- **Utility First:** Apply pre-defined utility-first to style elements quickly.
-- **Customizable:** Easy to add new custom class and property.
+- **Fast and Efficient:** The majority of classes are managed through JavaScript, ensuring a lightweight and fast user experience.
+
+- **Utility-First:** Seamlessly apply pre-defined utility classes to elements by simply invoking their associated classes, fostering a utility-first approach to styling.
+
+- **Tailored to Your Taste:** Easily customize your unique style with user-friendly configuration options, providing a personalized and bespoke design experience.
 
 ## Getting Started
 
@@ -26,11 +28,8 @@ Using CDN :
 
 ```html
 <script
-  defer
   type="module"
-  src="https://cdn.jsdelivr.net/npm/tenoxui@0.1.0/dist/js/index.min.js"
-  integrity="sha256-5G02cajm5lQwd0lFbRogVCXn8qsANy+5elreXO/I4fs="
-  crossorigin="anonymous"
+  src="https://cdn.jsdelivr.net/npm/tenoxui@0.2.0/dist/js/index.min.js"
 ></script>
 ```
 

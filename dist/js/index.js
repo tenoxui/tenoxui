@@ -1,6 +1,6 @@
 /*!
  *
- * TenoxUI CSS Framework v0.1.4
+ * TenoxUI CSS Framework v0.2.0
  *
  * copyright (c) 2023 NOuSantx
  *
@@ -19,8 +19,6 @@ function newProp(name, values) {
       "Invalid arguments for newProp. Please provide a string for name and an array for values."
     );
     return;
-  } else {
-    console.log("added new type and property to property");
   }
   this[name] = values;
   Classes.push(`[class*="${name}-"]`);
@@ -107,10 +105,41 @@ makeTenoxUI.prototype.applyStyles = function (className) {
     this.applyStyle(type, value, unitOrValue);
   }
 };
+// MultyStyles function: Give multi style or class into one selector.
+makeTenoxUI.prototype.applyMultiStyles = function (styles) {
+  // Splitting the styles
+  const styleArray = styles.split(/\s+/);
+  // Applying the styles using forEach and `applyStyles`
+  styleArray.forEach((style) => {
+    this.applyStyles(style);
+  });
+};
+// MultiStyles function
+export function MakeStyles(className, styles) {
+  // Select all elements with the specified class
+  const elements = document.querySelectorAll(className);
+  // Check if there are any elements with the specified class
+  if (elements.length === 0) {
+    console.warn(`No elements found with class: ${className}`);
+    return;
+  }
+  // Iterate through each element and apply styles
+  elements.forEach((element) => {
+    // Make new styler for each element
+    const styler = new makeTenoxUI(element);
+    // Apply styles using `applyMultiStyles`
+    styler.applyMultiStyles(styles);
+  });
+}
+// Define the TenoxUI function to apply the styles
 export default function TenoxUI() {
+  // Iterate over elements with AllClasses
   AllClasses.forEach((element) => {
+    // Get the list of classes for the current element
     const classes = element.classList;
+    // Make TenoxUI
     const makeTx = new makeTenoxUI(element);
+    // Iterate over classes and apply styles using makeTenoxUI
     classes.forEach((className) => {
       makeTx.applyStyles(className);
     });

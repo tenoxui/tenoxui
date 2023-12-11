@@ -1,12 +1,13 @@
 /*!
  *
- * TenoxUI CSS Framework v0.1.5
+ * TenoxUI CSS Framework v0.2.0
  *
  * copyright (c) 2023 NOuSantx
  *
  * license: https://github.com/nousantx/tenoxui/blob/main/LICENSE
  *
  */
+
 :root {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   /* Aspect Ratio */
@@ -15,6 +16,7 @@
   --square: 1/1;
   --potrait: 4/5;
   /* other value */
+  --full: stretch;
   --flex-start: flex-start;
   --flex-end: flex-end;
   --sb: space-between;

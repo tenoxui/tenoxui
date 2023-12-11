@@ -1,3 +1,12 @@
+/*!
+ *
+ * TenoxUI CSS Framework v0.2.0
+ *
+ * copyright (c) 2023 NOuSantx
+ *
+ * license: https://github.com/nousantx/tenoxui/blob/main/LICENSE
+ *
+ */
 // Function to apply color styles to an element based on the provided pattern, property, and format
 const makeColor = (element, pattern, property, format) => {
   // Match the class name against the provided pattern
