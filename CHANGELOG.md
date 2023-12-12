@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.3.0] - 12-12-2023
+
+- Finishing feature `MultiProps` and `MultiStyles`
+
 ## [0.2.1] - 12-12-2023
 
 - Trying to migrate to Typescript XD.

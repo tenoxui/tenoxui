@@ -29,7 +29,7 @@ Using CDN :
 ```html
 <script
   type="module"
-  src="https://cdn.jsdelivr.net/npm/tenoxui@0.2.0/dist/js/index.min.js"
+  src="https://cdn.jsdelivr.net/npm/tenoxui@0.3.0/dist/js/index.min.js"
 ></script>
 ```
 
