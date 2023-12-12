@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "module": "ES2015",
+    "outDir": "./src/js", // Output directory for compiled files
+    "rootDir": "./src/ts", // Root directory of input files
+    // "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "sourceMap": true
+  },
+  "include": ["./src/ts/**/*"],
+  "exclude": ["node_modules", "./dist"]
+}

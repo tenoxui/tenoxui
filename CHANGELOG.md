@@ -1,6 +1,12 @@
 # Changelog
 
-## [0.2.0] - 10-12-2023
+## [0.2.1] - 12-12-2023
+
+- Trying to migrate to Typescript XD.
+- Added `MultiProps` and `MultiStyles` feature.
+- Deleting HTML test directory.
+
+## [0.2.0] - 11-12-2023
 
 - Added new feature `MakeStyles` that allow you apply multi styles with classes into element using desired selector.
 - Optimizing `color` feature, and-

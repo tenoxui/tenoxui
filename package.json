@@ -1,13 +1,16 @@
 {
   "name": "tenoxui",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Tenox UI is a Utiliy-First CSS Framework with small and lightweight size and fast, most of its class is builded in Javascript.",
   "main": "./dist/js/index.min.js",
+  "css": "./dist/css/index.min.css",
   "type": "module",
   "scripts": {
     "test": "echo 'TenoxUI Always Ready'",
     "mini-js": "terser src/js/index.js src/js/color.js -o dist/js/index.min.js --mangle && terser src/js/property.js -o dist/js/property.js && cp src/js/index.js src/js/color.js dist/js/",
-    "mini-css": "cleancss src/css/index.css -o dist/css/index.min.css && cp src/css/index.css dist/css/"
+    "mini-css": "cleancss src/css/index.css -o dist/css/index.min.css && cp src/css/index.css dist/css/",
+    "ts-watch": "tsc --watch",
+    "ts-build": "tsc"
   },
   "keywords": [
     "framework",
@@ -27,5 +30,8 @@
   "bugs": {
     "url": "https://github.com/nousantx/tenoxui/issues"
   },
-  "homepage": "https://github.com/nousantx/tenoxui#readme"
+  "homepage": "https://github.com/nousantx/tenoxui#readme",
+  "dependencies": {
+    "typescript": "^5.3.3"
+  }
 }

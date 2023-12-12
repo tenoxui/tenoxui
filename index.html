@@ -29,8 +29,8 @@
       <div class="w-mx w-mx-1000px flex-parent-center fd-column">
         <h1 class="fw-600 tc-bbb">
           <span class="tc-white">Tenox</span
-          ><span class="tc-[primary]">UI</span> CSS Framework
-          <span class="fs-1rem tc-[primary]">v<span class="v"></span></span>
+          ><span class="tc-d2e603">UI</span> CSS Framework
+          <span class="fs-1rem tc-d2e603">v<span class="v"></span></span>
         </h1>
         <p class="ta-center w-mx-1000px tc-aaa">
           TenoxUI is a lightweight Utility-First CSS Framework with no
@@ -38,14 +38,34 @@
           Built with javascript, make this code really fast, and directly give
           the style into your element.
         </p>
+        <!-- <div class="boxs bg-blue"></div> -->
       </div>
     </main>
     <footer class="post-fixed b-1rem fs-12px">
       Copyright &copy; 2023 nousantx. All Rights Reserved.
     </footer>
     <!-- Script -->
-    <script defer src="./src/js/color.js"></script>
+    <!-- <script defer src="./dist/js/color.js"></script> -->
+    <script type="module">
+      import TenoxUI, {
+        MakeProp,
+        MakeStyle,
+        MultiProps,
+        MultiStyles,
+      } from "./dist/js/index.min.js";
+      let MyProps = {
+        gra: ["padding"],
+      };
+      // If
+      let MyStyles = {
+        ".boxs": "gra-1rem box-200px bg-red",
+        // ".primary": "tc-[primary]",
+      };
+      // console.log(TenoxUI, MultiStyles);
+      MultiProps(MyProps);
+      MultiStyles(MyStyles);
+      TenoxUI();
+    </script>
     <script defer src="./version.js"></script>
-    <script defer type="module" src="./src/js/index.js"></script>
   </body>
 </html>

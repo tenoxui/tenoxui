@@ -1,6 +1,6 @@
 /*!
  *
- * TenoxUI CSS Framework v0.2.1
+ * TenoxUI CSS Framework v0.2.0
  *
  * copyright (c) 2023 NOuSantx
  *
@@ -179,4 +179,4 @@ export default function TenoxUI() {
     });
 }
 TenoxUI();
-//# sourceMappingURL=index.js.map
+//# sourceMappingURL=tenoxui.js.map
