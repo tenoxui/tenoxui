@@ -34,7 +34,7 @@
     "url": "https://github.com/nousantx/tenoxui/issues"
   },
   "homepage": "https://github.com/nousantx/tenoxui#readme",
-  "dependencies": {
+  "devDependencies": {
     "typescript": "^5.3.3"
   }
 }
