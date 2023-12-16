@@ -27,10 +27,7 @@ npm i tenoxui@latest
 Using CDN :
 
 ```html
-<script
-  type="module"
-  src="https://cdn.jsdelivr.net/npm/tenoxui@0.3.0/dist/js/index.min.js"
-></script>
+<script src="https://cdn.jsdelivr.net/npm/tenoxui@0.4.0/dist/js/tenoxui.min.js"></script>
 ```
 
 ### Documentation
@@ -40,8 +37,8 @@ Using CDN :
 This code will make a box with 200px width and 200px height with 2rem padding and 8px border radius. And black text with 1.5rem of font size and 500 of font weight
 
 ```html
-<div class="box-200px flex-parent-center br-8px bg-khaki p-2rem">
-  <h1 class="fs-1.5rem fw-500 tc-black">Hello World!</h1>
+<div class="box-200px flex-parent-center br-8px bg-0d0d0d p-2rem">
+  <h1 class="fs-1.5rem fw-500 tc-lightgreen">Hello World!</h1>
 </div>
 ```
 

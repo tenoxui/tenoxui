@@ -1,6 +1,10 @@
+interface PropertyMap {
+  [key: string]: string[];
+}
+
 /*!
  *
- * TenoxUI CSS Framework v0.3.0
+ * TenoxUI CSS Framework v0.4.0
  *
  * copyright (c) 2023 NOuSantx
  *
@@ -8,7 +12,142 @@
  *
  */
 
-import property from "./property.js";
+let property: PropertyMap = {
+  // Mapping type and its Property
+  p: ["padding"],
+  pt: ["paddingTop"],
+  pb: ["paddingBottom"],
+  pr: ["paddingRight"],
+  pl: ["paddingLeft"],
+  ph: ["paddingLeft", "paddingRight"],
+  pv: ["paddingTop", "paddingBottom"],
+  // Margin
+  m: ["margin"],
+  mt: ["marginTop"],
+  mb: ["marginBottom"],
+  mr: ["marginRight"],
+  ml: ["marginLeft"],
+  mv: ["marginTop", "marginBottom"],
+  mh: ["marginLeft", "marginRight"],
+  // Text and font
+  fs: ["fontSize"],
+  fw: ["fontWeight"],
+  lh: ["lineHeight"],
+  ls: ["letterSpacing"],
+  ta: ["text-align"],
+  tc: ["color"],
+  ts: ["textStyle"],
+  td: ["textDecoration"],
+  ti: ["textIndent"],
+  tn: ["textReansform"],
+  ws: ["wordSpacing"],
+  "text-style": ["fontStyle"],
+  "white-space": ["whiteSpace"],
+  // Positioning
+  position: ["position"],
+  post: ["position"],
+  z: ["zIndex"],
+  t: ["top"],
+  b: ["bottom"],
+  r: ["right"],
+  l: ["left"],
+  // Display
+  display: ["display"],
+  // Width and Height
+  w: ["width"],
+  "w-mx": ["maxWidth"],
+  "w-mn": ["minWidth"],
+  h: ["height"],
+  "h-mx": ["maxHeight"],
+  "h-mn": ["minHeight"],
+  // Background
+  bg: ["background"],
+  "bg-size": ["backgroundSize"],
+  "bg-clip": ["backgroundClip"],
+  "bg-repeat": ["backgroundRepeat"],
+  "bg-loc": ["backgroundPosition"],
+  "bg-loc-x": ["backgroundPositionX"],
+  "bg-loc-y": ["backgroundPositionY"],
+  "bg-blend": ["backgroundBlendMode"],
+  // Flex
+  fx: ["flex"],
+  "flex-parent": ["justifyContent", "alignItems"],
+  fd: ["flexDirection"],
+  "fx-wrap": ["flexWrap"],
+  "item-order": ["order"],
+  "fx-basis": ["flexBasis"],
+  "fx-grow": ["flexGrow"],
+  "fx-shrink": ["flexShrink"],
+  // Grid
+  "grid-row": ["gridTemplateRows"],
+  "grid-col": ["gridTemplateColumns"],
+  "auto-grid-row": ["gridTemplateRows"],
+  "auto-grid-col": ["gridTemplateColumns"],
+  "grid-item-row": ["gridRow"],
+  "grid-item-col": ["gridColumn"],
+  "grid-row-end": ["gridRowEnd"],
+  "grid-row-start": ["gridRowStart"],
+  "grid-col-end": ["gridColumnEnd"],
+  "grid-col-start": ["gridColumnStart"],
+  "grid-area": ["gridArea"],
+  "item-place": ["placeArea"],
+  "content-place": ["placeContent"],
+  // Gap
+  gap: ["gap"],
+  "grid-gap": ["gridGap"],
+  "grid-row-gap": ["gridRowGap"],
+  "grid-col-gap": ["gridColumnGap"],
+  // Align
+  ac: ["alignContent"],
+  ai: ["align-items"],
+  as: ["alignSelf"],
+  // Justify
+  jc: ["justify-content"],
+  ji: ["justifyItems"],
+  js: ["justifySelf"],
+  // backdrop [ under developement ]
+  "backdrop-blur": ["backdropFilter"],
+  // Filter
+  filter: ["filter"],
+  blur: ["filter"],
+  brightness: ["filter"],
+  contrast: ["filter"],
+  grayscale: ["filter"],
+  "hue-rotate": ["filter"],
+  saturate: ["filter"],
+  sepia: ["filter"],
+  opa: ["opacity"],
+  // Border
+  br: ["borderRadius"],
+  bw: ["borderWidth"],
+  "bw-left": ["borderLeftWidth"],
+  "bw-right": ["borderRightWidth"],
+  "bw-top": ["borderTopWidth"],
+  "bw-bottom": ["borderBottomWidth"],
+  bs: ["borderStyle"],
+  "radius-tl": ["borderTopLeftRadius"],
+  "radius-tr": ["borderTopRightRadius"],
+  "radius-bl": ["borderBottomLeftRadius"],
+  "radius-br": ["borderBottomRightRadius"],
+  "radius-top": ["borderTopLeftRadius", "borderTopRightRadius"],
+  "radius-bottom": ["borderBottomLeftRadius", "borderBottomRightRadius"],
+  "radius-left": ["borderTopLeftRadius", "borderBottomLeftRadius"],
+  "radius-right": ["borderTopRightRadius", "borderBottomRightRadius"],
+  // Additional
+  curs: ["cursor"],
+  scale: ["scale"],
+  rt: ["rotate"],
+  // Overflow
+  over: ["overflow"],
+  overY: ["overflowY"],
+  overX: ["overflowX"],
+  // Float
+  float: ["float"],
+  // Aspect Ratio
+  ratio: ["aspectRatio"],
+  // TenoxUI Custom property.
+  box: ["width", "height"],
+};
 
 let Classes = Object.keys(property).map(
   (className) => `[class*="${className}-"]`
@@ -38,7 +177,7 @@ class newProp {
   }
 }
 
-export function MakeProp(Types: string, Property: string[]): void {
+function MakeProp(Types: string, Property: string[]): void {
   // Check if 'Types' is a string
   if (typeof Types !== "string") {
     throw new Error("Types must be a string");
@@ -134,7 +273,7 @@ class makeTenoxUI {
 }
 
 // Applied multi style into all elements with the specified class.
-export function MakeStyle(
+function MakeStyle(
   selector: string,
   styles: string | Record<string, string>
 ): void {
@@ -173,7 +312,7 @@ export function MakeStyle(
 }
 
 // MultiProps function: Add multiple properties from the provided object
-export function MultiProps(propsObject: Record<string, string[]>): void {
+function MultiProps(propsObject: Record<string, string[]>): void {
   // Iterate over object entries
   Object.entries(propsObject).forEach(([propName, propValues]) => {
     // Check if propValues is an array
@@ -191,14 +330,14 @@ export function MultiProps(propsObject: Record<string, string[]>): void {
 }
 
 // Apply styles for multiple elements using the provided object
-export function MultiStyles(stylesObject: Record<string, string>): void {
+function MultiStyles(stylesObject: Record<string, string>): void {
   Object.entries(stylesObject).forEach(([selector, styles]) => {
     MakeStyle(selector, styles);
   });
 }
 
 // Define the TenoxUI function to apply the styles
-export default function TenoxUI(): void {
+function TenoxUI(): void {
   // Iterate over elements with AllClasses
   AllClasses.forEach((element) => {
     // Get the list of classes for the current element
@@ -211,4 +350,56 @@ export default function TenoxUI(): void {
     });
   });
 }
+function Color() {
+  const makeColor = (
+    element: HTMLElement,
+    pattern: RegExp,
+    property: string,
+    format: (match: RegExpMatchArray) => string
+  ) => {
+    // Match the class name against the provided pattern
+    const match = element.className.match(pattern);
+
+    // If there is a match, apply the style to the element using the specified property and format
+    if (match) {
+      element.style[property] = format(match);
+    }
+  };
+
+  // Select all elements with classes related to colors (background, text, border)
+  const colorClass = document.querySelectorAll<HTMLElement>(
+    '[class*="bg-"], [class*="tc-"], [class*="border-"]'
+  );
+
+  // Define mappings for color types and corresponding CSS properties
+  const colorTypes: Record<string, string> = {
+    bg: "background",
+    tc: "color",
+    border: "borderColor",
+  };
+  // Define different color formats and their corresponding formatting functions
+  const colorFormats: Record<string, (match: RegExpMatchArray) => string> = {
+    rgb: (match) => `rgb(${match.slice(1, 4).join(",")})`,
+    rgba: (match) => `rgba(${match.slice(1, 5).join(",")})`,
+    hex: (match) => `#${match[1]}`,
+  };
+  // Iterate through each element with color-related classes
+  colorClass.forEach((element) => {
+    // Iterate through each color type (bg, tc, border)
+    for (const type in colorTypes) {
+      // Iterate through each color format (rgb, rgba, hex)
+      for (const format in colorFormats) {
+        // Create a pattern for the specific color type and format
+        const pattern = new RegExp(`${type}-${format}\\(([^)]+)\\)`);
+        // Apply color to the element using the makeColor function
+        makeColor(element, pattern, colorTypes[type], colorFormats[format]);
+      }
+      // Create a pattern for hex color format
+      const hexPattern = new RegExp(`${type}-([0-9a-fA-F]{3,6})`);
+      // Apply color to the element using the makeColor function for hex format
+      makeColor(element, hexPattern, colorTypes[type], colorFormats["hex"]);
+    }
+  });
+}
+Color();
 TenoxUI();

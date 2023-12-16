@@ -1,6 +1,6 @@
 /*!
  *
- * TenoxUI CSS Framework v0.3.0
+ * TenoxUI CSS Framework v0.4.0
  *
  * copyright (c) 2023 NOuSantx
  *
@@ -142,6 +142,11 @@ const property = {
     ratio: ["aspectRatio"],
     // TenoxUI Custom property.
     box: ["width", "height"],
+    transition: ["transition"],
+    "tr-time": ["transitionDuration"],
+    "tr-prop": ["transitionProperty"],
+    "tr-timing": ["transitionTimingFunction"],
+    "tr-delay": ["transitionDelay"],
 };
 export default property;
 //# sourceMappingURL=property.js.map

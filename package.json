@@ -2,16 +2,18 @@
   "name": "tenoxui",
   "version": "0.4.0",
   "description": "Tenox UI is a Utiliy-First CSS Framework with small and lightweight size and fast, most of its class is builded in Javascript.",
-  "main": "./dist/js/index.min.js",
-  "style": "./dist/css/index.min.css",
-  "type": "module",
+  "type": "commonjs",
+  "main": "./dist/js/tenoxui.min.js",
+  "style": "./dist/css/tenoxui.min.css",
+  "module": "./dist/js/tenoxui.esm.min.js",
   "files": [
     "**/*"
   ],
   "scripts": {
     "test": "echo 'TenoxUI Always Ready'",
-    "mini-js": "terser src/js/index.js src/js/color.js -o dist/js/index.min.js --mangle && terser src/js/property.js -o dist/js/property.js && cp src/js/index.js src/js/color.js dist/js/",
-    "mini-css": "cleancss src/css/index.css -o dist/css/index.min.css && cp src/css/index.css dist/css/",
+    "mini-js": "terser src/js/tenoxui.js -o dist/js/tenoxui.min.js -c -m --mangle --source-map url='tenoxui.min.js.map' && terser src/js/property.js -o dist/js/property.js -c -m --mangle && cp src/js/color.js src/js/tenoxui.js src/js/tenoxui.esm.js dist/js/",
+    "mini-mjs": "terser src/js/tenoxui.esm.js -o dist/js/tenoxui.esm.min.js -c -m --mangle --source-map url='tenoxui.esm.min.js.map'",
+    "mini-css": "cleancss src/css/tenoxui.css -o dist/css/tenoxui.min.css && cp src/css/tenoxui.css dist/css/",
     "ts-watch": "tsc --watch",
     "ts-build": "tsc"
   },
@@ -35,6 +37,8 @@
   },
   "homepage": "https://github.com/nousantx/tenoxui#readme",
   "devDependencies": {
+    "clean-css-cli": "^5.6.3",
+    "terser": "^5.26.0",
     "typescript": "^5.3.3"
   }
 }

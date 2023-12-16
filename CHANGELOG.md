@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.4.0] - 12-12-2023
+
+- Separated `cjs` and `esm`, both will have different file now.
+
 ## [0.3.0] - 12-12-2023
 
 - Finishing feature `MultiProps` and `MultiStyles`

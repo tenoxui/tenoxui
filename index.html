@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="TenoxUI Lab" />
     <title>TenoxUI Lab</title>
-    <link rel="stylesheet" href="src/css/index.css" />
+    <link rel="stylesheet" href="src/css/tenoxui.css" />
     <!-- Tenk7css by nousantx -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tenk7css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -19,18 +19,17 @@
         font-family: "figtree", sans-serif;
         --text-light: #fafafa;
         --primary: #d2e603;
+        --background: #0d0d0d;
       }
     </style>
   </head>
-  <body
-    class="w-mx h-100svh flex-parent-center bg-0d0d0d tc-[text-light] fd-column p-2rem"
-  >
-    <main class="w-mx flex-parent-center al-str">
+  <body>
+    <main>
       <div class="w-mx w-mx-1000px flex-parent-center fd-column">
         <h1 class="fw-600 tc-bbb">
           <span class="tc-white">Tenox</span
-          ><span class="tc-d2e603">UI</span> CSS Framework
-          <span class="fs-1rem tc-d2e603">v<span class="v"></span></span>
+          ><span class="tc-[primary]">UI</span> CSS Framework
+          <span class="fs-1rem tc-[primary]">v<span class="v"></span></span>
         </h1>
         <p class="ta-center w-mx-1000px tc-aaa">
           TenoxUI is a lightweight Utility-First CSS Framework with no
@@ -41,30 +40,31 @@
         <!-- <div class="boxs bg-blue"></div> -->
       </div>
     </main>
-    <footer class="post-fixed b-1rem fs-12px">
-      Copyright &copy; 2023 nousantx. All Rights Reserved.
-    </footer>
+    <footer>Copyright &copy; 2023 nousantx. All Rights Reserved.</footer>
     <!-- Script -->
-    <!-- <script defer src="./dist/js/color.js"></script> -->
-    <script type="module">
-      import TenoxUI, {
-        MakeProp,
-        MakeStyle,
-        MultiProps,
-        MultiStyles,
-      } from "./dist/js/index.min.js";
-      let MyProps = {
-        gra: ["padding"],
-      };
-      // If
-      let MyStyles = {
-        ".boxs": "gra-1rem box-200px bg-red",
-        // ".primary": "tc-[primary]",
-      };
-      // console.log(TenoxUI, MultiStyles);
-      MultiProps(MyProps);
-      MultiStyles(MyStyles);
+    <!-- default -->
+    <!-- <script src="./dist/js/tenoxui.js"></script>
+    <script>
+      MultiStyles({
+        body: "w-mx h-100svh flex-parent-center tc-[text-light] fd-column bg-[background] p-1rem",
+        main: "w-mx flex-parent-center al-str",
+        footer: "post-fixed b-1rem fs-12px",
+      });
+
       TenoxUI();
+      Color();
+    </script> -->
+    <!-- ES Module -->
+    <script type="module">
+      import TenoxUI, { MultiStyles, Color } from "./dist/js/tenoxui.esm.js";
+      MultiStyles({
+        body: "w-mx h-100svh flex-parent-center tc-[text-light] fd-column bg-[background] p-1rem",
+        main: "w-mx flex-parent-center al-str",
+        footer: "post-fixed b-1rem fs-12px",
+      });
+
+      TenoxUI();
+      Color();
     </script>
     <script defer src="./version.js"></script>
   </body>
