@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.4.2] - 24-12-2023
+
+- `grid-row` and `grid-col` bug fix not recognize.
+
 ## [0.4.0] - 12-12-2023
 
 - Separated `cjs` and `esm`, both will have different file now.

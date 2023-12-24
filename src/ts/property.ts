@@ -1,6 +1,6 @@
 /*!
  *
- * TenoxUI CSS Framework v0.4.0
+ * TenoxUI CSS Framework v0.4.1
  *
  * copyright (c) 2023 NOuSantx
  *

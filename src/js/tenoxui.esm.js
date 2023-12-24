@@ -1,6 +1,6 @@
 /*!
  *
- * TenoxUI CSS Framework v0.4.0
+ * TenoxUI CSS Framework v0.4.1
  *
  * copyright (c) 2023 NOuSantx
  *
@@ -70,7 +70,7 @@ class makeTenoxUI {
                     this.element.style[property] = `span ${value}${unit}`;
                 }
                 else if (type === "grid-row" || type === "grid-col") {
-                    this.element.style[property] = `repeat(${value}${unit}, 1fr))`;
+                    this.element.style[property] = `repeat(${value}${unit}, 1fr)`;
                 }
                 else if (type === "auto-grid-row" || type === "auto-grid-col") {
                     this.element.style[property] = `repeat(auto-fit, minmax(${value}${unit}, 1fr))`;

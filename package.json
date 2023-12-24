@@ -7,7 +7,11 @@
   "style": "./dist/css/tenoxui.min.css",
   "module": "./dist/js/tenoxui.esm.min.js",
   "files": [
-    "**/*"
+    "dist/*",
+    "src/*",
+    "README.md",
+    "LICENSE",
+    "package.json"
   ],
   "scripts": {
     "test": "echo 'TenoxUI Always Ready'",
