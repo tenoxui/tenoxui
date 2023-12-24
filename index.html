@@ -32,10 +32,11 @@
           <span class="fs-1rem tc-[primary]">v<span class="v"></span></span>
         </h1>
         <p class="ta-center w-mx-1000px tc-aaa">
-          TenoxUI is a lightweight Utility-First CSS Framework with no
-          additional plugins, no additional module, and no generated CSS file.
-          Built with javascript, make this code really fast, and directly give
-          the style into your element.
+          TenoxUI stands as a nimble Utility-First CSS framework meticulously
+          crafted to elevate web development by enhancing speed and efficiency.
+          It delivers a curated collection of customizable styles and embraces a
+          utility-first approach, simplifying and expediting the styling process
+          for developers.
         </p>
         <div class="boxs bg-blue"></div>
       </div>
@@ -43,7 +44,7 @@
     <footer>Copyright &copy; 2023 nousantx. All Rights Reserved.</footer>
     <!-- Script -->
     <!-- default -->
-    <!-- <script src="./dist/js/tenoxui.js"></script>
+    <script src="./dist/js/tenoxui.js"></script>
     <script>
       MultiStyles({
         body: "w-mx h-100svh flex-parent-center tc-[text-light] fd-column bg-[background] p-1rem",
@@ -51,11 +52,13 @@
         footer: "post-fixed b-1rem fs-12px",
       });
 
+      makeValue("fxx", "flex", "1 1 ${value}${unit}");
+
       TenoxUI();
       Color();
-    </script> -->
-    <script type="module">
-      import TenoxUI, { MultiStyles, Color } from "./dist/js/tenoxui.esm.js";
+    </script>
+    <!-- <script type="module">
+      import TenoxUI, { MultiStyles, Color } from "./src/js/tenoxui.esm.js";
       MultiStyles({
         body: "w-mx h-100svh display-flex flex-parent-center tc-[text-light] fd-column bg-[background] p-1rem ",
         main: "w-mx flex-parent-center al-str",
@@ -64,7 +67,7 @@
 
       TenoxUI();
       Color();
-    </script>
+    </script> -->
     <script defer src="./version.js"></script>
   </body>
 </html>
