@@ -27,7 +27,9 @@ npm i tenoxui@latest
 Using CDN :
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/tenoxui@0.4.0/dist/js/tenoxui.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tenoxui@0.4.1/dist/css/tenoxui.min.css" />
+
+<script src="https://cdn.jsdelivr.net/npm/tenoxui@0.4.1/dist/js/tenoxui.min.js"></script>
 ```
 
 ### Documentation
