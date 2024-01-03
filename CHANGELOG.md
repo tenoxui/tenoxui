@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.3] - 3-1-2024 
+
+- Change `MakeProp` to `addType`
+- Change `MultiProps` to `defineProps`
+- Change `MakeStyle` to `makeStyle`
+- Change `MultiStyles` to `makeStyles`
+
 ## [0.4.2] - 3-1-2024 
 
 - Change some functionality for prop and styling rules.
