@@ -1,6 +1,10 @@
 # Changelog
 
-## [0.4.2] - 24-12-2023
+## [0.4.2] - 3-1-2024 
+
+- Change some functionality for prop and styling rules.
+
+## [0.4.1] - 24-12-2023
 
 - `grid-row` and `grid-col` bug fix not recognize.
 
