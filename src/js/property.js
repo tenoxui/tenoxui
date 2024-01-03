@@ -1,6 +1,6 @@
 /*!
  *
- * TenoxUI CSS Framework v0.4.0
+ * TenoxUI CSS Framework v0.4.1
  *
  * copyright (c) 2023 NOuSantx
  *
@@ -130,6 +130,7 @@ const property = {
     "radius-right": ["borderTopRightRadius", "borderBottomRightRadius"],
     // Additional
     curs: ["cursor"],
+    cursor: ["cursor"],
     scale: ["scale"],
     rt: ["rotate"],
     // Overflow

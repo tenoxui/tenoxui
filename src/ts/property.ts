@@ -135,6 +135,7 @@ const property: PropertyMap = {
   "radius-right": ["borderTopRightRadius", "borderBottomRightRadius"],
   // Additional
   curs: ["cursor"],
+  cursor: ["cursor"],
   scale: ["scale"],
   rt: ["rotate"],
   // Overflow

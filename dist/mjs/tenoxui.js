@@ -1,6 +1,6 @@
 /*!
  *
- * TenoxUI CSS Framework v0.4.1
+ * TenoxUI CSS Framework v0.4.2
  *
  * copyright (c) 2023 NOuSantx
  *
@@ -8,9 +8,9 @@
  *
  */
 import property from "./property.js";
-let Classes = Object.keys(property).map((className) => `[class*="${className}-"]`);
+export let Classes = Object.keys(property).map((className) => `[class*="${className}-"]`);
 // Merge all `Classes` into one selector. Example : '[class*="p-"]', '[class*="m-"]', '[class*="justify-"]'
-let AllClasses = document.querySelectorAll(Classes.join(", "));
+export let AllClasses = document.querySelectorAll(Classes.join(", "));
 class newProp {
     constructor(name, values) {
         if (typeof name !== "string" || !Array.isArray(values)) {
@@ -29,7 +29,7 @@ class newProp {
         Object.assign(property, this);
     }
 }
-export function MakeProp(Types, Property) {
+export function addType(Types, Property) {
     // Check if 'Types' is a string
     if (typeof Types !== "string") {
         throw new Error("Types must be a string");
@@ -113,7 +113,7 @@ class makeTenoxUI {
     }
 }
 // Applied multi style into all elements with the specified class.
-export function MakeStyle(selector, styles) {
+export function makeStyle(selector, styles) {
     const applyStylesToElement = (element, styles) => {
         const styler = new makeTenoxUI(element);
         styler.applyMultiStyles(styles);
@@ -121,20 +121,12 @@ export function MakeStyle(selector, styles) {
     if (typeof styles === "string") {
         // If styles is a string, apply it to the specified selector
         const elements = document.querySelectorAll(selector);
-        if (elements.length === 0) {
-            console.warn(`No elements found with selector: ${selector}`);
-            return;
-        }
         elements.forEach((element) => applyStylesToElement(element, styles));
     }
     else if (typeof styles === "object") {
         // If styles is an object, iterate through its key-value pairs
         Object.entries(styles).forEach(([classSelector, classStyles]) => {
             const elements = document.querySelectorAll(classSelector);
-            if (elements.length === 0) {
-                console.warn(`No elements found with selector: ${classSelector}`);
-                return;
-            }
             elements.forEach((element) => applyStylesToElement(element, classStyles));
         });
     }
@@ -143,7 +135,7 @@ export function MakeStyle(selector, styles) {
     }
 }
 // MultiProps function: Add multiple properties from the provided object
-export function MultiProps(propsObject) {
+export function defineProps(propsObject) {
     // Iterate over object entries
     Object.entries(propsObject).forEach(([propName, propValues]) => {
         // Check if propValues is an array
@@ -159,26 +151,12 @@ export function MultiProps(propsObject) {
     });
 }
 // Apply styles for multiple elements using the provided object
-export function MultiStyles(stylesObject) {
+export function makeStyles(stylesObject) {
     Object.entries(stylesObject).forEach(([selector, styles]) => {
-        MakeStyle(selector, styles);
+        makeStyle(selector, styles);
     });
 }
-// Define the TenoxUI function to apply the styles
-export default function TenoxUI() {
-    // Iterate over elements with AllClasses
-    AllClasses.forEach((element) => {
-        // Get the list of classes for the current element
-        const classes = element.classList;
-        // Make TenoxUI
-        const makeTx = new makeTenoxUI(element);
-        // Iterate over classes and apply styles using makeTenoxUI
-        classes.forEach((className) => {
-            makeTx.applyStyles(className);
-        });
-    });
-}
-export function Color() {
+export function moreColor() {
     const makeColor = (element, pattern, property, format) => {
         // Match the class name against the provided pattern
         const match = element.className.match(pattern);
@@ -219,6 +197,20 @@ export function Color() {
         }
     });
 }
-Color();
-TenoxUI();
+// Define the TenoxUI function to apply the styles
+export default function tenoxui() {
+    // Iterate over elements with AllClasses
+    AllClasses.forEach((element) => {
+        // Get the list of classes for the current element
+        const classes = element.classList;
+        // Make TenoxUI
+        const makeTx = new makeTenoxUI(element);
+        // Iterate over classes and apply styles using makeTenoxUI
+        classes.forEach((className) => {
+            makeTx.applyStyles(className);
+        });
+    });
+}
+moreColor();
+tenoxui();
 //# sourceMappingURL=tenoxui.esm.js.map

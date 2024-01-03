@@ -1,6 +1,6 @@
 /*!
  *
- * TenoxUI CSS Framework v0.4.1
+ * TenoxUI CSS Framework v0.4.2
  *
  * copyright (c) 2023 NOuSantx
  *
@@ -50,27 +50,6 @@ q:before {
   content: "";
   content: none;
 }
-h1 {
-  font-size: clamp(2rem, 5vw, 3rem);
-}
-h2 {
-  font-size: clamp(1.5rem, 4vw, 2.5rem);
-}
-h3 {
-  font-size: clamp(1.2rem, 3vw, 2rem);
-}
-h4 {
-  font-size: clamp(1rem, 2.5vw, 1.5rem);
-}
-h5 {
-  font-size: clamp(0.9rem, 2vw, 1.2rem);
-}
-h6 {
-  font-size: clamp(0.8rem, 1.5vw, 1rem);
-}
-p {
-  font-size: clamp(1rem, 2vw, 1.5rem);
-}
 a {
   text-decoration: none;
 }
@@ -85,24 +64,6 @@ a:hover {
 }
 .h-mx {
   height: 100%;
-}
-.uppercase {
-  text-transform: uppercase;
-}
-.underlined {
-  text-decoration: underline;
-}
-.nowrap {
-  white-space: nowrap;
-}
-.absolute {
-  position: absolute;
-}
-.relative {
-  position: relative;
-}
-.fixed {
-  position: fixed;
 }
 :where([hidden]),
 .none {

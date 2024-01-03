@@ -1,11 +1,17 @@
 {
   "name": "tenoxui",
-  "version": "0.4.1",
-  "description": "Tenox UI is a Utiliy-First CSS Framework with small and lightweight size and fast, most of its class is builded in Javascript.",
+  "version": "0.4.2",
+  "description": "Tenox UI is a Utiliy-First CSS Framework with small and lightweight size and fast, most of its class is built in Javascript.",
   "type": "commonjs",
-  "main": "./dist/js/tenoxui.min.js",
-  "style": "./dist/css/tenoxui.min.css",
-  "module": "./dist/js/tenoxui.esm.min.js",
+  "main": "dist/cjs/tenoxui.min.js",
+  "style": "dist/css/tenoxui.min.css",
+  "module": "dist/mjs/tenoxui.min.js",
+  "exports": {
+    ".": {
+      "import": "./dist/mjs/tenoxui.js",
+      "require": "./dist/cjs/tenoxui.js"
+    }
+  },
   "files": [
     "dist/*",
     "src/*",
@@ -14,9 +20,8 @@
     "package.json"
   ],
   "scripts": {
-    "test": "echo 'TenoxUI Always Ready'",
-    "mini-js": "terser src/js/tenoxui.js -o dist/js/tenoxui.min.js -c -m --mangle --source-map url='tenoxui.min.js.map' && terser src/js/property.js -o dist/js/property.js -c -m --mangle && cp src/js/color.js src/js/tenoxui.js src/js/tenoxui.esm.js dist/js/",
-    "mini-mjs": "terser src/js/tenoxui.esm.js -o dist/js/tenoxui.esm.min.js -c -m --mangle --source-map url='tenoxui.esm.min.js.map'",
+    "mini-js": "terser src/js/tenoxui.js -o dist/cjs/tenoxui.min.js -c -m --mangle --source-map url='tenoxui.min.js.map' && cp src/js/tenoxui.js dist/cjs/ && cp src/js/color.js src/js/property.js dist/cjs/* dist/js/ ",
+    "mini-mjs": "terser src/js/tenoxui.esm.js -o dist/mjs/tenoxui.min.js -c -m --mangle --source-map url='tenoxui.esm.min.js.map' && terser src/js/property.js -o dist/mjs/property.js -c -m --mangle && cp src/js/tenoxui.esm.js dist/mjs/tenoxui.js",
     "mini-css": "cleancss src/css/tenoxui.css -o dist/css/tenoxui.min.css && cp src/css/tenoxui.css dist/css/",
     "ts-watch": "tsc --watch",
     "ts-build": "tsc"
@@ -28,6 +33,7 @@
     "css3",
     "css-framework",
     "css-library",
+    "css-in-js",
     "utility-first"
   ],
   "author": "nousantx",
