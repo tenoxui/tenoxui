@@ -1,11 +1,11 @@
 {
   "name": "tenoxui",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "description": "Tenox UI is a Utiliy-First CSS Framework with small and lightweight size and fast, most of its class is built in Javascript.",
   "type": "commonjs",
-  "main": "dist/cjs/tenoxui.min.js",
-  "style": "dist/css/tenoxui.min.css",
-  "module": "dist/mjs/tenoxui.min.js",
+  "main": "dist/js/tenoxui.js",
+  "module": "dist/mjs/tenoxui.js",
+  "style": "dist/css/tenoxui.css",
   "exports": {
     ".": {
       "import": "./dist/mjs/tenoxui.js",
