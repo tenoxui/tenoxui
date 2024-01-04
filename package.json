@@ -1,11 +1,10 @@
 {
   "name": "tenoxui",
-  "version": "0.4.5",
+  "version": "0.4.6",
   "description": "Tenox UI is a Utiliy-First CSS Framework with small and lightweight size and fast, most of its class is built in Javascript.",
-  "type": "commonjs",
-  "main": "./dist/js/tenoxui.js",
-  "module": "./dist/js/tenoxui.esm.js",
-  "style": "./dist/css/tenoxui.css",
+  "main": "dist/js/tenoxui.js",
+  "module": "dist/js/tenoxui.esm.js",
+  "style": "dist/css/tenoxui.css",
   "files": [
     "dist/*",
     "src/*",
@@ -39,7 +38,7 @@
   "bugs": {
     "url": "https://github.com/nousantx/tenoxui/issues"
   },
-  "homepage": "https://tenoxui.web.app",
+  "homepage": "https://tenoxui.web.app/",
   "devDependencies": {
     "clean-css-cli": "^5.6.3",
     "terser": "^5.26.0",
