@@ -33,6 +33,13 @@
   margin: 0;
   padding: 0;
 }
+[class*="fx"],
+[class*="flex"] {
+  display: flex;
+}
+[class*="grid"] {
+  display: grid;
+}
 blockquote,
 q {
   quotes: none;
