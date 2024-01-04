@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.4.4] - 3-1-2024 
+
+- Updating `package.json` compability
+
 ## [0.4.3] - 3-1-2024 
 
 - Change `MakeProp` to `addType`
