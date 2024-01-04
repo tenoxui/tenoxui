@@ -1,7 +1,7 @@
 {
   "name": "tenoxui",
   "description": "Tenox UI is a Utiliy-First CSS Framework with small and lightweight size and fast, most of its class is built in Javascript.",
-  "version": "0.4.12",
+  "version": "0.4.13",
   "config": {
     "version_short": "0.4"
   },
@@ -24,6 +24,19 @@
   "main": "dist/js/tenoxui.js",
   "module": "dist/js/tenoxui.esm.js",
   "style": "dist/css/tenoxui.css",
+  "files": [
+    "dist/{css,js}/*.{css,js,map}",
+    "LICENSE",
+    "README.md",
+    "package.json"
+  ],
+  "exports": {
+    "./": {
+      "browser": "./dist/js/tenoxui.js",
+      "import": "./dist/js/tenoxui.esm.js",
+      "require": "./dist/js/tenoxui.js"
+    }
+  },
   "scripts": {
     "mini-js": "terser src/js/tenoxui.js -o dist/js/tenoxui.min.js -c -m --mangle --source-map url='tenoxui.min.js.map' && terser src/js/property.js -o dist/js/property.js -c -m --mangle && cp src/js/color.js src/js/tenoxui.js src/js/tenoxui.esm.js dist/js/",
     "mini-mjs": "terser src/js/tenoxui.esm.js -o dist/js/tenoxui.esm.min.js -c -m --mangle --source-map url='tenoxui.esm.min.js.map'",
