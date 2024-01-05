@@ -4,7 +4,7 @@ interface PropertyMap {
 
 /*!
  *
- * TenoxUI CSS Framework v0.4.2
+ * TenoxUI CSS Framework v0.4.21
  *
  * Copyright (c) 2023 NOuSantx
  *

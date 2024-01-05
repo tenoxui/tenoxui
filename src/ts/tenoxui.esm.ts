@@ -1,6 +1,6 @@
 /*!
  *
- * TenoxUI CSS Framework v0.4.2
+ * TenoxUI CSS Framework v0.4.21
  *
  * copyright (c) 2023 NOuSantx
  *
@@ -8,7 +8,7 @@
  *
  */
 
-import property from "./property.js";
+import property from "./lib/property.js";
 
 export let Classes = Object.keys(property).map(
   (className) => `[class*="${className}-"]`
