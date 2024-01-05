@@ -1,13 +1,9 @@
 /*!
- *
- * TenoxUI CSS Framework v0.4.2
- *
- * copyright (c) 2023 NOuSantx
- *
- * license: https://github.com/nousantx/tenoxui/blob/main/LICENSE
- *
+ * TenoxUI CSS Framework v0.4.23 [ https://tenoxui.web.app ]
+ * copyright (c) 2024 nousantx
+ * licensed under MIT [ https://github.com/nousantx/tenoxui/blob/main/LICENSE ]
  */
-import property from "./property.js";
+import property from "./lib/property.js";
 export let Classes = Object.keys(property).map((className) => `[class*="${className}-"]`);
 // Merge all `Classes` into one selector. Example : '[class*="p-"]', '[class*="m-"]', '[class*="justify-"]'
 export let AllClasses = document.querySelectorAll(Classes.join(", "));
