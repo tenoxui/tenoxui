@@ -1,17 +1,8 @@
 # Changelog
 
-## [0.4.6] - 4-1-2024
+## [0.4.4] ~ [0.4.22] - 4-1-2024
 
-- Remove `commonjs` type.
-- Update `package.json`.
-
-## [0.4.5] - 4-1-2024
-
-- Updating `package.json` compability
-
-## [0.4.4] - 4-1-2024
-
-- Updating `package.json` compability
+- Just update and changing some rules in `package.json`
 
 ## [0.4.3] - 3-1-2024
 

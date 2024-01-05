@@ -3,13 +3,9 @@ interface PropertyMap {
 }
 
 /*!
- *
- * TenoxUI CSS Framework v0.4.21
- *
- * Copyright (c) 2023 NOuSantx
- *
- * License: https://github.com/nousantx/tenoxui/blob/main/LICENSE
- *
+ * TenoxUI CSS Framework v0.4.21 [ https://tenoxui.web.app ]
+ * copyright (c) 2024 nousantx
+ * licensed under MIT [ https://github.com/nousantx/tenoxui/blob/main/LICENSE ]
  */
 
 let property: PropertyMap = {
