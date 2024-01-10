@@ -1,0 +1,31 @@
+/*!
+ * TenoxUI CSS Framework v0.4.24 [ https://tenoxui.web.app ]
+ * copyright (c) 2024 nousantx
+ * licensed under MIT [ https://github.com/nousantx/tenoxui/blob/main/LICENSE ]
+ */
+
+:root {
+  --full: stretch;
+  --col: column;
+  --fxs: flex-start;
+  --fxe: flex-end;
+  --flex-start: var(--fxs);
+  --flex-end: var(--fxe);
+  --sb: space-between;
+  --sa: space-around;
+  --se: space-evenly;
+  --row-rev: row-reverse;
+  --col-rev: column-reverse;
+  --wrap-rev: wrap-reverse;
+  --repeat-x: repeat-x;
+  --repeat-y: repeat-y;
+  --ib: inline-block;
+  --i-fx: inline-flex;
+}
+[class*="fx-"],
+[class*="flex-"] {
+  display: flex;
+}
+[class*="grid-"] {
+  display: grid;
+}

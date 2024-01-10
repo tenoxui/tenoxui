@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.4.24] - 10-1-2024
+
+- Update some functionality on `tenoxui.esm.js`
+- `text-transform` not spelling correctly.
+
 ## [0.4.4] ~ [0.4.22] - 4-1-2024
 
 - Just update and changing some rules in `package.json`

@@ -26,13 +26,12 @@
   <body>
     <main>
       <div class="w-mx w-mx-1000px flex-parent-center fd-column">
-        <h1 class="fw-600 tc-bbb">
-          <div class="fxx-100px fx-start-start"></div>
+        <h1 class="fw-600 tc-bbb ta-center">
           <span class="tc-white">Tenox</span
           ><span class="tc-[primary]">UI</span> CSS Framework
           <span class="fs-1rem tc-[primary]">v<span class="v"></span></span>
         </h1>
-        <p class="ta-center w-mx-1000px tc-aaa">
+        <p class="ta-center w-mx-1000px tc-aaa lh-1.4 fw-500">
           TenoxUI stands as a nimble Utility-First CSS framework meticulously
           crafted to elevate web development by enhancing speed and efficiency.
           It delivers a curated collection of customizable styles and embraces a
@@ -48,11 +47,13 @@
     <!-- <script type="module" src="src/js/tenoxui.esm.js"></script> -->
     <script type="module">
       import tenoxui, {
+        Classes,
+        AllClasses,
         moreColor,
         addType,
         makeStyles,
       } from "./dist/js/tui.esm.min.js";
-
+      console.log(Classes, AllClasses, moreColor);
       addType("fx-par", ["justifyContent", "align-items"]);
 
       makeStyles({

@@ -6,12 +6,18 @@
 
 import property from "./lib/property.js";
 
-export let Classes = Object.keys(property).map(
-  (className) => `[class*="${className}-"]`
-);
-// Merge all `Classes` into one selector. Example : '[class*="p-"]', '[class*="m-"]', '[class*="justify-"]'
-export let AllClasses = document.querySelectorAll(Classes.join(", "));
+export let Classes;
+export let AllClasses;
+if (typeof window !== "undefined") {
+  Classes = Object.keys(property).map(
+    (className) => `[class*="${className}-"]`
+  );
+}
 
+if (typeof window !== "undefined") {
+  // Merge all `Classes` into one selector. Example : '[class*="p-"]', '[class*="m-"]', '[class*="justify-"]'
+  AllClasses = document.querySelectorAll(Classes.join(", "));
+}
 class newProp {
   constructor(name: string, values: string[]) {
     if (typeof name !== "string" || !Array.isArray(values)) {
@@ -21,8 +27,10 @@ class newProp {
       return;
     }
     this[name] = values;
-    Classes.push(`[class*="${name}-"]`);
-    AllClasses = document.querySelectorAll(Classes.join(", "));
+    if (typeof window !== "undefined") {
+      Classes.push(`[class*="${name}-"]`);
+      AllClasses = document.querySelectorAll(Classes.join(", "));
+    }
   }
 
   tryAdd(): void {
@@ -202,11 +210,13 @@ export function moreColor() {
       element.style[property] = format(match);
     }
   };
-
-  // Select all elements with classes related to colors (background, text, border)
-  const colorClass = document.querySelectorAll<HTMLElement>(
-    '[class*="bg-"], [class*="tc-"], [class*="border-"]'
-  );
+  let colorClass;
+  if (typeof window !== "undefined") {
+    // Select all elements with classes related to colors (background, text, border)
+    colorClass = document.querySelectorAll<HTMLElement>(
+      '[class*="bg-"], [class*="tc-"], [class*="border-"]'
+    );
+  }
 
   // Define mappings for color types and corresponding CSS properties
   const colorTypes: Record<string, string> = {
