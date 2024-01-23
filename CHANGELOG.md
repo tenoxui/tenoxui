@@ -1,22 +1,30 @@
 # Changelog
 
-## [0.4.24] - 10-1-2024
+## [0.5] - 24-01-2024
+
+- Finalizing `backdrop-filter` and `transform` property.
+- Added some lib for some new functionality
+- Change `rotate` and `scale` property into `transform` value
+- Finalize Javascript Framework
+- React JS Compability
+
+## [0.4.24] - 10-01-2024
 
 - Update some functionality on `tenoxui.esm.js`
 - `text-transform` not spelling correctly.
 
-## [0.4.4] ~ [0.4.22] - 4-1-2024
+## [0.4.4] ~ [0.4.22] - 4-01-2024
 
 - Just update and changing some rules in `package.json`
 
-## [0.4.3] - 3-1-2024
+## [0.4.3] - 3-01-2024
 
 - Change `MakeProp` to `addType`
 - Change `MultiProps` to `defineProps`
 - Change `MakeStyle` to `makeStyle`
 - Change `MultiStyles` to `makeStyles`
 
-## [0.4.2] - 3-1-2024
+## [0.4.2] - 3-01-2024
 
 - Change some functionality for prop and styling rules.
 

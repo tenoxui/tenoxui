@@ -1,5 +1,5 @@
 /*!
- * TenoxUI CSS Framework v0.4.26+ [ https://tenoxui.web.app ]
+ * TenoxUI CSS Framework v0.5.0 [ https://tenoxui.web.app ]
  * copyright (c) 2024 nousantx
  * licensed under MIT [ https://github.com/nousantx/tenoxui/blob/main/LICENSE ]
  */

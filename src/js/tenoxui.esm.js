@@ -1,5 +1,5 @@
 /*!
- * TenoxUI CSS Framework v0.4.29 [ https://tenoxui.web.app ]
+ * TenoxUI CSS Framework v0.5.0 [ https://tenoxui.web.app ]
  * copyright (c) 2024 nousantx
  * licensed under MIT [ https://github.com/nousantx/tenoxui/blob/main/LICENSE ]
  */
@@ -57,6 +57,7 @@ function MakeTenoxUI(element) {
 }
 // Export the whole TenoxUI :)
 function tenoxui() {
+    //! Forgot to add this on v0.4.28 :(
     if (typeof window !== "undefined") {
         // Combine the type and property to allProperty after defined it to Classes and AllClasses
         Classes.push(`[class*="${name}-"]`);
@@ -185,18 +186,20 @@ function tenoxui() {
                             break;
                     }
                 }
-                // CSS Variables support
-                /*
-                 * Check className if the `value` is wrapped with `[]`,
-                 * if so then this is treated as css variable, css value. */
                 else if (value.startsWith("[") && value.endsWith("]")) {
+                    /*
+                     * CSS Variable Support 🎋
+                     *
+                     * Check className if the `value` is wrapped with `[]`,
+                     * if so then this is treated as css variable, css value.
+                     */
                     // Check if the value is a CSS variable enclosed in square brackets
                     const cssVariable = value.slice(1, -1);
                     this.element.style[property] = `var(--${cssVariable})`;
                 }
                 // Default value and unit
                 else {
-                    // All `type` and `property` that didn't have custom value will have this value
+                    // All `type` and `property` didn't have custom value will have this value
                     this.element.style[property] = `${value}${unit}`;
                 }
             });
@@ -244,6 +247,7 @@ function makeStyle(selector, styles) {
         const styler = new MakeTenoxUI(element);
         styler.applyMultiStyles(styles);
     };
+    // Make sure to run only on browser environment
     if (typeof window !== "undefined") {
         if (typeof styles === "string") {
             // If styles is a string, apply it to the specified selector
@@ -257,6 +261,7 @@ function makeStyle(selector, styles) {
                 elements.forEach((element) => applyStylesToElement(element, classStyles));
             });
         }
+        // Error Handling for make Style
         else {
             console.warn(`Invalid styles format for "${selector}". Make sure you provide style correctly`);
         }
@@ -273,6 +278,7 @@ function defineProps(propsObject) {
             // Add it to AllProperty
             propInstance.tryAdd();
         }
+        // Error handling for defineProps
         else {
             console.warn(`Invalid property values for "${propName}". Make sure you provide values as an array.`);
         }
@@ -333,8 +339,7 @@ function moreColor() {
         }
     });
 }
-moreColor();
-tenoxui();
-export default tenoxui;
+moreColor(), tenoxui();
 export { Classes, AllClasses, addType, defineProps, makeStyle, makeStyles, moreColor, };
+export default tenoxui;
 //# sourceMappingURL=tenoxui.esm.js.map

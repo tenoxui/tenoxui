@@ -1,5 +1,5 @@
 /*!
- * TenoxUI CSS Framework v0.4.26+ [ https://tenoxui.web.app ]
+ * TenoxUI CSS Framework v0.5.0 [ https://tenoxui.web.app ]
  * copyright (c) 2024 nousantx
  * licensed under MIT [ https://github.com/nousantx/tenoxui/blob/main/LICENSE ]
  */
@@ -199,13 +199,12 @@ const property: PropertyMap = {
   // Aspect Ratio
   ratio: ["aspectRatio"],
   // Transition
-
   transition: ["transition"],
   "tr-time": ["transitionDuration"],
   "tr-prop": ["transitionProperty"],
   "tr-timing": ["transitionTimingFunction"],
   "tr-delay": ["transitionDelay"],
-  // Transform: for v0.4.6 or higher.
+  // Transform: for v0.4.26 or higher.
   transform: ["transform"],
   "move-x": ["transform"],
   "move-y": ["transform"],

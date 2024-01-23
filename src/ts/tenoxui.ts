@@ -1,13 +1,11 @@
 interface PropertyMap {
   [key: string]: string[];
 }
-
 /*!
- * TenoxUI CSS Framework v0.4.27 [ https://tenoxui.web.app ]
+ * TenoxUI CSS Framework v0.5.0 [ https://tenoxui.web.app ]
  * copyright (c) 2024 nousantx
  * licensed under MIT [ https://github.com/nousantx/tenoxui/blob/main/LICENSE ]
  */
-
 // All TenoxUI `type` and `property`
 const property: PropertyMap = {
   // Mapping type and its Property
@@ -45,7 +43,6 @@ const property: PropertyMap = {
   family: ["fontFamily"],
   "text-style": ["fontStyle"],
   "white-space": ["whiteSpace"],
-
   // More Text
   "text-over": ["textOverflow"],
   "text-wrap": ["textWrap"],
@@ -131,7 +128,6 @@ const property: PropertyMap = {
   "grid-gap": ["gridGap"],
   "grid-row-gap": ["gridRowGap"],
   "grid-col-gap": ["gridColumnGap"],
-
   "row-gap": ["rowGap"],
   "col-gap": ["columnGap"],
   // Align
@@ -200,13 +196,12 @@ const property: PropertyMap = {
   // Aspect Ratio
   ratio: ["aspectRatio"],
   // Transition
-
   transition: ["transition"],
   "tr-time": ["transitionDuration"],
   "tr-prop": ["transitionProperty"],
   "tr-timing": ["transitionTimingFunction"],
   "tr-delay": ["transitionDelay"],
-  // Transform
+  // Transform: for v0.4.26 or higher.
   transform: ["transform"],
   "move-x": ["transform"],
   "move-y": ["transform"],
@@ -238,17 +233,15 @@ const property: PropertyMap = {
   "os-beh-y": ["overscrollBehaviorY"],
   "os-beh-x": ["overscrollBehaviorX"],
   visibility: ["visibility"],
-  // TenoxUI Custom property.
+  // TenoxUI Custom property
   box: ["width", "height"],
 };
-
 // Make classes from type name from properties key name
 let Classes = Object.keys(property).map(
   (className) => `[class*="${className}-"]`
 );
 // Merge all `Classes` into one selector. Example : '[class*="p-"]', '[class*="m-"]', '[class*="justify-"]'
 let AllClasses = document.querySelectorAll(Classes.join(", "));
-
 // Props maker function :)
 class newProp {
   constructor(name: string, values: string[]) {
@@ -274,7 +267,6 @@ class newProp {
     Object.assign(property, this);
   }
 }
-
 function addType(Types: string, Property: string[]): void {
   // Check if 'Types' is a string
   if (typeof Types !== "string") {
@@ -287,12 +279,10 @@ function addType(Types: string, Property: string[]): void {
   // Add new property
   new newProp(Types, Property).tryAdd();
 }
-
 // TenoxUI make style class
 class makeTenoxUI {
   element: HTMLElement;
   styles: any;
-
   // TenoxUI constructor
   constructor(element: HTMLElement) {
     this.element = element;
@@ -302,7 +292,6 @@ class makeTenoxUI {
   applyStyle(type: string, value: string, unit: string): void {
     const properties = this.styles[type];
     // If properties matched the `type` or `property` from `allProperty`
-
     if (properties) {
       properties.forEach((property: string) => {
         // Filter Custom Property
@@ -384,7 +373,7 @@ class makeTenoxUI {
         else if (property === "transform") {
           // Check if there any transform property and class on the element
           const transformContainer = this.element.style[property];
-          // Handle All Value
+          // Handle different transform properties
           switch (type) {
             case "translate":
               this.element.style[property] = `${
@@ -392,6 +381,11 @@ class makeTenoxUI {
               } translate(${value}${unit})`;
               break;
             case "rt":
+              this.element.style[property] = `${
+                transformContainer || ""
+              } rotate(${value}${unit})`;
+              break;
+            case "rotate":
               this.element.style[property] = `${
                 transformContainer || ""
               } rotate(${value}${unit})`;
@@ -461,15 +455,17 @@ class makeTenoxUI {
                 transformContainer || ""
               } skewZ(${value}${unit})`;
               break;
-
             default:
               break;
           }
         }
-        // CSS Variables support
         /*
+         * CSS Variable Support 🎋
+         *
          * Check className if the `value` is wrapped with `[]`,
-         * if so then this is treated as css variable, css value. */
+         * if so then this is treated as css variable, css value.
+         */
+        // Check if the value is a CSS variable enclosed in square brackets
         else if (value.startsWith("[") && value.endsWith("]")) {
           // Slice value from the box and identify the
           const cssVariable = value.slice(1, -1);
@@ -499,7 +495,6 @@ class makeTenoxUI {
       this.applyStyle(type, value, unitOrValue);
     }
   }
-
   // Multi styler function, style through javascript.
   applyMultiStyles(styles: string): void {
     // Splitting the styles
@@ -510,8 +505,7 @@ class makeTenoxUI {
     });
   }
 }
-
-// Applied multi style into all elements with the specified element (not just className)
+// Applied multi style into all elements with the specified element, possible to all selector
 function makeStyle(
   selector: string,
   styles: string | Record<string, string>
@@ -520,11 +514,9 @@ function makeStyle(
     const styler = new makeTenoxUI(element);
     styler.applyMultiStyles(styles);
   };
-
   if (typeof styles === "string") {
     // If styles is a string, apply it to the specified selector
     const elements = document.querySelectorAll(selector);
-
     elements.forEach((element: HTMLElement) =>
       applyStylesToElement(element, styles)
     );
@@ -532,20 +524,18 @@ function makeStyle(
     // If styles is an object, iterate through its key-value pairs
     Object.entries(styles).forEach(([classSelector, classStyles]) => {
       const elements = document.querySelectorAll(classSelector);
-
       elements.forEach((element: HTMLElement) =>
         applyStylesToElement(element, classStyles)
       );
     });
   }
-  // Error Handling
+  // Error Handling for makeStyle
   else {
     console.warn(
       `Invalid styles format for "${selector}". Make sure you provide style correctly`
     );
   }
 }
-
 // MultiProps function: Add multiple properties from the provided object
 function defineProps(propsObject: Record<string, string[]>): void {
   // Iterate over object entries
@@ -556,21 +546,21 @@ function defineProps(propsObject: Record<string, string[]>): void {
       const propInstance = new newProp(propName, propValues);
       // Add it to AllProperty at once
       propInstance.tryAdd();
-    } else {
+    }
+    // Error Handling for `defineProps`
+    else {
       console.warn(
         `Invalid property values for "${propName}". Make sure you provide values as an array.`
       );
     }
   });
 }
-
-// Apply styles for multiple elements using the provided object
+// Apply multiple styles into elements using selector, all selector is possible
 function makeStyles(stylesObject: Record<string, string>): void {
   Object.entries(stylesObject).forEach(([selector, styles]) => {
     makeStyle(selector, styles);
   });
 }
-
 // Define mappings for color types and corresponding CSS properties
 function moreColor() {
   const makeColor = (
@@ -581,18 +571,15 @@ function moreColor() {
   ) => {
     // Match the class name against the provided pattern
     const match = element.className.match(pattern);
-
     // If there is a match, apply the style to the element using the specified property and format
     if (match) {
       element.style[property] = format(match);
     }
   };
-
   // Select all elements with classes related to colors (background, text, border)
   const colorClass = document.querySelectorAll<HTMLElement>(
     '[class*="bg-"], [class*="tc-"], [class*="border-"]'
   );
-
   // Define mappings for color types and corresponding CSS properties
   const colorTypes: Record<string, string> = {
     bg: "background",
@@ -623,7 +610,6 @@ function moreColor() {
     }
   });
 }
-
 // Applying the style to all elements ✨
 function tenoxui(): void {
   // Iterate over elements with AllClasses
@@ -638,6 +624,5 @@ function tenoxui(): void {
     });
   });
 }
-
 moreColor();
 tenoxui();

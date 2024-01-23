@@ -3,7 +3,6 @@
  * copyright (c) 2024 nousantx
  * licensed under MIT [ https://github.com/nousantx/tenoxui/blob/main/LICENSE ]
  */
-
 :root {
   /* TenoxUI v0.4.25 Below */
   --full: stretch;
@@ -20,9 +19,13 @@
   --wrap-rev: wrap-reverse;
   --repeat-x: repeat-x;
   --repeat-y: repeat-y;
+  --x-repeat: repeat-x;
+  --y-repeat: repeat-y;
+  --no-repeat: no-repeat;
   --ib: inline-block;
   --i-fx: inline-flex;
-  /* tenoxui v0.4.26 + */
+  /* tenoxui v0.4.26 or higher */
+  --tx_default: "Aku Sayang Zeta :)";
   --tx_row-rev: row-reverse;
   --tx_col-rev: column-reverse;
   --tx_wrap-rev: wrap-reverse;
@@ -42,6 +45,4 @@
   --tx_border-box: border-box;
   --tx_content-box: content-box;
   --tx_padding-box: padding-box;
-  --tx_default: "Ignore this, its just the trigger. Haha";
-  --tx_default_message_from_me: "Aku Sayang Zeta :), Hehe";
 }

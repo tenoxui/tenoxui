@@ -1,15 +1,12 @@
 /*!
- * TenoxUI CSS Framework v0.4.29 [ https://tenoxui.web.app ]
+ * TenoxUI CSS Framework v0.5.0 [ https://tenoxui.web.app ]
  * copyright (c) 2024 nousantx
  * licensed under MIT [ https://github.com/nousantx/tenoxui/blob/main/LICENSE ]
  */
-
 // Importing All property that will be used on TenoxUI
 import property from "./lib/property.js";
-
 let Classes: any;
 let AllClasses: any;
-
 // Check browser environment
 if (typeof window !== "undefined") {
   // Make classes from type name from properties key name
@@ -29,7 +26,6 @@ function newProp(name: string, values: string[]): void {
     return;
   }
   this[name] = values;
-
   if (typeof window !== "undefined") {
     // Combine the type and property to allProperty after defined it to Classes and AllClasses
     Classes.push(`[class*="${name}-"]`);
@@ -45,7 +41,6 @@ newProp.prototype.tryAdd = function (): void {
   // Added new `type` and `property` to the All Property
   Object.assign(property, this);
 };
-
 // Add new `type` and `property`
 function addType(Types: string, Property: string[]): void {
   // Check if 'Types' is a string
@@ -59,15 +54,14 @@ function addType(Types: string, Property: string[]): void {
   // Add new property
   new newProp(Types, Property).tryAdd();
 }
-
 // TenoxUI make style proto
 function MakeTenoxUI(element: HTMLElement) {
   this.element = element;
   this.styles = property;
 }
-
 // Export the whole TenoxUI :)
 function tenoxui(): void {
+  //! Forgot to add this on v0.4.28 :(
   if (typeof window !== "undefined") {
     // Combine the type and property to allProperty after defined it to Classes and AllClasses
     Classes.push(`[class*="${name}-"]`);
@@ -240,19 +234,20 @@ function tenoxui(): void {
             default:
               break;
           }
-        }
-        // CSS Variables support
-        /*
-         * Check className if the `value` is wrapped with `[]`,
-         * if so then this is treated as css variable, css value. */
-        else if (value.startsWith("[") && value.endsWith("]")) {
+        } else if (value.startsWith("[") && value.endsWith("]")) {
+          /*
+           * CSS Variable Support 🎋
+           *
+           * Check className if the `value` is wrapped with `[]`,
+           * if so then this is treated as css variable, css value.
+           */
           // Check if the value is a CSS variable enclosed in square brackets
           const cssVariable = value.slice(1, -1);
           this.element.style[property] = `var(--${cssVariable})`;
         }
         // Default value and unit
         else {
-          // All `type` and `property` that didn't have custom value will have this value
+          // All `type` and `property` didn't have custom value will have this value
           this.element.style[property] = `${value}${unit}`;
         }
       });
@@ -282,9 +277,7 @@ function tenoxui(): void {
       this.applyStyles(style);
     });
   };
-
   // Applying the style to all elements ✨
-
   // Iterate over elements with AllClasses
   AllClasses.forEach((element) => {
     // Get the list of classes for the current element
@@ -297,7 +290,6 @@ function tenoxui(): void {
     });
   });
 }
-
 // Applied multi style into all elements with the specified element (not just className)
 function makeStyle(
   selector: string,
@@ -308,7 +300,7 @@ function makeStyle(
     const styler = new MakeTenoxUI(element);
     styler.applyMultiStyles(styles);
   };
-
+  // Make sure to run only on browser environment
   if (typeof window !== "undefined") {
     if (typeof styles === "string") {
       // If styles is a string, apply it to the specified selector
@@ -324,7 +316,9 @@ function makeStyle(
           applyStylesToElement(element, classStyles)
         );
       });
-    } else {
+    }
+    // Error Handling for make Style
+    else {
       console.warn(
         `Invalid styles format for "${selector}". Make sure you provide style correctly`
       );
@@ -342,21 +336,21 @@ function defineProps(propsObject: Record<string, string[]>): void {
       const propInstance = new newProp(propName, propValues);
       // Add it to AllProperty
       propInstance.tryAdd();
-    } else {
+    }
+    // Error handling for defineProps
+    else {
       console.warn(
         `Invalid property values for "${propName}". Make sure you provide values as an array.`
       );
     }
   });
 }
-
 // Apply styles for multiple elements using the provided object
 function makeStyles(stylesObject: Record<string, string>): void {
   Object.entries(stylesObject).forEach(([selector, styles]) => {
     makeStyle(selector, styles);
   });
 }
-
 // More color compability, for hex, rgb, and rgba
 function moreColor() {
   // Makd color function
@@ -373,7 +367,6 @@ function moreColor() {
       element.style[property] = format(match);
     }
   };
-
   let colorClass;
   if (typeof window !== "undefined") {
     // Select all elements with classes related to colors (background, text, border)
@@ -381,7 +374,6 @@ function moreColor() {
       '[class*="bg-"], [class*="tc-"], [class*="border-"]'
     );
   }
-
   // Define mappings for color types and corresponding CSS properties
   const colorTypes: Record<string, string> = {
     bg: "background",
@@ -415,10 +407,7 @@ function moreColor() {
     }
   });
 }
-moreColor();
-tenoxui();
-
-export default tenoxui;
+moreColor(), tenoxui();
 export {
   Classes,
   AllClasses,
@@ -428,3 +417,4 @@ export {
   makeStyles,
   moreColor,
 };
+export default tenoxui;

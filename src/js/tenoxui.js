@@ -1,5 +1,5 @@
 /*!
- * TenoxUI CSS Framework v0.4.27 [ https://tenoxui.web.app ]
+ * TenoxUI CSS Framework v0.5.0 [ https://tenoxui.web.app ]
  * copyright (c) 2024 nousantx
  * licensed under MIT [ https://github.com/nousantx/tenoxui/blob/main/LICENSE ]
  */
@@ -198,7 +198,7 @@ const property = {
     "tr-prop": ["transitionProperty"],
     "tr-timing": ["transitionTimingFunction"],
     "tr-delay": ["transitionDelay"],
-    // Transform
+    // Transform: for v0.4.26 or higher.
     transform: ["transform"],
     "move-x": ["transform"],
     "move-y": ["transform"],
@@ -230,7 +230,7 @@ const property = {
     "os-beh-y": ["overscrollBehaviorY"],
     "os-beh-x": ["overscrollBehaviorX"],
     visibility: ["visibility"],
-    // TenoxUI Custom property.
+    // TenoxUI Custom property
     box: ["width", "height"],
 };
 // Make classes from type name from properties key name
@@ -349,12 +349,15 @@ class makeTenoxUI {
                 else if (property === "transform") {
                     // Check if there any transform property and class on the element
                     const transformContainer = this.element.style[property];
-                    // Handle All Value
+                    // Handle different transform properties
                     switch (type) {
                         case "translate":
                             this.element.style[property] = `${transformContainer || ""} translate(${value}${unit})`;
                             break;
                         case "rt":
+                            this.element.style[property] = `${transformContainer || ""} rotate(${value}${unit})`;
+                            break;
+                        case "rotate":
                             this.element.style[property] = `${transformContainer || ""} rotate(${value}${unit})`;
                             break;
                         case "move-x":
@@ -400,10 +403,13 @@ class makeTenoxUI {
                             break;
                     }
                 }
-                // CSS Variables support
                 /*
+                 * CSS Variable Support 🎋
+                 *
                  * Check className if the `value` is wrapped with `[]`,
-                 * if so then this is treated as css variable, css value. */
+                 * if so then this is treated as css variable, css value.
+                 */
+                // Check if the value is a CSS variable enclosed in square brackets
                 else if (value.startsWith("[") && value.endsWith("]")) {
                     // Slice value from the box and identify the
                     const cssVariable = value.slice(1, -1);
@@ -441,7 +447,7 @@ class makeTenoxUI {
         });
     }
 }
-// Applied multi style into all elements with the specified element (not just className)
+// Applied multi style into all elements with the specified element, possible to all selector
 function makeStyle(selector, styles) {
     const applyStylesToElement = (element, styles) => {
         const styler = new makeTenoxUI(element);
@@ -459,7 +465,7 @@ function makeStyle(selector, styles) {
             elements.forEach((element) => applyStylesToElement(element, classStyles));
         });
     }
-    // Error Handling
+    // Error Handling for makeStyle
     else {
         console.warn(`Invalid styles format for "${selector}". Make sure you provide style correctly`);
     }
@@ -475,12 +481,13 @@ function defineProps(propsObject) {
             // Add it to AllProperty at once
             propInstance.tryAdd();
         }
+        // Error Handling for `defineProps`
         else {
             console.warn(`Invalid property values for "${propName}". Make sure you provide values as an array.`);
         }
     });
 }
-// Apply styles for multiple elements using the provided object
+// Apply multiple styles into elements using selector, all selector is possible
 function makeStyles(stylesObject) {
     Object.entries(stylesObject).forEach(([selector, styles]) => {
         makeStyle(selector, styles);
