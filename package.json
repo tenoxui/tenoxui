@@ -1,10 +1,6 @@
 {
   "name": "tenoxui",
-<<<<<<< HEAD
   "version": "0.4.27",
-=======
-  "version": "0.4.25",
->>>>>>> 514679ac0d6c769ea439bc020b0591eaf979ca14
   "description": "Tenox UI is a Utiliy-First CSS Framework with small and lightweight size and fast, most of its class is built in Javascript.",
   "main": "dist/js/tui.js",
   "module": "dist/js/tui.esm.js",
