@@ -1,5 +1,5 @@
 /*!
- * TenoxUI CSS Framework v0.4.23 [ https://tenoxui.web.app ]
+ * TenoxUI CSS Framework v0.4.26 [ https://tenoxui.web.app ]
  * copyright (c) 2024 nousantx
  * licensed under MIT [ https://github.com/nousantx/tenoxui/blob/main/LICENSE ]
  */
@@ -8,6 +8,7 @@ import property from "./lib/property.js";
 
 export let Classes;
 export let AllClasses;
+
 if (typeof window !== "undefined") {
   Classes = Object.keys(property).map(
     (className) => `[class*="${className}-"]`
@@ -94,6 +95,131 @@ class makeTenoxUI {
           this.element.style[
             property
           ] = `repeat(auto-fit, minmax(${value}${unit}, 1fr))`;
+        }
+        // Backdrop Filter Property
+        else if (property === "backdropFilter") {
+          // Check if there's an existing backdrop-filter value
+          const backdropContainer = this.element.style[property];
+          // Handle different backdrop-filter properties
+          switch (type) {
+            case "back-blur":
+              this.element.style[property] = `${
+                backdropContainer || ""
+              } blur(${value}${unit})`;
+              break;
+            case "back-sepia":
+              this.element.style[property] = `${
+                backdropContainer || ""
+              } sepia(${value}${unit})`;
+              break;
+            case "back-saturate":
+              this.element.style[property] = `${
+                backdropContainer || ""
+              } saturate(${value}${unit})`;
+              break;
+            case "back-grayscale":
+              this.element.style[property] = `${
+                backdropContainer || ""
+              } grayscale(${value}${unit})`;
+              break;
+            case "back-brightness":
+              this.element.style[property] = `${
+                backdropContainer || ""
+              } brightness(${value}${unit})`;
+              break;
+            case "back-invert":
+              this.element.style[property] = `${
+                backdropContainer || ""
+              } invert(${value}${unit})`;
+              break;
+            case "back-contrast":
+              this.element.style[property] = `${
+                backdropContainer || ""
+              } contrast(${value}${unit})`;
+              break;
+            default:
+              break;
+          }
+        }
+        // Transform Property
+        else if (property === "transform") {
+          // Check if there any transform property and class on the element
+          const transformContainer = this.element.style[property];
+          // Handle All Value
+          switch (type) {
+            case "translate":
+              this.element.style[property] = `${
+                transformContainer || ""
+              } translate(${value}${unit})`;
+              break;
+            case "rt":
+              this.element.style[property] = `${
+                transformContainer || ""
+              } rotate(${value}${unit})`;
+              break;
+            case "move-x":
+              this.element.style[property] = `${
+                transformContainer || ""
+              } translateX(${value}${unit})`;
+              break;
+            case "move-y":
+              this.element.style[property] = `${
+                transformContainer || ""
+              } translateY(${value}${unit})`;
+              break;
+            case "move-z":
+              this.element.style[property] = `${
+                transformContainer || ""
+              } translateZ(${value}${unit})`;
+              break;
+            case "matrix":
+              this.element.style[property] = `${
+                transformContainer || ""
+              } matrix(${value}${unit})`;
+              break;
+            case "matrix-3d":
+              this.element.style[property] = `${
+                transformContainer || ""
+              } matrix3d(${value}${unit})`;
+              break;
+            case "scale-3d":
+              this.element.style[property] = `${
+                transformContainer || ""
+              } scale3d(${value}${unit})`;
+              break;
+            case "scale-x":
+              this.element.style[property] = `${
+                transformContainer || ""
+              } scaleX(${value}${unit})`;
+              break;
+            case "scale-y":
+              this.element.style[property] = `${
+                transformContainer || ""
+              } scaleY(${value}${unit})`;
+              break;
+            case "scale-z":
+              this.element.style[property] = `${
+                transformContainer || ""
+              } scaleZ(${value}${unit})`;
+              break;
+            case "skew-x":
+              this.element.style[property] = `${
+                transformContainer || ""
+              } skewX(${value}${unit})`;
+              break;
+            case "skew-y":
+              this.element.style[property] = `${
+                transformContainer || ""
+              } skewY(${value}${unit})`;
+              break;
+            case "skew-z":
+              this.element.style[property] = `${
+                transformContainer || ""
+              } skewZ(${value}${unit})`;
+              break;
+            default:
+              break;
+          }
         }
         // CSS Variables support
         else if (value.startsWith("[") && value.endsWith("]")) {
