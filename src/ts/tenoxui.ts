@@ -3,11 +3,12 @@ interface PropertyMap {
 }
 
 /*!
- * TenoxUI CSS Framework v0.4.26 [ https://tenoxui.web.app ]
+ * TenoxUI CSS Framework v0.4.27 [ https://tenoxui.web.app ]
  * copyright (c) 2024 nousantx
  * licensed under MIT [ https://github.com/nousantx/tenoxui/blob/main/LICENSE ]
  */
 
+// All TenoxUI `type` and `property`
 const property: PropertyMap = {
   // Mapping type and its Property
   p: ["padding"],
@@ -241,14 +242,17 @@ const property: PropertyMap = {
   box: ["width", "height"],
 };
 
+// Make classes from type name from properties key name
 let Classes = Object.keys(property).map(
   (className) => `[class*="${className}-"]`
 );
 // Merge all `Classes` into one selector. Example : '[class*="p-"]', '[class*="m-"]', '[class*="justify-"]'
 let AllClasses = document.querySelectorAll(Classes.join(", "));
 
+// Props maker function :)
 class newProp {
   constructor(name: string, values: string[]) {
+    // Error handling, the type must be a string, properties must be an array
     if (typeof name !== "string" || !Array.isArray(values)) {
       console.warn(
         "Invalid arguments for newProp. Please provide a string for name and an array for values."
@@ -256,15 +260,17 @@ class newProp {
       return;
     }
     this[name] = values;
+    // Combine the type and property to allProperty after defined it to Classes and AllClasses
     Classes.push(`[class*="${name}-"]`);
     AllClasses = document.querySelectorAll(Classes.join(", "));
   }
-
+  // Function to handle add `type` and `property`
   tryAdd(): void {
     if (!this || Object.keys(this).length === 0) {
       console.warn("Invalid newProp instance:", this);
       return;
     }
+    // Added new `type` and `property` to the All Property
     Object.assign(property, this);
   }
 }
@@ -278,20 +284,25 @@ function addType(Types: string, Property: string[]): void {
   if (!Array.isArray(Property)) {
     throw new Error("Property must be an array");
   }
+  // Add new property
   new newProp(Types, Property).tryAdd();
 }
 
+// TenoxUI make style class
 class makeTenoxUI {
   element: HTMLElement;
   styles: any;
 
+  // TenoxUI constructor
   constructor(element: HTMLElement) {
     this.element = element;
     this.styles = property;
   }
-
+  // `applyStyle`: Handle the styling and custom value for property
   applyStyle(type: string, value: string, unit: string): void {
     const properties = this.styles[type];
+    // If properties matched the `type` or `property` from `allProperty`
+
     if (properties) {
       properties.forEach((property: string) => {
         // Filter Custom Property
@@ -307,7 +318,7 @@ class makeTenoxUI {
         } else if (type === "initial-flex") {
           this.element.style[property] = `0 1 ${value}${unit}`;
         }
-        // Grid System Property
+        // Grid System Property [ Not Stable... Yet :) ]
         else if (
           property === "gridRow" ||
           property === "gridColumn" ||
@@ -415,6 +426,11 @@ class makeTenoxUI {
                 transformContainer || ""
               } scale3d(${value}${unit})`;
               break;
+            case "scale":
+              this.element.style[property] = `${
+                transformContainer || ""
+              } scale(${value}${unit})`;
+              break;
             case "scale-x":
               this.element.style[property] = `${
                 transformContainer || ""
@@ -451,7 +467,9 @@ class makeTenoxUI {
           }
         }
         // CSS Variables support
-        // Check if the value is a CSS variable enclosed in square brackets
+        /*
+         * Check className if the `value` is wrapped with `[]`,
+         * if so then this is treated as css variable, css value. */
         else if (value.startsWith("[") && value.endsWith("]")) {
           // Slice value from the box and identify the
           const cssVariable = value.slice(1, -1);
@@ -464,9 +482,9 @@ class makeTenoxUI {
       });
     }
   }
-
+  // Handle all possible values
   applyStyles(className: string): void {
-    // Match all type and
+    // Using RegExp to handle the value
     const match = className.match(
       /([a-zA-Z]+(?:-[a-zA-Z]+)*)-(-?(?:\d+(\.\d+)?)|(?:[a-zA-Z]+(?:-[a-zA-Z]+)*(?:-[a-zA-Z]+)*)|(?:\[[^\]]+\]))([a-zA-Z%]*)/
     );
@@ -482,7 +500,7 @@ class makeTenoxUI {
     }
   }
 
-  // MultyStyles function: Give multi style or class into one selector.
+  // Multi styler function, style through javascript.
   applyMultiStyles(styles: string): void {
     // Splitting the styles
     const styleArray = styles.split(/\s+/);
@@ -493,7 +511,7 @@ class makeTenoxUI {
   }
 }
 
-// Applied multi style into all elements with the specified class.
+// Applied multi style into all elements with the specified element (not just className)
 function makeStyle(
   selector: string,
   styles: string | Record<string, string>
@@ -519,7 +537,9 @@ function makeStyle(
         applyStylesToElement(element, classStyles)
       );
     });
-  } else {
+  }
+  // Error Handling
+  else {
     console.warn(
       `Invalid styles format for "${selector}". Make sure you provide style correctly`
     );
@@ -534,7 +554,7 @@ function defineProps(propsObject: Record<string, string[]>): void {
     if (Array.isArray(propValues)) {
       // Create a new CustomProperty
       const propInstance = new newProp(propName, propValues);
-      // Add it to AllProperty
+      // Add it to AllProperty at once
       propInstance.tryAdd();
     } else {
       console.warn(
@@ -551,6 +571,7 @@ function makeStyles(stylesObject: Record<string, string>): void {
   });
 }
 
+// Define mappings for color types and corresponding CSS properties
 function moreColor() {
   const makeColor = (
     element: HTMLElement,
@@ -602,7 +623,8 @@ function moreColor() {
     }
   });
 }
-// Define the TenoxUI function to apply the styles
+
+// Applying the style to all elements ✨
 function tenoxui(): void {
   // Iterate over elements with AllClasses
   AllClasses.forEach((element) => {

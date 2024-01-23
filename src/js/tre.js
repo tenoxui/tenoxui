@@ -1,5 +1,5 @@
 /*!
- * TenoxUI CSS Framework v0.4.27 [ https://tenoxui.web.app ]
+ * TenoxUI CSS Framework v0.4.26 [ https://tenoxui.web.app ]
  * copyright (c) 2024 nousantx
  * licensed under MIT [ https://github.com/nousantx/tenoxui/blob/main/LICENSE ]
  */
@@ -8,7 +8,7 @@ import property from "./lib/property.js";
 let allProps = property;
 let Classes;
 let AllClasses;
-// Check browser environment
+// If window detected then
 if (typeof window !== "undefined") {
     // Make classes from type name from properties key name
     Classes = Object.keys(property).map((className) => `[class*="${className}-"]`);
@@ -16,21 +16,19 @@ if (typeof window !== "undefined") {
     AllClasses = document.querySelectorAll(Classes.join(", "));
 }
 // Props maker function :)
-function newProp(name, values) {
-    // Error handling, the type must be a string, properties must be an array
+function NewProp(name, values) {
     if (typeof name !== "string" || !Array.isArray(values)) {
-        console.warn("Invalid arguments for newProp. Please provide a string for keys and array for values.");
+        console.warn("Invalid arguments for newProp. Please provide a string for name and an array for values.");
         return;
     }
     this[name] = values;
     if (typeof window !== "undefined") {
-        // Combine the type and property to allProperty after defined it to Classes and AllClasses
         Classes.push(`[class*="${name}-"]`);
         AllClasses = document.querySelectorAll(Classes.join(", "));
     }
 }
-// Function to handle add `type` and `property`
-newProp.prototype.tryAdd = function () {
+//
+NewProp.prototype.tryAdd = function () {
     if (!this || Object.keys(this).length === 0) {
         console.warn("Invalid newProp instance:", this);
         return;
@@ -38,7 +36,6 @@ newProp.prototype.tryAdd = function () {
     // Added new `type` and `property` to the All Property
     Object.assign(property, this);
 };
-// Add new `type` and `property`
 function addType(Types, Property) {
     // Check if 'Types' is a string
     if (typeof Types !== "string") {
@@ -48,7 +45,6 @@ function addType(Types, Property) {
     if (!Array.isArray(Property)) {
         throw new Error("Property must be an array");
     }
-    // Add new property
     new newProp(Types, Property).tryAdd();
 }
 // TenoxUI make style proto
@@ -56,9 +52,9 @@ function MakeTenoxUI(element) {
     this.element = element;
     this.styles = property;
 }
-// Export the whole TenoxUI :)
+// Define the TenoxUI function to apply the styles
 function tenoxui() {
-    // `applyStyle`: Handle the styling and custom value for property
+    // `applyStyle`: Handle the styling and custom value for property.
     MakeTenoxUI.prototype.applyStyle = function (type, value, unit) {
         const properties = this.styles[type];
         // If properties matched the `type` or `property` from `allProperty`
@@ -66,12 +62,10 @@ function tenoxui() {
             properties.forEach((property) => {
                 // Filter Custom Property
                 if (property === "filter") {
-                    // Looking for all existing filter
                     const existingFilter = this.element.style[property];
-                    const filterName = type;
                     this.element.style[property] = existingFilter
-                        ? `${existingFilter} ${filterName}(${value}${unit})`
-                        : `${filterName}(${value}${unit})`; // Ex: blur-6.7px
+                        ? `${existingFilter} ${type}(${value}${unit})`
+                        : `${type}(${value}${unit})`;
                 }
                 // Flex Property
                 else if (type === "flex-auto") {
@@ -80,7 +74,7 @@ function tenoxui() {
                 else if (type === "initial-flex") {
                     this.element.style[property] = `0 1 ${value}${unit}`;
                 }
-                // Grid System Property [ Not Stable... Yet :) ]
+                // Grid System Property
                 else if (property === "gridRow" ||
                     property === "gridColumn" ||
                     property === "gridRowStart" ||
@@ -130,7 +124,7 @@ function tenoxui() {
                 else if (property === "transform") {
                     // Check if there any transform property and class on the element
                     const transformContainer = this.element.style[property];
-                    // Handle different transform property
+                    // Handle All Value
                     switch (type) {
                         case "translate":
                             this.element.style[property] = `${transformContainer || ""} translate(${value}${unit})`;
@@ -226,36 +220,33 @@ function tenoxui() {
         // Get the list of classes for the current element
         const classes = element.classList;
         // Make TenoxUI
-        const makeTx = new MakeTenoxUI(element);
+        const makeTx = new makeTenoxUI(element);
         // Iterate over classes and apply styles using makeTenoxUI
         classes.forEach((className) => {
             makeTx.applyStyles(className);
         });
     });
 }
-// Applied multi style into all elements with the specified element (not just className)
+// Applied multi style into all elements with the specified class.
 function makeStyle(selector, styles) {
     const applyStylesToElement = (element, styles) => {
-        // make new styler
-        const styler = new MakeTenoxUI(element);
+        const styler = new makeTenoxUI(element);
         styler.applyMultiStyles(styles);
     };
-    if (typeof window !== "undefined") {
-        if (typeof styles === "string") {
-            // If styles is a string, apply it to the specified selector
-            const elements = document.querySelectorAll(selector);
-            elements.forEach((element) => applyStylesToElement(element, styles));
-        }
-        else if (typeof styles === "object") {
-            // If styles is an object, iterate through its key-value pairs
-            Object.entries(styles).forEach(([classSelector, classStyles]) => {
-                const elements = document.querySelectorAll(classSelector);
-                elements.forEach((element) => applyStylesToElement(element, classStyles));
-            });
-        }
-        else {
-            console.warn(`Invalid styles format for "${selector}". Make sure you provide style correctly`);
-        }
+    if (typeof styles === "string") {
+        // If styles is a string, apply it to the specified selector
+        const elements = document.querySelectorAll(selector);
+        elements.forEach((element) => applyStylesToElement(element, styles));
+    }
+    else if (typeof styles === "object") {
+        // If styles is an object, iterate through its key-value pairs
+        Object.entries(styles).forEach(([classSelector, classStyles]) => {
+            const elements = document.querySelectorAll(classSelector);
+            elements.forEach((element) => applyStylesToElement(element, classStyles));
+        });
+    }
+    else {
+        console.warn(`Invalid styles format for "${selector}". Make sure you provide style correctly`);
     }
 }
 // MultiProps function: Add multiple properties from the provided object
@@ -323,7 +314,7 @@ function moreColor() {
                 makeColor(element, pattern, colorTypes[type], colorFormats[format]);
             }
             // Create a pattern for hex color format
-            const hexPattern = new RegExp(`${type}-([0-9a-fA-F]{3,6})`);
+            const hexPattern = new RegExp(`${type}-([0-9a-fA-F]{3,6,8})`);
             // Apply color to the element using the makeColor function for hex format
             makeColor(element, hexPattern, colorTypes[type], colorFormats["hex"]);
         }

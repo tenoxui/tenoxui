@@ -1,49 +1,54 @@
 /*!
- * TenoxUI CSS Framework v0.4.26 [ https://tenoxui.web.app ]
+ * TenoxUI CSS Framework v0.4.27 [ https://tenoxui.web.app ]
  * copyright (c) 2024 nousantx
  * licensed under MIT [ https://github.com/nousantx/tenoxui/blob/main/LICENSE ]
  */
 
+// Importing All property that will be used on TenoxUI
 import property from "./lib/property.js";
 
-export let Classes;
-export let AllClasses;
+let allProps: object = property;
+let Classes: any;
+let AllClasses: any;
 
+// Check browser environment
 if (typeof window !== "undefined") {
+  // Make classes from type name from properties key name
   Classes = Object.keys(property).map(
     (className) => `[class*="${className}-"]`
   );
-}
-
-if (typeof window !== "undefined") {
   // Merge all `Classes` into one selector. Example : '[class*="p-"]', '[class*="m-"]', '[class*="justify-"]'
   AllClasses = document.querySelectorAll(Classes.join(", "));
 }
-class newProp {
-  constructor(name: string, values: string[]) {
-    if (typeof name !== "string" || !Array.isArray(values)) {
-      console.warn(
-        "Invalid arguments for newProp. Please provide a string for name and an array for values."
-      );
-      return;
-    }
-    this[name] = values;
-    if (typeof window !== "undefined") {
-      Classes.push(`[class*="${name}-"]`);
-      AllClasses = document.querySelectorAll(Classes.join(", "));
-    }
+// Props maker function :)
+function newProp(name: string, values: string[]): void {
+  // Error handling, the type must be a string, properties must be an array
+  if (typeof name !== "string" || !Array.isArray(values)) {
+    console.warn(
+      "Invalid arguments for newProp. Please provide a string for keys and array for values."
+    );
+    return;
   }
+  this[name] = values;
 
-  tryAdd(): void {
-    if (!this || Object.keys(this).length === 0) {
-      console.warn("Invalid newProp instance:", this);
-      return;
-    }
-    Object.assign(property, this);
+  if (typeof window !== "undefined") {
+    // Combine the type and property to allProperty after defined it to Classes and AllClasses
+    Classes.push(`[class*="${name}-"]`);
+    AllClasses = document.querySelectorAll(Classes.join(", "));
   }
 }
+// Function to handle add `type` and `property`
+newProp.prototype.tryAdd = function (): void {
+  if (!this || Object.keys(this).length === 0) {
+    console.warn("Invalid newProp instance:", this);
+    return;
+  }
+  // Added new `type` and `property` to the All Property
+  Object.assign(property, this);
+};
 
-export function addType(Types: string, Property: string[]): void {
+// Add new `type` and `property`
+function addType(Types: string, Property: string[]): void {
   // Check if 'Types' is a string
   if (typeof Types !== "string") {
     throw new Error("Types must be a string");
@@ -52,34 +57,40 @@ export function addType(Types: string, Property: string[]): void {
   if (!Array.isArray(Property)) {
     throw new Error("Property must be an array");
   }
+  // Add new property
   new newProp(Types, Property).tryAdd();
 }
 
-class makeTenoxUI {
-  element: HTMLElement;
-  styles: any;
+// TenoxUI make style proto
+function MakeTenoxUI(element: HTMLElement) {
+  this.element = element;
+  this.styles = property;
+}
 
-  constructor(element: HTMLElement) {
-    this.element = element;
-    this.styles = property;
-  }
-
-  applyStyle(type: string, value: string, unit: string): void {
+// Export the whole TenoxUI :)
+function tenoxui(): void {
+  // `applyStyle`: Handle the styling and custom value for property
+  MakeTenoxUI.prototype.applyStyle = function (type, value, unit) {
     const properties = this.styles[type];
+    // If properties matched the `type` or `property` from `allProperty`
     if (properties) {
       properties.forEach((property: string) => {
         // Filter Custom Property
         if (property === "filter") {
+          // Looking for all existing filter
           const existingFilter = this.element.style[property];
+          const filterName = type;
           this.element.style[property] = existingFilter
-            ? `${existingFilter} ${type}(${value}${unit})`
-            : `${type}(${value}${unit})`;
+            ? `${existingFilter} ${filterName}(${value}${unit})`
+            : `${filterName}(${value}${unit})`; // Ex: blur-6.7px
         }
-        // Make custom property for flex
-        else if (property === "flex") {
+        // Flex Property
+        else if (type === "flex-auto") {
           this.element.style[property] = `1 1 ${value}${unit}`;
+        } else if (type === "initial-flex") {
+          this.element.style[property] = `0 1 ${value}${unit}`;
         }
-        // Grid System Property
+        // Grid System Property [ Not Stable... Yet :) ]
         else if (
           property === "gridRow" ||
           property === "gridColumn" ||
@@ -98,9 +109,9 @@ class makeTenoxUI {
         }
         // Backdrop Filter Property
         else if (property === "backdropFilter") {
-          // Check if there's an existing backdrop-filter value
+          // Check if there's an existing backdrop-filter value on the element
           const backdropContainer = this.element.style[property];
-          // Handle different backdrop-filter properties
+          // Handle different backdrop-filter property
           switch (type) {
             case "back-blur":
               this.element.style[property] = `${
@@ -145,7 +156,7 @@ class makeTenoxUI {
         else if (property === "transform") {
           // Check if there any transform property and class on the element
           const transformContainer = this.element.style[property];
-          // Handle All Value
+          // Handle different transform property
           switch (type) {
             case "translate":
               this.element.style[property] = `${
@@ -187,6 +198,11 @@ class makeTenoxUI {
                 transformContainer || ""
               } scale3d(${value}${unit})`;
               break;
+            case "scale":
+              this.element.style[property] = `${
+                transformContainer || ""
+              } scale(${value}${unit})`;
+              break;
             case "scale-x":
               this.element.style[property] = `${
                 transformContainer || ""
@@ -222,6 +238,9 @@ class makeTenoxUI {
           }
         }
         // CSS Variables support
+        /*
+         * Check className if the `value` is wrapped with `[]`,
+         * if so then this is treated as css variable, css value. */
         else if (value.startsWith("[") && value.endsWith("]")) {
           // Check if the value is a CSS variable enclosed in square brackets
           const cssVariable = value.slice(1, -1);
@@ -229,14 +248,15 @@ class makeTenoxUI {
         }
         // Default value and unit
         else {
+          // All `type` and `property` that didn't have custom value will have this value
           this.element.style[property] = `${value}${unit}`;
         }
       });
     }
-  }
-
-  applyStyles(className: string): void {
-    // Match all type and
+  };
+  // Handle all posibble values
+  MakeTenoxUI.prototype.applyStyles = function (className) {
+    // Using Regexp to handle  match
     const match = className.match(
       /([a-zA-Z]+(?:-[a-zA-Z]+)*)-(-?(?:\d+(\.\d+)?)|(?:[a-zA-Z]+(?:-[a-zA-Z]+)*(?:-[a-zA-Z]+)*)|(?:\[[^\]]+\]))([a-zA-Z%]*)/
     );
@@ -247,57 +267,69 @@ class makeTenoxUI {
       const value = match[2];
       // unit = possible unit. Example: px, rem, em, s, %, etc.
       const unitOrValue = match[4];
-      // Combine all to one class. Example 'p-10px', 'flex-100px', 'grid-row-6', etc.
+      // Combine the type, value, and the unit
       this.applyStyle(type, value, unitOrValue);
     }
-  }
-
-  // MultyStyles function: Give multi style or class into one selector.
-  applyMultiStyles(styles: string): void {
-    // Splitting the styles
+  };
+  // Multi styler function, style through javascript.
+  MakeTenoxUI.prototype.applyMultiStyles = function (styles) {
     const styleArray = styles.split(/\s+/);
-    // Applying the styles using forEach and `applyStyles`
-    styleArray.forEach((style: string) => {
+    styleArray.forEach((style) => {
       this.applyStyles(style);
     });
-  }
+  };
+
+  // Applying the style to all elements ✨
+
+  // Iterate over elements with AllClasses
+  AllClasses.forEach((element) => {
+    // Get the list of classes for the current element
+    const classes = (element as HTMLElement).classList;
+    // Make TenoxUI
+    const makeTx = new MakeTenoxUI(element as HTMLElement);
+    // Iterate over classes and apply styles using makeTenoxUI
+    classes.forEach((className) => {
+      makeTx.applyStyles(className);
+    });
+  });
 }
 
-// Applied multi style into all elements with the specified class.
-export function makeStyle(
+// Applied multi style into all elements with the specified element (not just className)
+function makeStyle(
   selector: string,
   styles: string | Record<string, string>
 ): void {
   const applyStylesToElement = (element: HTMLElement, styles: string): void => {
-    const styler = new makeTenoxUI(element);
+    // make new styler
+    const styler = new MakeTenoxUI(element);
     styler.applyMultiStyles(styles);
   };
 
-  if (typeof styles === "string") {
-    // If styles is a string, apply it to the specified selector
-    const elements = document.querySelectorAll(selector);
-
-    elements.forEach((element: HTMLElement) =>
-      applyStylesToElement(element, styles)
-    );
-  } else if (typeof styles === "object") {
-    // If styles is an object, iterate through its key-value pairs
-    Object.entries(styles).forEach(([classSelector, classStyles]) => {
-      const elements = document.querySelectorAll(classSelector);
-
+  if (typeof window !== "undefined") {
+    if (typeof styles === "string") {
+      // If styles is a string, apply it to the specified selector
+      const elements = document.querySelectorAll(selector);
       elements.forEach((element: HTMLElement) =>
-        applyStylesToElement(element, classStyles)
+        applyStylesToElement(element, styles)
       );
-    });
-  } else {
-    console.warn(
-      `Invalid styles format for "${selector}". Make sure you provide style correctly`
-    );
+    } else if (typeof styles === "object") {
+      // If styles is an object, iterate through its key-value pairs
+      Object.entries(styles).forEach(([classSelector, classStyles]) => {
+        const elements = document.querySelectorAll(classSelector);
+        elements.forEach((element: HTMLElement) =>
+          applyStylesToElement(element, classStyles)
+        );
+      });
+    } else {
+      console.warn(
+        `Invalid styles format for "${selector}". Make sure you provide style correctly`
+      );
+    }
   }
 }
 
 // MultiProps function: Add multiple properties from the provided object
-export function defineProps(propsObject: Record<string, string[]>): void {
+function defineProps(propsObject: Record<string, string[]>): void {
   // Iterate over object entries
   Object.entries(propsObject).forEach(([propName, propValues]) => {
     // Check if propValues is an array
@@ -315,13 +347,15 @@ export function defineProps(propsObject: Record<string, string[]>): void {
 }
 
 // Apply styles for multiple elements using the provided object
-export function makeStyles(stylesObject: Record<string, string>): void {
+function makeStyles(stylesObject: Record<string, string>): void {
   Object.entries(stylesObject).forEach(([selector, styles]) => {
     makeStyle(selector, styles);
   });
 }
 
-export function moreColor() {
+// More color compability, for hex, rgb, and rgba
+function moreColor() {
+  // Makd color function
   const makeColor = (
     element: HTMLElement,
     pattern: RegExp,
@@ -330,12 +364,12 @@ export function moreColor() {
   ) => {
     // Match the class name against the provided pattern
     const match = element.className.match(pattern);
-
     // If there is a match, apply the style to the element using the specified property and format
     if (match) {
       element.style[property] = format(match);
     }
   };
+
   let colorClass;
   if (typeof window !== "undefined") {
     // Select all elements with classes related to colors (background, text, border)
@@ -352,8 +386,11 @@ export function moreColor() {
   };
   // Define different color formats and their corresponding formatting functions
   const colorFormats: Record<string, (match: RegExpMatchArray) => string> = {
+    // rgb
     rgb: (match) => `rgb(${match.slice(1, 4).join(",")})`,
+    // rgba
     rgba: (match) => `rgba(${match.slice(1, 5).join(",")})`,
+    // hex
     hex: (match) => `#${match[1]}`,
   };
   // Iterate through each element with color-related classes
@@ -374,20 +411,17 @@ export function moreColor() {
     }
   });
 }
-// Define the TenoxUI function to apply the styles
-export default function tenoxui(): void {
-  // Iterate over elements with AllClasses
-  AllClasses.forEach((element) => {
-    // Get the list of classes for the current element
-    const classes = (element as HTMLElement).classList;
-    // Make TenoxUI
-    const makeTx = new makeTenoxUI(element as HTMLElement);
-    // Iterate over classes and apply styles using makeTenoxUI
-    classes.forEach((className) => {
-      makeTx.applyStyles(className);
-    });
-  });
-}
-
 moreColor();
 tenoxui();
+
+export default tenoxui;
+export {
+  allProps,
+  Classes,
+  AllClasses,
+  addType,
+  defineProps,
+  makeStyle,
+  makeStyles,
+  moreColor,
+};

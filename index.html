@@ -23,7 +23,7 @@
         --blurred: #0d0d0d70;
       }
     </style>
-    <script src="./src/js/tenoxui.js"></script>
+    <!-- <script src="./src/js/tenoxui.js"></script> -->
   </head>
   <body>
     <main>
@@ -47,7 +47,14 @@
     <!-- Script -->
     <!-- default -->
     <!-- <script type="module" src="src/js/tenoxui.esm.js"></script> -->
-    <script defer>
+    <script defer type="module">
+      import tenoxui, {
+        addType,
+        makeStyles,
+        Classes,
+        AllClasses,
+        // moreColor,
+      } from "/src/js/tenoxui.esm.js";
       addType("fx-par", ["justifyContent", "align-items"]);
 
       makeStyles({
@@ -58,7 +65,9 @@
       });
 
       tenoxui();
-      moreColor();
+
+      console.log(Classes);
+      // moreColor();
     </script>
 
     <script defer src="./version.js"></script>

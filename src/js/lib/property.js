@@ -197,7 +197,7 @@ const property = {
     "tr-prop": ["transitionProperty"],
     "tr-timing": ["transitionTimingFunction"],
     "tr-delay": ["transitionDelay"],
-    // Transform
+    // Transform: for v0.4.6 or higher.
     transform: ["transform"],
     "move-x": ["transform"],
     "move-y": ["transform"],
@@ -229,7 +229,7 @@ const property = {
     "os-beh-y": ["overscrollBehaviorY"],
     "os-beh-x": ["overscrollBehaviorX"],
     visibility: ["visibility"],
-    // TenoxUI Custom property.
+    // TenoxUI Custom property
     box: ["width", "height"],
 };
 export default property;
