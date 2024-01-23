@@ -1,5 +1,5 @@
 /*!
- * TenoxUI CSS Framework v0.4.27 [ https://tenoxui.web.app ]
+ * TenoxUI CSS Framework v0.4.29 [ https://tenoxui.web.app ]
  * copyright (c) 2024 nousantx
  * licensed under MIT [ https://github.com/nousantx/tenoxui/blob/main/LICENSE ]
  */
@@ -7,7 +7,6 @@
 // Importing All property that will be used on TenoxUI
 import property from "./lib/property.js";
 
-let allProps: object = property;
 let Classes: any;
 let AllClasses: any;
 
@@ -69,6 +68,11 @@ function MakeTenoxUI(element: HTMLElement) {
 
 // Export the whole TenoxUI :)
 function tenoxui(): void {
+  if (typeof window !== "undefined") {
+    // Combine the type and property to allProperty after defined it to Classes and AllClasses
+    Classes.push(`[class*="${name}-"]`);
+    AllClasses = document.querySelectorAll(Classes.join(", "));
+  }
   // `applyStyle`: Handle the styling and custom value for property
   MakeTenoxUI.prototype.applyStyle = function (type, value, unit) {
     const properties = this.styles[type];
@@ -416,7 +420,6 @@ tenoxui();
 
 export default tenoxui;
 export {
-  allProps,
   Classes,
   AllClasses,
   addType,

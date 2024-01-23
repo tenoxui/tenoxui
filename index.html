@@ -55,18 +55,18 @@
         AllClasses,
         // moreColor,
       } from "/src/js/tenoxui.esm.js";
-      addType("fx-par", ["justifyContent", "align-items"]);
+      // addType("fx-par", ["justifyContent", "align-items"]);
 
+      console.log(Classes);
       makeStyles({
-        body: "w-mx h-100svh display-flex fx-par-center tc-[text-light] fd-column bg-[background] p-1rem",
-        main: "w-mx display-flex fx-par-center ai-[flex-start]",
+        body: "w-mx h-100svh display-flex flex-parent-center tc-[text-light] fd-column bg-[background] p-1rem",
+        main: "w-mx display-flex flex-parent-center ai-[flex-start]",
         footer: "post-fixed b-1rem fs-12px",
         ".fxtdgs": "post-fixed b-1rem fs-12px",
       });
 
       tenoxui();
 
-      console.log(Classes);
       // moreColor();
     </script>
 
