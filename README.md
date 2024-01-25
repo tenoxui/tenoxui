@@ -3,7 +3,7 @@
 <img src="https://raw.githubusercontent.com/nousantx/tenoxui-docs/main/tx_logo.png" alt="TenoxUI Logo" width="200" height="200">
 </a>
 </p>
-<h1 align="center">TenoxUI v0.4.24</h1>
+<h1 align="center">TenoxUI v0.5.0</h1>
 <p align="center">
 Fast and Lightweight CSS Framework, Style through javascript
 <br>
