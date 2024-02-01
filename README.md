@@ -7,7 +7,7 @@
 <p align="center">
 Fast and Lightweight CSS Framework, Style through javascript
 <br>
-<a href="https://tenoxui.web.app/docs/">Full Documentation</a>
+<a href="https://tenoxui.web.app/docs/start">Full Documentation</a>
 </p>
 
 <h2>About</h2>
