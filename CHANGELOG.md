@@ -1,12 +1,16 @@
 # Changelog
 
+## [0.5.1] - 28-02-2024
+
+- Fix `tenoxui` function not adding new props to `allProperty`.
+
 ## [0.5] - 24-01-2024
 
-- Finalizing `backdrop-filter` and `transform` property.
+- Finalizing `backdrop-filter` and `transform` property
 - Added some lib for some new functionality
 - Change `rotate` and `scale` property into `transform` value
 - Finalize Javascript Framework
-- React JS Compability
+- React JS Compability.
 
 ## [0.4.24] - 10-01-2024
 
@@ -15,7 +19,7 @@
 
 ## [0.4.4] ~ [0.4.22] - 4-01-2024
 
-- Just update and changing some rules in `package.json`
+- Just update and changing some rules in `package.json`.
 
 ## [0.4.3] - 3-01-2024
 
