@@ -1,5 +1,5 @@
 /*!
- * TenoxUI CSS Framework v0.5.0 [ https://tenoxui.web.app ]
+ * TenoxUI CSS Framework v0.5.1 [ https://tenoxui.web.app ]
  * copyright (c) 2024 nousantx
  * licensed under MIT [ https://github.com/nousantx/tenoxui/blob/main/LICENSE ]
  */
@@ -57,188 +57,187 @@ function MakeTenoxUI(element) {
 }
 // Export the whole TenoxUI :)
 function tenoxui() {
-    //! Forgot to add this on v0.4.28 :(
     if (typeof window !== "undefined") {
         // Combine the type and property to allProperty after defined it to Classes and AllClasses
         Classes.push(`[class*="${name}-"]`);
         AllClasses = document.querySelectorAll(Classes.join(", "));
-    }
-    // `applyStyle`: Handle the styling and custom value for property
-    MakeTenoxUI.prototype.applyStyle = function (type, value, unit) {
-        const properties = this.styles[type];
-        // If properties matched the `type` or `property` from `allProperty`
-        if (properties) {
-            properties.forEach((property) => {
-                // Filter Custom Property
-                if (property === "filter") {
-                    // Looking for all existing filter
-                    const existingFilter = this.element.style[property];
-                    const filterName = type;
-                    this.element.style[property] = existingFilter
-                        ? `${existingFilter} ${filterName}(${value}${unit})`
-                        : `${filterName}(${value}${unit})`; // Ex: blur-6.7px
-                }
-                // Flex Property
-                else if (type === "flex-auto") {
-                    this.element.style[property] = `1 1 ${value}${unit}`;
-                }
-                else if (type === "initial-flex") {
-                    this.element.style[property] = `0 1 ${value}${unit}`;
-                }
-                // Grid System Property [ Not Stable... Yet :) ]
-                else if (property === "gridRow" ||
-                    property === "gridColumn" ||
-                    property === "gridRowStart" ||
-                    property === "gridColumnStart" ||
-                    property === "gridRowEnd" ||
-                    property === "gridColumnEnd") {
-                    this.element.style[property] = `span ${value}${unit}`;
-                }
-                else if (type === "grid-row" || type === "grid-col") {
-                    this.element.style[property] = `repeat(${value}${unit}, 1fr)`;
-                }
-                else if (type === "auto-grid-row" || type === "auto-grid-col") {
-                    this.element.style[property] = `repeat(auto-fit, minmax(${value}${unit}, 1fr))`;
-                }
-                // Backdrop Filter Property
-                else if (property === "backdropFilter") {
-                    // Check if there's an existing backdrop-filter value on the element
-                    const backdropContainer = this.element.style[property];
-                    // Handle different backdrop-filter property
-                    switch (type) {
-                        case "back-blur":
-                            this.element.style[property] = `${backdropContainer || ""} blur(${value}${unit})`;
-                            break;
-                        case "back-sepia":
-                            this.element.style[property] = `${backdropContainer || ""} sepia(${value}${unit})`;
-                            break;
-                        case "back-saturate":
-                            this.element.style[property] = `${backdropContainer || ""} saturate(${value}${unit})`;
-                            break;
-                        case "back-grayscale":
-                            this.element.style[property] = `${backdropContainer || ""} grayscale(${value}${unit})`;
-                            break;
-                        case "back-brightness":
-                            this.element.style[property] = `${backdropContainer || ""} brightness(${value}${unit})`;
-                            break;
-                        case "back-invert":
-                            this.element.style[property] = `${backdropContainer || ""} invert(${value}${unit})`;
-                            break;
-                        case "back-contrast":
-                            this.element.style[property] = `${backdropContainer || ""} contrast(${value}${unit})`;
-                            break;
-                        default:
-                            break;
+        // `applyStyle`: Handle the styling and custom value for property
+        MakeTenoxUI.prototype.applyStyle = function (type, value, unit) {
+            const properties = this.styles[type];
+            // If properties matched the `type` or `property` from `allProperty`
+            if (properties) {
+                properties.forEach((property) => {
+                    // Filter Custom Property
+                    if (property === "filter") {
+                        // Looking for all existing filter
+                        const existingFilter = this.element.style[property];
+                        const filterName = type;
+                        this.element.style[property] = existingFilter
+                            ? `${existingFilter} ${filterName}(${value}${unit})`
+                            : `${filterName}(${value}${unit})`; // Ex: blur-6.7px
                     }
-                }
-                // Transform Property
-                else if (property === "transform") {
-                    // Check if there any transform property and class on the element
-                    const transformContainer = this.element.style[property];
-                    // Handle different transform property
-                    switch (type) {
-                        case "translate":
-                            this.element.style[property] = `${transformContainer || ""} translate(${value}${unit})`;
-                            break;
-                        case "rt":
-                            this.element.style[property] = `${transformContainer || ""} rotate(${value}${unit})`;
-                            break;
-                        case "move-x":
-                            this.element.style[property] = `${transformContainer || ""} translateX(${value}${unit})`;
-                            break;
-                        case "move-y":
-                            this.element.style[property] = `${transformContainer || ""} translateY(${value}${unit})`;
-                            break;
-                        case "move-z":
-                            this.element.style[property] = `${transformContainer || ""} translateZ(${value}${unit})`;
-                            break;
-                        case "matrix":
-                            this.element.style[property] = `${transformContainer || ""} matrix(${value}${unit})`;
-                            break;
-                        case "matrix-3d":
-                            this.element.style[property] = `${transformContainer || ""} matrix3d(${value}${unit})`;
-                            break;
-                        case "scale-3d":
-                            this.element.style[property] = `${transformContainer || ""} scale3d(${value}${unit})`;
-                            break;
-                        case "scale":
-                            this.element.style[property] = `${transformContainer || ""} scale(${value}${unit})`;
-                            break;
-                        case "scale-x":
-                            this.element.style[property] = `${transformContainer || ""} scaleX(${value}${unit})`;
-                            break;
-                        case "scale-y":
-                            this.element.style[property] = `${transformContainer || ""} scaleY(${value}${unit})`;
-                            break;
-                        case "scale-z":
-                            this.element.style[property] = `${transformContainer || ""} scaleZ(${value}${unit})`;
-                            break;
-                        case "skew-x":
-                            this.element.style[property] = `${transformContainer || ""} skewX(${value}${unit})`;
-                            break;
-                        case "skew-y":
-                            this.element.style[property] = `${transformContainer || ""} skewY(${value}${unit})`;
-                            break;
-                        case "skew-z":
-                            this.element.style[property] = `${transformContainer || ""} skewZ(${value}${unit})`;
-                            break;
-                        default:
-                            break;
+                    // Flex Property
+                    else if (type === "flex-auto") {
+                        this.element.style[property] = `1 1 ${value}${unit}`;
                     }
-                }
-                else if (value.startsWith("[") && value.endsWith("]")) {
-                    /*
-                     * CSS Variable Support 🎋
-                     *
-                     * Check className if the `value` is wrapped with `[]`,
-                     * if so then this is treated as css variable, css value.
-                     */
-                    // Check if the value is a CSS variable enclosed in square brackets
-                    const cssVariable = value.slice(1, -1);
-                    this.element.style[property] = `var(--${cssVariable})`;
-                }
-                // Default value and unit
-                else {
-                    // All `type` and `property` didn't have custom value will have this value
-                    this.element.style[property] = `${value}${unit}`;
-                }
+                    else if (type === "initial-flex") {
+                        this.element.style[property] = `0 1 ${value}${unit}`;
+                    }
+                    // Grid System Property [ Not Stable... Yet :) ]
+                    else if (property === "gridRow" ||
+                        property === "gridColumn" ||
+                        property === "gridRowStart" ||
+                        property === "gridColumnStart" ||
+                        property === "gridRowEnd" ||
+                        property === "gridColumnEnd") {
+                        this.element.style[property] = `span ${value}${unit}`;
+                    }
+                    else if (type === "grid-row" || type === "grid-col") {
+                        this.element.style[property] = `repeat(${value}${unit}, 1fr)`;
+                    }
+                    else if (type === "auto-grid-row" || type === "auto-grid-col") {
+                        this.element.style[property] = `repeat(auto-fit, minmax(${value}${unit}, 1fr))`;
+                    }
+                    // Backdrop Filter Property
+                    else if (property === "backdropFilter") {
+                        // Check if there's an existing backdrop-filter value on the element
+                        const backdropContainer = this.element.style[property];
+                        // Handle different backdrop-filter property
+                        switch (type) {
+                            case "back-blur":
+                                this.element.style[property] = `${backdropContainer || ""} blur(${value}${unit})`;
+                                break;
+                            case "back-sepia":
+                                this.element.style[property] = `${backdropContainer || ""} sepia(${value}${unit})`;
+                                break;
+                            case "back-saturate":
+                                this.element.style[property] = `${backdropContainer || ""} saturate(${value}${unit})`;
+                                break;
+                            case "back-grayscale":
+                                this.element.style[property] = `${backdropContainer || ""} grayscale(${value}${unit})`;
+                                break;
+                            case "back-brightness":
+                                this.element.style[property] = `${backdropContainer || ""} brightness(${value}${unit})`;
+                                break;
+                            case "back-invert":
+                                this.element.style[property] = `${backdropContainer || ""} invert(${value}${unit})`;
+                                break;
+                            case "back-contrast":
+                                this.element.style[property] = `${backdropContainer || ""} contrast(${value}${unit})`;
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    // Transform Property
+                    else if (property === "transform") {
+                        // Check if there any transform property and class on the element
+                        const transformContainer = this.element.style[property];
+                        // Handle different transform property
+                        switch (type) {
+                            case "translate":
+                                this.element.style[property] = `${transformContainer || ""} translate(${value}${unit})`;
+                                break;
+                            case "rt":
+                                this.element.style[property] = `${transformContainer || ""} rotate(${value}${unit})`;
+                                break;
+                            case "move-x":
+                                this.element.style[property] = `${transformContainer || ""} translateX(${value}${unit})`;
+                                break;
+                            case "move-y":
+                                this.element.style[property] = `${transformContainer || ""} translateY(${value}${unit})`;
+                                break;
+                            case "move-z":
+                                this.element.style[property] = `${transformContainer || ""} translateZ(${value}${unit})`;
+                                break;
+                            case "matrix":
+                                this.element.style[property] = `${transformContainer || ""} matrix(${value}${unit})`;
+                                break;
+                            case "matrix-3d":
+                                this.element.style[property] = `${transformContainer || ""} matrix3d(${value}${unit})`;
+                                break;
+                            case "scale-3d":
+                                this.element.style[property] = `${transformContainer || ""} scale3d(${value}${unit})`;
+                                break;
+                            case "scale":
+                                this.element.style[property] = `${transformContainer || ""} scale(${value}${unit})`;
+                                break;
+                            case "scale-x":
+                                this.element.style[property] = `${transformContainer || ""} scaleX(${value}${unit})`;
+                                break;
+                            case "scale-y":
+                                this.element.style[property] = `${transformContainer || ""} scaleY(${value}${unit})`;
+                                break;
+                            case "scale-z":
+                                this.element.style[property] = `${transformContainer || ""} scaleZ(${value}${unit})`;
+                                break;
+                            case "skew-x":
+                                this.element.style[property] = `${transformContainer || ""} skewX(${value}${unit})`;
+                                break;
+                            case "skew-y":
+                                this.element.style[property] = `${transformContainer || ""} skewY(${value}${unit})`;
+                                break;
+                            case "skew-z":
+                                this.element.style[property] = `${transformContainer || ""} skewZ(${value}${unit})`;
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    else if (value.startsWith("[") && value.endsWith("]")) {
+                        /*
+                         * CSS Variable Support 🎋
+                         *
+                         * Check className if the `value` is wrapped with `[]`,
+                         * if so then this is treated as css variable, css value.
+                         */
+                        // Check if the value is a CSS variable enclosed in square brackets
+                        const cssVariable = value.slice(1, -1);
+                        this.element.style[property] = `var(--${cssVariable})`;
+                    }
+                    // Default value and unit
+                    else {
+                        // All `type` and `property` didn't have custom value will have this value
+                        this.element.style[property] = `${value}${unit}`;
+                    }
+                });
+            }
+        };
+        // Handle all posibble values
+        MakeTenoxUI.prototype.applyStyles = function (className) {
+            // Using Regexp to handle  match
+            const match = className.match(/([a-zA-Z]+(?:-[a-zA-Z]+)*)-(-?(?:\d+(\.\d+)?)|(?:[a-zA-Z]+(?:-[a-zA-Z]+)*(?:-[a-zA-Z]+)*)|(?:\[[^\]]+\]))([a-zA-Z%]*)/);
+            if (match) {
+                // type = property class. Example: p-, m-, flex-, fx-, filter-, etc.
+                const type = match[1];
+                // value = possible value. Example: 10, red, blue, etc.
+                const value = match[2];
+                // unit = possible unit. Example: px, rem, em, s, %, etc.
+                const unitOrValue = match[4];
+                // Combine the type, value, and the unit
+                this.applyStyle(type, value, unitOrValue);
+            }
+        };
+        // Multi styler function, style through javascript.
+        MakeTenoxUI.prototype.applyMultiStyles = function (styles) {
+            const styleArray = styles.split(/\s+/);
+            styleArray.forEach((style) => {
+                this.applyStyles(style);
             });
-        }
-    };
-    // Handle all posibble values
-    MakeTenoxUI.prototype.applyStyles = function (className) {
-        // Using Regexp to handle  match
-        const match = className.match(/([a-zA-Z]+(?:-[a-zA-Z]+)*)-(-?(?:\d+(\.\d+)?)|(?:[a-zA-Z]+(?:-[a-zA-Z]+)*(?:-[a-zA-Z]+)*)|(?:\[[^\]]+\]))([a-zA-Z%]*)/);
-        if (match) {
-            // type = property class. Example: p-, m-, flex-, fx-, filter-, etc.
-            const type = match[1];
-            // value = possible value. Example: 10, red, blue, etc.
-            const value = match[2];
-            // unit = possible unit. Example: px, rem, em, s, %, etc.
-            const unitOrValue = match[4];
-            // Combine the type, value, and the unit
-            this.applyStyle(type, value, unitOrValue);
-        }
-    };
-    // Multi styler function, style through javascript.
-    MakeTenoxUI.prototype.applyMultiStyles = function (styles) {
-        const styleArray = styles.split(/\s+/);
-        styleArray.forEach((style) => {
-            this.applyStyles(style);
+        };
+        // Applying the style to all elements ✨
+        // Iterate over elements with AllClasses
+        AllClasses.forEach((element) => {
+            // Get the list of classes for the current element
+            const classes = element.classList;
+            // Make TenoxUI
+            const makeTx = new MakeTenoxUI(element);
+            // Iterate over classes and apply styles using makeTenoxUI
+            classes.forEach((className) => {
+                makeTx.applyStyles(className);
+            });
         });
-    };
-    // Applying the style to all elements ✨
-    // Iterate over elements with AllClasses
-    AllClasses.forEach((element) => {
-        // Get the list of classes for the current element
-        const classes = element.classList;
-        // Make TenoxUI
-        const makeTx = new MakeTenoxUI(element);
-        // Iterate over classes and apply styles using makeTenoxUI
-        classes.forEach((className) => {
-            makeTx.applyStyles(className);
-        });
-    });
+    }
 }
 // Applied multi style into all elements with the specified element (not just className)
 function makeStyle(selector, styles) {
@@ -339,7 +338,6 @@ function moreColor() {
         }
     });
 }
-moreColor(), tenoxui();
 export { Classes, AllClasses, addType, defineProps, makeStyle, makeStyles, moreColor, };
 export default tenoxui;
 //# sourceMappingURL=tenoxui.esm.js.map

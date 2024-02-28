@@ -1,5 +1,5 @@
 /*!
- * TenoxUI CSS Framework v0.5.0 [ https://tenoxui.web.app ]
+ * TenoxUI CSS Framework v0.5.1 [ https://tenoxui.web.app ]
  * copyright (c) 2024 nousantx
  * licensed under MIT [ https://github.com/nousantx/tenoxui/blob/main/LICENSE ]
  */
@@ -118,7 +118,7 @@ const property = {
     "grid-col-end": ["gridColumnEnd"],
     "grid-col-start": ["gridColumnStart"],
     "grid-area": ["gridArea"],
-    "item-place": ["placeArea"],
+    "item-place": ["placeitems"],
     "content-place": ["placeContent"],
     // Gap
     gap: ["gap"],
@@ -537,6 +537,10 @@ function moreColor() {
 }
 // Applying the style to all elements ✨
 function tenoxui() {
+    // Make classes from type name from properties key name
+    let Classes = Object.keys(property).map((className) => `[class*="${className}-"]`);
+    // Merge all `Classes` into one selector. Example : '[class*="p-"]', '[class*="m-"]', '[class*="justify-"]'
+    let AllClasses = document.querySelectorAll(Classes.join(", "));
     // Iterate over elements with AllClasses
     AllClasses.forEach((element) => {
         // Get the list of classes for the current element
@@ -549,6 +553,6 @@ function tenoxui() {
         });
     });
 }
-moreColor();
-tenoxui();
+moreColor(); // init: moreColor function
+tenoxui(); // init: tenoxui
 //# sourceMappingURL=tenoxui.js.map
