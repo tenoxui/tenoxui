@@ -1,1 +1,1 @@
-document.querySelector(".v").textContent = "0.4.26";
+document.querySelector(".v").textContent = "0.5.1";
