@@ -123,7 +123,7 @@ const property: PropertyMap = {
   "grid-col-end": ["gridColumnEnd"],
   "grid-col-start": ["gridColumnStart"],
   "grid-area": ["gridArea"],
-  "item-place": ["placeArea"],
+  "item-place": ["placeItem"],
   "content-place": ["placeContent"],
   // Gap
   gap: ["gap"],
