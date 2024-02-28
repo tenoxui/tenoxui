@@ -1,5 +1,5 @@
 /*!
- * TenoxUI CSS Framework v0.5.0 [ https://tenoxui.web.app ]
+ * TenoxUI CSS Framework v0.5.1 [ https://tenoxui.web.app ]
  * copyright (c) 2024 nousantx
  * licensed under MIT [ https://github.com/nousantx/tenoxui/blob/main/LICENSE ]
  */
@@ -123,7 +123,7 @@ const property: PropertyMap = {
   "grid-col-end": ["gridColumnEnd"],
   "grid-col-start": ["gridColumnStart"],
   "grid-area": ["gridArea"],
-  "item-place": ["placeItem"],
+  "item-place": ["placeItems"],
   "content-place": ["placeContent"],
   // Gap
   gap: ["gap"],

@@ -2,7 +2,7 @@ interface PropertyMap {
   [key: string]: string[];
 }
 /*!
- * TenoxUI CSS Framework v0.5.0 [ https://tenoxui.web.app ]
+ * TenoxUI CSS Framework v0.5.1 [ https://tenoxui.web.app ]
  * copyright (c) 2024 nousantx
  * licensed under MIT [ https://github.com/nousantx/tenoxui/blob/main/LICENSE ]
  */
@@ -121,7 +121,7 @@ const property: PropertyMap = {
   "grid-col-end": ["gridColumnEnd"],
   "grid-col-start": ["gridColumnStart"],
   "grid-area": ["gridArea"],
-  "item-place": ["placeArea"],
+  "item-place": ["placeitems"],
   "content-place": ["placeContent"],
   // Gap
   gap: ["gap"],
@@ -236,12 +236,15 @@ const property: PropertyMap = {
   // TenoxUI Custom property
   box: ["width", "height"],
 };
+
 // Make classes from type name from properties key name
 let Classes = Object.keys(property).map(
   (className) => `[class*="${className}-"]`
 );
+
 // Merge all `Classes` into one selector. Example : '[class*="p-"]', '[class*="m-"]', '[class*="justify-"]'
 let AllClasses = document.querySelectorAll(Classes.join(", "));
+
 // Props maker function :)
 class newProp {
   constructor(name: string, values: string[]) {
@@ -257,6 +260,7 @@ class newProp {
     Classes.push(`[class*="${name}-"]`);
     AllClasses = document.querySelectorAll(Classes.join(", "));
   }
+
   // Function to handle add `type` and `property`
   tryAdd(): void {
     if (!this || Object.keys(this).length === 0) {
@@ -267,6 +271,7 @@ class newProp {
     Object.assign(property, this);
   }
 }
+
 function addType(Types: string, Property: string[]): void {
   // Check if 'Types' is a string
   if (typeof Types !== "string") {
@@ -279,15 +284,18 @@ function addType(Types: string, Property: string[]): void {
   // Add new property
   new newProp(Types, Property).tryAdd();
 }
+
 // TenoxUI make style class
 class makeTenoxUI {
   element: HTMLElement;
   styles: any;
+
   // TenoxUI constructor
   constructor(element: HTMLElement) {
     this.element = element;
     this.styles = property;
   }
+
   // `applyStyle`: Handle the styling and custom value for property
   applyStyle(type: string, value: string, unit: string): void {
     const properties = this.styles[type];
@@ -478,6 +486,7 @@ class makeTenoxUI {
       });
     }
   }
+
   // Handle all possible values
   applyStyles(className: string): void {
     // Using RegExp to handle the value
@@ -495,6 +504,7 @@ class makeTenoxUI {
       this.applyStyle(type, value, unitOrValue);
     }
   }
+
   // Multi styler function, style through javascript.
   applyMultiStyles(styles: string): void {
     // Splitting the styles
@@ -505,6 +515,7 @@ class makeTenoxUI {
     });
   }
 }
+
 // Applied multi style into all elements with the specified element, possible to all selector
 function makeStyle(
   selector: string,
@@ -536,6 +547,7 @@ function makeStyle(
     );
   }
 }
+
 // MultiProps function: Add multiple properties from the provided object
 function defineProps(propsObject: Record<string, string[]>): void {
   // Iterate over object entries
@@ -555,12 +567,14 @@ function defineProps(propsObject: Record<string, string[]>): void {
     }
   });
 }
+
 // Apply multiple styles into elements using selector, all selector is possible
 function makeStyles(stylesObject: Record<string, string>): void {
   Object.entries(stylesObject).forEach(([selector, styles]) => {
     makeStyle(selector, styles);
   });
 }
+
 // Define mappings for color types and corresponding CSS properties
 function moreColor() {
   const makeColor = (
@@ -576,22 +590,26 @@ function moreColor() {
       element.style[property] = format(match);
     }
   };
+
   // Select all elements with classes related to colors (background, text, border)
   const colorClass = document.querySelectorAll<HTMLElement>(
     '[class*="bg-"], [class*="tc-"], [class*="border-"]'
   );
+
   // Define mappings for color types and corresponding CSS properties
   const colorTypes: Record<string, string> = {
     bg: "background",
     tc: "color",
     border: "borderColor",
   };
+
   // Define different color formats and their corresponding formatting functions
   const colorFormats: Record<string, (match: RegExpMatchArray) => string> = {
     rgb: (match) => `rgb(${match.slice(1, 4).join(",")})`,
     rgba: (match) => `rgba(${match.slice(1, 5).join(",")})`,
     hex: (match) => `#${match[1]}`,
   };
+
   // Iterate through each element with color-related classes
   colorClass.forEach((element) => {
     // Iterate through each color type (bg, tc, border)
@@ -610,8 +628,17 @@ function moreColor() {
     }
   });
 }
+
 // Applying the style to all elements ✨
 function tenoxui(): void {
+  // Make classes from type name from properties key name
+  let Classes = Object.keys(property).map(
+    (className) => `[class*="${className}-"]`
+  );
+
+  // Merge all `Classes` into one selector. Example : '[class*="p-"]', '[class*="m-"]', '[class*="justify-"]'
+  let AllClasses = document.querySelectorAll(Classes.join(", "));
+
   // Iterate over elements with AllClasses
   AllClasses.forEach((element) => {
     // Get the list of classes for the current element
@@ -624,5 +651,7 @@ function tenoxui(): void {
     });
   });
 }
-moreColor();
-tenoxui();
+
+moreColor(); // init: moreColor function
+
+tenoxui(); // init: tenoxui
