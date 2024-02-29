@@ -1,3 +1,4 @@
+<!-- TenoxUI Page Tester: v0.5+ -->
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -20,54 +21,324 @@
         --text-light: #fafafa;
         --primary: rgb(210, 230, 3);
         --background: #0d0d0d;
+        --nav-bg: rgba(13, 13, 13, 0.3);
         --blurred: #0d0d0d70;
+        --para-color: #aaa;
+        --sb: space-between;
+      }
+      a,
+      a:hover {
+        text-decoration-color: var(--primary);
+      }
+      nav div a,
+      section a {
+        color: white;
+        text-decoration: underline var(--primary);
+        &:hover {
+          text-decoration: none;
+        }
       }
     </style>
-    <script src="./src/js/tenoxui.js"></script>
+    <script src="./test/plain-tui.test.js"></script>
   </head>
-  <body>
-    <main>
-      <div class="w-mx w-mx-1000px flex-parent-center fd-column relative">
-        <h1 class="fw-600 tc-bbb ta-center">
-          <span class="tc-white">Tenox</span
-          ><span class="tc-[primary] blur-6.7px">UI</span> CSS Framework
-          <span class="fs-1rem tc-[primary]">v<span class="v"></span></span>
-        </h1>
-        <p class="ta-center w-mx-1000px tc-aaa lh-1.4 fw-500">
+  <body class="bg-[background] tc-white h-mn-100vh">
+    <nav
+      class="position-fixed bg-[background] ph-10vw pv-1rem t-0 l-0 r-0 display-flex ai-center jc-[sb]"
+    >
+      <header>
+        <a href="https://tenoxui.web.app/">
+          <h1 class="fw-600 fs-1.2rem">
+            <span class="tc-white">TUI</span>
+            <span class="tc-[primary] fs-12px fw-500"
+              >v<span class="v"></span
+            ></span>
+          </h1>
+        </a>
+      </header>
+      <div class="display-flex flex-parent-center gap-1rem">
+        <a href="https://github.com/nousantx/tenoxui"> GitHub </a>
+        <a href="https://jsdelivr.com/package/npm/tenoxui"> JSDelivr </a>
+      </div>
+    </nav>
+    <main class="p-3ren ph-10vw pt-5rem h-mn-100vh">
+      <header>
+        <a href="https://tenoxui.web.app/">
+          <h1 class="fw-600 tc-[para-color]">
+            <span class="tc-white">Tenox</span
+            ><span class="tc-[primary] blur-6.7px">UI</span> CSS Framework
+          </h1>
+        </a>
+      </header>
+      <section class="mt-2rem">
+        <h2>About</h2>
+        <p class="w-mx-1000px tc-[para-color] lh-1.4 fw-500 ta-justify">
           TenoxUI stands as a nimble Utility-First CSS framework meticulously
           crafted to elevate web development by enhancing speed and efficiency.
           It delivers a curated collection of customizable styles and embraces a
           utility-first approach, simplifying and expediting the styling process
           for developers.
         </p>
-        <div class="boxs bg-blue"></div>
-      </div>
+      </section>
+      <section class="mt-2rem">
+        <header>
+          <h2>Features</h2>
+        </header>
+        <ul>
+          <li>
+            <p class="tc-[para-color] ta-justify">
+              <span class="tc-white fw-600">Fast and Efficient:</span>
+              The majority of classes are managed through JavaScript, ensuring a
+              lightweight and fast user experience.
+            </p>
+          </li>
+          <li>
+            <p class="tc-[para-color] ta-justify">
+              <span class="tc-white fw-600">No CSS:</span>
+              No more generated CSS files. Elevate your design journey as styles
+              are seamlessly applied directly to each element, unleashing
+              simplicity and efficiency.
+            </p>
+          </li>
+          <li>
+            <p class="tc-[para-color] ta-justify">
+              <span class="tc-white fw-600">Utility-First Approach:</span>
+              Seamlessly apply pre-defined utility classes to elements by simply
+              invoking their associated classes, fostering a utility-first
+              approach to styling.
+            </p>
+          </li>
+          <li>
+            <p class="tc-[para-color] ta-justify">
+              <span class="tc-white fw-600">Tailored to Your Taste:</span>
+              Easily customize your unique style with user-friendly
+              configuration options, providing a personalized and bespoke design
+              experience.
+            </p>
+          </li>
+        </ul>
+      </section>
+      <section class="mt-2rem">
+        <header>
+          <h2>Documentation</h2>
+        </header>
+        <p class="tc-[para-color] ta-justify">
+          Documentation available on
+          <a href="https://tenoxui.web.app/">TenoxUI Docs</a>. Or visit the
+          repository on
+          <a href="https://github.com/nousantx/tenoxui">GitHub</a>.
+        </p>
+      </section>
     </main>
-    <footer>Copyright &copy; 2024 nousantx. All Rights Reserved.</footer>
+    <footer class="w-100% p-1rem ph-10vw display-flex flex-parent-center">
+      <p class="tc-[para-color] ta-center fs-12px">
+        Copyright &copy; 2024 nousantx. All Rights Reserved.
+      </p>
+    </footer>
     <!-- Script -->
     <!-- default -->
     <!-- <script type="module" src="src/js/tenoxui.esm.js"></script> -->
     <script defer>
-      // import tenoxui, {
-      //   addType,
-      //   makeStyles,
-      //   Classes,
-      //   AllClasses,
-      //   // moreColor,
-      // } from "/src/js/tenoxui.esm.js";
-      // addType("fx-par", ["justifyContent", "align-items"]);
-
-      console.log(Classes);
-      makeStyles({
-        body: "w-mx sm:bg-red lg:bg-black md:h-100svh display-flex flex-parent-center tc-[text-light] fd-column p-1rem",
-        main: "w-mx display-flex flex-parent-center ai-[flex-start]",
-        footer: "post-fixed b-1rem fs-12px",
-        ".fxtdgs": "post-fixed b-1rem fs-12px",
-      });
+      property = {
+        p: ["padding"],
+        pt: ["paddingTop"],
+        pb: ["paddingBottom"],
+        pr: ["paddingRight"],
+        pl: ["paddingLeft"],
+        ph: ["paddingLeft", "paddingRight"],
+        pv: ["paddingTop", "paddingBottom"],
+        "pad-in-start": ["paddingInlineStart"],
+        "pad-in-end": ["paddingInlineEnd"],
+        m: ["margin"],
+        mt: ["marginTop"],
+        mb: ["marginBottom"],
+        mr: ["marginRight"],
+        ml: ["marginLeft"],
+        mv: ["marginTop", "marginBottom"],
+        mh: ["marginLeft", "marginRight"],
+        "mar-in-start": ["marginInlineStart"],
+        "mar-in-end": ["marginInlineEnd"],
+        fs: ["fontSize"],
+        fw: ["fontWeight"],
+        lh: ["lineHeight"],
+        ls: ["letterSpacing"],
+        ta: ["text-align"],
+        tc: ["color"],
+        ts: ["textStyle"],
+        td: ["textDecoration"],
+        ti: ["textIndent"],
+        tn: ["textReansform"],
+        ws: ["wordSpacing"],
+        family: ["fontFamily"],
+        "text-style": ["fontStyle"],
+        "white-space": ["whiteSpace"],
+        "text-over": ["textOverflow"],
+        "text-wrap": ["textWrap"],
+        "v-align": ["verticalAlign"],
+        "w-break": ["wordBreak"],
+        "wrap-over": ["overflowWrap"],
+        hyphens: ["hyphens"],
+        "text-deco-line": ["textDecorationLine"],
+        "text-deco-style": ["textDecorationStyle"],
+        "text-deco-thick": ["textDecorationThickness"],
+        "text-underline-off": ["textUnderlineOffset"],
+        "variant-num": ["font-variant-numeric:"],
+        "webkit-font-smooth": ["-webkit-font-smoothing"],
+        "moz-font-smooth": ["-moz-osx-font-smoothing"],
+        position: ["position"],
+        post: ["position"],
+        z: ["zIndex"],
+        zi: ["zIndex"],
+        t: ["top"],
+        top: ["top"],
+        b: ["bottom"],
+        bottom: ["bottom"],
+        r: ["right"],
+        right: ["right"],
+        l: ["left"],
+        left: ["left"],
+        display: ["display"],
+        w: ["width"],
+        "w-mx": ["maxWidth"],
+        "w-mn": ["minWidth"],
+        h: ["height"],
+        "h-mx": ["maxHeight"],
+        "h-mn": ["minHeight"],
+        col: ["columns"],
+        "bk-af": ["breakAfter"],
+        "bk-bef": ["breakBefore"],
+        "bk-in": ["breakInside"],
+        bg: ["background"],
+        "bg-attach": ["backgroundAttachment"],
+        "bg-origin": ["backgroundOrigin"],
+        "bg-size": ["backgroundSize"],
+        "bg-clip": ["backgroundClip"],
+        "bg-repeat": ["backgroundRepeat"],
+        "bg-loc": ["backgroundPosition"],
+        "bg-loc-x": ["backgroundPositionX"],
+        "bg-loc-y": ["backgroundPositionY"],
+        "bg-blend": ["backgroundBlendMode"],
+        fx: ["flex"],
+        flex: ["flex"],
+        "flex-auto": ["flex"],
+        "initial-flex": ["flex"],
+        "flex-parent": ["justifyContent", "alignItems"],
+        fd: ["flexDirection"],
+        "fx-wrap": ["flexWrap"],
+        "item-order": ["order"],
+        order: ["order"],
+        "fx-basis": ["flexBasis"],
+        "fx-grow": ["flexGrow"],
+        "fx-shrink": ["flexShrink"],
+        "grid-row": ["gridTemplateRows"],
+        "grid-col": ["gridTemplateColumns"],
+        "auto-grid-row": ["gridTemplateRows"],
+        "auto-grid-col": ["gridTemplateColumns"],
+        "grid-item-row": ["gridRow"],
+        "grid-item-col": ["gridColumn"],
+        "grid-row-end": ["gridRowEnd"],
+        "grid-row-start": ["gridRowStart"],
+        "grid-col-end": ["gridColumnEnd"],
+        "grid-col-start": ["gridColumnStart"],
+        "grid-area": ["gridArea"],
+        "item-place": ["placeItems"],
+        "content-place": ["placeContent"],
+        gap: ["gap"],
+        "grid-gap": ["gridGap"],
+        "grid-row-gap": ["gridRowGap"],
+        "grid-col-gap": ["gridColumnGap"],
+        "row-gap": ["rowGap"],
+        "col-gap": ["columnGap"],
+        ac: ["alignContent"],
+        ai: ["align-items"],
+        as: ["alignSelf"],
+        jc: ["justify-content"],
+        ji: ["justifyItems"],
+        js: ["justifySelf"],
+        "backdrop-blur": ["backdropFilter"],
+        filter: ["filter"],
+        blur: ["filter"],
+        brightness: ["filter"],
+        contrast: ["filter"],
+        grayscale: ["filter"],
+        "hue-rotate": ["filter"],
+        saturate: ["filter"],
+        sepia: ["filter"],
+        opa: ["opacity"],
+        "back-blur": ["backdropFilter"],
+        "back-brightness": ["backdropFilter"],
+        "back-contrast": ["backdropFilter"],
+        "back-grayscale": ["backdropFilter"],
+        "back-saturate": ["backdropFilter"],
+        "back-sepia": ["backdropFilter"],
+        br: ["borderRadius"],
+        bw: ["borderWidth"],
+        "bw-left": ["borderLeftWidth"],
+        "bw-right": ["borderRightWidth"],
+        "bw-top": ["borderTopWidth"],
+        "bw-bottom": ["borderBottomWidth"],
+        bs: ["borderStyle"],
+        "radius-tl": ["borderTopLeftRadius"],
+        "radius-tr": ["borderTopRightRadius"],
+        "radius-bl": ["borderBottomLeftRadius"],
+        "radius-br": ["borderBottomRightRadius"],
+        "radius-top": ["borderTopLeftRadius", "borderTopRightRadius"],
+        "radius-bottom": ["borderBottomLeftRadius", "borderBottomRightRadius"],
+        "radius-left": ["borderTopLeftRadius", "borderBottomLeftRadius"],
+        "radius-right": ["borderTopRightRadius", "borderBottomRightRadius"],
+        "br-ss": ["border-start-start-radius"],
+        "br-se": ["border-start-end-radius"],
+        "br-ee": ["border-end-end-radius"],
+        "br-es": ["border-end-start-radius"],
+        "bw-is": ["border-inline-start-width"],
+        "bw-ie": ["border-inline-end-width"],
+        ol: ["outline"],
+        "ol-width": ["outlineWidth"],
+        "ol-style": ["outlineStyle"],
+        "ol-offset": ["outlineOffset"],
+        curs: ["cursor"],
+        cursor: ["cursor"],
+        over: ["overflow"],
+        overY: ["overflowY"],
+        overX: ["overflowX"],
+        float: ["float"],
+        ratio: ["aspectRatio"],
+        transition: ["transition"],
+        "tr-time": ["transitionDuration"],
+        "tr-prop": ["transitionProperty"],
+        "tr-timing": ["transitionTimingFunction"],
+        "tr-delay": ["transitionDelay"],
+        transform: ["transform"],
+        "move-x": ["transform"],
+        "move-y": ["transform"],
+        "move-z": ["transform"],
+        matrix: ["transform"],
+        "matrix-3d": ["transform"],
+        rt: ["transform"],
+        "rt-3d": ["transform"],
+        translate: ["transform"],
+        scale: ["transform"],
+        "scale-3d": ["transform"],
+        "scale-x": ["transform"],
+        "scale-y": ["transform"],
+        "scale-z": ["transform"],
+        skew: ["transform"],
+        "skew-x": ["transform"],
+        "skew-y": ["transform"],
+        "list-s-img": ["listStyleImage"],
+        "list-s-pos": ["listStylePosition"],
+        "list-s-type": ["listStyleType"],
+        "box-sizing": ["boxSizing"],
+        isolation: ["isolation"],
+        "object-fit": ["objectFit"],
+        "object-post": ["objectPosition"],
+        "os-beh": ["overscrollBehavior"],
+        "os-beh-y": ["overscrollBehaviorY"],
+        "os-beh-x": ["overscrollBehaviorX"],
+        visibility: ["visibility"],
+        box: ["width", "height"],
+      };
 
       tenoxui();
-
-      // moreColor();
     </script>
 
     <script defer src="./version.js"></script>
