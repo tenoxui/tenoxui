@@ -3,6 +3,8 @@
 ## [0.5.1] - 28-02-2024
 
 - Fix `tenoxui` function not adding new props to `allProperty`.
+- Make `tenoxui` function in `tenoxui.esm` only work on client side
+- Fix `place-items` property on `property.js` file
 
 ## [0.5] - 24-01-2024
 
