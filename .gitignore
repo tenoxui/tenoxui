@@ -127,3 +127,7 @@ out
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# bash
+*.sh
+*.zsh
