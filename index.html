@@ -39,7 +39,8 @@
         }
       }
     </style>
-    <script src="./test/plain-tui.test.js"></script>
+    <!-- <script src="./test/plain-tui.test.js"></script> -->
+    <script src="/src/js/tenoxui.js"></script>
   </head>
   <body class="bg-[background] tc-white h-mn-100vh">
     <nav
@@ -64,15 +65,29 @@
         </a>
       </div>
     </nav>
-    <main class="p-3ren ph-10vw pt-5rem h-mn-100vh">
-      <header>
+    <main class="p-3ren ph-10vw pt-5rem">
+      <header class="head-title">
         <a target="_blank" href="https://tenoxui.web.app/">
           <h1 class="fw-600 tc-[para-color]">
             <span class="tc-white">Tenox</span
-            ><span class="tc-[primary] blur-6.7px">UI</span> CSS Framework
+            ><span class="text-[primary]">UI</span> CSS Framework
           </h1>
         </a>
       </header>
+      <!-- Remove `none` className to see nested class example -->
+      <div class="card none">
+        <h1 class="title">Nested CSS</h1>
+        <p class="desc">
+          This card is styled using new Nested Feature TenoxUI.
+        </p>
+      </div>
+      <div class="card none">
+        <h1 class="title">Nested CSS</h1>
+        <p class="desc">
+          This card is styled using new Nested Feature TenoxUI.
+        </p>
+      </div>
+
       <section class="mt-2rem">
         <h2>About</h2>
         <p class="w-mx-1000px tc-[para-color] lh-1.4 fw-500 ta-justify">
@@ -95,7 +110,7 @@
               lightweight and fast user experience.
             </p>
           </li>
-          <li>
+          <li class="mt-1em">
             <p class="tc-[para-color] ta-justify">
               <span class="tc-white fw-600">No CSS:</span>
               No more generated CSS files. Elevate your design journey as styles
@@ -103,7 +118,7 @@
               simplicity and efficiency.
             </p>
           </li>
-          <li>
+          <li class="mt-1em">
             <p class="tc-[para-color] ta-justify">
               <span class="tc-white fw-600">Utility-First Approach:</span>
               Seamlessly apply pre-defined utility classes to elements by simply
@@ -111,7 +126,7 @@
               approach to styling.
             </p>
           </li>
-          <li>
+          <li class="mt-1em">
             <p class="tc-[para-color] ta-justify">
               <span class="tc-white fw-600">Tailored to Your Taste:</span>
               Easily customize your unique style with user-friendly
@@ -137,13 +152,13 @@
     </main>
     <footer class="w-100% p-1rem ph-10vw display-flex flex-parent-center">
       <p class="tc-[para-color] ta-center fs-12px">
-        Copyright &copy; 2024 nousantx. All Rights Reserved.
+        Copyright &copy; 2024 nousantx.
       </p>
     </footer>
     <!-- Script -->
     <!-- default -->
     <!-- <script type="module" src="src/js/tenoxui.esm.js"></script> -->
-    <script defer>
+    <!-- <script defer>
       property = {
         p: ["padding"],
         pt: ["paddingTop"],
@@ -345,8 +360,36 @@
       };
 
       tenoxui();
+    </script> -->
+
+    <script>
+      const styles = makeStyles({
+        primary: "bg-[primary]",
+        red: "bg-#f00",
+        white: "bg-#fff",
+      });
+
+      makeStyles({
+        ".card": {
+          // empty string will give style into parent element
+          "": `${styles["primary"]} p-2rem  tc-black radius-top-1em`,
+          h1: "fs-3rem fw-700",
+          p: "fw-500 fs-14px",
+        },
+        ".card:nth-child(3)": {
+          "": `${styles["white"]} radius-top-0 radius-bottom-1em`,
+          h1: "fs-3rem fw-700",
+          p: "fw-500 fs-14px",
+        },
+      });
     </script>
 
+    <script>
+      defineProps({
+        text: "color",
+      });
+      tenoxui();
+    </script>
     <script defer src="./version.js"></script>
   </body>
 </html>
