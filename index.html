@@ -19,7 +19,7 @@
       :root {
         font-family: "figtree", sans-serif;
         --text-light: #fafafa;
-        --primary: rgb(210, 230, 3);
+        --primary: #d2e603;
         --background: #0d0d0d;
         --nav-bg: rgba(13, 13, 13, 0.3);
         --blurred: #0d0d0d70;
@@ -40,9 +40,10 @@
       }
     </style>
     <!-- <script src="./test/plain-tui.test.js"></script> -->
-    <script src="/src/js/tenoxui.js"></script>
+    <!-- <script src="/src/js/tenoxui.js"></script> -->
   </head>
   <body class="bg-[background] tc-white h-mn-100vh">
+    <!-- Navbar -->
     <nav
       class="position-fixed bg-[background] ph-10vw pv-1rem t-0 l-0 r-0 display-flex ai-center jc-[sb]"
     >
@@ -50,7 +51,7 @@
         <a target="_blank" href="https://tenoxui.web.app/">
           <h1 class="fw-600 fs-1.2rem">
             <span class="tc-white">TUI</span>
-            <span class="tc-[primary] fs-12px fw-500"
+            <span class="tc-#d2e603 fs-12px fw-500"
               >v<span class="v"></span
             ></span>
           </h1>
@@ -65,30 +66,31 @@
         </a>
       </div>
     </nav>
-    <main class="p-3ren ph-10vw pt-5rem">
+    <!-- Main Content -->
+    <main class="ph-10vw pt-5rem">
       <header class="head-title">
         <a target="_blank" href="https://tenoxui.web.app/">
           <h1 class="fw-600 tc-[para-color]">
             <span class="tc-white">Tenox</span
-            ><span class="text-[primary]">UI</span> CSS Framework
+            ><span class="text-#d2e603">UI</span> CSS Framework
           </h1>
         </a>
       </header>
       <!-- Remove `none` className to see nested class example -->
-      <div class="card none">
+      <div class="card">
         <h1 class="title">Nested CSS</h1>
         <p class="desc">
           This card is styled using new Nested Feature TenoxUI.
         </p>
       </div>
-      <div class="card none">
+      <div class="card">
         <h1 class="title">Nested CSS</h1>
         <p class="desc">
           This card is styled using new Nested Feature TenoxUI.
         </p>
       </div>
-
-      <section class="mt-2rem">
+      <!-- About Section -->
+      <section class="about">
         <h2>About</h2>
         <p class="w-mx-1000px tc-[para-color] lh-1.4 fw-500 ta-justify">
           TenoxUI stands as a nimble Utility-First CSS framework meticulously
@@ -98,7 +100,8 @@
           for developers.
         </p>
       </section>
-      <section class="mt-2rem">
+      <!-- Features Section -->
+      <section class="features">
         <header>
           <h2>Features</h2>
         </header>
@@ -136,7 +139,8 @@
           </li>
         </ul>
       </section>
-      <section class="mt-2rem">
+      <!-- Docs Section -->
+      <section class="docs">
         <header>
           <h2>Documentation</h2>
         </header>
@@ -150,219 +154,24 @@
         </p>
       </section>
     </main>
-    <footer class="w-100% p-1rem ph-10vw display-flex flex-parent-center">
+    <!-- Footer -->
+    <footer
+      class="w-100% p-1rem ph-10vw display-flex flex-parent-center mt-2rem"
+    >
       <p class="tc-[para-color] ta-center fs-12px">
         Copyright &copy; 2024 nousantx.
       </p>
     </footer>
     <!-- Script -->
-    <!-- default -->
-    <!-- <script type="module" src="src/js/tenoxui.esm.js"></script> -->
-    <!-- <script defer>
-      property = {
-        p: ["padding"],
-        pt: ["paddingTop"],
-        pb: ["paddingBottom"],
-        pr: ["paddingRight"],
-        pl: ["paddingLeft"],
-        ph: ["paddingLeft", "paddingRight"],
-        pv: ["paddingTop", "paddingBottom"],
-        "pad-in-start": ["paddingInlineStart"],
-        "pad-in-end": ["paddingInlineEnd"],
-        m: ["margin"],
-        mt: ["marginTop"],
-        mb: ["marginBottom"],
-        mr: ["marginRight"],
-        ml: ["marginLeft"],
-        mv: ["marginTop", "marginBottom"],
-        mh: ["marginLeft", "marginRight"],
-        "mar-in-start": ["marginInlineStart"],
-        "mar-in-end": ["marginInlineEnd"],
-        fs: ["fontSize"],
-        fw: ["fontWeight"],
-        lh: ["lineHeight"],
-        ls: ["letterSpacing"],
-        ta: ["text-align"],
-        tc: ["color"],
-        ts: ["textStyle"],
-        td: ["textDecoration"],
-        ti: ["textIndent"],
-        tn: ["textReansform"],
-        ws: ["wordSpacing"],
-        family: ["fontFamily"],
-        "text-style": ["fontStyle"],
-        "white-space": ["whiteSpace"],
-        "text-over": ["textOverflow"],
-        "text-wrap": ["textWrap"],
-        "v-align": ["verticalAlign"],
-        "w-break": ["wordBreak"],
-        "wrap-over": ["overflowWrap"],
-        hyphens: ["hyphens"],
-        "text-deco-line": ["textDecorationLine"],
-        "text-deco-style": ["textDecorationStyle"],
-        "text-deco-thick": ["textDecorationThickness"],
-        "text-underline-off": ["textUnderlineOffset"],
-        "variant-num": ["font-variant-numeric:"],
-        "webkit-font-smooth": ["-webkit-font-smoothing"],
-        "moz-font-smooth": ["-moz-osx-font-smoothing"],
-        position: ["position"],
-        post: ["position"],
-        z: ["zIndex"],
-        zi: ["zIndex"],
-        t: ["top"],
-        top: ["top"],
-        b: ["bottom"],
-        bottom: ["bottom"],
-        r: ["right"],
-        right: ["right"],
-        l: ["left"],
-        left: ["left"],
-        display: ["display"],
-        w: ["width"],
-        "w-mx": ["maxWidth"],
-        "w-mn": ["minWidth"],
-        h: ["height"],
-        "h-mx": ["maxHeight"],
-        "h-mn": ["minHeight"],
-        col: ["columns"],
-        "bk-af": ["breakAfter"],
-        "bk-bef": ["breakBefore"],
-        "bk-in": ["breakInside"],
-        bg: ["background"],
-        "bg-attach": ["backgroundAttachment"],
-        "bg-origin": ["backgroundOrigin"],
-        "bg-size": ["backgroundSize"],
-        "bg-clip": ["backgroundClip"],
-        "bg-repeat": ["backgroundRepeat"],
-        "bg-loc": ["backgroundPosition"],
-        "bg-loc-x": ["backgroundPositionX"],
-        "bg-loc-y": ["backgroundPositionY"],
-        "bg-blend": ["backgroundBlendMode"],
-        fx: ["flex"],
-        flex: ["flex"],
-        "flex-auto": ["flex"],
-        "initial-flex": ["flex"],
-        "flex-parent": ["justifyContent", "alignItems"],
-        fd: ["flexDirection"],
-        "fx-wrap": ["flexWrap"],
-        "item-order": ["order"],
-        order: ["order"],
-        "fx-basis": ["flexBasis"],
-        "fx-grow": ["flexGrow"],
-        "fx-shrink": ["flexShrink"],
-        "grid-row": ["gridTemplateRows"],
-        "grid-col": ["gridTemplateColumns"],
-        "auto-grid-row": ["gridTemplateRows"],
-        "auto-grid-col": ["gridTemplateColumns"],
-        "grid-item-row": ["gridRow"],
-        "grid-item-col": ["gridColumn"],
-        "grid-row-end": ["gridRowEnd"],
-        "grid-row-start": ["gridRowStart"],
-        "grid-col-end": ["gridColumnEnd"],
-        "grid-col-start": ["gridColumnStart"],
-        "grid-area": ["gridArea"],
-        "item-place": ["placeItems"],
-        "content-place": ["placeContent"],
-        gap: ["gap"],
-        "grid-gap": ["gridGap"],
-        "grid-row-gap": ["gridRowGap"],
-        "grid-col-gap": ["gridColumnGap"],
-        "row-gap": ["rowGap"],
-        "col-gap": ["columnGap"],
-        ac: ["alignContent"],
-        ai: ["align-items"],
-        as: ["alignSelf"],
-        jc: ["justify-content"],
-        ji: ["justifyItems"],
-        js: ["justifySelf"],
-        "backdrop-blur": ["backdropFilter"],
-        filter: ["filter"],
-        blur: ["filter"],
-        brightness: ["filter"],
-        contrast: ["filter"],
-        grayscale: ["filter"],
-        "hue-rotate": ["filter"],
-        saturate: ["filter"],
-        sepia: ["filter"],
-        opa: ["opacity"],
-        "back-blur": ["backdropFilter"],
-        "back-brightness": ["backdropFilter"],
-        "back-contrast": ["backdropFilter"],
-        "back-grayscale": ["backdropFilter"],
-        "back-saturate": ["backdropFilter"],
-        "back-sepia": ["backdropFilter"],
-        br: ["borderRadius"],
-        bw: ["borderWidth"],
-        "bw-left": ["borderLeftWidth"],
-        "bw-right": ["borderRightWidth"],
-        "bw-top": ["borderTopWidth"],
-        "bw-bottom": ["borderBottomWidth"],
-        bs: ["borderStyle"],
-        "radius-tl": ["borderTopLeftRadius"],
-        "radius-tr": ["borderTopRightRadius"],
-        "radius-bl": ["borderBottomLeftRadius"],
-        "radius-br": ["borderBottomRightRadius"],
-        "radius-top": ["borderTopLeftRadius", "borderTopRightRadius"],
-        "radius-bottom": ["borderBottomLeftRadius", "borderBottomRightRadius"],
-        "radius-left": ["borderTopLeftRadius", "borderBottomLeftRadius"],
-        "radius-right": ["borderTopRightRadius", "borderBottomRightRadius"],
-        "br-ss": ["border-start-start-radius"],
-        "br-se": ["border-start-end-radius"],
-        "br-ee": ["border-end-end-radius"],
-        "br-es": ["border-end-start-radius"],
-        "bw-is": ["border-inline-start-width"],
-        "bw-ie": ["border-inline-end-width"],
-        ol: ["outline"],
-        "ol-width": ["outlineWidth"],
-        "ol-style": ["outlineStyle"],
-        "ol-offset": ["outlineOffset"],
-        curs: ["cursor"],
-        cursor: ["cursor"],
-        over: ["overflow"],
-        overY: ["overflowY"],
-        overX: ["overflowX"],
-        float: ["float"],
-        ratio: ["aspectRatio"],
-        transition: ["transition"],
-        "tr-time": ["transitionDuration"],
-        "tr-prop": ["transitionProperty"],
-        "tr-timing": ["transitionTimingFunction"],
-        "tr-delay": ["transitionDelay"],
-        transform: ["transform"],
-        "move-x": ["transform"],
-        "move-y": ["transform"],
-        "move-z": ["transform"],
-        matrix: ["transform"],
-        "matrix-3d": ["transform"],
-        rt: ["transform"],
-        "rt-3d": ["transform"],
-        translate: ["transform"],
-        scale: ["transform"],
-        "scale-3d": ["transform"],
-        "scale-x": ["transform"],
-        "scale-y": ["transform"],
-        "scale-z": ["transform"],
-        skew: ["transform"],
-        "skew-x": ["transform"],
-        "skew-y": ["transform"],
-        "list-s-img": ["listStyleImage"],
-        "list-s-pos": ["listStylePosition"],
-        "list-s-type": ["listStyleType"],
-        "box-sizing": ["boxSizing"],
-        isolation: ["isolation"],
-        "object-fit": ["objectFit"],
-        "object-post": ["objectPosition"],
-        "os-beh": ["overscrollBehavior"],
-        "os-beh-y": ["overscrollBehaviorY"],
-        "os-beh-x": ["overscrollBehaviorX"],
-        visibility: ["visibility"],
-        box: ["width", "height"],
-      };
 
-      tenoxui();
-    </script> -->
+    <!-- <script type="module">
+      import tenoxui, {
+        defineProps,
+        makeStyles,
+      } from "./src/js/tenoxui.esm.js";
+      // Storing the styles
 
-    <script>
+
       const styles = makeStyles({
         primary: "bg-[primary]",
         red: "bg-#f00",
@@ -372,24 +181,72 @@
       makeStyles({
         ".card": {
           // empty string will give style into parent element
-          "": `${styles["primary"]} p-2rem  tc-black radius-top-1em`,
+          "": `${styles["primary"]} p-2rem tc-black radius-top-1em`,
           h1: "fs-3rem fw-700",
           p: "fw-500 fs-14px",
         },
-        ".card:nth-child(3)": {
-          "": `${styles["white"]} radius-top-0 radius-bottom-1em`,
-          h1: "fs-3rem fw-700",
-          p: "fw-500 fs-14px",
-        },
-      });
-    </script>
 
-    <script>
+        ".card:nth-child(3)": `${styles["white"]} radius-top-0 radius-bottom-1em`,
+      });
+    </script> -->
+
+    <script type="module">
+      import tenoxui, {
+        defineProps,
+        makeStyles,
+        makeTenoxUI,
+      } from "./src/js/tenoxui.esm.js";
+
       defineProps({
         text: "color",
       });
+
+      const styles = makeStyles({
+        primary: "bg-[primary]",
+        red: "bg-#f00",
+        white: "bg-#fff",
+      });
+
+      makeStyles({
+        ".card": {
+          // empty string will give style into parent element
+          "": `${styles["primary"]} p-2rem tc-black radius-top-1em`,
+          h1: "fs-3rem fw-700",
+          p: "fw-500 fs-14px",
+        },
+
+        ".card:nth-child(3)": `${styles["white"]} radius-top-0 radius-bottom-1em`,
+      });
+
+      console.log(makeTenoxUI);
+
+      // Manual Styler Example 1
+      // Tested js and esm
+      // const element = document.querySelector(".about");
+      // const styler = new makeTenoxUI(element);
+      // styler.applyStyle("mt", "2", "rem");
+
+      // Manual Styler Example 2
+      // new makeTenoxUI(document.querySelector(".features")).applyStyle(
+      //   "mt",
+      //   "2",
+      //   "rem"
+      // );
+
+      // Using foreach/multiple elements
+      const elements = document.querySelectorAll("section");
+      elements.forEach((element) => {
+        const styler = new makeTenoxUI(element);
+        styler.applyStyle("mt", "2", "rem");
+      });
+
       tenoxui();
     </script>
+    <!-- <script src="/src/js/tenoxui.js"></script>
+    <script>
+      console.log(makeTenoxUI);
+    </script> -->
     <script defer src="./version.js"></script>
   </body>
+  <!-- Propmt: it didnt work, instead now give me some example and usage between class constructor and function prototype -->
 </html>
