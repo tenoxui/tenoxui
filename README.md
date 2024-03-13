@@ -1,10 +1,10 @@
 <p align="center">
 <a href="https://tenoxui.web.app/">
-<img src="https://tenoxui.web.app/tenoxui.svg" alt="TenoxUI Logo" width='300' height='300'
+<img src="https://tenoxui.web.app/img/tenoxui.svg" alt="TenoxUI Logo" width='300' height='300'
  >
 </a>
 </p>
-<h1 align="center">TenoxUI v0.5.1</h1>
+<h1 align="center">TenoxUI v0.6.0</h1>
 <p align="center">
 Fast and Lightweight CSS Framework, Style through javascript
 <br>
