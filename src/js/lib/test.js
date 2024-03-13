@@ -1,9 +1,4 @@
-/*!
- * TenoxUI CSS Framework v0.6.0 [ https://tenoxui.web.app ]
- * copyright (c) 2024 nousantx
- * licensed under MIT [ https://github.com/nousantx/tenoxui/blob/main/LICENSE ]
- */
-const property = {
+const tx = {
     // Mapping type and its Property
     p: "padding",
     pt: "paddingTop",
@@ -232,5 +227,4 @@ const property = {
     // TenoxUI Custom property
     box: ["width", "height"],
 };
-export default property;
-//# sourceMappingURL=property.js.map
+//# sourceMappingURL=test.js.map
