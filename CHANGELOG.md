@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.6] - 13-03-2024
+
+- Single `property` when make a new type and property now dont need wrapped inside an array
+- `Nested Style` now available
+- Update ESM issues can't rendering on client side
+- HEX color value must started using `#`, not using the color code directly
+- Changed `regexp` on `applyStyles` function to recognize `#` for HEX color value
+- `makeTenoxUI` function can be imported in ESM variant
+
 ## [0.5.1] - 28-02-2024
 
 - Fix `tenoxui` function not adding new props to `allProperty`.
