@@ -5,8 +5,8 @@
     // "target": "esnext",
     // "module": "esnext",
     // "moduleResolution": "node",
-    "outDir": "./src/js", // Output directory for compiled files
-    "rootDir": "./src/ts", // Root directory of input files
+    "outDir": "./src/js",
+    "rootDir": "./src/ts",
     // "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
