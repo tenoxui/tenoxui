@@ -1,238 +1,240 @@
 interface PropertyMap {
-  [key: string]: string[];
+  [key: string]: string | string[];
 }
 /*!
- * TenoxUI CSS Framework v0.5.1 [ https://tenoxui.web.app ]
+ * TenoxUI CSS Framework v0.6.0 [ https://tenoxui.web.app ]
  * copyright (c) 2024 nousantx
  * licensed under MIT [ https://github.com/nousantx/tenoxui/blob/main/LICENSE ]
  */
 // All TenoxUI `type` and `property`
 const property: PropertyMap = {
   // Mapping type and its Property
-  p: ["padding"],
-  pt: ["paddingTop"],
-  pb: ["paddingBottom"],
-  pr: ["paddingRight"],
-  pl: ["paddingLeft"],
+  p: "padding",
+  pt: "paddingTop",
+  pb: "paddingBottom",
+  pr: "paddingRight",
+  pl: "paddingLeft",
   ph: ["paddingLeft", "paddingRight"],
   pv: ["paddingTop", "paddingBottom"],
-  "pad-in-start": ["paddingInlineStart"],
-  "pad-in-end": ["paddingInlineEnd"],
+  "pad-in-start": "paddingInlineStart",
+  "pad-in-end": "paddingInlineEnd",
   // Margin
-  m: ["margin"],
-  mt: ["marginTop"],
-  mb: ["marginBottom"],
-  mr: ["marginRight"],
-  ml: ["marginLeft"],
+  m: "margin",
+  mt: "marginTop",
+  mb: "marginBottom",
+  mr: "marginRight",
+  ml: "marginLeft",
   mv: ["marginTop", "marginBottom"],
   mh: ["marginLeft", "marginRight"],
-  "mar-in-start": ["marginInlineStart"],
-  "mar-in-end": ["marginInlineEnd"],
+  "mar-in-start": "marginInlineStart",
+  "mar-in-end": "marginInlineEnd",
   // Text and font
-  fs: ["fontSize"],
-  fw: ["fontWeight"],
-  lh: ["lineHeight"],
-  ls: ["letterSpacing"],
-  ta: ["text-align"],
-  tc: ["color"],
-  ts: ["textStyle"],
-  td: ["textDecoration"],
-  ti: ["textIndent"],
-  tn: ["textReansform"],
-  ws: ["wordSpacing"],
-  family: ["fontFamily"],
-  "text-style": ["fontStyle"],
-  "white-space": ["whiteSpace"],
+  fs: "fontSize",
+  fw: "fontWeight",
+  lh: "lineHeight",
+  ls: "letterSpacing",
+  ta: "text-align",
+  tc: "color",
+  ts: "textStyle",
+  td: "textDecoration",
+  ti: "textIndent",
+  tn: "textReansform",
+  ws: "wordSpacing",
+  family: "fontFamily",
+  "text-style": "fontStyle",
+  "white-space": "whiteSpace",
+
   // More Text
-  "text-over": ["textOverflow"],
-  "text-wrap": ["textWrap"],
-  "v-align": ["verticalAlign"],
-  "w-break": ["wordBreak"],
-  "wrap-over": ["overflowWrap"],
-  hyphens: ["hyphens"],
-  "text-deco-line": ["textDecorationLine"],
-  "text-deco-style": ["textDecorationStyle"],
-  "text-deco-thick": ["textDecorationThickness"],
-  "text-underline-off": ["textUnderlineOffset"],
-  "variant-num": ["font-variant-numeric:"],
-  "webkit-font-smooth": ["-webkit-font-smoothing"],
-  "moz-font-smooth": ["-moz-osx-font-smoothing"],
+  "text-over": "textOverflow",
+  "text-wrap": "textWrap",
+  "v-align": "verticalAlign",
+  "w-break": "wordBreak",
+  "wrap-over": "overflowWrap",
+  hyphens: "hyphens",
+  "text-deco-line": "textDecorationLine",
+  "text-deco-style": "textDecorationStyle",
+  "text-deco-thick": "textDecorationThickness",
+  "text-underline-off": "textUnderlineOffset",
+  "variant-num": "font-variant-numeric:",
+  "webkit-font-smooth": "-webkit-font-smoothing",
+  "moz-font-smooth": "-moz-osx-font-smoothing",
   // Positioning
-  position: ["position"],
-  post: ["position"],
-  z: ["zIndex"],
-  zi: ["zIndex"],
-  t: ["top"],
-  top: ["top"],
-  b: ["bottom"],
-  bottom: ["bottom"],
-  r: ["right"],
-  right: ["right"],
-  l: ["left"],
-  left: ["left"],
+  position: "position",
+  post: "position",
+  z: "zIndex",
+  zi: "zIndex",
+  t: "top",
+  top: "top",
+  b: "bottom",
+  bottom: "bottom",
+  r: "right",
+  right: "right",
+  l: "left",
+  left: "left",
   // Display
-  display: ["display"],
+  display: "display",
   // Width and Height
-  w: ["width"],
-  "w-mx": ["maxWidth"],
-  "w-mn": ["minWidth"],
-  h: ["height"],
-  "h-mx": ["maxHeight"],
-  "h-mn": ["minHeight"],
+  w: "width",
+  "w-mx": "maxWidth",
+  "w-mn": "minWidth",
+  h: "height",
+  "h-mx": "maxHeight",
+  "h-mn": "minHeight",
   // Columns
-  col: ["columns"],
+  col: "columns",
   // Break After
-  "bk-af": ["breakAfter"],
-  "bk-bef": ["breakBefore"],
-  "bk-in": ["breakInside"],
+  "bk-af": "breakAfter",
+  "bk-bef": "breakBefore",
+  "bk-in": "breakInside",
   // Background
-  bg: ["background"],
-  "bg-attach": ["backgroundAttachment"],
-  "bg-origin": ["backgroundOrigin"],
-  "bg-size": ["backgroundSize"],
-  "bg-clip": ["backgroundClip"],
-  "bg-repeat": ["backgroundRepeat"],
-  "bg-loc": ["backgroundPosition"],
-  "bg-loc-x": ["backgroundPositionX"],
-  "bg-loc-y": ["backgroundPositionY"],
-  "bg-blend": ["backgroundBlendMode"],
+  bg: "background",
+  "bg-attach": "backgroundAttachment",
+  "bg-origin": "backgroundOrigin",
+  "bg-size": "backgroundSize",
+  "bg-clip": "backgroundClip",
+  "bg-repeat": "backgroundRepeat",
+  "bg-loc": "backgroundPosition",
+  "bg-loc-x": "backgroundPositionX",
+  "bg-loc-y": "backgroundPositionY",
+  "bg-blend": "backgroundBlendMode",
   // Flex
-  fx: ["flex"],
-  flex: ["flex"],
-  "flex-auto": ["flex"],
-  "initial-flex": ["flex"],
+  fx: "flex",
+  flex: "flex",
+  "flex-auto": "flex",
+  "initial-flex": "flex",
   "flex-parent": ["justifyContent", "alignItems"],
-  fd: ["flexDirection"],
-  "fx-wrap": ["flexWrap"],
-  "item-order": ["order"],
-  order: ["order"],
-  "fx-basis": ["flexBasis"],
-  "fx-grow": ["flexGrow"],
-  "fx-shrink": ["flexShrink"],
+  fd: "flexDirection",
+  "fx-wrap": "flexWrap",
+  "item-order": "order",
+  order: "order",
+  "fx-basis": "flexBasis",
+  "fx-grow": "flexGrow",
+  "fx-shrink": "flexShrink",
   // Grid
-  "grid-row": ["gridTemplateRows"],
-  "grid-col": ["gridTemplateColumns"],
-  "auto-grid-row": ["gridTemplateRows"],
-  "auto-grid-col": ["gridTemplateColumns"],
-  "grid-item-row": ["gridRow"],
-  "grid-item-col": ["gridColumn"],
-  "grid-row-end": ["gridRowEnd"],
-  "grid-row-start": ["gridRowStart"],
-  "grid-col-end": ["gridColumnEnd"],
-  "grid-col-start": ["gridColumnStart"],
-  "grid-area": ["gridArea"],
-  "item-place": ["placeitems"],
-  "content-place": ["placeContent"],
+  "grid-row": "gridTemplateRows",
+  "grid-col": "gridTemplateColumns",
+  "auto-grid-row": "gridTemplateRows",
+  "auto-grid-col": "gridTemplateColumns",
+  "grid-item-row": "gridRow",
+  "grid-item-col": "gridColumn",
+  "grid-row-end": "gridRowEnd",
+  "grid-row-start": "gridRowStart",
+  "grid-col-end": "gridColumnEnd",
+  "grid-col-start": "gridColumnStart",
+  "grid-area": "gridArea",
+  "item-place": "placeItems",
+  "content-place": "placeContent",
   // Gap
-  gap: ["gap"],
-  "grid-gap": ["gridGap"],
-  "grid-row-gap": ["gridRowGap"],
-  "grid-col-gap": ["gridColumnGap"],
-  "row-gap": ["rowGap"],
-  "col-gap": ["columnGap"],
+  gap: "gap",
+  "grid-gap": "gridGap",
+  "grid-row-gap": "gridRowGap",
+  "grid-col-gap": "gridColumnGap",
+
+  "row-gap": "rowGap",
+  "col-gap": "columnGap",
   // Align
-  ac: ["alignContent"],
-  ai: ["align-items"],
-  as: ["alignSelf"],
+  ac: "alignContent",
+  ai: "align-items",
+  as: "alignSelf",
   // Justify
-  jc: ["justify-content"],
-  ji: ["justifyItems"],
-  js: ["justifySelf"],
-  // backdrop [ under developement ]
-  "backdrop-blur": ["backdropFilter"],
+  jc: "justify-content",
+  ji: "justifyItems",
+  js: "justifySelf",
+  // backdrop  under developement]
+  "backdrop-blur": "backdropFilter",
   // Filter
-  filter: ["filter"],
-  blur: ["filter"],
-  brightness: ["filter"],
-  contrast: ["filter"],
-  grayscale: ["filter"],
-  "hue-rotate": ["filter"],
-  saturate: ["filter"],
-  sepia: ["filter"],
-  opa: ["opacity"],
+  filter: "filter",
+  blur: "filter",
+  brightness: "filter",
+  contrast: "filter",
+  grayscale: "filter",
+  "hue-rotate": "filter",
+  saturate: "filter",
+  sepia: "filter",
+  opa: "opacity",
   // Backdrop Filter
-  "back-blur": ["backdropFilter"],
-  "back-brightness": ["backdropFilter"],
-  "back-contrast": ["backdropFilter"],
-  "back-grayscale": ["backdropFilter"],
-  "back-saturate": ["backdropFilter"],
-  "back-sepia": ["backdropFilter"],
+  "back-blur": "backdropFilter",
+  "back-brightness": "backdropFilter",
+  "back-contrast": "backdropFilter",
+  "back-grayscale": "backdropFilter",
+  "back-saturate": "backdropFilter",
+  "back-sepia": "backdropFilter",
   // Border
-  br: ["borderRadius"],
-  bw: ["borderWidth"],
-  "bw-left": ["borderLeftWidth"],
-  "bw-right": ["borderRightWidth"],
-  "bw-top": ["borderTopWidth"],
-  "bw-bottom": ["borderBottomWidth"],
-  bs: ["borderStyle"],
-  "radius-tl": ["borderTopLeftRadius"],
-  "radius-tr": ["borderTopRightRadius"],
-  "radius-bl": ["borderBottomLeftRadius"],
-  "radius-br": ["borderBottomRightRadius"],
+  br: "borderRadius",
+  bw: "borderWidth",
+  "bw-left": "borderLeftWidth",
+  "bw-right": "borderRightWidth",
+  "bw-top": "borderTopWidth",
+  "bw-bottom": "borderBottomWidth",
+  bs: "borderStyle",
+  "radius-tl": "borderTopLeftRadius",
+  "radius-tr": "borderTopRightRadius",
+  "radius-bl": "borderBottomLeftRadius",
+  "radius-br": "borderBottomRightRadius",
   "radius-top": ["borderTopLeftRadius", "borderTopRightRadius"],
   "radius-bottom": ["borderBottomLeftRadius", "borderBottomRightRadius"],
   "radius-left": ["borderTopLeftRadius", "borderBottomLeftRadius"],
   "radius-right": ["borderTopRightRadius", "borderBottomRightRadius"],
-  "br-ss": ["border-start-start-radius"],
-  "br-se": ["border-start-end-radius"],
-  "br-ee": ["border-end-end-radius"],
-  "br-es": ["border-end-start-radius"],
-  "bw-is": ["border-inline-start-width"],
-  "bw-ie": ["border-inline-end-width"],
+  "br-ss": "border-start-start-radius",
+  "br-se": "border-start-end-radius",
+  "br-ee": "border-end-end-radius",
+  "br-es": "border-end-start-radius",
+  "bw-is": "border-inline-start-width",
+  "bw-ie": "border-inline-end-width",
   // Outline
-  ol: ["outline"],
-  "ol-width": ["outlineWidth"],
-  "ol-style": ["outlineStyle"],
-  "ol-offset": ["outlineOffset"],
+  ol: "outline",
+  "ol-width": "outlineWidth",
+  "ol-style": "outlineStyle",
+  "ol-offset": "outlineOffset",
   // Cursor
-  curs: ["cursor"],
-  cursor: ["cursor"],
+  curs: "cursor",
+  cursor: "cursor",
   // Overflow
-  over: ["overflow"],
-  overY: ["overflowY"],
-  overX: ["overflowX"],
+  over: "overflow",
+  overY: "overflowY",
+  overX: "overflowX",
   // Float
-  float: ["float"],
+  float: "float",
   // Aspect Ratio
-  ratio: ["aspectRatio"],
+  ratio: "aspectRatio",
   // Transition
-  transition: ["transition"],
-  "tr-time": ["transitionDuration"],
-  "tr-prop": ["transitionProperty"],
-  "tr-timing": ["transitionTimingFunction"],
-  "tr-delay": ["transitionDelay"],
+  transition: "transition",
+  "tr-time": "transitionDuration",
+  "tr-prop": "transitionProperty",
+  "tr-timing": "transitionTimingFunction",
+  "tr-delay": "transitionDelay",
   // Transform: for v0.4.26 or higher.
-  transform: ["transform"],
-  "move-x": ["transform"],
-  "move-y": ["transform"],
-  "move-z": ["transform"],
-  matrix: ["transform"],
-  "matrix-3d": ["transform"],
-  rt: ["transform"],
-  "rt-3d": ["transform"],
-  translate: ["transform"],
-  scale: ["transform"],
-  "scale-3d": ["transform"],
-  "scale-x": ["transform"],
-  "scale-y": ["transform"],
-  "scale-z": ["transform"],
-  skew: ["transform"],
-  "skew-x": ["transform"],
-  "skew-y": ["transform"],
+  transform: "transform",
+  "move-x": "transform",
+  "move-y": "transform",
+  "move-z": "transform",
+  matrix: "transform",
+  "matrix-3d": "transform",
+  rt: "transform",
+  "rt-3d": "transform",
+  translate: "transform",
+  scale: "transform",
+  "scale-3d": "transform",
+  "scale-x": "transform",
+  "scale-y": "transform",
+  "scale-z": "transform",
+  skew: "transform",
+  "skew-x": "transform",
+  "skew-y": "transform",
   // List Style
-  "list-s-img": ["listStyleImage"],
-  "list-s-pos": ["listStylePosition"],
-  "list-s-type": ["listStyleType"],
+  "list-s-img": "listStyleImage",
+  "list-s-pos": "listStylePosition",
+  "list-s-type": "listStyleType",
   // More
-  "box-sizing": ["boxSizing"], //! need custom value ${value}-box
-  isolation: ["isolation"],
-  "object-fit": ["objectFit"],
-  "object-post": ["objectPosition"],
+  "box-sizing": "boxSizing", //! need custom value ${value}-bx
+  isolation: "isolation",
+  "object-fit": "objectFit",
+  "object-post": "objectPosition",
   // Overscroll Behavior
-  "os-beh": ["overscrollBehavior"],
-  "os-beh-y": ["overscrollBehaviorY"],
-  "os-beh-x": ["overscrollBehaviorX"],
-  visibility: ["visibility"],
+  "os-beh": "overscrollBehavior",
+  "os-beh-y": "overscrollBehaviorY",
+  "os-beh-x": "overscrollBehaviorX",
+  visibility: "visibility",
   // TenoxUI Custom property
   box: ["width", "height"],
 };
@@ -272,15 +274,23 @@ class newProp {
   }
 }
 
-function addType(Types: string, Property: string[]): void {
+function addType(Types: string, Property: string | string[]): void {
   // Check if 'Types' is a string
   if (typeof Types !== "string") {
     throw new Error("Types must be a string");
   }
-  // Check if 'Property' is an array
-  if (!Array.isArray(Property)) {
-    throw new Error("Property must be an array");
+
+  // Check if 'Property' is a string or an array
+  if (!Array.isArray(Property) && typeof Property !== "string") {
+    throw new Error("Property must be a string or array");
   }
+
+  // If properties has only one css property and it was string, not wrapped inside an array
+  if (typeof Property === "string") {
+    // Convert the string value from property into an array
+    Property = [Property];
+  }
+
   // Add new property
   new newProp(Types, Property).tryAdd();
 }
@@ -298,9 +308,16 @@ class makeTenoxUI {
 
   // `applyStyle`: Handle the styling and custom value for property
   applyStyle(type: string, value: string, unit: string): void {
-    const properties = this.styles[type];
+    // the styles with let, not constant, because the properties no longer using array, optionally it can just be string
+    let properties = this.styles[type];
     // If properties matched the `type` or `property` from `allProperty`
     if (properties) {
+      // If properties has only one css property and it was string, not wrapped inside an array
+      if (!Array.isArray(properties)) {
+        // Convert the string value from property into an array
+        properties = [properties];
+      }
+
       properties.forEach((property: string) => {
         // Filter Custom Property
         if (property === "filter") {
@@ -491,7 +508,7 @@ class makeTenoxUI {
   applyStyles(className: string): void {
     // Using RegExp to handle the value
     const match = className.match(
-      /([a-zA-Z]+(?:-[a-zA-Z]+)*)-(-?(?:\d+(\.\d+)?)|(?:[a-zA-Z]+(?:-[a-zA-Z]+)*(?:-[a-zA-Z]+)*)|(?:\[[^\]]+\]))([a-zA-Z%]*)/
+      /([a-zA-Z]+(?:-[a-zA-Z]+)*)-(-?(?:\d+(\.\d+)?)|(?:[a-zA-Z]+(?:-[a-zA-Z]+)*(?:-[a-zA-Z]+)*)|(?:#[0-9a-fA-F]+)|(?:\[[^\]]+\]))([a-zA-Z%]*)/
     );
     if (match) {
       // type = property class. Example: p-, m-, flex-, fx-, filter-, etc.
@@ -549,38 +566,83 @@ function makeStyle(
 }
 
 // MultiProps function: Add multiple properties from the provided object
-function defineProps(propsObject: Record<string, string[]>): void {
+function defineProps(propsObject: Record<string, string | string[]>): void {
   // Iterate over object entries
   Object.entries(propsObject).forEach(([propName, propValues]) => {
-    // Check if propValues is an array
-    if (Array.isArray(propValues)) {
-      // Create a new CustomProperty
-      const propInstance = new newProp(propName, propValues);
-      // Add it to AllProperty at once
-      propInstance.tryAdd();
-    }
-    // Error Handling for `defineProps`
-    else {
+    // Check if propValues is an array or string
+    if (typeof propValues !== "string" && !Array.isArray(propValues)) {
       console.warn(
         `Invalid property values for "${propName}". Make sure you provide values as an array.`
       );
     }
+
+    // if the propValues is a string, convert into array
+    const processedValues: string[] =
+      typeof propValues === "string" ? [propValues] : (propValues as string[]);
+
+    // Create a new CustomProperty
+    const propInstance = new newProp(propName, processedValues);
+    // Add it to AllProperty at once
+    propInstance.tryAdd();
   });
 }
 
-// Apply multiple styles into elements using selector, all selector is possible
-function makeStyles(stylesObject: Record<string, string>): void {
+// Apply styles for multiple elements using the provided object
+function makeStyles(stylesObject) {
+  // Object to store defined styles
+  const definedStyles = {};
+
+  // Helper function to apply styles to a single element
+  const applyStylesToElement = (element, styles) => {
+    const styler = new makeTenoxUI(element);
+    styler.applyMultiStyles(styles);
+  };
+
+  // Recursive function to apply styles to nested selectors
+  const applyNestedStyles = (parentSelector, styles) => {
+    Object.entries(styles).forEach(([childSelector, childStyles]) => {
+      const elements = document.querySelectorAll(
+        `${parentSelector} ${childSelector}`
+      );
+      elements.forEach((element) => {
+        applyStylesToElement(element, childStyles);
+      });
+
+      // Recursive call for nested selectors
+      if (typeof childStyles === "object" && !Array.isArray(childStyles)) {
+        applyNestedStyles(`${parentSelector} ${childSelector}`, childStyles);
+      }
+    });
+  };
+
+  // Iterate through stylesObject and apply styles
   Object.entries(stylesObject).forEach(([selector, styles]) => {
-    makeStyle(selector, styles);
+    // Check if styles is an object and has nested styles
+    if (typeof styles === "object" && !Array.isArray(styles)) {
+      // Apply styles for nested selectors
+      applyNestedStyles(selector, styles);
+    } else {
+      // Apply direct styles if not overridden by nested styles
+      const elements = document.querySelectorAll(selector);
+      elements.forEach((element) => {
+        applyStylesToElement(element, styles);
+      });
+    }
+
+    // Store defined styles for reuse
+    definedStyles[selector] = styles;
   });
+
+  // Return the definedStyles object for reuse
+  return definedStyles;
 }
 
 // Define mappings for color types and corresponding CSS properties
 function moreColor() {
   const makeColor = (
     element: HTMLElement,
-    pattern: RegExp,
-    property: string,
+    pattern: RegExp, // regex patern
+    property: string, // propety value
     format: (match: RegExpMatchArray) => string
   ) => {
     // Match the class name against the provided pattern
@@ -653,5 +715,4 @@ function tenoxui(): void {
 }
 
 moreColor(); // init: moreColor function
-
 tenoxui(); // init: tenoxui
