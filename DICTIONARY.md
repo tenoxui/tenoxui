@@ -6,18 +6,113 @@ Explore tenoxui definition and words definition you need to know.
 
 In TenoxUI, we define a variable called `property`. This is contains many `types` and `properties` and we defined it as an object. Also, `type` and `property` are key components responsible for managing and applying styles to HTML elements dynamically. Breakdown:
 
-- `type` : This is the key names of the of the object. It used to define the className prefix that will trigger the desired class that will applied to the element. The examples is like:
+- `type` : This is the key names of the of the object. It used to define the className prefix that will `trigger` the desired class that will applied to the element, such as `m`, `p`, `fs`, `fw`, `gap`, and more.
+
+- `property` : Like it's name, this is what css property that will `triggered` using the `type` we define earlier, such as `padding`, `fontSize`, `justifyContent`, and so on. You can define it by using string or array of string if you has more than one property in one `type`. This is how you can make your type and peroperty :
   ```js
-  let property = {
+  const sample = {
+    type: property,
+  };
+  ```
+  Example:
+  ```js
+  const property = {
     p: "padding",
     px: ["paddingTop", "paddingBottom"],
     // more keys and values
   };
   ```
+  See all tenoxui property on [Docs](https://tenoxui.web.app/docs/extras/all-class) or [GitHub](https://github.com/nousantx/tenoxui/blob/main/src/js/lib/property.js)
+
+## TenoxUI Function
+
+- `addType` : This is a function for adding new type and property, you can use the new type after you define it. Usage:
+
+  ```js
+  addType(type, proeprty);
+  ```
+
+  Example:
+
+  - js :
+
+  ```js
+  addType("mypad", "padding");
+  ```
+
+  - html :
+
+  ```html
+  <div class="mypad-20px"></div>
+  ```
+
+- `defineProps` : Same as `addType` function, it will add new types and proeprties to your project from an `object`. Usage:
+
+  ```js
+  defineProps({ type: property });
+  ```
+
+  Example:
+
+  - js :
+
+  ```js
+  defineProps({
+    myPad: "padding",
+    myMar: "margin",
+    myBox: ["width", "height"],
+  });
+  ```
+
+  - html :
+
+  ```html
+  <div class="myPad-20px myBox-200px"></div>
+  ```
+
+- `makeStyle` : Is a function to give a style to an element by calling the selector. Usage:
+
+  ```js
+  makeStyle(selector, styles);
+  ```
+
+  Example:
+
+  - js :
+
+  ```js
+  makeStyle(".logo", "fs-3rem fw-600 tc-red");
+  ```
+
+  - html :
+
+  ```html
+  <h1 class="logo">Logo</h1>
+  ```
+
+- `makeStyles` : Is a function that allow you to give styles to your elements defined in an `object`. Usage:
+  ```js
+  makeStyles({ selector, styles });
+  ```
+  Example:
+  - js :
+  ```js
+  makeStyles({
+    body: "bg-black tc-white p-20px",
+    section: "p-10vw mt-1rem bg-white",
+    "h1.logo": "fs-3rem fw-600 tc-red",
+  });
+  ```
+  - html :
+  ```html
+  <section>
+    <h1 class="logo">Logo</h1>
+  </section>
+  ```
 
 ## TenoxUI Method
 
-Differences between applyStyle, applyStyles, and applyMultiStyles
+There's a few method stored in tenoxui, and its usage for styling
 
 - `applyStyle`. Is a method inside makeTenoxUI that will give style to your element through its parameter. Usage:
 
