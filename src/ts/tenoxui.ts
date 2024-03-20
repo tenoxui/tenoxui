@@ -1,13 +1,12 @@
-interface PropertyMap {
-  [key: string]: string | string[];
-}
 /*!
  * TenoxUI CSS Framework v0.6.0 [ https://tenoxui.web.app ]
  * copyright (c) 2024 nousantx
  * licensed under MIT [ https://github.com/nousantx/tenoxui/blob/main/LICENSE ]
  */
 // All TenoxUI `type` and `property`
-const property: PropertyMap = {
+const property: {
+  [key: string]: string | string[];
+} = {
   // Mapping type and its Property
   p: "padding",
   pt: "paddingTop",
@@ -239,13 +238,13 @@ const property: PropertyMap = {
   box: ["width", "height"],
 };
 
+let Classes: String[], AllClasses: NodeListOf<HTMLElement>;
+
 // Make classes from type name from properties key name
-let Classes = Object.keys(property).map(
-  (className) => `[class*="${className}-"]`
-);
+Classes = Object.keys(property).map((className) => `[class*="${className}-"]`);
 
 // Merge all `Classes` into one selector. Example : '[class*="p-"]', '[class*="m-"]', '[class*="justify-"]'
-let AllClasses = document.querySelectorAll(Classes.join(", "));
+AllClasses = document.querySelectorAll(Classes.join(", "));
 
 // Props maker function :)
 class newProp {
@@ -587,53 +586,57 @@ function defineProps(propsObject: Record<string, string | string[]>): void {
   });
 }
 
-// Apply styles for multiple elements using the provided object
-function makeStyles(stylesObject) {
-  // Object to store defined styles
-  const definedStyles = {};
+type StylesObject = Record<string, string | Record<string, string>>;
 
-  // Helper function to apply styles to a single element
-  const applyStylesToElement = (element, styles) => {
+function makeStyles(
+  stylesObject: StylesObject
+): Record<string, string | Record<string, string>> {
+  const definedStyles: Record<string, string | Record<string, string>> = {};
+
+  const applyStylesToElement = (
+    element: HTMLElement,
+    styles: string | Record<string, string>
+  ): void => {
     const styler = new makeTenoxUI(element);
-    styler.applyMultiStyles(styles);
+    if (typeof styles === "string") {
+      styler.applyMultiStyles(styles);
+    } else {
+      for (const [prop, value] of Object.entries(styles)) {
+        styler.applyStyle(prop, value, "");
+      }
+    }
   };
 
-  // Recursive function to apply styles to nested selectors
-  const applyNestedStyles = (parentSelector, styles) => {
+  const applyNestedStyles = (
+    parentSelector: string,
+    styles: Record<string, string>
+  ): void => {
     Object.entries(styles).forEach(([childSelector, childStyles]) => {
-      const elements = document.querySelectorAll(
+      const elements = document.querySelectorAll<HTMLElement>(
         `${parentSelector} ${childSelector}`
       );
-      elements.forEach((element) => {
-        applyStylesToElement(element, childStyles);
-      });
-
-      // Recursive call for nested selectors
       if (typeof childStyles === "object" && !Array.isArray(childStyles)) {
         applyNestedStyles(`${parentSelector} ${childSelector}`, childStyles);
+      } else {
+        elements.forEach((element) => {
+          applyStylesToElement(element, childStyles);
+        });
       }
     });
   };
 
-  // Iterate through stylesObject and apply styles
-  Object.entries(stylesObject).forEach(([selector, styles]) => {
-    // Check if styles is an object and has nested styles
+  for (const [selector, styles] of Object.entries(stylesObject)) {
     if (typeof styles === "object" && !Array.isArray(styles)) {
-      // Apply styles for nested selectors
       applyNestedStyles(selector, styles);
     } else {
-      // Apply direct styles if not overridden by nested styles
-      const elements = document.querySelectorAll(selector);
+      const elements = document.querySelectorAll<HTMLElement>(selector);
       elements.forEach((element) => {
         applyStylesToElement(element, styles);
       });
     }
-
-    // Store defined styles for reuse
     definedStyles[selector] = styles;
-  });
+  }
 
-  // Return the definedStyles object for reuse
   return definedStyles;
 }
 
@@ -694,22 +697,22 @@ function moreColor() {
 // Applying the style to all elements ✨
 function tenoxui(): void {
   // Make classes from type name from properties key name
-  let Classes = Object.keys(property).map(
+  Classes = Object.keys(property).map(
     (className) => `[class*="${className}-"]`
   );
 
   // Merge all `Classes` into one selector. Example : '[class*="p-"]', '[class*="m-"]', '[class*="justify-"]'
-  let AllClasses = document.querySelectorAll(Classes.join(", "));
+  AllClasses = document.querySelectorAll(Classes.join(", "));
 
   // Iterate over elements with AllClasses
-  AllClasses.forEach((element) => {
+  AllClasses.forEach((element: HTMLElement) => {
     // Get the list of classes for the current element
-    const classes = (element as HTMLElement).classList;
+    const classes = element.classList;
     // Make TenoxUI
-    const makeTx = new makeTenoxUI(element as HTMLElement);
+    const styler = new makeTenoxUI(element);
     // Iterate over classes and apply styles using makeTenoxUI
     classes.forEach((className) => {
-      makeTx.applyStyles(className);
+      styler.applyStyles(className);
     });
   });
 }
