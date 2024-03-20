@@ -5,8 +5,7 @@
  */
 // Importing All property that will be used on TenoxUI
 import property from "./lib/property.js";
-let Classes;
-let AllClasses;
+let Classes, AllClasses;
 // Check browser environment
 if (typeof window !== "undefined") {
     // Make classes from type name from properties key name
@@ -55,18 +54,16 @@ function addType(Types, Property) {
     // Add new property
     new newProp(Types, Property).tryAdd();
 }
-// TenoxUI make style proto
-function makeTenoxUI(element) {
-    this.element = element;
-    this.styles = property;
-}
-// Export the whole TenoxUI :)
-if (typeof window !== "undefined") {
-    // Combine the type and property to allProperty after defined it to Classes and AllClasses
-    Classes.push(`[class*="${name}-"]`);
-    AllClasses = document.querySelectorAll(Classes.join(", "));
+// makeTenoxUI class
+class makeTenoxUI {
+    // TenoxUI constructor
+    constructor(element) {
+        this.element = element;
+        this.styles = property;
+    }
     // `applyStyle`: Handle the styling and custom value for property
-    makeTenoxUI.prototype.applyStyle = function (type, value, unit) {
+    applyStyle(type, value, unit) {
+        // the styles with let, not constant, because the properties no longer using array, optionally it can just be string
         let properties = this.styles[type];
         // If properties matched the `type` or `property` from `allProperty`
         if (properties) {
@@ -78,14 +75,12 @@ if (typeof window !== "undefined") {
             properties.forEach((property) => {
                 // Filter Custom Property
                 if (property === "filter") {
-                    // Looking for all existing filter
                     const existingFilter = this.element.style[property];
-                    const filterName = type;
                     this.element.style[property] = existingFilter
-                        ? `${existingFilter} ${filterName}(${value}${unit})`
-                        : `${filterName}(${value}${unit})`; // Ex: blur-6.7px
+                        ? `${existingFilter} ${type}(${value}${unit})`
+                        : `${type}(${value}${unit})`;
                 }
-                // Flex Property
+                // Make custom property for flex
                 else if (type === "flex-auto") {
                     this.element.style[property] = `1 1 ${value}${unit}`;
                 }
@@ -109,9 +104,9 @@ if (typeof window !== "undefined") {
                 }
                 // Backdrop Filter Property
                 else if (property === "backdropFilter") {
-                    // Check if there's an existing backdrop-filter value on the element
+                    // Check if there's an existing backdrop-filter value
                     const backdropContainer = this.element.style[property];
-                    // Handle different backdrop-filter property
+                    // Handle different backdrop-filter properties
                     switch (type) {
                         case "back-blur":
                             this.element.style[property] = `${backdropContainer || ""} blur(${value}${unit})`;
@@ -142,12 +137,15 @@ if (typeof window !== "undefined") {
                 else if (property === "transform") {
                     // Check if there any transform property and class on the element
                     const transformContainer = this.element.style[property];
-                    // Handle different transform property
+                    // Handle different transform properties
                     switch (type) {
                         case "translate":
                             this.element.style[property] = `${transformContainer || ""} translate(${value}${unit})`;
                             break;
                         case "rt":
+                            this.element.style[property] = `${transformContainer || ""} rotate(${value}${unit})`;
+                            break;
+                        case "rotate":
                             this.element.style[property] = `${transformContainer || ""} rotate(${value}${unit})`;
                             break;
                         case "move-x":
@@ -193,28 +191,28 @@ if (typeof window !== "undefined") {
                             break;
                     }
                 }
+                /*
+                 * CSS Variable Support 🎋
+                 *
+                 * Check className if the `value` is wrapped with `[]`,
+                 * if so then this is treated as css variable, css value.
+                 */
+                // Check if the value is a CSS variable enclosed in square brackets
                 else if (value.startsWith("[") && value.endsWith("]")) {
-                    /*
-                     * CSS Variable Support 🎋
-                     *
-                     * Check className if the `value` is wrapped with `[]`,
-                     * if so then this is treated as css variable, css value.
-                     */
-                    // Check if the value is a CSS variable enclosed in square brackets
+                    // Slice value from the box and identify the
                     const cssVariable = value.slice(1, -1);
                     this.element.style[property] = `var(--${cssVariable})`;
                 }
                 // Default value and unit
                 else {
-                    // All `type` and `property` didn't have custom value will have this value
                     this.element.style[property] = `${value}${unit}`;
                 }
             });
         }
-    };
-    // Handle all posibble values
-    makeTenoxUI.prototype.applyStyles = function (className) {
-        // Using Regexp to handle  match
+    }
+    // Handle all possible values
+    applyStyles(className) {
+        // Using RegExp to handle the value
         const match = className.match(/([a-zA-Z]+(?:-[a-zA-Z]+)*)-(-?(?:\d+(\.\d+)?)|(?:[a-zA-Z]+(?:-[a-zA-Z]+)*(?:-[a-zA-Z]+)*)|(?:#[0-9a-fA-F]+)|(?:\[[^\]]+\]))([a-zA-Z%]*)/);
         if (match) {
             // type = property class. Example: p-, m-, flex-, fx-, filter-, etc.
@@ -223,17 +221,19 @@ if (typeof window !== "undefined") {
             const value = match[2];
             // unit = possible unit. Example: px, rem, em, s, %, etc.
             const unitOrValue = match[4];
-            // Combine the type, value, and the unit
+            // Combine all to one class. Example 'p-10px', 'flex-100px', 'grid-row-6', etc.
             this.applyStyle(type, value, unitOrValue);
         }
-    };
+    }
     // Multi styler function, style through javascript.
-    makeTenoxUI.prototype.applyMultiStyles = function (styles) {
+    applyMultiStyles(styles) {
+        // Splitting the styles
         const styleArray = styles.split(/\s+/);
+        // Applying the styles using forEach and `applyStyles`
         styleArray.forEach((style) => {
             this.applyStyles(style);
         });
-    };
+    }
 }
 // Applied multi style into all elements with the specified element (not just className)
 function makeStyle(selector, styles) {
@@ -278,46 +278,44 @@ function defineProps(propsObject) {
         propInstance.tryAdd();
     });
 }
-// Apply styles for multiple elements using the provided object
 function makeStyles(stylesObject) {
-    // Object to store defined styles
     const definedStyles = {};
-    // Helper function to apply styles to a single element
     const applyStylesToElement = (element, styles) => {
         const styler = new makeTenoxUI(element);
-        styler.applyMultiStyles(styles);
+        if (typeof styles === "string") {
+            styler.applyMultiStyles(styles);
+        }
+        else {
+            for (const [prop, value] of Object.entries(styles)) {
+                styler.applyStyle(prop, value, "");
+            }
+        }
     };
-    // Recursive function to apply styles to nested selectors
     const applyNestedStyles = (parentSelector, styles) => {
         Object.entries(styles).forEach(([childSelector, childStyles]) => {
             const elements = document.querySelectorAll(`${parentSelector} ${childSelector}`);
-            elements.forEach((element) => {
-                applyStylesToElement(element, childStyles);
-            });
-            // Recursive call for nested selectors
             if (typeof childStyles === "object" && !Array.isArray(childStyles)) {
                 applyNestedStyles(`${parentSelector} ${childSelector}`, childStyles);
             }
+            else {
+                elements.forEach((element) => {
+                    applyStylesToElement(element, childStyles);
+                });
+            }
         });
     };
-    // Iterate through stylesObject and apply styles
-    Object.entries(stylesObject).forEach(([selector, styles]) => {
-        // Check if styles is an object and has nested styles
+    for (const [selector, styles] of Object.entries(stylesObject)) {
         if (typeof styles === "object" && !Array.isArray(styles)) {
-            // Apply styles for nested selectors
             applyNestedStyles(selector, styles);
         }
         else {
-            // Apply direct styles if not overridden by nested styles
             const elements = document.querySelectorAll(selector);
             elements.forEach((element) => {
                 applyStylesToElement(element, styles);
             });
         }
-        // Store defined styles for reuse
         definedStyles[selector] = styles;
-    });
-    // Return the definedStyles object for reuse
+    }
     return definedStyles;
 }
 // More color compability, for hex, rgb, and rgba
@@ -371,6 +369,10 @@ function moreColor() {
 }
 // Applying the style to all elements ✨
 function tenoxui() {
+    // Make classes from type name from properties key name
+    Classes = Object.keys(property).map((className) => `[class*="${className}-"]`);
+    // Merge all `Classes` into one selector. Example : '[class*="p-"]', '[class*="m-"]', '[class*="justify-"]'
+    AllClasses = document.querySelectorAll(Classes.join(", "));
     // Iterate over elements with AllClasses
     AllClasses.forEach((element) => {
         // Get the list of classes for the current element
