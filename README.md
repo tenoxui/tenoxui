@@ -68,7 +68,7 @@ This code will make a box with 200px width and 200px height with 2rem padding an
 </p>
 
 ```html
-<div class="box-200px flex-parent-center br-8px bg-0d0d0d p-2rem">
+<div class="box-200px flex-parent-center br-8px bg-#0d0d0d p-2rem">
   <h1 class="fs-1.5rem fw-500 tc-lightgreen">Hello World!</h1>
 </div>
 ```
