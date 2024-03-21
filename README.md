@@ -56,11 +56,6 @@ npm i tenoxui@latest
 Using CDN :
 
 ```html
-<link
-  rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/tenoxui@latest/dist/css/tui.min.css"
-/>
-
 <script src="https://cdn.jsdelivr.net/npm/tenoxui@latest/dist/js/tui.min.js"></script>
 ```
 
