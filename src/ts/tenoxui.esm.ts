@@ -11,7 +11,7 @@ let Classes: String[], AllClasses: NodeListOf<HTMLElement>;
 
 // Check browser environment
 if (typeof window !== "undefined") {
-  // Make classes from type name from properties key name
+  // Generate className from property key name, or property type
   Classes = Object.keys(property).map(
     (className) => `[class*="${className}-"]`
   );
@@ -368,57 +368,77 @@ function defineProps(propsObject: Record<string, string | string[]>): void {
   });
 }
 
+// StylesObject type
 type StylesObject = Record<string, string | Record<string, string>>;
 
-function makeStyles(
-  stylesObject: StylesObject
-): Record<string, string | Record<string, string>> {
-  const definedStyles: Record<string, string | Record<string, string>> = {};
-
+function makeStyles(stylesObject: StylesObject): StylesObject {
+  // Store defined styles into an object
+  const definedStyles: StylesObject = {};
+  // Helper function to apply styles into elements
   const applyStylesToElement = (
     element: HTMLElement,
     styles: string | Record<string, string>
   ): void => {
+    // Define new styler
     const styler = new makeTenoxUI(element);
+    // If the styles is a string, like: "p-20px m-1rem fs-2rem" / Stacked classes
     if (typeof styles === "string") {
+      // Handled using `applyMultiStyles`
       styler.applyMultiStyles(styles);
     } else {
+      // Handle nested styles / if the value is new object
       for (const [prop, value] of Object.entries(styles)) {
         styler.applyStyle(prop, value, "");
       }
     }
   };
-
+  // Recursive function to handle nested styles
   const applyNestedStyles = (
     parentSelector: string,
     styles: Record<string, string>
   ): void => {
+    // Handle nested style
     Object.entries(styles).forEach(([childSelector, childStyles]) => {
       const elements = document.querySelectorAll<HTMLElement>(
         `${parentSelector} ${childSelector}`
       );
+      // Apply nested styles if the value is an object / new object as value
       if (typeof childStyles === "object" && !Array.isArray(childStyles)) {
         applyNestedStyles(`${parentSelector} ${childSelector}`, childStyles);
-      } else {
+      }
+      // Apply direct styles if not overridden by nested styles / default style
+      else {
+        // Default handler if style is a string / default styler (e.g. "p-1rem fs-1rem")
         elements.forEach((element) => {
           applyStylesToElement(element, childStyles);
         });
       }
     });
   };
-
-  for (const [selector, styles] of Object.entries(stylesObject)) {
+  // Handle styling logic, nested style or only default
+  Object.entries(stylesObject).forEach(([selector, styles]) => {
+    // If the styles is an object or nested style, use `applyNestedStyles` function to apply nested style logic
     if (typeof styles === "object" && !Array.isArray(styles)) {
       applyNestedStyles(selector, styles);
-    } else {
+    }
+    // If the styles is not overriden by nested style, apply styles using default styler
+    else {
+      // Stacking selector and
       const elements = document.querySelectorAll<HTMLElement>(selector);
+      // Apply direct styles into element using default styler
       elements.forEach((element) => {
+        // apply default styles
         applyStylesToElement(element, styles);
+        /**
+         * const styler = new makeTenoxUI(element);
+         * styler.applyMultiStyles(styles);
+         */
       });
     }
+    // Store defined styles for reuse
     definedStyles[selector] = styles;
-  }
-
+  });
+  // returning defined styles
   return definedStyles;
 }
 
@@ -488,15 +508,16 @@ function tenoxui(): void {
 
   // Merge all `Classes` into one selector. Example : '[class*="p-"]', '[class*="m-"]', '[class*="justify-"]'
   AllClasses = document.querySelectorAll(Classes.join(", "));
+
   // Iterate over elements with AllClasses
   AllClasses.forEach((element: HTMLElement) => {
     // Get the list of classes for the current element
     const classes = element.classList;
     // Make TenoxUI
-    const makeTx = new makeTenoxUI(element);
+    const styler = new makeTenoxUI(element);
     // Iterate over classes and apply styles using makeTenoxUI
     classes.forEach((className) => {
-      makeTx.applyStyles(className);
+      styler.applyStyles(className);
     });
   });
 }
