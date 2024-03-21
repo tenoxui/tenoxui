@@ -61,16 +61,123 @@ Using CDN :
 
 <h3>Documentation</h3>
 
-<h4>Usage Example</h4>
-
-<p>
-This code will make a box with 200px width and 200px height with 2rem padding and 8px border radius. And black text with 1.5rem of font size and 500 of font weight
-</p>
+<h4>Using Class</h4>
 
 ```html
 <div class="box-200px flex-parent-center br-8px bg-#0d0d0d p-2rem">
   <h1 class="fs-1.5rem fw-500 tc-lightgreen">Hello World!</h1>
 </div>
 ```
+
+<h4>Using Function</h4>
+
+1. `makeStyle` function
+
+Using selector and the class names as parameter, you can change the style of the element.
+
+```js
+makeStyle("body", "bg-#0d0d0d tc-white p-20px");
+```
+
+Note: `makeStyle` only give styles to one selector
+
+2. `makeStyles` function
+
+Using object as parameter to give the styles
+
+```js
+makeStyles({
+  body: "bg-#0d0d0d tc-white p-20px",
+  nav: "position-fixed top-0 p-10px",
+  "h1.logo": "fs-1rem fw-600",
+  // Try re-usable class
+  ".card": "display-flex flex-parent-center",
+  ".flex": "display-flex",
+  ".center": "flex-parent-center",
+});
+```
+
+Using re-usable class:
+
+```html
+<div class="flex center">...</div>
+```
+
+The `div` above will have style of :
+
+```css
+div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+```
+
+3. Nested Style
+
+`makeStyles` also support nested styles because it's defined as an object.
+
+HTML:
+
+```html
+<div class="container">
+  <div class="card">
+    <h2 class="title">Hello</h2>
+    <p class="desc">Lorem ipsum dolor sit amet consectetur.</p>
+  </div>
+  <div class="card">
+    <h2 class="title">World</h2>
+    <p class="desc">Lorem ipsum dolor sit amet consectetur.</p>
+  </div>
+</div>
+```
+
+JavaScript :
+
+```js
+const styles = {
+  body: "bg-#0d0d0d tc-white p-20px",
+  ".container": {
+    "": " display-flex gap-20px jc-center", // Empty string will treated as parent's style
+    // Card class will only applied when its inside container class, outside it will not styled
+    ".card": {
+      "": "p-20px br-8px",
+      ".title": "fs-1.4rem fw-600",
+      ".desc": "fs-14px fw-500 lh-1.4 ta-justify",
+    },
+  },
+};
+
+makeStyles(styles);
+```
+
+The css style will be like this :
+
+```css
+.container {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+
+  .card {
+    padding: 20px;
+    border-radius: 8px;
+
+    .title {
+      font-size: 1.4rem;
+      font-weight: 600;
+    }
+
+    .desc {
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.4;
+      text-align: justify;
+    }
+  }
+}
+```
+
+<h4>More</h4>
 
 Full documentation on [TenoxUI Documentation](https://tenoxui.web.app).
