@@ -125,6 +125,8 @@ class makeTenoxUI {
           this.element.style[
             property
           ] = `repeat(auto-fit, minmax(${value}${unit}, 1fr))`;
+        } else if (type === "bg-image") {
+          this.element.style[property] = `url(${value})`;
         }
         // Backdrop Filter Property
         else if (property === "backdropFilter") {
@@ -284,8 +286,14 @@ class makeTenoxUI {
   // Handle all possible values
   applyStyles(className: string): void {
     // Using RegExp to handle the value
+    // Fix 0.6
+    // const match = className.match(
+    //   /([a-zA-Z]+(?:-[a-zA-Z]+)*)-(-?(?:\d+(\.\d+)?)|(?:[a-zA-Z]+(?:-[a-zA-Z]+)*(?:-[a-zA-Z]+)*)|(?:#[0-9a-fA-F]+)|(?:\[[^\]]+\]))([a-zA-Z%]*)/
+    // );
+
     const match = className.match(
-      /([a-zA-Z]+(?:-[a-zA-Z]+)*)-(-?(?:\d+(\.\d+)?)|(?:[a-zA-Z]+(?:-[a-zA-Z]+)*(?:-[a-zA-Z]+)*)|(?:#[0-9a-fA-F]+)|(?:\[[^\]]+\]))([a-zA-Z%]*)/
+      /([a-zA-Z]+(?:-[a-zA-Z]+)*)-(-?(?:\d+(\.\d+)?)|(?:[a-zA-Z]+(?:-[a-zA-Z]+)*(?:-[a-zA-Z]+)*)|(?:#[0-9a-fA-F]+)|(?:\[[^\]]+\])|(?:\.[^\s.]+[.][a-zA-Z]+))([a-zA-Z%]*)/
+      // /([a-zA-Z]+(?:-[a-zA-Z]+)*)-(-?(?:\d+(\.\d+)?)|(?:[a-zA-Z]+(?:-[a-zA-Z]+)*(?:-[a-zA-Z]+)*)|(?:#[0-9a-fA-F]+)|(?:\[[^\]]+\])|(?:\.[^\s.]+))([a-zA-Z%]*)/
     );
     if (match) {
       // type = property class. Example: p-, m-, flex-, fx-, filter-, etc.

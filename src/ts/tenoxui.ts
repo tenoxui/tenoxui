@@ -91,6 +91,7 @@ const property: {
   "bg-attach": "backgroundAttachment",
   "bg-origin": "backgroundOrigin",
   "bg-size": "backgroundSize",
+  "bg-image": "backgroundImage",
   "bg-clip": "backgroundClip",
   "bg-repeat": "backgroundRepeat",
   "bg-loc": "backgroundPosition",
@@ -348,6 +349,9 @@ class makeTenoxUI {
           this.element.style[
             property
           ] = `repeat(auto-fit, minmax(${value}${unit}, 1fr))`;
+        }
+        else if (type === "bg-image") {
+          this.element.style[property] = `url(${value})`;
         }
         // Backdrop Filter Property
         else if (property === "backdropFilter") {
@@ -737,6 +741,16 @@ function tenoxui(): void {
     });
   });
 }
+
+// Simple tenoxui manual styling function
+// function styler(selector: string, type: string, value: string) {
+//   const elements: NodeListOf<HTMLElement> = document.querySelectorAll(selector);
+//   elements.forEach((element) => {
+//     const tui = new makeTenoxUI(element);
+//     tui.applyStyle(type, value, "");
+//   });
+//   return `Styler for "${selector}", using "${type}" with value of "${value}"`;
+// }
 
 moreColor(); // init: moreColor function
 tenoxui(); // init: tenoxui
