@@ -48,7 +48,14 @@
       class="position-fixed bg-[background] ph-10vw pv-1rem t-0 l-0 r-0 display-flex ai-center jc-[sb]"
     >
       <header>
-        <a target="_blank" href="https://tenoxui.web.app/">
+        <a
+          target="_blank"
+          href="https://tenoxui.web.app/"
+          class="display-flex gap-8px flex-parent-center"
+        >
+          <!-- This is tenoxui logo, generated using background image -->
+          <div class="size-2rem tenoxui-logo fullsize"></div>
+          <!-- End Logo -->
           <h1 class="fw-600 fs-1.2rem">
             <span class="tc-white">TUI</span>
             <span class="tc-#d2e603 fs-12px fw-500"
@@ -138,6 +145,11 @@
             </p>
           </li>
         </ul>
+        <div class="container">
+          <div class="wrapper">
+            <h1 class="title">Hello World</h1>
+          </div>
+        </div>
       </section>
       <!-- Docs Section -->
       <section class="docs">
@@ -193,12 +205,20 @@
     <script type="module">
       import tenoxui, {
         defineProps,
+        makeStyle,
         makeStyles,
         makeTenoxUI,
+        styler,
       } from "./src/js/tenoxui.esm.js";
 
+      // Custom type and property
       defineProps({
         text: "color",
+        size: ["width", "height"],
+      });
+      // custom styles
+      makeStyles({
+        ".fullsize": "bg-size-cover",
       });
 
       const styles = makeStyles({
@@ -217,8 +237,6 @@
 
         ".card:nth-child(3)": `${styles["white"]} radius-top-0 radius-bottom-1em`,
       });
-
-      console.log(makeTenoxUI);
 
       // Manual Styler Example 1
       // Tested js and esm
@@ -240,6 +258,33 @@
         styler.applyStyle("mt", "2", "rem");
       });
 
+      makeStyles({
+        ".container": {
+          "": "bg-red p-1rem",
+          ".wrapper": {
+            "": "bg-blue",
+            ".title": "tc-pink",
+          },
+        },
+      });
+
+      // TenoxUI Logo
+      // new makeTenoxUI(document.querySelector(".tenoxui-logo")).applyStyle(
+      //   // type for background-image proeprty
+      //   "bg-image",
+      //   // {value} : image url
+      //   "https://tenoxui.web.app/img/tenoxui.svg"
+      // );
+
+      console.log(
+        styler(
+          ".tenoxui-logo",
+          "bg-image",
+          "https://tenoxui.web.app/img/tenoxui.svg"
+        )
+      );
+
+      // makeStyle(".fullsize", "bg-size-cover");
       tenoxui();
     </script>
     <!-- <script src="/src/js/tenoxui.js"></script>
@@ -248,5 +293,4 @@
     </script> -->
     <script defer src="./version.js"></script>
   </body>
-  <!-- Propmt: it didnt work, instead now give me some example and usage between class constructor and function prototype -->
 </html>
