@@ -208,7 +208,6 @@
         makeStyle,
         makeStyles,
         makeTenoxUI,
-        styler,
       } from "./src/js/tenoxui.esm.js";
 
       // Custom type and property
@@ -269,20 +268,20 @@
       });
 
       // TenoxUI Logo
-      // new makeTenoxUI(document.querySelector(".tenoxui-logo")).applyStyle(
-      //   // type for background-image proeprty
-      //   "bg-image",
-      //   // {value} : image url
-      //   "https://tenoxui.web.app/img/tenoxui.svg"
-      // );
-
-      console.log(
-        styler(
-          ".tenoxui-logo",
-          "bg-image",
-          "https://tenoxui.web.app/img/tenoxui.svg"
-        )
+      new makeTenoxUI(document.querySelector(".tenoxui-logo")).applyStyle(
+        // type for background-image proeprty
+        "bg-image",
+        // {value} : image url
+        "https://tenoxui.web.app/img/tenoxui.svg"
       );
+
+      // console.log(
+      //   styler(
+      //     ".tenoxui-logo",
+      //     "bg-image",
+      //     "https://tenoxui.web.app/img/tenoxui.svg"
+      //   )
+      // );
 
       // makeStyle(".fullsize", "bg-size-cover");
       tenoxui();
