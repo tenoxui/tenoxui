@@ -92,6 +92,7 @@ const property = {
     "bg-loc-x": "backgroundPositionX",
     "bg-loc-y": "backgroundPositionY",
     "bg-blend": "backgroundBlendMode",
+    "bg-image": "backgroundImage",
     // Flex
     fx: "flex",
     flex: "flex",

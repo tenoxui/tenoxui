@@ -8,7 +8,7 @@ import property from "./lib/property.js";
 let Classes, AllClasses;
 // Check browser environment
 if (typeof window !== "undefined") {
-    // Make classes from type name from properties key name
+    // Generate className from property key name, or property type
     Classes = Object.keys(property).map((className) => `[class*="${className}-"]`);
     // Merge all `Classes` into one selector. Example : '[class*="p-"]', '[class*="m-"]', '[class*="justify-"]'
     AllClasses = document.querySelectorAll(Classes.join(", "));
@@ -101,6 +101,9 @@ class makeTenoxUI {
                 }
                 else if (type === "auto-grid-row" || type === "auto-grid-col") {
                     this.element.style[property] = `repeat(auto-fit, minmax(${value}${unit}, 1fr))`;
+                }
+                else if (type === "bg-image") {
+                    this.element.style[property] = `url(${value})`;
                 }
                 // Backdrop Filter Property
                 else if (property === "backdropFilter") {
@@ -213,7 +216,13 @@ class makeTenoxUI {
     // Handle all possible values
     applyStyles(className) {
         // Using RegExp to handle the value
-        const match = className.match(/([a-zA-Z]+(?:-[a-zA-Z]+)*)-(-?(?:\d+(\.\d+)?)|(?:[a-zA-Z]+(?:-[a-zA-Z]+)*(?:-[a-zA-Z]+)*)|(?:#[0-9a-fA-F]+)|(?:\[[^\]]+\]))([a-zA-Z%]*)/);
+        // Fix 0.6
+        // const match = className.match(
+        //   /([a-zA-Z]+(?:-[a-zA-Z]+)*)-(-?(?:\d+(\.\d+)?)|(?:[a-zA-Z]+(?:-[a-zA-Z]+)*(?:-[a-zA-Z]+)*)|(?:#[0-9a-fA-F]+)|(?:\[[^\]]+\]))([a-zA-Z%]*)/
+        // );
+        const match = className.match(/([a-zA-Z]+(?:-[a-zA-Z]+)*)-(-?(?:\d+(\.\d+)?)|(?:[a-zA-Z]+(?:-[a-zA-Z]+)*(?:-[a-zA-Z]+)*)|(?:#[0-9a-fA-F]+)|(?:\[[^\]]+\])|(?:\.[^\s.]+[.][a-zA-Z]+))([a-zA-Z%]*)/
+        // /([a-zA-Z]+(?:-[a-zA-Z]+)*)-(-?(?:\d+(\.\d+)?)|(?:[a-zA-Z]+(?:-[a-zA-Z]+)*(?:-[a-zA-Z]+)*)|(?:#[0-9a-fA-F]+)|(?:\[[^\]]+\])|(?:\.[^\s.]+))([a-zA-Z%]*)/
+        );
         if (match) {
             // type = property class. Example: p-, m-, flex-, fx-, filter-, etc.
             const type = match[1];
@@ -279,43 +288,66 @@ function defineProps(propsObject) {
     });
 }
 function makeStyles(stylesObject) {
+    // Store defined styles into an object
     const definedStyles = {};
+    // Helper function to apply styles into elements
     const applyStylesToElement = (element, styles) => {
+        // Define new styler
         const styler = new makeTenoxUI(element);
+        // If the styles is a string, like: "p-20px m-1rem fs-2rem" / Stacked classes
         if (typeof styles === "string") {
+            // Handled using `applyMultiStyles`
             styler.applyMultiStyles(styles);
         }
         else {
+            // Handle nested styles / if the value is new object
             for (const [prop, value] of Object.entries(styles)) {
                 styler.applyStyle(prop, value, "");
             }
         }
     };
+    // Recursive function to handle nested styles
     const applyNestedStyles = (parentSelector, styles) => {
+        // Handle nested style
         Object.entries(styles).forEach(([childSelector, childStyles]) => {
             const elements = document.querySelectorAll(`${parentSelector} ${childSelector}`);
+            // Apply nested styles if the value is an object / new object as value
             if (typeof childStyles === "object" && !Array.isArray(childStyles)) {
                 applyNestedStyles(`${parentSelector} ${childSelector}`, childStyles);
             }
+            // Apply direct styles if not overridden by nested styles / default style
             else {
+                // Default handler if style is a string / default styler (e.g. "p-1rem fs-1rem")
                 elements.forEach((element) => {
                     applyStylesToElement(element, childStyles);
                 });
             }
         });
     };
-    for (const [selector, styles] of Object.entries(stylesObject)) {
+    // Handle styling logic, nested style or only default
+    Object.entries(stylesObject).forEach(([selector, styles]) => {
+        // If the styles is an object or nested style, use `applyNestedStyles` function to apply nested style logic
         if (typeof styles === "object" && !Array.isArray(styles)) {
             applyNestedStyles(selector, styles);
         }
+        // If the styles is not overriden by nested style, apply styles using default styler
         else {
+            // Stacking selector and
             const elements = document.querySelectorAll(selector);
+            // Apply direct styles into element using default styler
             elements.forEach((element) => {
+                // apply default styles
                 applyStylesToElement(element, styles);
+                /**
+                 * const styler = new makeTenoxUI(element);
+                 * styler.applyMultiStyles(styles);
+                 */
             });
         }
+        // Store defined styles for reuse
         definedStyles[selector] = styles;
-    }
+    });
+    // returning defined styles
     return definedStyles;
 }
 // More color compability, for hex, rgb, and rgba
@@ -378,10 +410,10 @@ function tenoxui() {
         // Get the list of classes for the current element
         const classes = element.classList;
         // Make TenoxUI
-        const makeTx = new makeTenoxUI(element);
+        const styler = new makeTenoxUI(element);
         // Iterate over classes and apply styles using makeTenoxUI
         classes.forEach((className) => {
-            makeTx.applyStyles(className);
+            styler.applyStyles(className);
         });
     });
 }
