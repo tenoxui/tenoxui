@@ -1,5 +1,5 @@
 /*!
- * TenoxUI CSS Framework v0.6.0 [ https://tenoxui.web.app ]
+ * TenoxUI CSS Framework v0.6.1 [ https://tenoxui.web.app ]
  * copyright (c) 2024 nousantx
  * licensed under MIT [ https://github.com/nousantx/tenoxui/blob/main/LICENSE ]
  */
@@ -222,7 +222,7 @@ const property = {
     "list-s-pos": "listStylePosition",
     "list-s-type": "listStyleType",
     // More
-    "box-sizing": "boxSizing",
+    "box-sizing": "boxSizing", //! need custom value ${value}-bx
     isolation: "isolation",
     "object-fit": "objectFit",
     "object-post": "objectPosition",
