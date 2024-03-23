@@ -14,11 +14,10 @@
   "scripts": {
     "dev": "tsc --watch",
     "build": "tsc",
-    "ts-watch": "tsc --watch",
-    "ts-build": "tsc",
-    "mini-js": "terser src/js/tenoxui.js -o dist/js/tui.min.js -c -m --mangle --source-map url='tui.min.js.map' && terser src/js/lib/property.js -o dist/js/lib/property.js -c -m --mangle && cp src/js/tenoxui.js dist/js/tui.js && cp src/js/lib/color.js dist/js/lib/",
-    "mini-mjs": "terser src/js/tenoxui.esm.js -o dist/js/tui.esm.min.js -c -m --mangle --source-map url='tui.esm.min.js.map' && cp src/js/tenoxui.esm.js dist/js/tui.esm.js",
-    "mini-css": "cleancss src/css/tenoxui.css -o dist/css/tui.min.css --source-map && cp src/css/tenoxui.css dist/css/tui.css && cp src/css/lib.css dist/css/"
+    "build-js": "terser src/js/tenoxui.js -o dist/js/tui.min.js -c -m --mangle --source-map url='tui.min.js.map' && terser src/js/lib/property.js -o dist/js/lib/property.js -c -m --mangle && cp src/js/tenoxui.js dist/js/tui.js && cp src/js/lib/color.js dist/js/lib/",
+    "build-mjs": "terser src/js/tenoxui.esm.js -o dist/js/tui.esm.min.js -c -m --mangle --source-map url='tui.esm.min.js.map' && cp src/js/tenoxui.esm.js dist/js/tui.esm.js",
+    "build-css": "cleancss src/css/tenoxui.css -o dist/css/tui.min.css --source-map && cp src/css/tenoxui.css dist/css/tui.css && cp src/css/lib.css dist/css/",
+    "build-all": "npm run build-js && npm run build-mjs && npm run build-css"
   },
   "repository": {
     "type": "git",
