@@ -4,7 +4,7 @@
  >
 </a>
 </p>
-<h1 align="center">TenoxUI v0.6.0</h1>
+<h1 align="center">TenoxUI v0.6.1</h1>
 <p align="center">
 Fast and Lightweight CSS Framework, Style through javascript
 <br>
@@ -135,7 +135,7 @@ HTML:
 JavaScript :
 
 ```js
-const styles = {
+makeStyles({
   body: "bg-#0d0d0d tc-white p-20px",
   ".container": {
     "": " display-flex gap-20px jc-center", // Empty string will treated as parent's style
@@ -146,9 +146,7 @@ const styles = {
       ".desc": "fs-14px fw-500 lh-1.4 ta-justify",
     },
   },
-};
-
-makeStyles(styles);
+});
 ```
 
 The css style will be like this :
