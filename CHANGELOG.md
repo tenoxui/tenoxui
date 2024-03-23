@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.6.1] - 23-03-2024
+
+- Nested in nested problem
+- Not applying the class style in esm module ReactJS
+- Change `makeTx` variable on `tenoxui` function to `styler`
+- Improving `makeTenoxUI` constructor in esm variant
+- Update `package.json` scripts
+
 ## [0.6] - 13-03-2024
 
 - Single `property` when make a new type and property now dont need wrapped inside an array
