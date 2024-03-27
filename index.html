@@ -84,13 +84,13 @@
         </a>
       </header>
       <!-- Remove `none` className to see nested class example -->
-      <div class="card">
+      <div class="card none">
         <h1 class="title">Nested CSS</h1>
         <p class="desc">
           This card is styled using new Nested Feature TenoxUI.
         </p>
       </div>
-      <div class="card">
+      <div class="card none">
         <h1 class="title">Nested CSS</h1>
         <p class="desc">
           This card is styled using new Nested Feature TenoxUI.
@@ -145,7 +145,7 @@
             </p>
           </li>
         </ul>
-        <div class="container">
+        <div class="container none">
           <div class="wrapper">
             <h1 class="title">Hello World</h1>
           </div>
@@ -215,9 +215,11 @@
         text: "color",
         size: ["width", "height"],
       });
+
       // custom styles
       makeStyles({
         ".fullsize": "bg-size-cover",
+        ".none, [hidden]": "display-none",
       });
 
       const styles = makeStyles({
@@ -286,10 +288,6 @@
       // makeStyle(".fullsize", "bg-size-cover");
       tenoxui();
     </script>
-    <!-- <script src="/src/js/tenoxui.js"></script>
-    <script>
-      console.log(makeTenoxUI);
-    </script> -->
     <script defer src="./version.js"></script>
   </body>
 </html>
