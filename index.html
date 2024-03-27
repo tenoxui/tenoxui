@@ -1,4 +1,4 @@
-<!-- TenoxUI Page Tester: v0.5+ -->
+<!-- TenoxUI Page Tester: v0.6: Nested style -->
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -219,6 +219,7 @@
       // custom styles
       makeStyles({
         ".fullsize": "bg-size-cover",
+        // display none
         ".none, [hidden]": "display-none",
       });
 
@@ -235,7 +236,6 @@
           h1: "fs-3rem fw-700",
           p: "fw-500 fs-14px",
         },
-
         ".card:nth-child(3)": `${styles["white"]} radius-top-0 radius-bottom-1em`,
       });
 
@@ -252,13 +252,16 @@
       //   "rem"
       // );
 
-      // Using foreach/multiple elements
+      // defining selector
       const elements = document.querySelectorAll("section");
+      // iterate elements
       elements.forEach((element) => {
+        // makeTenoxUI instance
         const styler = new makeTenoxUI(element);
         styler.applyStyle("mt", "2", "rem");
       });
 
+      // nested style test
       makeStyles({
         ".container": {
           "": "bg-red p-1rem",
