@@ -15,6 +15,7 @@
       href="https://fonts.googleapis.com/css2?family=Cabin:wght@400;500;600;700&family=Figtree:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
+
     <style>
       :root {
         font-family: "figtree", sans-serif;
@@ -26,21 +27,22 @@
         --para-color: #aaa;
         --sb: space-between;
       }
-      a,
+      /* a,
       a:hover {
         text-decoration-color: var(--primary);
-      }
-      nav div a,
+      } */
+
+      /* nav div a,
       section a {
         color: white;
         text-decoration: underline var(--primary);
         &:hover {
           text-decoration: none;
         }
-      }
+      } */
     </style>
     <!-- <script src="./test/plain-tui.test.js"></script> -->
-    <!-- <script src="/src/js/tenoxui.js"></script> -->
+    <script src="/src/js/tenoxui.js"></script>
   </head>
   <body class="bg-[background] tc-white h-mn-100vh">
     <!-- Navbar -->
@@ -83,6 +85,19 @@
           </h1>
         </a>
       </header>
+      <!-- hover tester -->
+      <div class="center gap-1rem">
+        <div class="hover-me box-100px center rounded cursor-pointer">
+          <h1 class="fs-1rem fw-500">Hover Me!</h1>
+        </div>
+
+        <div class="hover-me-2 position-relative center cursor-pointer">
+          <div class="box-100px bg-pink"></div>
+          <div class="box-100px bg-lightblue"></div>
+          <h1 class="position-absolute fs-1rem fw-500">Hover Me Too!</h1>
+        </div>
+      </div>
+
       <!-- Remove `none` className to see nested class example -->
       <div class="card none">
         <h1 class="title">Nested CSS</h1>
@@ -202,24 +217,32 @@
       });
     </script> -->
 
-    <script type="module">
-      import tenoxui, {
-        defineProps,
-        makeStyle,
-        makeStyles,
-        makeTenoxUI,
-      } from "./src/js/tenoxui.esm.js";
+    <script>
+      // <script type="module">
+      // import tenoxui, {
+      //   defineProps,
+      //   makeStyle,
+      //   makeStyles,
+      //   applyHover,
+      //   applyHovers,
+      //   makeTenoxUI,
+      // } from "./src/js/tenoxui.esm.js";
 
       // Custom type and property
       defineProps({
         text: "color",
         size: ["width", "height"],
+        td: "textDecoration",
+        "td-c": "textDecorationColor",
       });
 
       // custom styles
       makeStyles({
+        // re-usable class
         ".fullsize": "bg-size-cover",
-        // display none
+        ".center": "display-flex flex-parent-center",
+        ".rounded": "br-0.25rem",
+        // make the `none` class always on the bottom
         ".none, [hidden]": "display-none",
       });
 
@@ -280,13 +303,22 @@
         "https://tenoxui.web.app/img/tenoxui.svg"
       );
 
-      // console.log(
-      //   styler(
-      //     ".tenoxui-logo",
-      //     "bg-image",
-      //     "https://tenoxui.web.app/img/tenoxui.svg"
-      //   )
-      // );
+      // new function (v0.7 update)
+      const all_trans = "tr-prop-all tr-time-0.4s tr-timing-ease";
+
+      // applyHover
+      applyHover("a", "td-c-[primary]", "", `${all_trans}`);
+
+      // applyHovers function
+      applyHovers({
+        "nav div a, section a": [
+          "tc-white td-underline td-c-[primary]",
+          "td-none td-c-[primary]",
+          "td-c-[primary] tc-white td-underline td-c-[primary]",
+        ],
+        ".hover-me": ["bg-red", "bg-blue", `${all_trans} bg-red`],
+        ".hover-me-2": ["move-x--30px", "move-x-30px", `${all_trans}`],
+      });
 
       // makeStyle(".fullsize", "bg-size-cover");
       tenoxui();
