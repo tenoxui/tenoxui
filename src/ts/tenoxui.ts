@@ -16,8 +16,6 @@ const property: {
   pl: "paddingLeft",
   ph: ["paddingLeft", "paddingRight"],
   pv: ["paddingTop", "paddingBottom"],
-  "pad-in-start": "paddingInlineStart",
-  "pad-in-end": "paddingInlineEnd",
   // Margin
   m: "margin",
   mt: "marginTop",
@@ -26,8 +24,6 @@ const property: {
   ml: "marginLeft",
   mv: ["marginTop", "marginBottom"],
   mh: ["marginLeft", "marginRight"],
-  "mar-in-start": "marginInlineStart",
-  "mar-in-end": "marginInlineEnd",
   // Text and font
   fs: "fontSize",
   fw: "fontWeight",
@@ -44,20 +40,6 @@ const property: {
   "text-style": "fontStyle",
   "white-space": "whiteSpace",
 
-  // More Text
-  "text-over": "textOverflow",
-  "text-wrap": "textWrap",
-  "v-align": "verticalAlign",
-  "w-break": "wordBreak",
-  "wrap-over": "overflowWrap",
-  hyphens: "hyphens",
-  "text-deco-line": "textDecorationLine",
-  "text-deco-style": "textDecorationStyle",
-  "text-deco-thick": "textDecorationThickness",
-  "text-underline-off": "textUnderlineOffset",
-  "variant-num": "font-variant-numeric:",
-  "webkit-font-smooth": "-webkit-font-smoothing",
-  "moz-font-smooth": "-moz-osx-font-smoothing",
   // Positioning
   position: "position",
   post: "position",
@@ -82,22 +64,18 @@ const property: {
   "h-mn": "minHeight",
   // Columns
   col: "columns",
-  // Break After
-  "bk-af": "breakAfter",
-  "bk-bef": "breakBefore",
-  "bk-in": "breakInside",
   // Background
   bg: "background",
   "bg-attach": "backgroundAttachment",
   "bg-origin": "backgroundOrigin",
   "bg-size": "backgroundSize",
-  "bg-image": "backgroundImage",
   "bg-clip": "backgroundClip",
   "bg-repeat": "backgroundRepeat",
   "bg-loc": "backgroundPosition",
   "bg-loc-x": "backgroundPositionX",
   "bg-loc-y": "backgroundPositionY",
   "bg-blend": "backgroundBlendMode",
+  "bg-image": "backgroundImage",
   // Flex
   fx: "flex",
   flex: "flex",
@@ -130,7 +108,6 @@ const property: {
   "grid-gap": "gridGap",
   "grid-row-gap": "gridRowGap",
   "grid-col-gap": "gridColumnGap",
-
   "row-gap": "rowGap",
   "col-gap": "columnGap",
   // Align
@@ -176,12 +153,7 @@ const property: {
   "radius-bottom": ["borderBottomLeftRadius", "borderBottomRightRadius"],
   "radius-left": ["borderTopLeftRadius", "borderBottomLeftRadius"],
   "radius-right": ["borderTopRightRadius", "borderBottomRightRadius"],
-  "br-ss": "border-start-start-radius",
-  "br-se": "border-start-end-radius",
-  "br-ee": "border-end-end-radius",
-  "br-es": "border-end-start-radius",
-  "bw-is": "border-inline-start-width",
-  "bw-ie": "border-inline-end-width",
+
   // Outline
   ol: "outline",
   "ol-width": "outlineWidth",
@@ -222,19 +194,11 @@ const property: {
   skew: "transform",
   "skew-x": "transform",
   "skew-y": "transform",
-  // List Style
-  "list-s-img": "listStyleImage",
-  "list-s-pos": "listStylePosition",
-  "list-s-type": "listStyleType",
+
   // More
-  "box-sizing": "boxSizing", //! need custom value ${value}-bx
+  "box-sizing": "boxSizing",
   isolation: "isolation",
-  "object-fit": "objectFit",
-  "object-post": "objectPosition",
-  // Overscroll Behavior
-  "os-beh": "overscrollBehavior",
-  "os-beh-y": "overscrollBehaviorY",
-  "os-beh-x": "overscrollBehaviorX",
+
   visibility: "visibility",
   // TenoxUI Custom property
   box: ["width", "height"],
@@ -327,6 +291,10 @@ class makeTenoxUI {
             ? `${existingFilter} ${type}(${value}${unit})`
             : `${type}(${value}${unit})`;
         }
+        // if (type === "filter") {
+        //   const existingFilter = this.element.style[property];
+        //   this.element.style[property] = `${value}${unit}`;
+        // }
         // Make custom property for flex
         else if (type === "flex-auto") {
           this.element.style[property] = `1 1 ${value}${unit}`;
@@ -349,8 +317,7 @@ class makeTenoxUI {
           this.element.style[
             property
           ] = `repeat(auto-fit, minmax(${value}${unit}, 1fr))`;
-        }
-        else if (type === "bg-image") {
+        } else if (type === "bg-image") {
           this.element.style[property] = `url(${value})`;
         }
         // Backdrop Filter Property
@@ -717,6 +684,63 @@ function moreColor() {
       makeColor(element, hexPattern, colorTypes[type], colorFormats["hex"]);
     }
   });
+}
+
+// hover handler test function (update v0.7)
+
+// applyHover function
+function applyHover(selector, notHover, isHover, styles = "") {
+  // define selector
+  const elements = document.querySelectorAll(selector);
+
+  // iterate elements
+  elements.forEach((element) => {
+    // makeTenoxUI instance
+    const styler = new makeTenoxUI(element);
+
+    // applying default styles
+    // styler.applyMultiStyles(`${notHover} ${styles}`);
+    styler.applyMultiStyles(styles);
+
+    // when the element is hovered
+    element.addEventListener("mouseenter", () => {
+      // apply hover style
+      styler.applyMultiStyles(isHover);
+    });
+
+    // default style / when element not hovered
+    element.addEventListener("mouseleave", () => {
+      // apply default style
+      styler.applyMultiStyles(notHover);
+    });
+  });
+}
+
+// applyHovers function
+function applyHovers(hovers: object) {
+  Object.entries(hovers).forEach(
+    ([selector, [notHover, isHover, styles = ""]]: string[]) => {
+      // selector
+      const elements = document.querySelectorAll(selector);
+      elements.forEach((element: HTMLElement) => {
+        // makeTenoxUI instance
+        const styler = new makeTenoxUI(element);
+        // applying default styles
+        // styler.applyMultiStyles(`${notHover} ${styles}`);
+        styler.applyMultiStyles(styles);
+        // when the element is hovered
+        element.addEventListener("mouseenter", () => {
+          // apply hover style
+          styler.applyMultiStyles(isHover);
+        });
+        // default style / when element not hovered
+        element.addEventListener("mouseleave", () => {
+          // apply default style
+          styler.applyMultiStyles(notHover);
+        });
+      });
+    }
+  );
 }
 
 // Applying the style to all elements ✨

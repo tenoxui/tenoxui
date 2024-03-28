@@ -450,61 +450,82 @@ function makeStyles(stylesObject: StylesObject): StylesObject {
   return definedStyles;
 }
 
-// More color compability, for hex, rgb, and rgba
-function moreColor() {
-  // Makd color function
-  const makeColor = (
-    element: HTMLElement,
-    pattern: RegExp,
-    property: string,
-    format: (match: RegExpMatchArray) => string
-  ) => {
-    // Match the class name against the provided pattern
-    const match = element.className.match(pattern);
-    // If there is a match, apply the style to the element using the specified property and format
-    if (match) {
-      element.style[property] = format(match);
-    }
-  };
-  let colorClass: NodeListOf<HTMLElement>;
-  if (typeof window !== "undefined") {
-    // Select all elements with classes related to colors (background, text, border)
-    colorClass = document.querySelectorAll<HTMLElement>(
-      '[class*="bg-"], [class*="tc-"], [class*="border-"]'
-    );
-  }
-  // Define mappings for color types and corresponding CSS properties
-  const colorTypes: Record<string, string> = {
-    bg: "background",
-    tc: "color",
-    border: "borderColor",
-  };
-  // Define different color formats and their corresponding formatting functions
-  const colorFormats: Record<string, (match: RegExpMatchArray) => string> = {
-    // rgb
-    rgb: (match) => `rgb(${match.slice(1, 4).join(",")})`,
-    // rgba
-    rgba: (match) => `rgba(${match.slice(1, 5).join(",")})`,
-    // hex
-    hex: (match) => `#${match[1]}`,
-  };
-  // Iterate through each element with color-related classes
-  colorClass.forEach((element: HTMLElement) => {
-    // Iterate through each color type (bg, tc, border)
-    for (const type in colorTypes) {
-      // Iterate through each color format (rgb, rgba, hex)
-      for (const format in colorFormats) {
-        // Create a pattern for the specific color type and format
-        const pattern = new RegExp(`${type}-${format}\\(([^)]+)\\)`);
-        // Apply color to the element using the makeColor function
-        makeColor(element, pattern, colorTypes[type], colorFormats[format]);
-      }
-      // Create a pattern for hex color format
-      const hexPattern = new RegExp(`${type}-([0-9a-fA-F]{3,6})`);
-      // Apply color to the element using the makeColor function for hex format
-      makeColor(element, hexPattern, colorTypes[type], colorFormats["hex"]);
-    }
+// function applyHover(
+//   selector: string,
+//   beforeHover: string,
+//   isHover: string,
+//   styles: string = ""
+// ) {
+//   const elements = document.querySelectorAll(selector);
+
+//   elements.forEach((element: HTMLElement) => {
+//     const styler = new makeTenoxUI(element);
+
+//     styler.applyMultiStyles(`${beforeHover} ${styler}`);
+
+//     element.addEventListener("mouseenter", () => {
+//       styler.applyMultiStyles(isHover);
+//     });
+
+//     element.addEventListener("mouseleave", () => {
+//       styler.applyMultiStyles(beforeHover);
+//     });
+//   });
+// }
+
+// hover handler test function (update v0.7)
+
+// applyHover function
+function applyHover(selector, notHover, isHover, styles = "") {
+  // define selector
+  const elements = document.querySelectorAll(selector);
+
+  // iterate elements
+  elements.forEach((element) => {
+    // makeTenoxUI instance
+    const styler = new makeTenoxUI(element);
+
+    // applying default styles
+    styler.applyMultiStyles(`${notHover} ${styles}`);
+
+    // when the element is hovered
+    element.addEventListener("mouseenter", () => {
+      // apply hover style
+      styler.applyMultiStyles(isHover);
+    });
+
+    // default style / when element not hovered
+    element.addEventListener("mouseleave", () => {
+      // apply default style
+      styler.applyMultiStyles(notHover);
+    });
   });
+}
+
+// applyHovers function
+function applyHovers(hovers: object) {
+  Object.entries(hovers).forEach(
+    ([selector, [notHover, isHover, styles = ""]]: string[]) => {
+      // selector
+      const elements = document.querySelectorAll(selector);
+      elements.forEach((element: HTMLElement) => {
+        // makeTenoxUI instance
+        const styler = new makeTenoxUI(element);
+        // applying default styles
+        styler.applyMultiStyles(`${notHover} ${styles}`);
+        // when the element is hovered
+        element.addEventListener("mouseenter", () => {
+          // apply hover style
+          styler.applyMultiStyles(isHover);
+        });
+        // default style / when element not hovered
+        element.addEventListener("mouseleave", () => {
+          // apply default style
+          styler.applyMultiStyles(notHover);
+        });
+      });
+    }
+  );
 }
 
 // Applying the style to all elements ✨
@@ -537,7 +558,8 @@ export {
   defineProps,
   makeStyle,
   makeStyles,
-  moreColor,
+  applyHover,
+  applyHovers,
   makeTenoxUI,
 };
 export default tenoxui;
