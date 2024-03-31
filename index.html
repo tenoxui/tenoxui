@@ -1,9 +1,10 @@
 <!-- TenoxUI Page Tester: v0.6: Nested style -->
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0d0d0d" />
     <meta name="description" content="TenoxUI Lab" />
     <title>TenoxUI Lab</title>
     <link rel="stylesheet" href="src/css/tenoxui.css" />
@@ -86,7 +87,7 @@
         </a>
       </header>
       <!-- hover tester -->
-      <div class="center gap-1rem">
+      <div class="center gap-1rem none">
         <div class="hover-me box-100px center rounded cursor-pointer">
           <h1 class="fs-1rem fw-500">Hover Me!</h1>
         </div>
@@ -238,6 +239,7 @@
 
       // custom styles
       makeStyles({
+        a: "td-c-[primary]",
         // re-usable class
         ".fullsize": "bg-size-cover",
         ".center": "display-flex flex-parent-center",
@@ -300,7 +302,7 @@
         // type for background-image proeprty
         "bg-image",
         // {value} : image url
-        "https://tenoxui.web.app/img/tenoxui.svg"
+        "https://tenoxui.web.app/img/tenoxui.svg",
       );
 
       // new function (v0.7 update)
@@ -314,7 +316,7 @@
         "nav div a, section a": [
           "tc-white td-underline td-c-[primary]",
           "td-none td-c-[primary]",
-          "td-c-[primary] tc-white td-underline td-c-[primary]",
+          "tc-white td-underline td-c-[primary]",
         ],
         ".hover-me": ["bg-red", "bg-blue", `${all_trans} bg-red`],
         ".hover-me-2": ["move-x--30px", "move-x-30px", `${all_trans}`],
