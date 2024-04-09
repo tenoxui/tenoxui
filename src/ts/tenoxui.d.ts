@@ -43,5 +43,5 @@ declare module "tenoxui" {
   export function applyHovers(hovers: object): void;
 
   // Define the tenoxui function
-  export function tenoxui(): void;
+  export default function tenoxui(): void;
 }
