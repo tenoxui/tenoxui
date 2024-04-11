@@ -1,5 +1,5 @@
 /*!
- * TenoxUI CSS Framework v0.6.1 [ https://tenoxui.web.app ]
+ * TenoxUI CSS Framework v0.7.0 [ https://tenoxui.web.app ]
  * copyright (c) 2024 nousantx
  * licensed under MIT [ https://github.com/nousantx/tenoxui/blob/main/LICENSE ]
  */
@@ -190,9 +190,7 @@ const property = {
     "skew-x": "transform",
     "skew-y": "transform",
     // More
-    "box-sizing": "boxSizing",
     isolation: "isolation",
-    visibility: "visibility",
     // TenoxUI Custom property
     box: ["width", "height"],
 };
@@ -267,31 +265,9 @@ class makeTenoxUI {
                         ? `${existingFilter} ${type}(${value}${unit})`
                         : `${type}(${value}${unit})`;
                 }
-                // if (type === "filter") {
-                //   const existingFilter = this.element.style[property];
-                //   this.element.style[property] = `${value}${unit}`;
-                // }
                 // Make custom property for flex
                 else if (type === "flex-auto") {
                     this.element.style[property] = `1 1 ${value}${unit}`;
-                }
-                else if (type === "initial-flex") {
-                    this.element.style[property] = `0 1 ${value}${unit}`;
-                }
-                // Grid System Property [ Not Stable... Yet :) ]
-                else if (property === "gridRow" ||
-                    property === "gridColumn" ||
-                    property === "gridRowStart" ||
-                    property === "gridColumnStart" ||
-                    property === "gridRowEnd" ||
-                    property === "gridColumnEnd") {
-                    this.element.style[property] = `span ${value}${unit}`;
-                }
-                else if (type === "grid-row" || type === "grid-col") {
-                    this.element.style[property] = `repeat(${value}${unit}, 1fr)`;
-                }
-                else if (type === "auto-grid-row" || type === "auto-grid-col") {
-                    this.element.style[property] = `repeat(auto-fit, minmax(${value}${unit}, 1fr))`;
                 }
                 else if (type === "bg-image") {
                     this.element.style[property] = `url(${value})`;
@@ -641,15 +617,6 @@ function tenoxui() {
         });
     });
 }
-// Simple tenoxui manual styling function
-// function styler(selector: string, type: string, value: string) {
-//   const elements: NodeListOf<HTMLElement> = document.querySelectorAll(selector);
-//   elements.forEach((element) => {
-//     const tui = new makeTenoxUI(element);
-//     tui.applyStyle(type, value, "");
-//   });
-//   return `Styler for "${selector}", using "${type}" with value of "${value}"`;
-// }
 moreColor(); // init: moreColor function
 tenoxui(); // init: tenoxui
 //# sourceMappingURL=tenoxui.js.map

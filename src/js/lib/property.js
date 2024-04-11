@@ -1,5 +1,5 @@
 /*!
- * TenoxUI CSS Framework v0.6.1 [ https://tenoxui.web.app ]
+ * TenoxUI CSS Framework v0.7.0 [ https://tenoxui.web.app ]
  * copyright (c) 2024 nousantx
  * licensed under MIT [ https://github.com/nousantx/tenoxui/blob/main/LICENSE ]
  */
@@ -12,8 +12,6 @@ const property = {
     pl: "paddingLeft",
     ph: ["paddingLeft", "paddingRight"],
     pv: ["paddingTop", "paddingBottom"],
-    "pad-in-start": "paddingInlineStart",
-    "pad-in-end": "paddingInlineEnd",
     // Margin
     m: "margin",
     mt: "marginTop",
@@ -22,14 +20,12 @@ const property = {
     ml: "marginLeft",
     mv: ["marginTop", "marginBottom"],
     mh: ["marginLeft", "marginRight"],
-    "mar-in-start": "marginInlineStart",
-    "mar-in-end": "marginInlineEnd",
     // Text and font
     fs: "fontSize",
     fw: "fontWeight",
     lh: "lineHeight",
     ls: "letterSpacing",
-    ta: "text-align",
+    ta: "textAlign",
     tc: "color",
     ts: "textStyle",
     td: "textDecoration",
@@ -39,23 +35,8 @@ const property = {
     family: "fontFamily",
     "text-style": "fontStyle",
     "white-space": "whiteSpace",
-    // More Text
-    "text-over": "textOverflow",
-    "text-wrap": "textWrap",
-    "v-align": "verticalAlign",
-    "w-break": "wordBreak",
-    "wrap-over": "overflowWrap",
-    hyphens: "hyphens",
-    "text-deco-line": "textDecorationLine",
-    "text-deco-style": "textDecorationStyle",
-    "text-deco-thick": "textDecorationThickness",
-    "text-underline-off": "textUnderlineOffset",
-    "variant-num": "font-variant-numeric:",
-    "webkit-font-smooth": "-webkit-font-smoothing",
-    "moz-font-smooth": "-moz-osx-font-smoothing",
     // Positioning
     position: "position",
-    post: "position",
     z: "zIndex",
     zi: "zIndex",
     t: "top",
@@ -67,6 +48,7 @@ const property = {
     l: "left",
     left: "left",
     // Display
+    d: "display",
     display: "display",
     // Width and Height
     w: "width",
@@ -75,12 +57,6 @@ const property = {
     h: "height",
     "h-mx": "maxHeight",
     "h-mn": "minHeight",
-    // Columns
-    col: "columns",
-    // Break After
-    "bk-af": "breakAfter",
-    "bk-bef": "breakBefore",
-    "bk-in": "breakInside",
     // Background
     bg: "background",
     "bg-attach": "backgroundAttachment",
@@ -97,8 +73,6 @@ const property = {
     fx: "flex",
     flex: "flex",
     "flex-auto": "flex",
-    "initial-flex": "flex",
-    "flex-parent": ["justifyContent", "alignItems"],
     fd: "flexDirection",
     "fx-wrap": "flexWrap",
     "item-order": "order",
@@ -106,25 +80,8 @@ const property = {
     "fx-basis": "flexBasis",
     "fx-grow": "flexGrow",
     "fx-shrink": "flexShrink",
-    // Grid
-    "grid-row": "gridTemplateRows",
-    "grid-col": "gridTemplateColumns",
-    "auto-grid-row": "gridTemplateRows",
-    "auto-grid-col": "gridTemplateColumns",
-    "grid-item-row": "gridRow",
-    "grid-item-col": "gridColumn",
-    "grid-row-end": "gridRowEnd",
-    "grid-row-start": "gridRowStart",
-    "grid-col-end": "gridColumnEnd",
-    "grid-col-start": "gridColumnStart",
-    "grid-area": "gridArea",
-    "item-place": "placeItems",
-    "content-place": "placeContent",
     // Gap
     gap: "gap",
-    "grid-gap": "gridGap",
-    "grid-row-gap": "gridRowGap",
-    "grid-col-gap": "gridColumnGap",
     "row-gap": "rowGap",
     "col-gap": "columnGap",
     // Align
@@ -170,12 +127,6 @@ const property = {
     "radius-bottom": ["borderBottomLeftRadius", "borderBottomRightRadius"],
     "radius-left": ["borderTopLeftRadius", "borderBottomLeftRadius"],
     "radius-right": ["borderTopRightRadius", "borderBottomRightRadius"],
-    "br-ss": "border-start-start-radius",
-    "br-se": "border-start-end-radius",
-    "br-ee": "border-end-end-radius",
-    "br-es": "border-end-start-radius",
-    "bw-is": "border-inline-start-width",
-    "bw-ie": "border-inline-end-width",
     // Outline
     ol: "outline",
     "ol-width": "outlineWidth",
@@ -216,22 +167,12 @@ const property = {
     skew: "transform",
     "skew-x": "transform",
     "skew-y": "transform",
-    // List Style
-    "list-s-img": "listStyleImage",
-    "list-s-pos": "listStylePosition",
-    "list-s-type": "listStyleType",
     // More
     "box-sizing": "boxSizing",
-    isolation: "isolation",
-    "object-fit": "objectFit",
-    "object-post": "objectPosition",
-    // Overscroll Behavior
-    "os-beh": "overscrollBehavior",
-    "os-beh-y": "overscrollBehaviorY",
-    "os-beh-x": "overscrollBehaviorX",
     visibility: "visibility",
     // TenoxUI Custom property
     box: ["width", "height"],
+    "flex-parent": ["justifyContent", "alignItems"],
 };
 export default property;
 //# sourceMappingURL=property.js.map
