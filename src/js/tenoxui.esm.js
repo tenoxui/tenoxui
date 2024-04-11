@@ -332,7 +332,6 @@ function makeStyles(stylesObject) {
     // returning defined styles
     return definedStyles;
 }
-// function applyHover(
 //   selector: string,
 //   beforeHover: string,
 //   isHover: string,
