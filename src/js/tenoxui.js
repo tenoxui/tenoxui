@@ -1,5 +1,5 @@
 /*!
- * TenoxUI CSS Framework v0.6.1 [ https://tenoxui.web.app ]
+ * TenoxUI CSS Framework v0.7.0 [ https://tenoxui.web.app ]
  * copyright (c) 2024 nousantx
  * licensed under MIT [ https://github.com/nousantx/tenoxui/blob/main/LICENSE ]
  */
@@ -190,9 +190,7 @@ const property = {
     "skew-x": "transform",
     "skew-y": "transform",
     // More
-    "box-sizing": "boxSizing",
     isolation: "isolation",
-    visibility: "visibility",
     // TenoxUI Custom property
     box: ["width", "height"],
 };
@@ -267,31 +265,9 @@ class makeTenoxUI {
                         ? `${existingFilter} ${type}(${value}${unit})`
                         : `${type}(${value}${unit})`;
                 }
-                // if (type === "filter") {
-                //   const existingFilter = this.element.style[property];
-                //   this.element.style[property] = `${value}${unit}`;
-                // }
                 // Make custom property for flex
                 else if (type === "flex-auto") {
                     this.element.style[property] = `1 1 ${value}${unit}`;
-                }
-                else if (type === "initial-flex") {
-                    this.element.style[property] = `0 1 ${value}${unit}`;
-                }
-                // Grid System Property [ Not Stable... Yet :) ]
-                else if (property === "gridRow" ||
-                    property === "gridColumn" ||
-                    property === "gridRowStart" ||
-                    property === "gridColumnStart" ||
-                    property === "gridRowEnd" ||
-                    property === "gridColumnEnd") {
-                    this.element.style[property] = `span ${value}${unit}`;
-                }
-                else if (type === "grid-row" || type === "grid-col") {
-                    this.element.style[property] = `repeat(${value}${unit}, 1fr)`;
-                }
-                else if (type === "auto-grid-row" || type === "auto-grid-col") {
-                    this.element.style[property] = `repeat(auto-fit, minmax(${value}${unit}, 1fr))`;
                 }
                 else if (type === "bg-image") {
                     this.element.style[property] = `url(${value})`;
@@ -531,50 +507,6 @@ function makeStyles(stylesObject) {
     // returning defined styles
     return definedStyles;
 }
-// Define mappings for color types and corresponding CSS properties
-function moreColor() {
-    const makeColor = (element, pattern, // regex patern
-    property, // propety value
-    format) => {
-        // Match the class name against the provided pattern
-        const match = element.className.match(pattern);
-        // If there is a match, apply the style to the element using the specified property and format
-        if (match) {
-            element.style[property] = format(match);
-        }
-    };
-    // Select all elements with classes related to colors (background, text, border)
-    const colorClass = document.querySelectorAll('[class*="bg-"], [class*="tc-"], [class*="border-"]');
-    // Define mappings for color types and corresponding CSS properties
-    const colorTypes = {
-        bg: "background",
-        tc: "color",
-        border: "borderColor",
-    };
-    // Define different color formats and their corresponding formatting functions
-    const colorFormats = {
-        rgb: (match) => `rgb(${match.slice(1, 4).join(",")})`,
-        rgba: (match) => `rgba(${match.slice(1, 5).join(",")})`,
-        hex: (match) => `#${match[1]}`,
-    };
-    // Iterate through each element with color-related classes
-    colorClass.forEach((element) => {
-        // Iterate through each color type (bg, tc, border)
-        for (const type in colorTypes) {
-            // Iterate through each color format (rgb, rgba, hex)
-            for (const format in colorFormats) {
-                // Create a pattern for the specific color type and format
-                const pattern = new RegExp(`${type}-${format}\\(([^)]+)\\)`);
-                // Apply color to the element using the makeColor function
-                makeColor(element, pattern, colorTypes[type], colorFormats[format]);
-            }
-            // Create a pattern for hex color format
-            const hexPattern = new RegExp(`${type}-([0-9a-fA-F]{3,6})`);
-            // Apply color to the element using the makeColor function for hex format
-            makeColor(element, hexPattern, colorTypes[type], colorFormats["hex"]);
-        }
-    });
-}
 // hover handler test function (update v0.7)
 // applyHover function
 function applyHover(selector, notHover, isHover, styles = "") {
@@ -641,15 +573,5 @@ function tenoxui() {
         });
     });
 }
-// Simple tenoxui manual styling function
-// function styler(selector: string, type: string, value: string) {
-//   const elements: NodeListOf<HTMLElement> = document.querySelectorAll(selector);
-//   elements.forEach((element) => {
-//     const tui = new makeTenoxUI(element);
-//     tui.applyStyle(type, value, "");
-//   });
-//   return `Styler for "${selector}", using "${type}" with value of "${value}"`;
-// }
-moreColor(); // init: moreColor function
 tenoxui(); // init: tenoxui
 //# sourceMappingURL=tenoxui.js.map

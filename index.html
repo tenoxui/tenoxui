@@ -1,5 +1,5 @@
 <!-- TenoxUI Page Tester: v0.6: Nested style -->
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -80,7 +80,7 @@
     <main class="ph-10vw pt-5rem">
       <header class="head-title">
         <a target="_blank" href="https://tenoxui.web.app/">
-          <h1 class="fw-600 tc-[para-color]">
+          <h1 class="fw-600 tc-[para-color] grayscale-100% blur-3px">
             <span class="tc-white">Tenox</span
             ><span class="text-#d2e603">UI</span> CSS Framework
           </h1>
@@ -244,7 +244,7 @@
         ".fullsize": "bg-size-cover",
         ".center": "display-flex flex-parent-center",
         ".rounded": "br-0.25rem",
-        // make the `none` class always on the bottom
+        // make the `none` class always on the bottom to ensure this class will apply lastly
         ".none, [hidden]": "display-none",
       });
 
@@ -302,11 +302,11 @@
         // type for background-image proeprty
         "bg-image",
         // {value} : image url
-        "https://tenoxui.web.app/img/tenoxui.svg",
+        "https://tenoxui.web.app/img/tenoxui.svg"
       );
 
       // new function (v0.7 update)
-      const all_trans = "tr-prop-all tr-time-0.4s tr-timing-ease";
+      const all_trans = "tr-prop-all tr-time-1s tr-timing-ease";
 
       // applyHover
       applyHover("a", "td-c-[primary]", "", `${all_trans}`);
@@ -316,13 +316,12 @@
         "nav div a, section a": [
           "tc-white td-underline td-c-[primary]",
           "td-none td-c-[primary]",
-          "tc-white td-underline td-c-[primary]",
+          `tc-white td-underline td-c-[primary]`,
         ],
         ".hover-me": ["bg-red", "bg-blue", `${all_trans} bg-red`],
         ".hover-me-2": ["move-x--30px", "move-x-30px", `${all_trans}`],
       });
 
-      // makeStyle(".fullsize", "bg-size-cover");
       tenoxui();
     </script>
     <script defer src="./version.js"></script>

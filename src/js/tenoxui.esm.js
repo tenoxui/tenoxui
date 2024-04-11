@@ -1,5 +1,5 @@
 /*!
- * TenoxUI CSS Framework v0.6.1 [ https://tenoxui.web.app ]
+ * TenoxUI CSS Framework v0.7.0 [ https://tenoxui.web.app ]
  * copyright (c) 2024 nousantx
  * licensed under MIT [ https://github.com/nousantx/tenoxui/blob/main/LICENSE ]
  */
@@ -83,24 +83,6 @@ class makeTenoxUI {
                 // Make custom property for flex
                 else if (type === "flex-auto") {
                     this.element.style[property] = `1 1 ${value}${unit}`;
-                }
-                else if (type === "initial-flex") {
-                    this.element.style[property] = `0 1 ${value}${unit}`;
-                }
-                // Grid System Property [ Not Stable... Yet :) ]
-                else if (property === "gridRow" ||
-                    property === "gridColumn" ||
-                    property === "gridRowStart" ||
-                    property === "gridColumnStart" ||
-                    property === "gridRowEnd" ||
-                    property === "gridColumnEnd") {
-                    this.element.style[property] = `span ${value}${unit}`;
-                }
-                else if (type === "grid-row" || type === "grid-col") {
-                    this.element.style[property] = `repeat(${value}${unit}, 1fr)`;
-                }
-                else if (type === "auto-grid-row" || type === "auto-grid-col") {
-                    this.element.style[property] = `repeat(auto-fit, minmax(${value}${unit}, 1fr))`;
                 }
                 else if (type === "bg-image") {
                     this.element.style[property] = `url(${value})`;
@@ -350,7 +332,6 @@ function makeStyles(stylesObject) {
     // returning defined styles
     return definedStyles;
 }
-// function applyHover(
 //   selector: string,
 //   beforeHover: string,
 //   isHover: string,

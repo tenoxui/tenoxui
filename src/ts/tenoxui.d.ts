@@ -25,19 +25,28 @@ declare module "tenoxui" {
   }
 
   // Define the makeStyle function
-  export function makeStyle(selector: string, styles: string | Record<string, string>): void;
+  export function makeStyle(
+    selector: string,
+    styles: string | Record<string, string>
+  ): void;
 
   // Define the defineProps function
-  export function defineProps(propsObject: Record<string, string | string[]>): void;
+  export function defineProps(
+    propsObject: Record<string, string | string[]>
+  ): void;
 
   // Define the makeStyles function
-  export function makeStyles(stylesObject: Record<string, string | Record<string, string>>): Record<string, string | Record<string, string>>;
-
-  // Define the moreColor function
-  export function moreColor(): void;
+  export function makeStyles(
+    stylesObject: Record<string, string | Record<string, string>>
+  ): Record<string, string | Record<string, string>>;
 
   // Define the applyHover function
-  export function applyHover(selector: string, notHover: string, isHover: string, styles?: string): void;
+  export function applyHover(
+    selector: string,
+    notHover: string,
+    isHover: string,
+    styles?: string
+  ): void;
 
   // Define the applyHovers function
   export function applyHovers(hovers: object): void;

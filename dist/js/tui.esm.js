@@ -1,5 +1,5 @@
 /*!
- * TenoxUI CSS Framework v0.6.1 [ https://tenoxui.web.app ]
+ * TenoxUI CSS Framework v0.7.0 [ https://tenoxui.web.app ]
  * copyright (c) 2024 nousantx
  * licensed under MIT [ https://github.com/nousantx/tenoxui/blob/main/LICENSE ]
  */
@@ -10,7 +10,7 @@ let Classes, AllClasses;
 if (typeof window !== "undefined") {
   // Generate className from property key name, or property type
   Classes = Object.keys(property).map(
-    (className) => `[class*="${className}-"]`,
+    (className) => `[class*="${className}-"]`
   );
   // Merge all `Classes` into one selector. Example : '[class*="p-"]', '[class*="m-"]', '[class*="justify-"]'
   AllClasses = document.querySelectorAll(Classes.join(", "));
@@ -20,7 +20,7 @@ function newProp(name, values) {
   // Error handling, the type must be a string, properties must be an array
   if (typeof name !== "string" || !Array.isArray(values)) {
     console.warn(
-      "Invalid arguments for newProp. Please provide a string for keys and array for values.",
+      "Invalid arguments for newProp. Please provide a string for keys and array for values."
     );
     return;
   }
@@ -87,24 +87,6 @@ class makeTenoxUI {
         // Make custom property for flex
         else if (type === "flex-auto") {
           this.element.style[property] = `1 1 ${value}${unit}`;
-        } else if (type === "initial-flex") {
-          this.element.style[property] = `0 1 ${value}${unit}`;
-        }
-        // Grid System Property [ Not Stable... Yet :) ]
-        else if (
-          property === "gridRow" ||
-          property === "gridColumn" ||
-          property === "gridRowStart" ||
-          property === "gridColumnStart" ||
-          property === "gridRowEnd" ||
-          property === "gridColumnEnd"
-        ) {
-          this.element.style[property] = `span ${value}${unit}`;
-        } else if (type === "grid-row" || type === "grid-col") {
-          this.element.style[property] = `repeat(${value}${unit}, 1fr)`;
-        } else if (type === "auto-grid-row" || type === "auto-grid-col") {
-          this.element.style[property] =
-            `repeat(auto-fit, minmax(${value}${unit}, 1fr))`;
         } else if (type === "bg-image") {
           this.element.style[property] = `url(${value})`;
         }
@@ -247,7 +229,7 @@ class makeTenoxUI {
     //   /([a-zA-Z]+(?:-[a-zA-Z]+)*)-(-?(?:\d+(\.\d+)?)|(?:[a-zA-Z]+(?:-[a-zA-Z]+)*(?:-[a-zA-Z]+)*)|(?:#[0-9a-fA-F]+)|(?:\[[^\]]+\]))([a-zA-Z%]*)/
     // );
     const match = className.match(
-      /([a-zA-Z]+(?:-[a-zA-Z]+)*)-(-?(?:\d+(\.\d+)?)|(?:[a-zA-Z]+(?:-[a-zA-Z]+)*(?:-[a-zA-Z]+)*)|(?:#[0-9a-fA-F]+)|(?:\[[^\]]+\])|(?:\.[^\s.]+[.][a-zA-Z]+))([a-zA-Z%]*)/,
+      /([a-zA-Z]+(?:-[a-zA-Z]+)*)-(-?(?:\d+(\.\d+)?)|(?:[a-zA-Z]+(?:-[a-zA-Z]+)*(?:-[a-zA-Z]+)*)|(?:#[0-9a-fA-F]+)|(?:\[[^\]]+\])|(?:\.[^\s.]+[.][a-zA-Z]+))([a-zA-Z%]*)/
       // /([a-zA-Z]+(?:-[a-zA-Z]+)*)-(-?(?:\d+(\.\d+)?)|(?:[a-zA-Z]+(?:-[a-zA-Z]+)*(?:-[a-zA-Z]+)*)|(?:#[0-9a-fA-F]+)|(?:\[[^\]]+\])|(?:\.[^\s.]+))([a-zA-Z%]*)/
     );
     if (match) {
@@ -289,14 +271,14 @@ function makeStyle(selector, styles) {
       Object.entries(styles).forEach(([classSelector, classStyles]) => {
         const elements = document.querySelectorAll(classSelector);
         elements.forEach((element) =>
-          applyStylesToElement(element, classStyles),
+          applyStylesToElement(element, classStyles)
         );
       });
     }
     // Error Handling for make Style
     else {
       console.warn(
-        `Invalid styles format for "${selector}". Make sure you provide style correctly`,
+        `Invalid styles format for "${selector}". Make sure you provide style correctly`
       );
     }
   }
@@ -308,7 +290,7 @@ function defineProps(propsObject) {
     // Check if propValues is an array or string
     if (typeof propValues !== "string" && !Array.isArray(propValues)) {
       console.warn(
-        `Invalid property values for "${propName}". Make sure you provide values as an array.`,
+        `Invalid property values for "${propName}". Make sure you provide values as an array.`
       );
     }
     // if the propValues is a string, convert into array
@@ -343,7 +325,7 @@ function makeStyles(stylesObject) {
     // Handle nested style
     Object.entries(styles).forEach(([childSelector, childStyles]) => {
       const elements = document.querySelectorAll(
-        `${parentSelector} ${childSelector}`,
+        `${parentSelector} ${childSelector}`
       );
       // Apply nested styles if the value is an object / new object as value
       if (typeof childStyles === "object" && !Array.isArray(childStyles)) {
@@ -384,62 +366,76 @@ function makeStyles(stylesObject) {
   // returning defined styles
   return definedStyles;
 }
-// More color compability, for hex, rgb, and rgba
-function moreColor() {
-  // Makd color function
-  const makeColor = (element, pattern, property, format) => {
-    // Match the class name against the provided pattern
-    const match = element.className.match(pattern);
-    // If there is a match, apply the style to the element using the specified property and format
-    if (match) {
-      element.style[property] = format(match);
-    }
-  };
-  let colorClass;
-  if (typeof window !== "undefined") {
-    // Select all elements with classes related to colors (background, text, border)
-    colorClass = document.querySelectorAll(
-      '[class*="bg-"], [class*="tc-"], [class*="border-"]',
-    );
-  }
-  // Define mappings for color types and corresponding CSS properties
-  const colorTypes = {
-    bg: "background",
-    tc: "color",
-    border: "borderColor",
-  };
-  // Define different color formats and their corresponding formatting functions
-  const colorFormats = {
-    // rgb
-    rgb: (match) => `rgb(${match.slice(1, 4).join(",")})`,
-    // rgba
-    rgba: (match) => `rgba(${match.slice(1, 5).join(",")})`,
-    // hex
-    hex: (match) => `#${match[1]}`,
-  };
-  // Iterate through each element with color-related classes
-  colorClass.forEach((element) => {
-    // Iterate through each color type (bg, tc, border)
-    for (const type in colorTypes) {
-      // Iterate through each color format (rgb, rgba, hex)
-      for (const format in colorFormats) {
-        // Create a pattern for the specific color type and format
-        const pattern = new RegExp(`${type}-${format}\\(([^)]+)\\)`);
-        // Apply color to the element using the makeColor function
-        makeColor(element, pattern, colorTypes[type], colorFormats[format]);
-      }
-      // Create a pattern for hex color format
-      const hexPattern = new RegExp(`${type}-([0-9a-fA-F]{3,6})`);
-      // Apply color to the element using the makeColor function for hex format
-      makeColor(element, hexPattern, colorTypes[type], colorFormats["hex"]);
-    }
+//   selector: string,
+//   beforeHover: string,
+//   isHover: string,
+//   styles: string = ""
+// ) {
+//   const elements = document.querySelectorAll(selector);
+//   elements.forEach((element: HTMLElement) => {
+//     const styler = new makeTenoxUI(element);
+//     styler.applyMultiStyles(`${beforeHover} ${styler}`);
+//     element.addEventListener("mouseenter", () => {
+//       styler.applyMultiStyles(isHover);
+//     });
+//     element.addEventListener("mouseleave", () => {
+//       styler.applyMultiStyles(beforeHover);
+//     });
+//   });
+// }
+// hover handler test function (update v0.7)
+// applyHover function
+function applyHover(selector, notHover, isHover, styles = "") {
+  // define selector
+  const elements = document.querySelectorAll(selector);
+  // iterate elements
+  elements.forEach((element) => {
+    // makeTenoxUI instance
+    const styler = new makeTenoxUI(element);
+    // applying default styles
+    styler.applyMultiStyles(`${notHover} ${styles}`);
+    // when the element is hovered
+    element.addEventListener("mouseenter", () => {
+      // apply hover style
+      styler.applyMultiStyles(isHover);
+    });
+    // default style / when element not hovered
+    element.addEventListener("mouseleave", () => {
+      // apply default style
+      styler.applyMultiStyles(notHover);
+    });
   });
+}
+// applyHovers function
+function applyHovers(hovers) {
+  Object.entries(hovers).forEach(
+    ([selector, [notHover, isHover, styles = ""]]) => {
+      // selector
+      const elements = document.querySelectorAll(selector);
+      elements.forEach((element) => {
+        // makeTenoxUI instance
+        const styler = new makeTenoxUI(element);
+        // applying default styles
+        styler.applyMultiStyles(`${notHover} ${styles}`);
+        // when the element is hovered
+        element.addEventListener("mouseenter", () => {
+          // apply hover style
+          styler.applyMultiStyles(isHover);
+        });
+        // default style / when element not hovered
+        element.addEventListener("mouseleave", () => {
+          // apply default style
+          styler.applyMultiStyles(notHover);
+        });
+      });
+    }
+  );
 }
 // Applying the style to all elements ✨
 function tenoxui() {
   // Make classes from type name from properties key name
   Classes = Object.keys(property).map(
-    (className) => `[class*="${className}-"]`,
+    (className) => `[class*="${className}-"]`
   );
   // Merge all `Classes` into one selector. Example : '[class*="p-"]', '[class*="m-"]', '[class*="justify-"]'
   AllClasses = document.querySelectorAll(Classes.join(", "));
@@ -462,8 +458,9 @@ export {
   defineProps,
   makeStyle,
   makeStyles,
-  moreColor,
+  applyHover,
+  applyHovers,
   makeTenoxUI,
 };
 export default tenoxui;
-//# sourceMappingURL=https://raw.githubusercontent.com/nousantx/tenoxui/main/src/js/tenoxui.esm.js.map
+//# sourceMappingURL=https://raw.githubusercontent.com/nousantx/css/main/src/js/tenoxui.esm.js.map

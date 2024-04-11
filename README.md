@@ -4,7 +4,7 @@
  >
 </a>
 </p>
-<h1 align="center">TenoxUI v0.6.1</h1>
+<h1 align="center">TenoxUI v0.7</h1>
 <p align="center">
 Fast and Lightweight CSS Framework, Style through javascript
 <br>
