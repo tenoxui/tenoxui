@@ -1,6 +1,6 @@
 {
   "name": "tenoxui",
-  "version": "0.6.1",
+  "version": "0.7.0",
   "description": "Tenox UI is a Utiliy-First CSS Framework with small and lightweight size and fast, most of its class is built in Javascript.",
   "main": "dist/js/tui.js",
   "module": "dist/js/tui.esm.js",
@@ -14,14 +14,14 @@
   "scripts": {
     "dev": "tsc --watch",
     "build": "tsc",
-    "build-js": "terser src/js/tenoxui.js -o dist/js/tui.min.js -c -m --mangle --source-map url='tui.min.js.map' && terser src/js/lib/property.js -o dist/js/lib/property.js -c -m --mangle && cp src/js/tenoxui.js dist/js/tui.js && cp src/js/lib/color.js dist/js/lib/",
+    "build-js": "terser src/js/tenoxui.js -o dist/js/tui.min.js -c -m --mangle --source-map url='tui.min.js.map' && terser src/js/lib/property.js -o dist/js/lib/property.js -c -m --mangle && cp src/js/tenoxui.js dist/js/tui.js",
     "build-mjs": "terser src/js/tenoxui.esm.js -o dist/js/tui.esm.min.js -c -m --mangle --source-map url='tui.esm.min.js.map' && cp src/js/tenoxui.esm.js dist/js/tui.esm.js",
     "build-css": "cleancss src/css/tenoxui.css -o dist/css/tui.min.css --source-map && cp src/css/tenoxui.css dist/css/tui.css && cp src/css/lib.css dist/css/",
-    "build-all": "npm run build-js && npm run build-mjs && npm run build-css"
+    "build-all": "npm run build-js && npm run build-mjs && npm run build-css && prettier --write dist/js/tui.js dist/js/tui.esm.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nousantx/tenoxui.git"
+    "url": "git+https://github.com/tenoxui/css.git"
   },
   "keywords": [
     "framework",
@@ -32,7 +32,13 @@
   "author": "NOuSantx",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/nousantx/tenoxui/issues"
+    "url": "https://github.com/tenoxui/css/issues"
   },
-  "homepage": "https://tenoxui.web.app/"
+  "homepage": "https://tenoxui.web.app",
+  "devDependencies": {
+    "clean-css-cli": "^5.6.3",
+    "prettier": "^3.2.5",
+    "terser": "^5.30.3",
+    "typescript": "^5.4.5"
+  }
 }
