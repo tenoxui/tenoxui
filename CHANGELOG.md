@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7] - 12-04-2024
+
+- Add `applyHover` and `applyHovers` function
+- Remove `makeColor` function
+- Remove unused types and properties for better size
+- Add declaration file
+
 ## [0.6.1] - 23-03-2024
 
 - Nested in nested problem
