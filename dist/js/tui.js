@@ -1,5 +1,5 @@
 /*!
- * TenoxUI CSS Framework v0.6.1 [ https://tenoxui.web.app ]
+ * TenoxUI CSS Framework v0.7.0 [ https://tenoxui.web.app ]
  * copyright (c) 2024 nousantx
  * licensed under MIT [ https://github.com/nousantx/tenoxui/blob/main/LICENSE ]
  */
@@ -13,8 +13,6 @@ const property = {
   pl: "paddingLeft",
   ph: ["paddingLeft", "paddingRight"],
   pv: ["paddingTop", "paddingBottom"],
-  "pad-in-start": "paddingInlineStart",
-  "pad-in-end": "paddingInlineEnd",
   // Margin
   m: "margin",
   mt: "marginTop",
@@ -23,8 +21,6 @@ const property = {
   ml: "marginLeft",
   mv: ["marginTop", "marginBottom"],
   mh: ["marginLeft", "marginRight"],
-  "mar-in-start": "marginInlineStart",
-  "mar-in-end": "marginInlineEnd",
   // Text and font
   fs: "fontSize",
   fw: "fontWeight",
@@ -40,20 +36,6 @@ const property = {
   family: "fontFamily",
   "text-style": "fontStyle",
   "white-space": "whiteSpace",
-  // More Text
-  "text-over": "textOverflow",
-  "text-wrap": "textWrap",
-  "v-align": "verticalAlign",
-  "w-break": "wordBreak",
-  "wrap-over": "overflowWrap",
-  hyphens: "hyphens",
-  "text-deco-line": "textDecorationLine",
-  "text-deco-style": "textDecorationStyle",
-  "text-deco-thick": "textDecorationThickness",
-  "text-underline-off": "textUnderlineOffset",
-  "variant-num": "font-variant-numeric:",
-  "webkit-font-smooth": "-webkit-font-smoothing",
-  "moz-font-smooth": "-moz-osx-font-smoothing",
   // Positioning
   position: "position",
   post: "position",
@@ -78,22 +60,18 @@ const property = {
   "h-mn": "minHeight",
   // Columns
   col: "columns",
-  // Break After
-  "bk-af": "breakAfter",
-  "bk-bef": "breakBefore",
-  "bk-in": "breakInside",
   // Background
   bg: "background",
   "bg-attach": "backgroundAttachment",
   "bg-origin": "backgroundOrigin",
   "bg-size": "backgroundSize",
-  "bg-image": "backgroundImage",
   "bg-clip": "backgroundClip",
   "bg-repeat": "backgroundRepeat",
   "bg-loc": "backgroundPosition",
   "bg-loc-x": "backgroundPositionX",
   "bg-loc-y": "backgroundPositionY",
   "bg-blend": "backgroundBlendMode",
+  "bg-image": "backgroundImage",
   // Flex
   fx: "flex",
   flex: "flex",
@@ -171,12 +149,6 @@ const property = {
   "radius-bottom": ["borderBottomLeftRadius", "borderBottomRightRadius"],
   "radius-left": ["borderTopLeftRadius", "borderBottomLeftRadius"],
   "radius-right": ["borderTopRightRadius", "borderBottomRightRadius"],
-  "br-ss": "border-start-start-radius",
-  "br-se": "border-start-end-radius",
-  "br-ee": "border-end-end-radius",
-  "br-es": "border-end-start-radius",
-  "bw-is": "border-inline-start-width",
-  "bw-ie": "border-inline-end-width",
   // Outline
   ol: "outline",
   "ol-width": "outlineWidth",
@@ -217,20 +189,8 @@ const property = {
   skew: "transform",
   "skew-x": "transform",
   "skew-y": "transform",
-  // List Style
-  "list-s-img": "listStyleImage",
-  "list-s-pos": "listStylePosition",
-  "list-s-type": "listStyleType",
   // More
-  "box-sizing": "boxSizing", //! need custom value ${value}-bx
   isolation: "isolation",
-  "object-fit": "objectFit",
-  "object-post": "objectPosition",
-  // Overscroll Behavior
-  "os-beh": "overscrollBehavior",
-  "os-beh-y": "overscrollBehaviorY",
-  "os-beh-x": "overscrollBehaviorX",
-  visibility: "visibility",
   // TenoxUI Custom property
   box: ["width", "height"],
 };
@@ -245,7 +205,7 @@ class newProp {
     // Error handling, the type must be a string, properties must be an array
     if (typeof name !== "string" || !Array.isArray(values)) {
       console.warn(
-        "Invalid arguments for newProp. Please provide a string for name and an array for values.",
+        "Invalid arguments for newProp. Please provide a string for name and an array for values."
       );
       return;
     }
@@ -310,24 +270,6 @@ class makeTenoxUI {
         // Make custom property for flex
         else if (type === "flex-auto") {
           this.element.style[property] = `1 1 ${value}${unit}`;
-        } else if (type === "initial-flex") {
-          this.element.style[property] = `0 1 ${value}${unit}`;
-        }
-        // Grid System Property [ Not Stable... Yet :) ]
-        else if (
-          property === "gridRow" ||
-          property === "gridColumn" ||
-          property === "gridRowStart" ||
-          property === "gridColumnStart" ||
-          property === "gridRowEnd" ||
-          property === "gridColumnEnd"
-        ) {
-          this.element.style[property] = `span ${value}${unit}`;
-        } else if (type === "grid-row" || type === "grid-col") {
-          this.element.style[property] = `repeat(${value}${unit}, 1fr)`;
-        } else if (type === "auto-grid-row" || type === "auto-grid-col") {
-          this.element.style[property] =
-            `repeat(auto-fit, minmax(${value}${unit}, 1fr))`;
         } else if (type === "bg-image") {
           this.element.style[property] = `url(${value})`;
         }
@@ -466,7 +408,7 @@ class makeTenoxUI {
   applyStyles(className) {
     // Using RegExp to handle the value
     const match = className.match(
-      /([a-zA-Z]+(?:-[a-zA-Z]+)*)-(-?(?:\d+(\.\d+)?)|(?:[a-zA-Z]+(?:-[a-zA-Z]+)*(?:-[a-zA-Z]+)*)|(?:#[0-9a-fA-F]+)|(?:\[[^\]]+\]))([a-zA-Z%]*)/,
+      /([a-zA-Z]+(?:-[a-zA-Z]+)*)-(-?(?:\d+(\.\d+)?)|(?:[a-zA-Z]+(?:-[a-zA-Z]+)*(?:-[a-zA-Z]+)*)|(?:#[0-9a-fA-F]+)|(?:\[[^\]]+\]))([a-zA-Z%]*)/
     );
     if (match) {
       // type = property class. Example: p-, m-, flex-, fx-, filter-, etc.
@@ -509,7 +451,7 @@ function makeStyle(selector, styles) {
   // Error Handling for makeStyle
   else {
     console.warn(
-      `Invalid styles format for "${selector}". Make sure you provide style correctly`,
+      `Invalid styles format for "${selector}". Make sure you provide style correctly`
     );
   }
 }
@@ -520,7 +462,7 @@ function defineProps(propsObject) {
     // Check if propValues is an array or string
     if (typeof propValues !== "string" && !Array.isArray(propValues)) {
       console.warn(
-        `Invalid property values for "${propName}". Make sure you provide values as an array.`,
+        `Invalid property values for "${propName}". Make sure you provide values as an array.`
       );
     }
     // if the propValues is a string, convert into array
@@ -555,7 +497,7 @@ function makeStyles(stylesObject) {
     // Handle nested style
     Object.entries(styles).forEach(([childSelector, childStyles]) => {
       const elements = document.querySelectorAll(
-        `${parentSelector} ${childSelector}`,
+        `${parentSelector} ${childSelector}`
       );
       // Apply nested styles if the value is an object / new object as value
       if (typeof childStyles === "object" && !Array.isArray(childStyles)) {
@@ -596,60 +538,61 @@ function makeStyles(stylesObject) {
   // returning defined styles
   return definedStyles;
 }
-// Define mappings for color types and corresponding CSS properties
-function moreColor() {
-  const makeColor = (
-    element,
-    pattern, // regex patern
-    property, // propety value
-    format,
-  ) => {
-    // Match the class name against the provided pattern
-    const match = element.className.match(pattern);
-    // If there is a match, apply the style to the element using the specified property and format
-    if (match) {
-      element.style[property] = format(match);
-    }
-  };
-  // Select all elements with classes related to colors (background, text, border)
-  const colorClass = document.querySelectorAll(
-    '[class*="bg-"], [class*="tc-"], [class*="border-"]',
-  );
-  // Define mappings for color types and corresponding CSS properties
-  const colorTypes = {
-    bg: "background",
-    tc: "color",
-    border: "borderColor",
-  };
-  // Define different color formats and their corresponding formatting functions
-  const colorFormats = {
-    rgb: (match) => `rgb(${match.slice(1, 4).join(",")})`,
-    rgba: (match) => `rgba(${match.slice(1, 5).join(",")})`,
-    hex: (match) => `#${match[1]}`,
-  };
-  // Iterate through each element with color-related classes
-  colorClass.forEach((element) => {
-    // Iterate through each color type (bg, tc, border)
-    for (const type in colorTypes) {
-      // Iterate through each color format (rgb, rgba, hex)
-      for (const format in colorFormats) {
-        // Create a pattern for the specific color type and format
-        const pattern = new RegExp(`${type}-${format}\\(([^)]+)\\)`);
-        // Apply color to the element using the makeColor function
-        makeColor(element, pattern, colorTypes[type], colorFormats[format]);
-      }
-      // Create a pattern for hex color format
-      const hexPattern = new RegExp(`${type}-([0-9a-fA-F]{3,6})`);
-      // Apply color to the element using the makeColor function for hex format
-      makeColor(element, hexPattern, colorTypes[type], colorFormats["hex"]);
-    }
+// hover handler test function (update v0.7)
+// applyHover function
+function applyHover(selector, notHover, isHover, styles = "") {
+  // define selector
+  const elements = document.querySelectorAll(selector);
+  // iterate elements
+  elements.forEach((element) => {
+    // makeTenoxUI instance
+    const styler = new makeTenoxUI(element);
+    // applying default styles
+    // styler.applyMultiStyles(`${notHover} ${styles}`);
+    styler.applyMultiStyles(styles);
+    // when the element is hovered
+    element.addEventListener("mouseenter", () => {
+      // apply hover style
+      styler.applyMultiStyles(isHover);
+    });
+    // default style / when element not hovered
+    element.addEventListener("mouseleave", () => {
+      // apply default style
+      styler.applyMultiStyles(notHover);
+    });
   });
+}
+// applyHovers function
+function applyHovers(hovers) {
+  Object.entries(hovers).forEach(
+    ([selector, [notHover, isHover, styles = ""]]) => {
+      // selector
+      const elements = document.querySelectorAll(selector);
+      elements.forEach((element) => {
+        // makeTenoxUI instance
+        const styler = new makeTenoxUI(element);
+        // applying default styles
+        // styler.applyMultiStyles(`${notHover} ${styles}`);
+        styler.applyMultiStyles(styles);
+        // when the element is hovered
+        element.addEventListener("mouseenter", () => {
+          // apply hover style
+          styler.applyMultiStyles(isHover);
+        });
+        // default style / when element not hovered
+        element.addEventListener("mouseleave", () => {
+          // apply default style
+          styler.applyMultiStyles(notHover);
+        });
+      });
+    }
+  );
 }
 // Applying the style to all elements ✨
 function tenoxui() {
   // Make classes from type name from properties key name
   Classes = Object.keys(property).map(
-    (className) => `[class*="${className}-"]`,
+    (className) => `[class*="${className}-"]`
   );
   // Merge all `Classes` into one selector. Example : '[class*="p-"]', '[class*="m-"]', '[class*="justify-"]'
   AllClasses = document.querySelectorAll(Classes.join(", "));
@@ -665,6 +608,5 @@ function tenoxui() {
     });
   });
 }
-moreColor(); // init: moreColor function
 tenoxui(); // init: tenoxui
-//# sourceMappingURL=https://raw.githubusercontent.com/nousantx/tenoxui/main/src/js/tenoxui.js.map
+//# sourceMappingURL=https://raw.githubusercontent.com/nousantx/css/main/src/js/tenoxui.js.map
