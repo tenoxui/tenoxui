@@ -605,67 +605,17 @@ function makeStyles(stylesObject: StylesObject): StylesObject {
   // returning defined styles
   return definedStyles;
 }
-
-// Define mappings for color types and corresponding CSS properties
-function moreColor() {
-  const makeColor = (
-    element: HTMLElement,
-    pattern: RegExp, // regex patern
-    property: string, // propety value
-    format: (match: RegExpMatchArray) => string
-  ) => {
-    // Match the class name against the provided pattern
-    const match = element.className.match(pattern);
-    // If there is a match, apply the style to the element using the specified property and format
-    if (match) {
-      element.style[property] = format(match);
-    }
-  };
-
-  // Select all elements with classes related to colors (background, text, border)
-  const colorClass = document.querySelectorAll<HTMLElement>(
-    '[class*="bg-"], [class*="tc-"], [class*="border-"]'
-  );
-
-  // Define mappings for color types and corresponding CSS properties
-  const colorTypes: Record<string, string> = {
-    bg: "background",
-    tc: "color",
-    border: "borderColor",
-  };
-
-  // Define different color formats and their corresponding formatting functions
-  const colorFormats: Record<string, (match: RegExpMatchArray) => string> = {
-    rgb: (match) => `rgb(${match.slice(1, 4).join(",")})`,
-    rgba: (match) => `rgba(${match.slice(1, 5).join(",")})`,
-    hex: (match) => `#${match[1]}`,
-  };
-
-  // Iterate through each element with color-related classes
-  colorClass.forEach((element) => {
-    // Iterate through each color type (bg, tc, border)
-    for (const type in colorTypes) {
-      // Iterate through each color format (rgb, rgba, hex)
-      for (const format in colorFormats) {
-        // Create a pattern for the specific color type and format
-        const pattern = new RegExp(`${type}-${format}\\(([^)]+)\\)`);
-        // Apply color to the element using the makeColor function
-        makeColor(element, pattern, colorTypes[type], colorFormats[format]);
-      }
-      // Create a pattern for hex color format
-      const hexPattern = new RegExp(`${type}-([0-9a-fA-F]{3,6})`);
-      // Apply color to the element using the makeColor function for hex format
-      makeColor(element, hexPattern, colorTypes[type], colorFormats["hex"]);
-    }
-  });
-}
-
 // hover handler test function (update v0.7)
 
 // applyHover function
-function applyHover(selector, notHover, isHover, styles = "") {
+function applyHover(
+  selector: string,
+  notHover: string,
+  isHover: string,
+  styles: string = ""
+) {
   // define selector
-  const elements = document.querySelectorAll(selector);
+  const elements: NodeListOf<HTMLElement> = document.querySelectorAll(selector);
 
   // iterate elements
   elements.forEach((element) => {
@@ -739,6 +689,4 @@ function tenoxui(): void {
     });
   });
 }
-
-moreColor(); // init: moreColor function
 tenoxui(); // init: tenoxui

@@ -431,7 +431,6 @@ function makeStyles(stylesObject: StylesObject): StylesObject {
   return definedStyles;
 }
 
-// function applyHover(
 //   selector: string,
 //   beforeHover: string,
 //   isHover: string,
@@ -457,9 +456,14 @@ function makeStyles(stylesObject: StylesObject): StylesObject {
 // hover handler test function (update v0.7)
 
 // applyHover function
-function applyHover(selector, notHover, isHover, styles = "") {
+function applyHover(
+  selector: string,
+  notHover: string,
+  isHover: string,
+  styles: string = ""
+) {
   // define selector
-  const elements = document.querySelectorAll(selector);
+  const elements: NodeListOf<HTMLElement> = document.querySelectorAll(selector);
 
   // iterate elements
   elements.forEach((element) => {
