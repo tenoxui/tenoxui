@@ -4,9 +4,9 @@
  >
 </a>
 </p>
-<h1 align="center">TenoxUI v0.7</h1>
+<h1 align="center">TenoxUI v0.7.1</h1>
 <p align="center">
-Fast and Lightweight CSS Framework, Style through javascript
+A CSS Framework without css file :D
 <br>
 <a href="https://tenoxui.web.app/docs/start">Full Documentation</a>
 </p>

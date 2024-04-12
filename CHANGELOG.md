@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.7.1] - 12-04-2024
+
+- Update `applyHovers` funtion, removing `notHover` parameter for giving styles firstly before hovering
+
 ## [0.7] - 12-04-2024
 
 - Add `applyHover` and `applyHovers` function
