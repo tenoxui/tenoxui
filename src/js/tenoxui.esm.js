@@ -1,5 +1,5 @@
 /*!
- * TenoxUI CSS Framework v0.7.0 [ https://tenoxui.web.app ]
+ * TenoxUI CSS Framework v0.7.1 [ https://tenoxui.web.app ]
  * copyright (c) 2024 nousantx
  * licensed under MIT [ https://github.com/nousantx/tenoxui/blob/main/LICENSE ]
  */
@@ -381,7 +381,8 @@ function applyHovers(hovers) {
             // makeTenoxUI instance
             const styler = new makeTenoxUI(element);
             // applying default styles
-            styler.applyMultiStyles(`${notHover} ${styles}`);
+            // styler.applyMultiStyles(`${notHover} ${styles}`);
+            styler.applyMultiStyles(styles);
             // when the element is hovered
             element.addEventListener("mouseenter", () => {
                 // apply hover style
