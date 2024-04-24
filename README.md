@@ -141,7 +141,7 @@ makeStyles({
     "": " display-flex gap-20px jc-center", // Empty string will treated as parent's style
     // Card class will only applied when its inside container class, outside it will not styled
     ".card": {
-      "": "p-20px br-8px",
+      "": "p-20px br-8px bg-lightblue",
       ".title": "fs-1.4rem fw-600",
       ".desc": "fs-14px fw-500 lh-1.4 ta-justify",
     },
@@ -160,6 +160,7 @@ The css style will be like this :
   .card {
     padding: 20px;
     border-radius: 8px;
+    background: lightblue;
 
     .title {
       font-size: 1.4rem;
