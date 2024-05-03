@@ -1,10 +1,11 @@
 {
   "name": "tenoxui",
-  "version": "0.7.1",
-  "description": "Tenox UI is a Utiliy-First CSS Framework with small and lightweight size and fast, most of its class is built in Javascript.",
-  "main": "dist/js/tui.js",
-  "module": "dist/js/tui.esm.js",
-  "style": "dist/css/tui.css",
+  "version": "0.8.0",
+  "description": "A CSS Framework without CSS file :D",
+  "types": "dist/js/tenoxui.esm.d.ts",
+  "main": "dist/js/tenoxui.min.js",
+  "module": "dist/js/tenoxui.esm.min.js",
+  "style": "dist/css/tenoxui.css",
   "files": [
     "dist/*",
     "package.json",
@@ -14,10 +15,11 @@
   "scripts": {
     "dev": "tsc --watch",
     "build": "tsc",
-    "build-js": "terser src/js/tenoxui.js -o dist/js/tui.min.js -c -m --mangle --source-map url='tui.min.js.map' && terser src/js/lib/property.js -o dist/js/lib/property.js -c -m --mangle && cp src/js/tenoxui.js dist/js/tui.js",
-    "build-mjs": "terser src/js/tenoxui.esm.js -o dist/js/tui.esm.min.js -c -m --mangle --source-map url='tui.esm.min.js.map' && cp src/js/tenoxui.esm.js dist/js/tui.esm.js",
+    "build-js": "terser src/js/tenoxui.js -o dist/js/tenoxui.min.js --mangle --source-map url='tenoxui.min.js.map' && cp src/js/tenoxui.js src/js/tenoxui.d.ts src/js/tenoxui.js.map dist/js/",
+    "build-esm": "terser src/js/tenoxui.esm.js -o dist/js/tenoxui.esm.min.js --mangle --source-map url='tenoxui.esm.min.js.map' && cp src/js/tenoxui.esm.js src/js/tenoxui.esm.d.ts src/js/tenoxui.esm.js.map dist/js/",
+    "build-prop": "terser src/js/lib/property.js -o dist/js/lib/property.js --mangle --source-map url='property.js.map' && cp src/js/lib/property.d.ts dist/js/lib/",
     "build-css": "cleancss src/css/tenoxui.css -o dist/css/tui.min.css --source-map && cp src/css/tenoxui.css dist/css/tui.css && cp src/css/lib.css dist/css/",
-    "build-all": "npm run build-js && npm run build-mjs && npm run build-css && prettier --write dist/js/tui.js dist/js/tui.esm.js"
+    "build-all": "npm run build-js && npm run build-esm && npm run build-prop"
   },
   "repository": {
     "type": "git",
