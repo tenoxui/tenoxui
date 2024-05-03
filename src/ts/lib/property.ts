@@ -1,5 +1,5 @@
 /*!
- * TenoxUI CSS Framework v0.7.0 [ https://tenoxui.web.app ]
+ * TenoxUI CSS Framework v0.8.0 [ https://tenoxui.web.app ]
  * copyright (c) 2024 nousantx
  * licensed under MIT [ https://github.com/nousantx/tenoxui/blob/main/LICENSE ]
  */
@@ -38,20 +38,15 @@ const property: PropertyMap = {
   tn: "textReansform",
   ws: "wordSpacing",
   family: "fontFamily",
-  "text-style": "fontStyle",
+  "text-s": "fontStyle",
   "white-space": "whiteSpace",
   // Positioning
   position: "position",
   z: "zIndex",
-  zi: "zIndex",
   t: "top",
-  top: "top",
   b: "bottom",
-  bottom: "bottom",
   r: "right",
-  right: "right",
   l: "left",
-  left: "left",
   // Display
   d: "display",
   display: "display",
@@ -94,11 +89,9 @@ const property: PropertyMap = {
   ai: "align-items",
   as: "alignSelf",
   // Justify
-  jc: "justify-content",
+  jc: "justifyContent",
   ji: "justifyItems",
   js: "justifySelf",
-  // backdrop  under developement]
-  "backdrop-blur": "backdropFilter",
   // Filter
   filter: "filter",
   blur: "filter",
@@ -132,19 +125,17 @@ const property: PropertyMap = {
   "radius-bottom": ["borderBottomLeftRadius", "borderBottomRightRadius"],
   "radius-left": ["borderTopLeftRadius", "borderBottomLeftRadius"],
   "radius-right": ["borderTopRightRadius", "borderBottomRightRadius"],
-
   // Outline
   ol: "outline",
   "ol-width": "outlineWidth",
   "ol-style": "outlineStyle",
   "ol-offset": "outlineOffset",
   // Cursor
-  curs: "cursor",
   cursor: "cursor",
   // Overflow
   over: "overflow",
-  overY: "overflowY",
-  overX: "overflowX",
+  "over-y": "overflowY",
+  "over-x": "overflowX",
   // Float
   float: "float",
   // Aspect Ratio
@@ -162,10 +153,8 @@ const property: PropertyMap = {
   "move-z": "transform",
   matrix: "transform",
   "matrix-3d": "transform",
-  rt: "transform",
   "rt-3d": "transform",
   translate: "transform",
-  scale: "transform",
   "scale-3d": "transform",
   "scale-x": "transform",
   "scale-y": "transform",
@@ -174,8 +163,8 @@ const property: PropertyMap = {
   "skew-x": "transform",
   "skew-y": "transform",
   // More
-  "box-sizing": "boxSizing",
-  visibility: "visibility",
+  rt: "rotate",
+  scale: "scale",
   // TenoxUI Custom property
   box: ["width", "height"],
   "flex-parent": ["justifyContent", "alignItems"],

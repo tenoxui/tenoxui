@@ -1,5 +1,5 @@
 /*!
- * TenoxUI CSS Framework v0.7.1 [ https://tenoxui.web.app ]
+ * TenoxUI CSS Framework v0.8 [ https://tenoxui.web.app ]
  * copyright (c) 2024 nousantx
  * licensed under MIT [ https://github.com/nousantx/tenoxui/blob/main/LICENSE ]
  */
@@ -29,7 +29,7 @@ const property: {
   fw: "fontWeight",
   lh: "lineHeight",
   ls: "letterSpacing",
-  ta: "text-align",
+  ta: "textAlign",
   tc: "color",
   ts: "textStyle",
   td: "textDecoration",
@@ -37,23 +37,17 @@ const property: {
   tn: "textReansform",
   ws: "wordSpacing",
   family: "fontFamily",
-  "text-style": "fontStyle",
+  "text-s": "fontStyle",
   "white-space": "whiteSpace",
-
   // Positioning
   position: "position",
-  post: "position",
   z: "zIndex",
-  zi: "zIndex",
   t: "top",
-  top: "top",
   b: "bottom",
-  bottom: "bottom",
   r: "right",
-  right: "right",
   l: "left",
-  left: "left",
   // Display
+  d: "display",
   display: "display",
   // Width and Height
   w: "width",
@@ -62,8 +56,6 @@ const property: {
   h: "height",
   "h-mx": "maxHeight",
   "h-mn": "minHeight",
-  // Columns
-  col: "columns",
   // Background
   bg: "background",
   "bg-attach": "backgroundAttachment",
@@ -80,8 +72,6 @@ const property: {
   fx: "flex",
   flex: "flex",
   "flex-auto": "flex",
-  "initial-flex": "flex",
-  "flex-parent": ["justifyContent", "alignItems"],
   fd: "flexDirection",
   "fx-wrap": "flexWrap",
   "item-order": "order",
@@ -89,25 +79,8 @@ const property: {
   "fx-basis": "flexBasis",
   "fx-grow": "flexGrow",
   "fx-shrink": "flexShrink",
-  // Grid
-  "grid-row": "gridTemplateRows",
-  "grid-col": "gridTemplateColumns",
-  "auto-grid-row": "gridTemplateRows",
-  "auto-grid-col": "gridTemplateColumns",
-  "grid-item-row": "gridRow",
-  "grid-item-col": "gridColumn",
-  "grid-row-end": "gridRowEnd",
-  "grid-row-start": "gridRowStart",
-  "grid-col-end": "gridColumnEnd",
-  "grid-col-start": "gridColumnStart",
-  "grid-area": "gridArea",
-  "item-place": "placeItems",
-  "content-place": "placeContent",
   // Gap
   gap: "gap",
-  "grid-gap": "gridGap",
-  "grid-row-gap": "gridRowGap",
-  "grid-col-gap": "gridColumnGap",
   "row-gap": "rowGap",
   "col-gap": "columnGap",
   // Align
@@ -115,11 +88,9 @@ const property: {
   ai: "align-items",
   as: "alignSelf",
   // Justify
-  jc: "justify-content",
+  jc: "justifyContent",
   ji: "justifyItems",
   js: "justifySelf",
-  // backdrop  under developement]
-  "backdrop-blur": "backdropFilter",
   // Filter
   filter: "filter",
   blur: "filter",
@@ -153,7 +124,6 @@ const property: {
   "radius-bottom": ["borderBottomLeftRadius", "borderBottomRightRadius"],
   "radius-left": ["borderTopLeftRadius", "borderBottomLeftRadius"],
   "radius-right": ["borderTopRightRadius", "borderBottomRightRadius"],
-
   // Outline
   ol: "outline",
   "ol-width": "outlineWidth",
@@ -195,10 +165,11 @@ const property: {
   "skew-x": "transform",
   "skew-y": "transform",
   // More
-
-  isolation: "isolation",
+  "box-sizing": "boxSizing",
+  visibility: "visibility",
   // TenoxUI Custom property
   box: ["width", "height"],
+  "flex-parent": ["justifyContent", "alignItems"],
 };
 
 let Classes: String[], AllClasses: NodeListOf<HTMLElement>;
@@ -236,27 +207,6 @@ class newProp {
   }
 }
 
-function addType(Types: string, Property: string | string[]): void {
-  // Check if 'Types' is a string
-  if (typeof Types !== "string") {
-    throw new Error("Types must be a string");
-  }
-
-  // Check if 'Property' is a string or an array
-  if (!Array.isArray(Property) && typeof Property !== "string") {
-    throw new Error("Property must be a string or array");
-  }
-
-  // If properties has only one css property and it was string, not wrapped inside an array
-  if (typeof Property === "string") {
-    // Convert the string value from property into an array
-    Property = [Property];
-  }
-
-  // Add new property
-  new newProp(Types, Property).tryAdd();
-}
-
 // TenoxUI make style class
 class makeTenoxUI {
   element: HTMLElement;
@@ -279,7 +229,6 @@ class makeTenoxUI {
         // Convert the string value from property into an array
         properties = [properties];
       }
-
       properties.forEach((property: string) => {
         // Filter Custom Property
         if (property === "filter") {
@@ -432,17 +381,31 @@ class makeTenoxUI {
         /*
          * CSS Variable Support 🎋
          *
-         * Check className if the `value` is wrapped with `[]`,
+         * Check className if the `value` is wrapped with square bracket `[]`,
          * if so then this is treated as css variable, css value.
          */
         // Check if the value is a CSS variable enclosed in square brackets
         else if (value.startsWith("[") && value.endsWith("]")) {
-          // Slice value from the box and identify the
+          // Slice value from the square brackets
           const cssVariable = value.slice(1, -1);
           this.element.style[property] = `var(--${cssVariable})`;
         }
-        // Default value and unit
-        else {
+        /*
+         * Custom values support 🪐
+         *
+         * Check className if the `value` is wrapped with curly bracket `{}`,
+         * if so then this is treated as custom value and ignore default value.
+         */
+        // Check if the value is a CSS variable enclosed in brackets {}
+        else if (value.startsWith("{") && value.endsWith("}")) {
+          const values = value.slice(1, -1).replace(/\\_/g, " ");
+          this.element.style[property] = values;
+        } else {
+          /*
+           * This is default value handler
+           *
+           * All types and properties will have this value as their default value.
+           */
           this.element.style[property] = `${value}${unit}`;
         }
       });
@@ -453,7 +416,8 @@ class makeTenoxUI {
   applyStyles(className: string): void {
     // Using RegExp to handle the value
     const match = className.match(
-      /([a-zA-Z]+(?:-[a-zA-Z]+)*)-(-?(?:\d+(\.\d+)?)|(?:[a-zA-Z]+(?:-[a-zA-Z]+)*(?:-[a-zA-Z]+)*)|(?:#[0-9a-fA-F]+)|(?:\[[^\]]+\]))([a-zA-Z%]*)/
+      /([a-zA-Z]+(?:-[a-zA-Z]+)*)-(-?(?:\d+(\.\d+)?)|(?:[a-zA-Z]+(?:-[a-zA-Z]+)*(?:-[a-zA-Z]+)*)|(?:#[0-9a-fA-F]+)|(?:\[[^\]]+\])|(?:\{[^\}]+\}))([a-zA-Z%]*)/
+      // /([a-zA-Z]+(?:-[a-zA-Z]+)*)-(-?(?:\d+(\.\d+)?)|(?:[a-zA-Z]+(?:-[a-zA-Z]+)*(?:-[a-zA-Z]+)*)|(?:#[0-9a-fA-F]+)|(?:\[[^\]]+\]))([a-zA-Z%]*)/
     );
     if (match) {
       // type = property class. Example: p-, m-, flex-, fx-, filter-, etc.
@@ -511,31 +475,37 @@ function makeStyle(
 }
 
 // MultiProps function: Add multiple properties from the provided object
-function defineProps(propsObject: Record<string, string | string[]>): void {
-  // Iterate over object entries
-  Object.entries(propsObject).forEach(([propName, propValues]) => {
-    // Check if propValues is an array or string
-    if (typeof propValues !== "string" && !Array.isArray(propValues)) {
-      console.warn(
-        `Invalid property values for "${propName}". Make sure you provide values as an array.`
-      );
-    }
+// MultiProps function: Add multiple properties from the provided object
+function defineProps(
+  ...propsObjects: Record<string, string | string[]>[]
+): void {
+  propsObjects.forEach((propsObject) => {
+    // Iterate over object entries
+    Object.entries(propsObject).forEach(([propName, propValues]) => {
+      // Check if propValues is an array or string
+      if (typeof propValues !== "string" && !Array.isArray(propValues)) {
+        console.warn(
+          `Invalid property values for "${propName}". Make sure you provide values as an array.`
+        );
+      }
+      // if the propValues is a string, convert into array
+      const processedValues: string[] =
+        typeof propValues === "string"
+          ? [propValues]
+          : (propValues as string[]);
 
-    // if the propValues is a string, convert into array
-    const processedValues: string[] =
-      typeof propValues === "string" ? [propValues] : (propValues as string[]);
-
-    // Create a new CustomProperty
-    const propInstance = new newProp(propName, processedValues);
-    // Add it to AllProperty at once
-    propInstance.tryAdd();
+      // Create a new CustomProperty
+      const propInstance = new newProp(propName, processedValues);
+      // Add it to AllProperty at once
+      propInstance.tryAdd();
+    });
   });
 }
 
 // StylesObject type
 type StylesObject = Record<string, string | Record<string, string>>;
 
-function makeStyles(stylesObject: StylesObject): StylesObject {
+function makeStyles(...stylesObjects: StylesObject[]): StylesObject {
   // Store defined styles into an object
   const definedStyles: StylesObject = {};
   // Helper function to apply styles into elements
@@ -580,66 +550,32 @@ function makeStyles(stylesObject: StylesObject): StylesObject {
     });
   };
   // Handle styling logic, nested style or only default
-  Object.entries(stylesObject).forEach(([selector, styles]) => {
-    // If the styles is an object or nested style, use `applyNestedStyles` function to apply nested style logic
-    if (typeof styles === "object" && !Array.isArray(styles)) {
-      applyNestedStyles(selector, styles);
-    }
-    // If the styles is not overriden by nested style, apply styles using default styler
-    else {
-      // Stacking selector and
-      const elements = document.querySelectorAll<HTMLElement>(selector);
-      // Apply direct styles into element using default styler
-      elements.forEach((element) => {
-        // apply default styles
-        applyStylesToElement(element, styles);
-        /**
-         * const styler = new makeTenoxUI(element);
-         * styler.applyMultiStyles(styles);
-         */
-      });
-    }
-    // Store defined styles for reuse
-    definedStyles[selector] = styles;
+  stylesObjects.forEach((stylesObject) => {
+    Object.entries(stylesObject).forEach(([selector, styles]) => {
+      // If the styles is an object or nested style, use `applyNestedStyles` function to apply nested style logic
+      if (typeof styles === "object" && !Array.isArray(styles)) {
+        applyNestedStyles(selector, styles);
+      }
+      // If the styles is not overridden by nested style, apply styles using default styler
+      else {
+        // Stacking selector and
+        const elements = document.querySelectorAll<HTMLElement>(selector);
+        // Apply direct styles into element using default styler
+        elements.forEach((element) => {
+          // apply default styles
+          applyStylesToElement(element, styles);
+        });
+      }
+      // Store defined styles for reuse
+      definedStyles[selector] = styles;
+    });
   });
+
   // returning defined styles
   return definedStyles;
 }
+
 // hover handler test function (update v0.7)
-
-// applyHover function
-function applyHover(
-  selector: string,
-  notHover: string,
-  isHover: string,
-  styles: string = ""
-) {
-  // define selector
-  const elements: NodeListOf<HTMLElement> = document.querySelectorAll(selector);
-
-  // iterate elements
-  elements.forEach((element) => {
-    // makeTenoxUI instance
-    const styler = new makeTenoxUI(element);
-
-    // applying default styles
-    // styler.applyMultiStyles(`${notHover} ${styles}`);
-    styler.applyMultiStyles(styles);
-
-    // when the element is hovered
-    element.addEventListener("mouseenter", () => {
-      // apply hover style
-      styler.applyMultiStyles(isHover);
-    });
-
-    // default style / when element not hovered
-    element.addEventListener("mouseleave", () => {
-      // apply default style
-      styler.applyMultiStyles(notHover);
-    });
-  });
-}
-
 // applyHovers function
 function applyHovers(hovers: object) {
   Object.entries(hovers).forEach(
@@ -673,10 +609,8 @@ function tenoxui(): void {
   Classes = Object.keys(property).map(
     (className) => `[class*="${className}-"]`
   );
-
   // Merge all `Classes` into one selector. Example : '[class*="p-"]', '[class*="m-"]', '[class*="justify-"]'
   AllClasses = document.querySelectorAll(Classes.join(", "));
-
   // Iterate over elements with AllClasses
   AllClasses.forEach((element: HTMLElement) => {
     // Get the list of classes for the current element
@@ -689,4 +623,5 @@ function tenoxui(): void {
     });
   });
 }
+
 tenoxui(); // init: tenoxui
