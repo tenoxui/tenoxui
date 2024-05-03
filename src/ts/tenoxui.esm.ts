@@ -1,7 +1,7 @@
 /*!
- * TenoxUI CSS Framework v0.8 [ https://tenoxui.web.app ]
- * copyright (c) 2024 nousantx
- * licensed under MIT [ https://github.com/nousantx/tenoxui/blob/main/LICENSE ]
+ * tenoxui/css v0.8.0 (https://github.com/tenoxui/css)
+ * Copyright (c) 2024 NOuSantx
+ * Licensed under the MIT License (https://github.com/tenoxui/css/blob/main/LICENSE)
  */
 
 // Importing All property that will be used on TenoxUI
@@ -164,11 +164,6 @@ class makeTenoxUI {
                 transformContainer || ""
               } scale3d(${value}${unit})`;
               break;
-            case "scale":
-              this.element.style[property] = `${
-                transformContainer || ""
-              } scale(${value}${unit})`;
-              break;
             case "scale-x":
               this.element.style[property] = `${
                 transformContainer || ""
@@ -299,7 +294,6 @@ function makeStyle(
   }
 }
 
-// MultiProps function: Add multiple properties from the provided object
 // MultiProps function: Add multiple properties from the provided object
 function defineProps(
   ...propsObjects: Record<string, string | string[]>[]

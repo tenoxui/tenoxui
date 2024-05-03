@@ -1,8 +1,9 @@
 /*!
- * TenoxUI CSS Framework v0.8 [ https://tenoxui.web.app ]
- * copyright (c) 2024 nousantx
- * licensed under MIT [ https://github.com/nousantx/tenoxui/blob/main/LICENSE ]
+ * tenoxui/css v0.8.0 (https://github.com/tenoxui/css)
+ * Copyright (c) 2024 NOuSantx
+ * Licensed under the MIT License (https://github.com/tenoxui/css/blob/main/LICENSE)
  */
+
 // All TenoxUI `type` and `property`
 const property: {
   // key, always string, value, can be string or an array that store string
@@ -130,12 +131,11 @@ const property: {
   "ol-style": "outlineStyle",
   "ol-offset": "outlineOffset",
   // Cursor
-  curs: "cursor",
   cursor: "cursor",
   // Overflow
   over: "overflow",
-  overY: "overflowY",
-  overX: "overflowX",
+  "over-y": "overflowY",
+  "over-x": "overflowX",
   // Float
   float: "float",
   // Aspect Ratio
@@ -153,10 +153,8 @@ const property: {
   "move-z": "transform",
   matrix: "transform",
   "matrix-3d": "transform",
-  rt: "transform",
   "rt-3d": "transform",
   translate: "transform",
-  scale: "transform",
   "scale-3d": "transform",
   "scale-x": "transform",
   "scale-y": "transform",
@@ -165,8 +163,8 @@ const property: {
   "skew-x": "transform",
   "skew-y": "transform",
   // More
-  "box-sizing": "boxSizing",
-  visibility: "visibility",
+  rt: "rotate",
+  scale: "scale",
   // TenoxUI Custom property
   box: ["width", "height"],
   "flex-parent": ["justifyContent", "alignItems"],
@@ -299,16 +297,6 @@ class makeTenoxUI {
                 transformContainer || ""
               } translate(${value}${unit})`;
               break;
-            case "rt":
-              this.element.style[property] = `${
-                transformContainer || ""
-              } rotate(${value}${unit})`;
-              break;
-            case "rotate":
-              this.element.style[property] = `${
-                transformContainer || ""
-              } rotate(${value}${unit})`;
-              break;
             case "move-x":
               this.element.style[property] = `${
                 transformContainer || ""
@@ -338,11 +326,6 @@ class makeTenoxUI {
               this.element.style[property] = `${
                 transformContainer || ""
               } scale3d(${value}${unit})`;
-              break;
-            case "scale":
-              this.element.style[property] = `${
-                transformContainer || ""
-              } scale(${value}${unit})`;
               break;
             case "scale-x":
               this.element.style[property] = `${
@@ -474,7 +457,6 @@ function makeStyle(
   }
 }
 
-// MultiProps function: Add multiple properties from the provided object
 // MultiProps function: Add multiple properties from the provided object
 function defineProps(
   ...propsObjects: Record<string, string | string[]>[]
