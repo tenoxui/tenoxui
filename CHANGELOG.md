@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.8] - 3-05-2024
+
+- Custom value feature.
+- Remove `addType` and `applyHover` function
+- Stopped maintain `src/css`
+- Types changing :
+  - `"scale": "transform"` => `"scale": "scale"`
+  - `"rt": "transform"` => `"rt": "rotate"`
+  - `"overX": "overflowX"` => `"over-x": "overflowX"`
+  - `"overY": "overflowY"` => `"over-y": "overflowY"`
+- Removed common used types :
+  - `top`
+  - `left`
+  - `right`
+  - `bottom`
+  - `box-sizing`
+  - `visibility`
+
 ## [0.7.1] - 12-04-2024
 
 - Update `applyHovers` funtion, removing `notHover` parameter for giving styles firstly before hovering
