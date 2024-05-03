@@ -3,14 +3,7 @@
  * Copyright (c) 2024 NOuSantx
  * Licensed under the MIT License (https://github.com/tenoxui/css/blob/main/LICENSE)
  */
-declare const property: {
-    [key: string]: string | string[];
-};
 declare let Classes: String[], AllClasses: NodeListOf<HTMLElement>;
-declare class newProp {
-    constructor(name: string, values: string[]);
-    tryAdd(): void;
-}
 declare class makeTenoxUI {
     element: HTMLElement;
     styles: any;
@@ -25,3 +18,5 @@ type StylesObject = Record<string, string | Record<string, string>>;
 declare function makeStyles(...stylesObjects: StylesObject[]): StylesObject;
 declare function applyHovers(hovers: object): void;
 declare function tenoxui(): void;
+export { Classes, AllClasses, defineProps, makeStyle, makeStyles, applyHovers, makeTenoxUI, };
+export default tenoxui;

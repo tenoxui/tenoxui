@@ -1,6 +1,11 @@
+/*!
+ * tenoxui/css v0.8.0 (https://github.com/tenoxui/css)
+ * Copyright (c) 2024 NOuSantx
+ * Licensed under the MIT License (https://github.com/tenoxui/css/blob/main/LICENSE)
+ */
+
 :root {
-  --font-all: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  --font-all: system-ui, sans-serif;
   font-family: var(--font-all);
 }
 *,
@@ -35,3 +40,4 @@ a,
 button {
   cursor: pointer;
 }
+/*! it's just "formality" css file :D */

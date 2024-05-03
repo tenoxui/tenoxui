@@ -1,60 +1,39 @@
 /*!
- * TenoxUI CSS Framework v0.7.1 [ https://tenoxui.web.app ]
- * copyright (c) 2024 nousantx
- * licensed under MIT [ https://github.com/nousantx/tenoxui/blob/main/LICENSE ]
+ * tenoxui/css v0.8.0 (https://github.com/tenoxui/css)
+ * Copyright (c) 2024 NOuSantx
+ * Licensed under the MIT License (https://github.com/tenoxui/css/blob/main/LICENSE)
  */
 // Importing All property that will be used on TenoxUI
 import property from "./lib/property.js";
 let Classes, AllClasses;
-// Check browser environment
-if (typeof window !== "undefined") {
-    // Generate className from property key name, or property type
-    Classes = Object.keys(property).map((className) => `[class*="${className}-"]`);
-    // Merge all `Classes` into one selector. Example : '[class*="p-"]', '[class*="m-"]', '[class*="justify-"]'
-    AllClasses = document.querySelectorAll(Classes.join(", "));
-}
+// Generate className from property key name, or property type
+Classes = Object.keys(property).map((className) => `[class*="${className}-"]`);
+// Merge all `Classes` into one selector. Example : '[class*="p-"]', '[class*="m-"]', '[class*="justify-"]'
+AllClasses = document.querySelectorAll(Classes.join(", "));
 // Props maker function :)
-function newProp(name, values) {
-    // Error handling, the type must be a string, properties must be an array
-    if (typeof name !== "string" || !Array.isArray(values)) {
-        console.warn("Invalid arguments for newProp. Please provide a string for keys and array for values.");
-        return;
-    }
-    this[name] = values;
-    if (typeof window !== "undefined") {
+class newProp {
+    constructor(name, values) {
+        // Error handling, the type must be a string, properties must be an array
+        if (typeof name !== "string" || !Array.isArray(values)) {
+            console.warn("Invalid arguments for newProp. Please provide a string for name and an array for values.");
+            return;
+        }
+        this[name] = values;
         // Combine the type and property to allProperty after defined it to Classes and AllClasses
         Classes.push(`[class*="${name}-"]`);
         AllClasses = document.querySelectorAll(Classes.join(", "));
     }
+    // Function to handle add `type` and `property`
+    tryAdd() {
+        if (!this || Object.keys(this).length === 0) {
+            console.warn("Invalid newProp instance:", this);
+            return;
+        }
+        // Added new `type` and `property` to the All Property
+        Object.assign(property, this);
+    }
 }
-// Function to handle add `type` and `property`
-newProp.prototype.tryAdd = function () {
-    if (!this || Object.keys(this).length === 0) {
-        console.warn("Invalid newProp instance:", this);
-        return;
-    }
-    // Added new `type` and `property` to the All Property
-    Object.assign(property, this);
-};
-// Add new `type` and `property`
-function addType(Types, Property) {
-    // Check if 'Types' is a string
-    if (typeof Types !== "string") {
-        throw new Error("Types must be a string");
-    }
-    // Check if 'Property' is a string or an array
-    if (!Array.isArray(Property) && typeof Property !== "string") {
-        throw new Error("Property must be a string or array");
-    }
-    // If properties has only one css property and it was string, not wrapped inside an array
-    if (typeof Property === "string") {
-        // Convert the string value from property into an array
-        Property = [Property];
-    }
-    // Add new property
-    new newProp(Types, Property).tryAdd();
-}
-// makeTenoxUI class
+// TenoxUI make style class
 class makeTenoxUI {
     // TenoxUI constructor
     constructor(element) {
@@ -127,12 +106,6 @@ class makeTenoxUI {
                         case "translate":
                             this.element.style[property] = `${transformContainer || ""} translate(${value}${unit})`;
                             break;
-                        case "rt":
-                            this.element.style[property] = `${transformContainer || ""} rotate(${value}${unit})`;
-                            break;
-                        case "rotate":
-                            this.element.style[property] = `${transformContainer || ""} rotate(${value}${unit})`;
-                            break;
                         case "move-x":
                             this.element.style[property] = `${transformContainer || ""} translateX(${value}${unit})`;
                             break;
@@ -150,9 +123,6 @@ class makeTenoxUI {
                             break;
                         case "scale-3d":
                             this.element.style[property] = `${transformContainer || ""} scale3d(${value}${unit})`;
-                            break;
-                        case "scale":
-                            this.element.style[property] = `${transformContainer || ""} scale(${value}${unit})`;
                             break;
                         case "scale-x":
                             this.element.style[property] = `${transformContainer || ""} scaleX(${value}${unit})`;
@@ -179,17 +149,32 @@ class makeTenoxUI {
                 /*
                  * CSS Variable Support 🎋
                  *
-                 * Check className if the `value` is wrapped with `[]`,
+                 * Check className if the `value` is wrapped with square bracket `[]`,
                  * if so then this is treated as css variable, css value.
                  */
                 // Check if the value is a CSS variable enclosed in square brackets
                 else if (value.startsWith("[") && value.endsWith("]")) {
-                    // Slice value from the box and identify the
+                    // Slice value from the square brackets
                     const cssVariable = value.slice(1, -1);
                     this.element.style[property] = `var(--${cssVariable})`;
                 }
-                // Default value and unit
+                /*
+                 * Custom values support 🪐
+                 *
+                 * Check className if the `value` is wrapped with curly bracket `{}`,
+                 * if so then this is treated as custom value and ignore default value.
+                 */
+                // Check if the value is a CSS variable enclosed in brackets {}
+                else if (value.startsWith("{") && value.endsWith("}")) {
+                    const values = value.slice(1, -1).replace(/\\_/g, " ");
+                    this.element.style[property] = values;
+                }
                 else {
+                    /*
+                     * This is default value handler
+                     *
+                     * All types and properties will have this value as their default value.
+                     */
                     this.element.style[property] = `${value}${unit}`;
                 }
             });
@@ -198,12 +183,8 @@ class makeTenoxUI {
     // Handle all possible values
     applyStyles(className) {
         // Using RegExp to handle the value
-        // Fix 0.6
-        // const match = className.match(
-        //   /([a-zA-Z]+(?:-[a-zA-Z]+)*)-(-?(?:\d+(\.\d+)?)|(?:[a-zA-Z]+(?:-[a-zA-Z]+)*(?:-[a-zA-Z]+)*)|(?:#[0-9a-fA-F]+)|(?:\[[^\]]+\]))([a-zA-Z%]*)/
-        // );
-        const match = className.match(/([a-zA-Z]+(?:-[a-zA-Z]+)*)-(-?(?:\d+(\.\d+)?)|(?:[a-zA-Z]+(?:-[a-zA-Z]+)*(?:-[a-zA-Z]+)*)|(?:#[0-9a-fA-F]+)|(?:\[[^\]]+\])|(?:\.[^\s.]+[.][a-zA-Z]+))([a-zA-Z%]*)/
-        // /([a-zA-Z]+(?:-[a-zA-Z]+)*)-(-?(?:\d+(\.\d+)?)|(?:[a-zA-Z]+(?:-[a-zA-Z]+)*(?:-[a-zA-Z]+)*)|(?:#[0-9a-fA-F]+)|(?:\[[^\]]+\])|(?:\.[^\s.]+))([a-zA-Z%]*)/
+        const match = className.match(/([a-zA-Z]+(?:-[a-zA-Z]+)*)-(-?(?:\d+(\.\d+)?)|(?:[a-zA-Z]+(?:-[a-zA-Z]+)*(?:-[a-zA-Z]+)*)|(?:#[0-9a-fA-F]+)|(?:\[[^\]]+\])|(?:\{[^\}]+\}))([a-zA-Z%]*)/
+        // /([a-zA-Z]+(?:-[a-zA-Z]+)*)-(-?(?:\d+(\.\d+)?)|(?:[a-zA-Z]+(?:-[a-zA-Z]+)*(?:-[a-zA-Z]+)*)|(?:#[0-9a-fA-F]+)|(?:\[[^\]]+\]))([a-zA-Z%]*)/
         );
         if (match) {
             // type = property class. Example: p-, m-, flex-, fx-, filter-, etc.
@@ -226,50 +207,50 @@ class makeTenoxUI {
         });
     }
 }
-// Applied multi style into all elements with the specified element (not just className)
+// Applied multi style into all elements with the specified element, possible to all selector
 function makeStyle(selector, styles) {
     const applyStylesToElement = (element, styles) => {
-        // make new styler
         const styler = new makeTenoxUI(element);
         styler.applyMultiStyles(styles);
     };
-    // Make sure to run only on browser environment
-    if (typeof window !== "undefined") {
-        if (typeof styles === "string") {
-            // If styles is a string, apply it to the specified selector
-            const elements = document.querySelectorAll(selector);
-            elements.forEach((element) => applyStylesToElement(element, styles));
-        }
-        else if (typeof styles === "object") {
-            // If styles is an object, iterate through its key-value pairs
-            Object.entries(styles).forEach(([classSelector, classStyles]) => {
-                const elements = document.querySelectorAll(classSelector);
-                elements.forEach((element) => applyStylesToElement(element, classStyles));
-            });
-        }
-        // Error Handling for make Style
-        else {
-            console.warn(`Invalid styles format for "${selector}". Make sure you provide style correctly`);
-        }
+    if (typeof styles === "string") {
+        // If styles is a string, apply it to the specified selector
+        const elements = document.querySelectorAll(selector);
+        elements.forEach((element) => applyStylesToElement(element, styles));
+    }
+    else if (typeof styles === "object") {
+        // If styles is an object, iterate through its key-value pairs
+        Object.entries(styles).forEach(([classSelector, classStyles]) => {
+            const elements = document.querySelectorAll(classSelector);
+            elements.forEach((element) => applyStylesToElement(element, classStyles));
+        });
+    }
+    // Error Handling for makeStyle
+    else {
+        console.warn(`Invalid styles format for "${selector}". Make sure you provide style correctly`);
     }
 }
 // MultiProps function: Add multiple properties from the provided object
-function defineProps(propsObject) {
-    // Iterate over object entries
-    Object.entries(propsObject).forEach(([propName, propValues]) => {
-        // Check if propValues is an array or string
-        if (typeof propValues !== "string" && !Array.isArray(propValues)) {
-            console.warn(`Invalid property values for "${propName}". Make sure you provide values as an array.`);
-        }
-        // if the propValues is a string, convert into array
-        const processedValues = typeof propValues === "string" ? [propValues] : propValues;
-        // Create a new CustomProperty
-        const propInstance = new newProp(propName, processedValues);
-        // Add it to AllProperty at once
-        propInstance.tryAdd();
+function defineProps(...propsObjects) {
+    propsObjects.forEach((propsObject) => {
+        // Iterate over object entries
+        Object.entries(propsObject).forEach(([propName, propValues]) => {
+            // Check if propValues is an array or string
+            if (typeof propValues !== "string" && !Array.isArray(propValues)) {
+                console.warn(`Invalid property values for "${propName}". Make sure you provide values as an array.`);
+            }
+            // if the propValues is a string, convert into array
+            const processedValues = typeof propValues === "string"
+                ? [propValues]
+                : propValues;
+            // Create a new CustomProperty
+            const propInstance = new newProp(propName, processedValues);
+            // Add it to AllProperty at once
+            propInstance.tryAdd();
+        });
     });
 }
-function makeStyles(stylesObject) {
+function makeStyles(...stylesObjects) {
     // Store defined styles into an object
     const definedStyles = {};
     // Helper function to apply styles into elements
@@ -307,71 +288,30 @@ function makeStyles(stylesObject) {
         });
     };
     // Handle styling logic, nested style or only default
-    Object.entries(stylesObject).forEach(([selector, styles]) => {
-        // If the styles is an object or nested style, use `applyNestedStyles` function to apply nested style logic
-        if (typeof styles === "object" && !Array.isArray(styles)) {
-            applyNestedStyles(selector, styles);
-        }
-        // If the styles is not overriden by nested style, apply styles using default styler
-        else {
-            // Stacking selector and
-            const elements = document.querySelectorAll(selector);
-            // Apply direct styles into element using default styler
-            elements.forEach((element) => {
-                // apply default styles
-                applyStylesToElement(element, styles);
-                /**
-                 * const styler = new makeTenoxUI(element);
-                 * styler.applyMultiStyles(styles);
-                 */
-            });
-        }
-        // Store defined styles for reuse
-        definedStyles[selector] = styles;
+    stylesObjects.forEach((stylesObject) => {
+        Object.entries(stylesObject).forEach(([selector, styles]) => {
+            // If the styles is an object or nested style, use `applyNestedStyles` function to apply nested style logic
+            if (typeof styles === "object" && !Array.isArray(styles)) {
+                applyNestedStyles(selector, styles);
+            }
+            // If the styles is not overridden by nested style, apply styles using default styler
+            else {
+                // Stacking selector and
+                const elements = document.querySelectorAll(selector);
+                // Apply direct styles into element using default styler
+                elements.forEach((element) => {
+                    // apply default styles
+                    applyStylesToElement(element, styles);
+                });
+            }
+            // Store defined styles for reuse
+            definedStyles[selector] = styles;
+        });
     });
     // returning defined styles
     return definedStyles;
 }
-//   selector: string,
-//   beforeHover: string,
-//   isHover: string,
-//   styles: string = ""
-// ) {
-//   const elements = document.querySelectorAll(selector);
-//   elements.forEach((element: HTMLElement) => {
-//     const styler = new makeTenoxUI(element);
-//     styler.applyMultiStyles(`${beforeHover} ${styler}`);
-//     element.addEventListener("mouseenter", () => {
-//       styler.applyMultiStyles(isHover);
-//     });
-//     element.addEventListener("mouseleave", () => {
-//       styler.applyMultiStyles(beforeHover);
-//     });
-//   });
-// }
 // hover handler test function (update v0.7)
-// applyHover function
-function applyHover(selector, notHover, isHover, styles = "") {
-    // define selector
-    const elements = document.querySelectorAll(selector);
-    // iterate elements
-    elements.forEach((element) => {
-        // makeTenoxUI instance
-        const styler = new makeTenoxUI(element);
-        // applying default styles
-        styler.applyMultiStyles(`${notHover} ${styles}`);
-        // when the element is hovered
-        element.addEventListener("mouseenter", () => {
-            // apply hover style
-            styler.applyMultiStyles(isHover);
-        });
-        // default style / when element not hovered
-        element.addEventListener("mouseleave", () => {
-            // apply default style
-            styler.applyMultiStyles(notHover);
-        });
-    });
-}
 // applyHovers function
 function applyHovers(hovers) {
     Object.entries(hovers).forEach(([selector, [notHover, isHover, styles = ""]]) => {
@@ -414,6 +354,6 @@ function tenoxui() {
         });
     });
 }
-export { Classes, AllClasses, addType, defineProps, makeStyle, makeStyles, applyHover, applyHovers, makeTenoxUI, };
+export { Classes, AllClasses, defineProps, makeStyle, makeStyles, applyHovers, makeTenoxUI, };
 export default tenoxui;
 //# sourceMappingURL=tenoxui.esm.js.map
