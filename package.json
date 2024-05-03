@@ -18,8 +18,8 @@
     "build-js": "terser src/js/tenoxui.js -o dist/js/tenoxui.min.js --mangle --source-map url='tenoxui.min.js.map' && cp src/js/tenoxui.js src/js/tenoxui.d.ts src/js/tenoxui.js.map dist/js/",
     "build-esm": "terser src/js/tenoxui.esm.js -o dist/js/tenoxui.esm.min.js --mangle --source-map url='tenoxui.esm.min.js.map' && cp src/js/tenoxui.esm.js src/js/tenoxui.esm.d.ts src/js/tenoxui.esm.js.map dist/js/",
     "build-prop": "terser src/js/lib/property.js -o dist/js/lib/property.js --mangle --source-map url='property.js.map' && cp src/js/lib/property.d.ts dist/js/lib/",
-    "build-css": "cleancss src/css/tenoxui.css -o dist/css/tui.min.css --source-map && cp src/css/tenoxui.css dist/css/tui.css && cp src/css/lib.css dist/css/",
-    "build-all": "npm run build-js && npm run build-esm && npm run build-prop"
+    "build-css": "cleancss src/css/tenoxui.css -o dist/css/tenoxui.min.css --source-map && cp src/css/tenoxui.css dist/css/",
+    "build-all": "npm run build-js && npm run build-esm && npm run build-prop && prettier -w dist/js/tenoxui.js dist/js/tenoxui.esm.js"
   },
   "repository": {
     "type": "git",
