@@ -50,7 +50,7 @@ TenoxUI stands as a nimble Utility-First CSS framework meticulously crafted to e
 Using npm:
 
 ```bash
-npm i tenoxui@latest
+npm i tenoxui --save-dev
 ```
 
 Using CDN :
@@ -60,6 +60,8 @@ Using CDN :
 ```
 
 <h3>Documentation</h3>
+
+Here's a simple usage of tenoxui css :
 
 <h4>Using Class</h4>
 
@@ -73,7 +75,7 @@ Using CDN :
 
 1. `makeStyle` function
 
-Using selector and the class names as parameter, you can change the style of the element.
+Using selector and the class names as parameter, you can change the style of the element :
 
 ```js
 makeStyle("body", "bg-#0d0d0d tc-white p-20px");
@@ -83,7 +85,7 @@ Note: `makeStyle` only give styles to one selector
 
 2. `makeStyles` function
 
-Using object as parameter to give the styles
+Using object as parameter to give styles into element :
 
 ```js
 makeStyles({
@@ -103,7 +105,7 @@ Using re-usable class:
 <div class="flex center">...</div>
 ```
 
-The `div` above will have style of :
+The `div` above will have same style as :
 
 ```css
 div {
