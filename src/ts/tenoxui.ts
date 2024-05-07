@@ -32,13 +32,12 @@ const property: {
   ls: "letterSpacing",
   ta: "textAlign",
   tc: "color",
-  ts: "textStyle",
   td: "textDecoration",
   ti: "textIndent",
   tn: "textReansform",
   ws: "wordSpacing",
   family: "fontFamily",
-  "text-s": "fontStyle",
+  "font-s": "fontStyle",
   "white-space": "whiteSpace",
   // Positioning
   position: "position",
@@ -65,33 +64,24 @@ const property: {
   "bg-clip": "backgroundClip",
   "bg-repeat": "backgroundRepeat",
   "bg-loc": "backgroundPosition",
-  "bg-loc-x": "backgroundPositionX",
-  "bg-loc-y": "backgroundPositionY",
-  "bg-blend": "backgroundBlendMode",
   "bg-image": "backgroundImage",
   // Flex
-  fx: "flex",
   flex: "flex",
   "flex-auto": "flex",
   fd: "flexDirection",
-  "fx-wrap": "flexWrap",
-  "item-order": "order",
+  "flex-wrap": "flexWrap",
   order: "order",
-  "fx-basis": "flexBasis",
-  "fx-grow": "flexGrow",
-  "fx-shrink": "flexShrink",
+  "flex-basis": "flexBasis",
+  "flex-grow": "flexGrow",
+  "flex-shrink": "flexShrink",
   // Gap
   gap: "gap",
-  "row-gap": "rowGap",
-  "col-gap": "columnGap",
   // Align
   ac: "alignContent",
   ai: "align-items",
-  as: "alignSelf",
   // Justify
   jc: "justifyContent",
   ji: "justifyItems",
-  js: "justifySelf",
   // Filter
   filter: "filter",
   blur: "ftr",
@@ -142,7 +132,6 @@ const property: {
   //? tra: is a shorts of transform, it will separated from its main property 'transform' and will have different approach for style
   "move-x": "tra",
   "move-y": "tra",
-  "move-z": "tra",
   matrix: "tra",
   "matrix-3d": "tra",
   "rt-3d": "tra",
@@ -150,7 +139,6 @@ const property: {
   "scale-3d": "tra",
   "scale-x": "tra",
   "scale-y": "tra",
-  "scale-z": "tra",
   skew: "tra",
   "skew-x": "tra",
   "skew-y": "tra",
@@ -256,16 +244,13 @@ class makeTenoxUI {
             translate: "translate",
             "move-x": "translateX",
             "move-y": "translateY",
-            "move-z": "translateZ",
             matrix: "matrix",
             "matrix-3d": "matrix3d",
             "scale-3d": "scale3d",
             "scale-x": "scaleX",
             "scale-y": "scaleY",
-            "scale-z": "scaleZ",
             "skew-x": "skewX",
             "skew-y": "skewY",
-            "skew-z": "skewZ",
           };
           const transformFunction = transformFunctions[type];
           if (transformFunction) {
@@ -275,34 +260,36 @@ class makeTenoxUI {
         /*
          * CSS Variable Support 🎋
          *
-         * Check className if the `value` is wrapped with square bracket `[]`,
+         * Check className if the `value` is wrapped with curly bracket `{}`,
          * if so then this is treated as css variable, css value.
          */
-        // Check if the value is a CSS variable enclosed in square brackets
+        // Check if the value is a CSS variable enclosed in curly brackets `{}`
         else if (value.startsWith("{") && value.endsWith("}")) {
-          // Slice value from the square brackets
+          // Slice value from the curly brackets
           const cssVariable = value.slice(1, -1);
           this.element.style[property] = `var(--${cssVariable})`;
         }
         /*
          * Custom values support 🪐
          *
-         * Check className if the `value` is wrapped with curly bracket `{}`,
+         * Check className if the `value` is wrapped with square bracket `[]`,
          * if so then this is treated as custom value and ignore default value.
          */
-        // Check if the value is a CSS variable enclosed in brackets {}
+        // Check if the value is a CSS variable enclosed in square bracket `[]`
         else if (value.startsWith("[") && value.endsWith("]")) {
           const values = value.slice(1, -1).replace(/\\_/g, " ");
+          // if value start with `--`, generate value as css variable
           if (values.startsWith("--")) {
             this.element.style[property] = `var(${values})`;
-          } else {
+          }
+          // else, will use default `values`
+          else {
             this.element.style[property] = values;
           }
         } else {
           /*
            * This is default value handler
-           *
-           * All types and properties will have this value as their default value.
+           * All types will have this as default values, no additional value
            */
           this.element.style[property] = `${value}${unit}`;
         }
@@ -322,6 +309,8 @@ class makeTenoxUI {
       const value = match[2];
       // unit = possible unit. Example: px, rem, em, s, %, etc.
       const unitOrValue = match[4];
+      // Combine all to one class. Example 'p-10px', 'flex-100px', 'grid-row-6', etc.
+      this.applyStyle(type, value, unitOrValue);
     }
   }
 
@@ -395,12 +384,13 @@ function defineProps(
   });
 }
 
-// StylesObject type
-type StylesObject = Record<string, string | Record<string, string>>;
-
-function makeStyles(...stylesObjects: StylesObject[]): StylesObject {
+interface typeObjects {
+  [key: string]: string | typeObjects;
+}
+type Styles = typeObjects | Record<string, typeObjects>;
+function makeStyles(...stylesObjects: Styles[]): Styles {
   // Store defined styles into an object
-  const definedStyles: StylesObject = {};
+  const definedStyles: Styles = {};
   // Helper function to apply styles into elements
   const applyStylesToElement = (
     element: HTMLElement,
@@ -414,16 +404,13 @@ function makeStyles(...stylesObjects: StylesObject[]): StylesObject {
       styler.applyMultiStyles(styles);
     } else {
       // Handle nested styles / if the value is new object
-      for (const [prop, value] of Object.entries(styles)) {
+      Object.entries(styles).forEach(([prop, value]) => {
         styler.applyStyle(prop, value, "");
-      }
+      });
     }
   };
   // Recursive function to handle nested styles
-  const applyNestedStyles = (
-    parentSelector: string,
-    styles: Record<string, string>
-  ): void => {
+  const applyNestedStyles = (parentSelector: string, styles: Styles): void => {
     // Handle nested style
     Object.entries(styles).forEach(([childSelector, childStyles]) => {
       const elements = document.querySelectorAll<HTMLElement>(
@@ -437,7 +424,14 @@ function makeStyles(...stylesObjects: StylesObject[]): StylesObject {
       else {
         // Default handler if style is a string / default styler (e.g. "p-1rem fs-1rem")
         elements.forEach((element) => {
-          applyStylesToElement(element, childStyles);
+          if (
+            typeof childStyles === "string" ||
+            (typeof childStyles === "object" && !Array.isArray(childStyles))
+          ) {
+            applyStylesToElement(element, childStyles);
+          } else {
+            console.warn("Invalid nested style for :", childStyles);
+          }
         });
       }
     });
@@ -455,8 +449,14 @@ function makeStyles(...stylesObjects: StylesObject[]): StylesObject {
         const elements = document.querySelectorAll<HTMLElement>(selector);
         // Apply direct styles into element using default styler
         elements.forEach((element) => {
-          // apply default styles
-          applyStylesToElement(element, styles);
+          if (
+            typeof styles === "string" ||
+            (typeof styles === "object" && !Array.isArray(styles))
+          ) {
+            applyStylesToElement(element, styles);
+          } else {
+            console.warn("Invalid styles type:", styles);
+          }
         });
       }
       // Store defined styles for reuse
