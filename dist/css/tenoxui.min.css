@@ -1,6 +1,0 @@
-/*!
- * tenoxui/css v0.8.0 (https://github.com/tenoxui/css)
- * Copyright (c) 2024 NOuSantx
- * Licensed under the MIT License (https://github.com/tenoxui/css/blob/main/LICENSE)
- */:root{--font-all:system-ui,sans-serif;font-family:var(--font-all)}*,::after,::before{box-sizing:border-box;margin:0;padding:0}blockquote,q{quotes:none}blockquote:after,blockquote:before,q:after,q:before{content:"";content:none}a{text-decoration:none}a:hover{text-decoration:underline}.none,:where([hidden]){display:none!important}a,button{cursor:pointer}/*! it's just "formality" css file :D */
-/*# sourceMappingURL=tenoxui.min.css.map */
