@@ -131,3 +131,5 @@ out
 # bash
 *.sh
 *.zsh
+
+dist
