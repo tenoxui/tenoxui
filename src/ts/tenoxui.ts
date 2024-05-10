@@ -1,21 +1,28 @@
 /*!
- * tenoxui/css v0.9.0-alpha.1 (https://github.com/tenoxui/css)
+ * tenoxui/css v0.9.0-alpha.4 (https://github.com/tenoxui/css)
  * Copyright (c) 2024 NOuSantx
  * Licensed under the MIT License (https://github.com/tenoxui/css/blob/main/LICENSE)
  */
 
-// TenoxUI all types and properties
-
+// tenoxui types and values type
+type Property = { [key: string]: string | string[] };
+// global variable to passing all values from `tenoxui`
+let allProps: Property;
 // TenoxUI make style class
 class makeTenoxUI {
+  // basically selector
   element: HTMLElement;
-  styles: object;
+  // all types and properties
+  styles: Property;
 
   // TenoxUI constructor
-  constructor(element: HTMLElement, styledProps?: object) {
+  constructor(element: HTMLElement, styledProps?: Property) {
+    // basically selector
     this.element = element;
+    // all types and properties
     this.styles = styledProps;
   }
+
   // `applyStyle`: Handle the styling and custom value for property
   applyStyle(type: string, value: string, unit: string): void {
     // the styles with let, not constant, because the properties no longer using array, optionally it can just be string
@@ -158,7 +165,7 @@ function makeStyle(
   styles: string | Record<string, string>
 ): void {
   const applyStylesToElement = (element: HTMLElement, styles: string): void => {
-    const styler = new makeTenoxUI(element);
+    const styler = new makeTenoxUI(element, allProps);
     styler.applyMultiStyles(styles);
   };
   if (typeof styles === "string") {
@@ -197,7 +204,7 @@ function makeStyles(...stylesObjects: Styles[]): Styles {
     styles: string | Record<string, string>
   ): void => {
     // Define new styler
-    const styler = new makeTenoxUI(element);
+    const styler = new makeTenoxUI(element, allProps);
     // If the styles is a string, like: "p-20px m-1rem fs-2rem" / Stacked classes
     if (typeof styles === "string") {
       // Handled using `applyMultiStyles`
@@ -277,7 +284,7 @@ function applyHovers(hovers: object) {
       const elements = document.querySelectorAll(selector);
       elements.forEach((element: HTMLElement) => {
         // makeTenoxUI instance
-        const styler = new makeTenoxUI(element);
+        const styler = new makeTenoxUI(element, allProps);
         // applying default styles
         // styler.applyMultiStyles(`${notHover} ${styles}`);
         styler.applyMultiStyles(styles);
@@ -297,15 +304,15 @@ function applyHovers(hovers: object) {
 }
 
 // Applying the style to all elements ✨
-function tenoxui(...customPropsArray) {
+function tenoxui(...customPropsArray: object[]) {
   // Merge all customProps objects into one object
   const styles = Object.assign({}, ...customPropsArray);
-
+  // passing for global values
+  allProps = styles;
   // Generate className from property key name, or property type
   const Classes = Object.keys(styles).map(
     (className) => `[class*="${className}-"]`
   );
-
   // Classes = Object.keys(property).map((className) => `[class*="${className}-"]`);
   const AllClasses = document.querySelectorAll(Classes.join(", "));
   // Iterate over elements with AllClasses
@@ -319,18 +326,9 @@ function tenoxui(...customPropsArray) {
       styler.applyStyles(className);
     });
   });
-
   // just dev
-  return styles;
+  return { styles };
 }
 
-export {
-  // Classes,
-  // AllClasses,
-  // defineProps,
-  makeStyle,
-  makeStyles,
-  applyHovers,
-  makeTenoxUI,
-};
+export { allProps, makeStyle, makeStyles, applyHovers, makeTenoxUI };
 export default tenoxui;
