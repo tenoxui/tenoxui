@@ -5,52 +5,16 @@
  */
 
 // TenoxUI all types and properties
-import property from "./lib/property.js";
-
-let Classes: String[], AllClasses: NodeListOf<HTMLElement>;
-
-// Generate className from property key name, or property type
-Classes = Object.keys(property).map((className) => `[class*="${className}-"]`);
-
-// Merge all `Classes` into one selector. Example : '[class*="p-"]', '[class*="m-"]', '[class*="justify-"]'
-AllClasses = document.querySelectorAll(Classes.join(", "));
-
-// Props maker function :)
-class newProp {
-  constructor(name: string, values: string[]) {
-    // Error handling, the type must be a string, properties must be an array
-    if (typeof name !== "string" || !Array.isArray(values)) {
-      console.warn(
-        "Invalid arguments for newProp. Please provide a string for name and an array for values."
-      );
-      return;
-    }
-    this[name] = values;
-    // Combine the type and property to allProperty after defined it to Classes and AllClasses
-    Classes.push(`[class*="${name}-"]`);
-    AllClasses = document.querySelectorAll(Classes.join(", "));
-  }
-
-  // Function to handle add `type` and `property`
-  tryAdd(): void {
-    if (!this || Object.keys(this).length === 0) {
-      console.warn("Invalid newProp instance:", this);
-      return;
-    }
-    // Added new `type` and `property` to the All Property
-    Object.assign(property, this);
-  }
-}
 
 // TenoxUI make style class
 class makeTenoxUI {
   element: HTMLElement;
-  styles: any;
+  styles: object;
 
   // TenoxUI constructor
-  constructor(element: HTMLElement) {
+  constructor(element: HTMLElement, styledProps?: object) {
     this.element = element;
-    this.styles = property;
+    this.styles = styledProps;
   }
   // `applyStyle`: Handle the styling and custom value for property
   applyStyle(type: string, value: string, unit: string): void {
@@ -71,12 +35,9 @@ class makeTenoxUI {
             ? `${existingFilter} ${type}(${value}${unit})`
             : `${type}(${value}${unit})`;
         }
-        // Make custom property for flex
-        else if (type === "flex-auto") {
-          this.element.style[property] = `1 1 ${value}${unit}`;
-        }
         // backdrop filter styles handler
         else if (property === "bFt") {
+          //? backdrop-filter function shorthand
           const filters = [
             "blur",
             "sepia",
@@ -125,6 +86,14 @@ class makeTenoxUI {
           // Slice value from the curly brackets
           const cssVariable = value.slice(1, -1);
           this.element.style[property] = `var(--${cssVariable})`;
+        } else if (type.startsWith("-")) {
+          /*
+           * Min value support 🎏
+           *
+           * Check className if the `value` is started with hypens `-`,
+           * if so then this is treated as `min` value.
+           */
+          this.element.style[property] = `${value}${unit}`;
         }
         /*
          * Custom values support 🪐
@@ -152,12 +121,13 @@ class makeTenoxUI {
         }
       });
     }
+    // console.log(this.styles);
   }
   // Handle all possible values
   applyStyles(className: string): void {
     // Using RegExp to handle the value
     const match = className.match(
-      /([a-zA-Z]+(?:-[a-zA-Z]+)*)-(-?(?:\d+(\.\d+)?)|(?:[a-zA-Z]+(?:-[a-zA-Z]+)*(?:-[a-zA-Z]+)*)|(?:#[0-9a-fA-F]+)|(?:\[[^\]]+\])|(?:\{[^\}]+\}))([a-zA-Z%]*)/
+      /(-?[a-zA-Z]+(?:-[a-zA-Z]+)*)-(-?(?:\d+(\.\d+)?)|(?:[a-zA-Z]+(?:-[a-zA-Z]+)*(?:-[a-zA-Z]+)*)|(?:#[0-9a-fA-F]+)|(?:\[[^\]]+\])|(?:\{[^\}]+\}))([a-zA-Z%]*)/
     );
     if (match) {
       // type = property class. Example: p-, m-, flex-, fx-, filter-, etc.
@@ -212,33 +182,6 @@ function makeStyle(
       `Invalid styles format for "${selector}". Make sure you provide style correctly`
     );
   }
-}
-
-// MultiProps function: Add multiple properties from the provided object
-function defineProps(
-  ...propsObjects: Record<string, string | string[]>[]
-): void {
-  propsObjects.forEach((propsObject) => {
-    // Iterate over object entries
-    Object.entries(propsObject).forEach(([propName, propValues]) => {
-      // Check if propValues is an array or string
-      if (typeof propValues !== "string" && !Array.isArray(propValues)) {
-        console.warn(
-          `Invalid property values for "${propName}". Make sure you provide values as an array.`
-        );
-      }
-      // if the propValues is a string, convert into array
-      const processedValues: string[] =
-        typeof propValues === "string"
-          ? [propValues]
-          : (propValues as string[]);
-
-      // Create a new CustomProperty
-      const propInstance = new newProp(propName, processedValues);
-      // Add it to AllProperty at once
-      propInstance.tryAdd();
-    });
-  });
 }
 
 interface typeObjects {
@@ -354,30 +297,37 @@ function applyHovers(hovers: object) {
 }
 
 // Applying the style to all elements ✨
-function tenoxui(): void {
-  // Make classes from type name from properties key name
-  Classes = Object.keys(property).map(
+function tenoxui(...customPropsArray) {
+  // Merge all customProps objects into one object
+  const styles = Object.assign({}, ...customPropsArray);
+
+  // Generate className from property key name, or property type
+  const Classes = Object.keys(styles).map(
     (className) => `[class*="${className}-"]`
   );
-  // Merge all `Classes` into one selector. Example : '[class*="p-"]', '[class*="m-"]', '[class*="justify-"]'
-  AllClasses = document.querySelectorAll(Classes.join(", "));
+
+  // Classes = Object.keys(property).map((className) => `[class*="${className}-"]`);
+  const AllClasses = document.querySelectorAll(Classes.join(", "));
   // Iterate over elements with AllClasses
   AllClasses.forEach((element: HTMLElement) => {
     // Get the list of classes for the current element
     const classes = element.classList;
     // Make TenoxUI
-    const styler = new makeTenoxUI(element);
+    const styler = new makeTenoxUI(element, styles);
     // Iterate over classes and apply styles using makeTenoxUI
     classes.forEach((className) => {
       styler.applyStyles(className);
     });
   });
+
+  // just dev
+  return styles;
 }
 
 export {
-  Classes,
-  AllClasses,
-  defineProps,
+  // Classes,
+  // AllClasses,
+  // defineProps,
   makeStyle,
   makeStyles,
   applyHovers,
