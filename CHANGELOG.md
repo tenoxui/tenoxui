@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Defining new props and properties can directly inside `tenoxui` function.
+
 ### Changed
 
 - Passing css variables into element now needed to add the `--` prefix and it will get the value from css variable. Example: `tc-[--neutral]`.
@@ -27,10 +29,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Deprecated
 
+- `property` is deprecated from tenoxui, and maybe moved into `@tenoxui/class` package
 - `filter`, `backdrop-filter`, and `transform` now can't be stacked using one-by-one classnames
 
 ### Removed
 
+- `newProp` class
+- `defineProps` function
 - Removed `background-image` custom value from `applyStyle` method.
 - All custom values now handled using square bracket `[]`, and the usage of curly bracket may be deprecated.
 - Removed types and properties :
