@@ -1,9 +1,3 @@
-/*!
- * tenoxui/css v0.8.0 (https://github.com/tenoxui/css)
- * Copyright (c) 2024 NOuSantx
- * Licensed under the MIT License (https://github.com/tenoxui/css/blob/main/LICENSE)
- */
-
 interface PropertyMap {
   [key: string]: string | string[];
 }
@@ -32,13 +26,12 @@ const property: PropertyMap = {
   ls: "letterSpacing",
   ta: "textAlign",
   tc: "color",
-  ts: "textStyle",
   td: "textDecoration",
   ti: "textIndent",
   tn: "textReansform",
   ws: "wordSpacing",
   family: "fontFamily",
-  "text-s": "fontStyle",
+  "font-s": "fontStyle",
   "white-space": "whiteSpace",
   // Positioning
   position: "position",
@@ -65,50 +58,43 @@ const property: PropertyMap = {
   "bg-clip": "backgroundClip",
   "bg-repeat": "backgroundRepeat",
   "bg-loc": "backgroundPosition",
-  "bg-loc-x": "backgroundPositionX",
-  "bg-loc-y": "backgroundPositionY",
-  "bg-blend": "backgroundBlendMode",
   "bg-image": "backgroundImage",
   // Flex
-  fx: "flex",
   flex: "flex",
   "flex-auto": "flex",
   fd: "flexDirection",
-  "fx-wrap": "flexWrap",
-  "item-order": "order",
+  "flex-wrap": "flexWrap",
   order: "order",
-  "fx-basis": "flexBasis",
-  "fx-grow": "flexGrow",
-  "fx-shrink": "flexShrink",
+  "flex-basis": "flexBasis",
+  "flex-grow": "flexGrow",
+  "flex-shrink": "flexShrink",
   // Gap
   gap: "gap",
-  "row-gap": "rowGap",
-  "col-gap": "columnGap",
   // Align
   ac: "alignContent",
   ai: "align-items",
-  as: "alignSelf",
   // Justify
   jc: "justifyContent",
   ji: "justifyItems",
-  js: "justifySelf",
   // Filter
   filter: "filter",
-  blur: "filter",
-  brightness: "filter",
-  contrast: "filter",
-  grayscale: "filter",
-  "hue-rotate": "filter",
-  saturate: "filter",
-  sepia: "filter",
+  blur: "ftr",
+  brightness: "ftr",
+  contrast: "ftr",
+  grayscale: "ftr",
+  "hue-rotate": "ftr",
+  saturate: "ftr",
+  sepia: "ftr",
   opa: "opacity",
   // Backdrop Filter
-  "back-blur": "backdropFilter",
-  "back-brightness": "backdropFilter",
-  "back-contrast": "backdropFilter",
-  "back-grayscale": "backdropFilter",
-  "back-saturate": "backdropFilter",
-  "back-sepia": "backdropFilter",
+  backdrop: "backdropFilter",
+  //? bFt: a shorthand of backdropFilter
+  "back-blur": "bFt",
+  "back-brightness": "bFt",
+  "back-contrast": "bFt",
+  "back-grayscale": "bFt",
+  "back-saturate": "bFt",
+  "back-sepia": "bFt",
   // Border
   br: "borderRadius",
   bw: "borderWidth",
@@ -117,27 +103,16 @@ const property: PropertyMap = {
   "bw-top": "borderTopWidth",
   "bw-bottom": "borderBottomWidth",
   bs: "borderStyle",
-  "radius-tl": "borderTopLeftRadius",
-  "radius-tr": "borderTopRightRadius",
-  "radius-bl": "borderBottomLeftRadius",
-  "radius-br": "borderBottomRightRadius",
   "radius-top": ["borderTopLeftRadius", "borderTopRightRadius"],
   "radius-bottom": ["borderBottomLeftRadius", "borderBottomRightRadius"],
   "radius-left": ["borderTopLeftRadius", "borderBottomLeftRadius"],
   "radius-right": ["borderTopRightRadius", "borderBottomRightRadius"],
-  // Outline
-  ol: "outline",
-  "ol-width": "outlineWidth",
-  "ol-style": "outlineStyle",
-  "ol-offset": "outlineOffset",
   // Cursor
   cursor: "cursor",
   // Overflow
   over: "overflow",
   "over-y": "overflowY",
   "over-x": "overflowX",
-  // Float
-  float: "float",
   // Aspect Ratio
   ratio: "aspectRatio",
   // Transition
@@ -148,20 +123,19 @@ const property: PropertyMap = {
   "tr-delay": "transitionDelay",
   // Transform: for v0.4.26 or higher.
   transform: "transform",
-  "move-x": "transform",
-  "move-y": "transform",
-  "move-z": "transform",
-  matrix: "transform",
-  "matrix-3d": "transform",
-  "rt-3d": "transform",
-  translate: "transform",
-  "scale-3d": "transform",
-  "scale-x": "transform",
-  "scale-y": "transform",
-  "scale-z": "transform",
-  skew: "transform",
-  "skew-x": "transform",
-  "skew-y": "transform",
+  //? tra: is a shorts of transform, it will separated from its main property 'transform' and will have different approach for style
+  "move-x": "tra",
+  "move-y": "tra",
+  matrix: "tra",
+  "matrix-3d": "tra",
+  "rt-3d": "tra",
+  translate: "tra",
+  "scale-3d": "tra",
+  "scale-x": "tra",
+  "scale-y": "tra",
+  skew: "tra",
+  "skew-x": "tra",
+  "skew-y": "tra",
   // More
   rt: "rotate",
   scale: "scale",

@@ -140,7 +140,7 @@ JavaScript :
 makeStyles({
   body: "bg-#0d0d0d tc-white p-20px",
   ".container": {
-    "": " display-flex gap-20px jc-center", // Empty string will treated as parent's style
+    "": "display-flex gap-20px jc-center", // Empty string will treated as parent's style
     // Card class will only applied when its inside container class, outside it will not styled
     ".card": {
       "": "p-20px br-8px bg-lightblue",
