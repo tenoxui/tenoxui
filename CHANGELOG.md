@@ -51,6 +51,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- On version `0.9.0-alpha.3`, fix for can't passing types and properties from `tenoxui` function after defining it.
+
 ### Security
 
 ## [0.8] - [2024-3-05]
