@@ -56,7 +56,7 @@ npm i tenoxui --save-dev
 Using CDN :
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/tenoxui@latest/dist/js/tui.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tenoxui@latest/dist/js/tenoxui.min.js"></script>
 ```
 
 <h3>Documentation</h3>
