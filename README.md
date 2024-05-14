@@ -11,41 +11,7 @@ A CSS Framework without css file :D
 <a href="https://tenoxui.web.app/docs/start">Full Documentation</a>
 </p>
 
-<h2>About</h2>
-<p>
-TenoxUI stands as a nimble Utility-First CSS framework meticulously crafted to elevate web development by enhancing speed and efficiency. It delivers a curated collection of customizable styles and embraces a utility-first approach, simplifying and expediting the styling process for developers.
-</p>
-
-<h2>Feature</h2>
-
-<ul>
-  <li>
-    <strong> Fast and Efficient: </strong> The majority of classes are managed
-    through JavaScript, ensuring a lightweight and fast user experience.
-  </li>
-  <br />
-  <li>
-    <strong> No CSS: </strong> No more generated CSS files. Elevate your design
-    journey as styles are seamlessly applied directly to each element,
-    unleashing simplicity and efficiency.
-  </li>
-  <br />
-  <li>
-    <strong> Utility-First Approach: </strong> Seamlessly apply pre-defined
-    utility classes to elements by simply invoking their associated classes,
-    fostering a utility-first approach to styling.
-  </li>
-  <br />
-  <li>
-    <strong> Tailored to Your Taste: </strong> Easily customize your unique
-    style with user-friendly configuration options, providing a personalized and
-    bespoke design experience.
-  </li>
-</ul>
-
-<h2>Getting Started</h2>
-
-<h3>Installation</h3>
+<h2>Installation</h2>
 
 Using npm:
 
@@ -59,126 +25,106 @@ Using CDN :
 <script src="https://cdn.jsdelivr.net/npm/tenoxui@latest/dist/js/tenoxui.min.js"></script>
 ```
 
-<h3>Documentation</h3>
+<h2>Setup Project</h2>
 
-Here's a simple usage of tenoxui css :
+Here is simple usage of tenoxui on your project.
 
-<h4>Using Class</h4>
-
-```html
-<div class="box-200px flex-parent-center br-8px bg-#0d0d0d p-2rem">
-  <h1 class="fs-1.5rem fw-500 tc-lightgreen">Hello World!</h1>
-</div>
-```
-
-<h4>Using Function</h4>
-
-1. `makeStyle` function
-
-Using selector and the class names as parameter, you can change the style of the element :
-
-```js
-makeStyle("body", "bg-#0d0d0d tc-white p-20px");
-```
-
-Note: `makeStyle` only give styles to one selector
-
-2. `makeStyles` function
-
-Using object as parameter to give styles into element :
-
-```js
-makeStyles({
-  body: "bg-#0d0d0d tc-white p-20px",
-  nav: "position-fixed top-0 p-10px",
-  "h1.logo": "fs-1rem fw-600",
-  // Try re-usable class
-  ".card": "display-flex flex-parent-center",
-  ".flex": "display-flex",
-  ".center": "flex-parent-center",
-});
-```
-
-Using re-usable class:
+### HTML :
 
 ```html
-<div class="flex center">...</div>
+<!doctype html>
+<html>
+  <head>
+    <title>Tester</title>
+    <script src="https://cdn.jsdelivr.net/npm/tenoxui"></script>
+  </head>
+  <body>
+    <h1 class="text-#ccf654 fs-4rem">Hello World!</h1>
+    <script>
+      tenoxui({ text: "color", fs: "fontSize" });
+    </script>
+  </body>
+</html>
 ```
 
-The `div` above will have same style as :
+### React :
 
-```css
-div {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+First, you need to add tenoxui to your project :
+
+```sh
+npm i tenoxui --save-dev
 ```
 
-3. Nested Style
+Then, on your app.jsx file :
 
-`makeStyles` also support nested styles because it's defined as an object.
+```jsx
+import { useLayoutEffect } from "react";
+import tenoxui from "tenoxui";
 
-HTML:
+const App = () => {
+  useLayoutEffect(() => {
+    // add tenoxui
+    tenoxui({ text: "color", fs: "fontSize" });
+  }, []);
+  return <h1 className="text-#ccf654 fs-4rem">Hello World!</h1>;
+};
+
+export default App;
+```
+
+<h2>Types and Properties</h2>
+
+TenoxUI also provide a library of defined types and properties that you can use without defining it one by one. You can add the `property` to your project using CDN or install it using npm :
 
 ```html
-<div class="container">
-  <div class="card">
-    <h2 class="title">Hello</h2>
-    <p class="desc">Lorem ipsum dolor sit amet consectetur.</p>
-  </div>
-  <div class="card">
-    <h2 class="title">World</h2>
-    <p class="desc">Lorem ipsum dolor sit amet consectetur.</p>
-  </div>
-</div>
+<script src="https://cdn.jsdelivr.net/npm/@tenoxui/property"></script>
 ```
 
-JavaScript :
+Or :
 
-```js
-makeStyles({
-  body: "bg-#0d0d0d tc-white p-20px",
-  ".container": {
-    "": "display-flex gap-20px jc-center", // Empty string will treated as parent's style
-    // Card class will only applied when its inside container class, outside it will not styled
-    ".card": {
-      "": "p-20px br-8px bg-lightblue",
-      ".title": "fs-1.4rem fw-600",
-      ".desc": "fs-14px fw-500 lh-1.4 ta-justify",
-    },
-  },
-});
+```sh
+npm i tenoxui @tenoxui/property
 ```
 
-The css style will be like this :
-
-```css
-.container {
-  display: flex;
-  gap: 20px;
-  justify-content: center;
-
-  .card {
-    padding: 20px;
-    border-radius: 8px;
-    background: lightblue;
-
-    .title {
-      font-size: 1.4rem;
-      font-weight: 600;
-    }
-
-    .desc {
-      font-size: 14px;
-      font-weight: 500;
-      line-height: 1.4;
-      text-align: justify;
-    }
-  }
-}
+```jsx
+import tenoxui from "tenoxui";
+import property from "@tenoxui/property";
 ```
+
+To use the `property` you can simply attach it inside tenoxui function as its parameter. Like this :
+
+```html
+<script>
+  tenoxui(property);
+</script>
+```
+
+Or ReactJS :
+
+```jsx
+import { useLayoutEffect } from "react";
+import tenoxui from "tenoxui";
+import property from "@tenoxui/property";
+
+const App = () => {
+  useLayoutEffect(() => {
+    // add tenoxui
+    tenoxui(property); // use tenoxui property
+  }, []);
+  return <h1 className="tc-red">Hello World!</h1>;
+};
+
+export default App;
+```
+
+You can see all types and properties on [GitHub Repository](https://github.com/tenoxui/property) or [Here](https://tenoxui.github.io/property)
 
 <h4>More</h4>
 
-Full documentation on [TenoxUI Documentation](https://tenoxui.web.app).
+- [tenoxui/css](https://github.com/tenoxui/css)
+- [tenoxui/website](https://github.com/tenoxui/website)
+- [tenoxui/property](https://github.com/tenoxui/property)
+- [tenoxui/react](https://github.com/tenoxui/react)
+- [tenoxui/styles](https://github.com/tenoxui/styles)
+- [tenoxui/cli](https://github.com/tenoxui/cli)
+- [tenoxui/components](https://github.com/tenoxui/components)
