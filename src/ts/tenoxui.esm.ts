@@ -308,23 +308,17 @@ function use(...customPropsArray: object[]) {
 	allProps = styles;
 	// Generate className from property key name, or property type
 	Classes = Object.keys(styles).map((className) => `[class*="${className}-"]`);
-	document.querySelectorAll(Classes.join(", "));
+	// Classes = Object.keys(property).map((className) => `[class*="${className}-"]`);
+	AllClasses = document.querySelectorAll(Classes.join(", "));
 	// Iterate over elements with AllClasses
 }
 
 // Applying the style to all elements ✨
-function tenoxui(...customPropsArray: object[]) {
-	// Check if customPropsArray is provided and not empty
-	if (!customPropsArray.some((props) => Object.keys(props).length !== 0)) {
-		console.warn("tenoxui function must have at least one type and property!");
-		return;
-	}
-	// Merge all customProps objects into one object
-	const styles = Object.assign({}, ...customPropsArray);
-	// passing for global values
-	allProps = styles;
+function tenoxui() {
 	// Generate className from property key name, or property type
-	Classes = Object.keys(styles).map((className) => `[class*="${className}-"]`);
+	Classes = Object.keys(allProps).map(
+		(className) => `[class*="${className}-"]`
+	);
 	// Classes = Object.keys(property).map((className) => `[class*="${className}-"]`);
 	AllClasses = document.querySelectorAll(Classes.join(", "));
 	// Iterate over elements with AllClasses
@@ -333,10 +327,13 @@ function tenoxui(...customPropsArray: object[]) {
 		const htmlELement = element as HTMLElement;
 		const classes = htmlELement.classList;
 		// Make TenoxUI
-		const styler = new makeTenoxUI(htmlELement, styles);
+		const styler = new makeTenoxUI(htmlELement, allProps);
 		// Iterate over classes and apply styles using makeTenoxUI
 		classes.forEach((className) => {
 			styler.applyStyles(className);
 		});
 	});
 }
+
+export { allProps, makeStyle, makeStyles, applyHovers, makeTenoxUI, use };
+export default tenoxui;
