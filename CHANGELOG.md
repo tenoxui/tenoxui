@@ -9,10 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `use` function, added initialization types and properties for function like `makeStyles` and others to work properly.
 - Defining new props and properties can directly inside `tenoxui` function.
+- Now `$` will handle the css variable value, like `tc-$c1`, it will get value from css variable `--c1: #ccf654;`
 
 ### Changed
 
+- All custom values now handled using square bracket `[]`, and the usage of curly bracket may be deprecated.
 - Passing css variables into element now needed to add the `--` prefix and it will get the value from css variable. Example: `tc-[--neutral]`.
 - On `applyStyle` method, changed how the custom styling works for `filter`, `backdrop-filter`, and `transform`
 - You can't use `filter`, `backdrop-filter`, and `transform` as stacked class like `<div class="blur-3.7px grayscale-50%"></div>`, use this instead `<div class="filter-[blur(3.7px)\_grayscale(50%)]"></div>`. If you only need one class, it's okay.
@@ -29,15 +32,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Deprecated
 
-- `property` is deprecated from tenoxui, and maybe moved into `@tenoxui/class` package
-- `filter`, `backdrop-filter`, and `transform` now can't be stacked using one-by-one classnames
+- Types and properties will maintained under `@tenoxui/property`
+- `filter`, `backdrop-filter`, and `transform` now can't be stacked using `one-by-one` classnames
 
 ### Removed
 
 - `newProp` class
 - `defineProps` function
-- Removed `background-image` custom value from `applyStyle` method.
-- All custom values now handled using square bracket `[]`, and the usage of curly bracket may be deprecated.
+- Remove `{}` value functionality
+- Removed `background-image` custom value from `applyStyle` method
 - Removed types and properties :
   1. `fx: "flex",`
   2. `ts: "textStyle"`
@@ -50,8 +53,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   9. `"js": "justifySelf",`
 
 ### Fixed
-
-- On version `0.9.0-alpha.3`, fix for can't passing types and properties from `tenoxui` function after defining it.
 
 ### Security
 

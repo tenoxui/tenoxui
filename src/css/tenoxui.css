@@ -1,12 +1,11 @@
 /*!
- * tenoxui/css v0.8.0 (https://github.com/tenoxui/css)
+ * tenoxui/css v0.9.0 (https://github.com/tenoxui/css)
  * Copyright (c) 2024 NOuSantx
  * Licensed under the MIT License (https://github.com/tenoxui/css/blob/main/LICENSE)
  */
 
 :root {
-  --font-all: system-ui, sans-serif;
-  font-family: var(--font-all);
+  font-family: sans-serif;
 }
 *,
 *::before,
@@ -40,4 +39,4 @@ a,
 button {
   cursor: pointer;
 }
-/*! it's just "formality" css file :D */
+/*! it's just "formality" css file :D Doesn't need to include this to your project :3 */
