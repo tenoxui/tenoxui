@@ -1,5 +1,5 @@
 /*!
- * tenoxui/css v0.9.0-alpha.8 (https://github.com/tenoxui/css)
+ * tenoxui/css v0.9.0-alpha.9 (https://github.com/tenoxui/css)
  * Copyright (c) 2024 NOuSantx
  * Licensed under the MIT License (https://github.com/tenoxui/css/blob/main/LICENSE)
  */
