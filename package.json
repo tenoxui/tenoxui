@@ -1,18 +1,13 @@
 {
   "name": "tenoxui",
-  "version": "0.9.0-alpha.8",
+  "version": "0.9.0-alpha.9",
   "description": "A CSS Framework without CSS file :D",
   "type": "module",
   "main": "./dist/js/tenoxui.js",
   "style": "./dist/css/tenoxui.css",
   "module": "./dist/js/tenoxui.esm.js",
   "types": "./dist/js/tenoxui.esm.d.ts",
-  "files": [
-    "dist/*",
-    "package.json",
-    "README.md",
-    "LICENSE"
-  ],
+  "files": ["dist/*", "package.json", "README.md", "LICENSE"],
   "scripts": {
     "dev": "tsc --watch",
     "build": "tsup",
@@ -25,12 +20,7 @@
     "type": "git",
     "url": "git+https://github.com/tenoxui/css.git"
   },
-  "keywords": [
-    "framework",
-    "css",
-    "css-in-js",
-    "utility-first"
-  ],
+  "keywords": ["framework", "css", "css-in-js", "utility-first"],
   "author": "NOuSantx",
   "license": "MIT",
   "bugs": {
