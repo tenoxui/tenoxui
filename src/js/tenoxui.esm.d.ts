@@ -1,5 +1,5 @@
 /*!
- * tenoxui/css v0.9.0-alpha.7 (https://github.com/tenoxui/css)
+ * tenoxui/css v0.9.0-alpha.9 (https://github.com/tenoxui/css)
  * Copyright (c) 2024 NOuSantx
  * Licensed under the MIT License (https://github.com/tenoxui/css/blob/main/LICENSE)
  */
@@ -8,8 +8,8 @@ type Property = {
 };
 declare let allProps: Property;
 declare class makeTenoxUI {
-    element: HTMLElement;
-    styles: Property;
+    private element;
+    private styles;
     constructor(element: HTMLElement, styledProps?: Property);
     applyStyle(type: string, value: string, unit: string): void;
     applyStyles(className: string): void;
