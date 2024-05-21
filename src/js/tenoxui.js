@@ -1,10 +1,21 @@
 /*!
- * tenoxui/css v0.9.0 (https://github.com/tenoxui/css)
+ * tenoxui/css v0.10.0 (https://github.com/tenoxui/css)
  * Copyright (c) 2024 NOuSantx
  * Licensed under the MIT License (https://github.com/tenoxui/css/blob/main/LICENSE)
  */
 // global variable to passing all values from `tenoxui`
-let allProps, Classes, AllClasses;
+let allProps, breakpoints, classes, allClasses;
+// breakpoints
+breakpoints = [
+  { name: "max-sm", max: 639.9 },
+  { name: "sm", min: 640 },
+  { name: "max-md", max: 767.9 },
+  { name: "md", min: 768 },
+  { name: "max-lg", max: 1023.9 },
+  { name: "lg", min: 1024 },
+  { name: "max-xl", max: 1279.9 },
+  { name: "xl", min: 1280 },
+];
 // tenoxui style handler
 class makeTenoxUI {
   // TenoxUI constructor
@@ -16,7 +27,13 @@ class makeTenoxUI {
   }
   // `applyStyle`: Handle the styling and custom value for property
   applyStyle(type, value, unit) {
-    // the styles with let, not constant, because the properties no longer using array, optionally it can just be string
+    // handle custom CSS properties directly
+    if (type.startsWith("[--") && type.endsWith("]")) {
+      // remove the square brackets
+      const cssProperty = type.slice(1, -1);
+      // add css variables into element
+      this.element.style.setProperty(cssProperty, value + unit);
+    }
     // get type's from allProps constant
     let properties = this.styles[type];
     // If properties matched the `type` or `property` from `allProps`
@@ -81,6 +98,7 @@ class makeTenoxUI {
         else if (value.startsWith("$")) {
           // remove the "$" prefix
           const cssValue = value.slice(1);
+          // use css variables as value
           this.element.style[property] = `var(--${cssValue})`;
         }
         /*
@@ -113,21 +131,69 @@ class makeTenoxUI {
     }
     // console.log(this.styles);
   }
-  // Handle all possible values
+  // responsive styles helper
+  applyResponsiveStyles(breakpoint, type, value, unit) {
+    // applyStyle helper
+    const applyStyle = () => {
+      this.applyStyle(type, value, unit);
+    };
+    // apply responsive styles
+    const applyResponsiveStyles = () => {
+      // viewport size / screen size helper
+      const viewportWidth = window.innerWidth;
+      // helper for matching the className with correct breakpoint
+      const matchedBreakpoint = breakpoints.find((bp) => {
+        if (bp.name === breakpoint) {
+          if (bp.min !== undefined && bp.max !== undefined) {
+            return viewportWidth >= bp.min && viewportWidth <= bp.max;
+          }
+          if (bp.min !== undefined && viewportWidth >= bp.min) {
+            return true;
+          }
+          if (bp.max !== undefined && viewportWidth <= bp.max) {
+            return true;
+          }
+        }
+        return false;
+      });
+      // apply responsive if matched breakpoint
+      if (matchedBreakpoint) {
+        applyStyle();
+      } else {
+        // Clear the style if it doesn't match the breakpoint anymore (unsure bout this)
+        this.element.style[type] = "";
+      }
+    };
+    // init the styles
+    applyResponsiveStyles();
+    // Add event listener to update styles when the viewport is resized
+    window.addEventListener("resize", applyResponsiveStyles);
+  }
   applyStyles(className) {
     // Using RegExp to handle the value
     const match = className.match(
-      /(-?[a-zA-Z]+(?:-[a-zA-Z]+)*)-(-?(?:\d+(\.\d+)?)|(?:[a-zA-Z]+(?:-[a-zA-Z]+)*(?:-[a-zA-Z]+)*)|(?:#[0-9a-fA-F]+)|(?:\[[^\]]+\])|(?:\{[^\}]+\})|(?:\$[^\s]+))([a-zA-Z%]*)/,
+      /(?:([a-z-]+):)?(-?[a-zA-Z0-9_]+(?:-[a-zA-Z0-9_]+)*|\[--[a-zA-Z0-9_-]+\])-(-?(?:\d+(\.\d+)?)|(?:[a-zA-Z0-9_]+(?:-[a-zA-Z0-9_]+)*(?:-[a-zA-Z0-9_]+)*)|(?:#[0-9a-fA-F]+)|(?:\[[^\]]+\])|(?:\$[^\s]+))([a-zA-Z%]*)/,
     );
     if (match) {
+      // breakpoint = responsive handler. Example: `sm:`, `lg:`, and etc.
+      const breakpoint = match[1];
       // type = property class. Example: p-, m-, flex-, fx-, filter-, etc.
-      const type = match[1];
+      const type = match[2];
       // value = possible value. Example: 10, red, blue, etc.
-      const value = match[2];
+      const value = match[3];
       // unit = possible unit. Example: px, rem, em, s, %, etc.
-      const unitOrValue = match[4];
-      // Combine all to one class. Example 'p-10px', 'flex-100px', 'grid-row-6', etc.
-      this.applyStyle(type, value, unitOrValue);
+      const unitOrValue = match[5];
+      /*
+       * classname handler :p
+       * if styles has breakpoint, handle style using responsive styles function. Else, use default stylee.
+       */
+      // Responsive styles handler
+      if (breakpoint) {
+        this.applyResponsiveStyles(breakpoint, type, value, unitOrValue);
+      } else {
+        // Apply default styles
+        this.applyStyle(type, value, unitOrValue);
+      }
     }
   }
   // Multi styler function, style through javascript.
@@ -143,27 +209,24 @@ class makeTenoxUI {
 // Applied multi style into all elements with the specified element, possible to all selector
 function makeStyle(selector, styles) {
   const applyStylesToElement = (element, styles) => {
+    // styler helper
     const styler = new makeTenoxUI(element, allProps);
     styler.applyMultiStyles(styles);
   };
+  // default style handler
   if (typeof styles === "string") {
     // If styles is a string, apply it to the specified selector
     const elements = document.querySelectorAll(selector);
     elements.forEach((element) => applyStylesToElement(element, styles));
-  } else if (typeof styles === "object") {
-    // If styles is an object, iterate through its key-value pairs
-    Object.entries(styles).forEach(([classSelector, classStyles]) => {
-      const elements = document.querySelectorAll(classSelector);
-      elements.forEach((element) => applyStylesToElement(element, classStyles));
-    });
   }
-  // Error Handling for makeStyle
+  // error handling (unnecessary actually :D)
   else {
     console.warn(
       `Invalid styles format for "${selector}". Make sure you provide style correctly`,
     );
   }
 }
+// Function to apply styles from selectors
 function makeStyles(...stylesObjects) {
   // Store defined styles into an object
   const definedStyles = {};
@@ -239,7 +302,6 @@ function makeStyles(...stylesObjects) {
   // returning defined styles
   return definedStyles;
 }
-// hover handler test function (update v0.7)
 // applyHovers function
 function applyHovers(hovers) {
   Object.entries(hovers).forEach(
@@ -266,17 +328,19 @@ function applyHovers(hovers) {
     },
   );
 }
-// `use` function, defining types and properties
-function use(...customPropsArray) {
-  // Check if customPropsArray is provided and not empty
-  if (!customPropsArray.some((props) => Object.keys(props).length !== 0)) {
-    console.warn("`use` function must have at least one type and property!");
-    return;
+// `use` function to define custom breakpoints, types and properties
+function use(customConfig) {
+  // custom breakpoints
+  if (customConfig.breakpoint) {
+    breakpoints = [...breakpoints, ...customConfig.breakpoint];
   }
-  // merging type and properties
-  let styles = Object.assign({}, ...customPropsArray);
-  // Assign merged styles to allProps
-  allProps = styles;
+  // types and properties to execute
+  if (customConfig.property) {
+    allProps = Object.assign(
+      Object.assign({}, allProps),
+      Object.assign({}, ...customConfig.property),
+    );
+  }
 }
 // Applying the style to all elements ✨
 function tenoxui(...customPropsArray) {
@@ -284,17 +348,19 @@ function tenoxui(...customPropsArray) {
   // passing for global values
   allProps = styles;
   // Generate className from property key name, or property type
-  Classes = Object.keys(allProps).map(
+  classes = Object.keys(allProps).map(
     (className) => `[class*="${className}-"]`,
   );
-  // Classes = Object.keys(property).map((className) => `[class*="${className}-"]`);
-  AllClasses = document.querySelectorAll(Classes.join(", "));
+  // css variable className
+  // classes.push(`[class*="[--"]`);
+  // selectors from classes
+  allClasses = document.querySelectorAll(classes.join(", "));
   // Iterate over elements with AllClasses
-  AllClasses.forEach((element) => {
+  allClasses.forEach((element) => {
     // Get the list of classes for the current element
     const htmlELement = element;
     const classes = htmlELement.classList;
-    // Make TenoxUI
+    // styler helper
     const styler = new makeTenoxUI(htmlELement, allProps);
     // Iterate over classes and apply styles using makeTenoxUI
     classes.forEach((className) => {
