@@ -1,6 +1,6 @@
 {
   "name": "tenoxui",
-  "version": "0.9.0-alpha.9",
+  "version": "0.9.0",
   "description": "A CSS Framework without CSS file :D",
   "type": "module",
   "main": "./dist/js/tenoxui.js",
