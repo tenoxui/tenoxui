@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Responsive feature 🔥🔥
+- Hover feature 🔥🔥😈
 - Add CSS variable declaration directly to the element
 - Define breakpoints inside `use` function
 
@@ -22,3 +23,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 - Remove unnecessary typeof object on `makeStyle` function
+- `applyHovers` function
