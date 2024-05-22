@@ -19,7 +19,7 @@ let allProps: Property,
   classes: Classes,
   allClasses: AllClasses;
 
-// breakpoints
+// Define the breakpoints
 breakpoints = [
   { name: "max-sm", max: 639.9 },
   { name: "sm", min: 640 },
@@ -166,6 +166,10 @@ class makeTenoxUI {
     const applyStyle = () => {
       this.applyStyle(type, value, unit);
     };
+    // store the initial styles
+    const initialStyle = this.element.style.getPropertyValue(
+      this.styles[type] as string
+    );
 
     // apply responsive styles
     const applyResponsiveStyles = () => {
@@ -173,6 +177,7 @@ class makeTenoxUI {
       const viewportWidth = window.innerWidth;
       // helper for matching the className with correct breakpoint
       const matchedBreakpoint = breakpoints.find(bp => {
+        // it's hard to explain :p
         if (bp.name === breakpoint) {
           if (bp.min !== undefined && bp.max !== undefined) {
             return viewportWidth >= bp.min && viewportWidth <= bp.max;
@@ -191,7 +196,8 @@ class makeTenoxUI {
       if (matchedBreakpoint) {
         applyStyle();
       } else {
-        // Clear the style if it doesn't match the breakpoint anymore (unsure bout this)
+        // reapply the initial styles when not not inside breakpoints anymore
+        // this.element.style.setProperty(this.styles[type] as string, initialStyle);
         this.element.style[type] = "";
       }
     };
@@ -202,15 +208,34 @@ class makeTenoxUI {
     window.addEventListener("resize", applyResponsiveStyles);
   }
 
+  // hover effect handler
+  private applyHoverStyles(type: string, value: string, unit: string): void {
+    // get the initial style before hover
+    const initialStyle = this.element.style.getPropertyValue(
+      this.styles[type] as string
+    );
+
+    // spplyStyle helper
+    const applyStyle = () => {
+      this.applyStyle(type, value, unit);
+    };
+
+    // applyStyle when the mouse enter
+    this.element.addEventListener("mouseover", applyStyle);
+    // give back the initialStyle when the mouse leave
+    this.element.addEventListener("mouseout", () => {
+      this.element.style.setProperty(this.styles[type] as string, initialStyle);
+    });
+  }
+
   public applyStyles(className: string): void {
-    // Using RegExp to handle the value
     const match = className.match(
       /(?:([a-z-]+):)?(-?[a-zA-Z0-9_]+(?:-[a-zA-Z0-9_]+)*|\[--[a-zA-Z0-9_-]+\])-(-?(?:\d+(\.\d+)?)|(?:[a-zA-Z0-9_]+(?:-[a-zA-Z0-9_]+)*(?:-[a-zA-Z0-9_]+)*)|(?:#[0-9a-fA-F]+)|(?:\[[^\]]+\])|(?:\$[^\s]+))([a-zA-Z%]*)/
     );
 
     if (match) {
       // breakpoint = responsive handler. Example: `sm:`, `lg:`, and etc.
-      const breakpoint = match[1];
+      const prefix = match[1];
       // type = property class. Example: p-, m-, flex-, fx-, filter-, etc.
       const type = match[2];
       // value = possible value. Example: 10, red, blue, etc.
@@ -218,15 +243,19 @@ class makeTenoxUI {
       // unit = possible unit. Example: px, rem, em, s, %, etc.
       const unitOrValue = match[5];
 
-      /*
-       * classname handler :p
-       * if styles has breakpoint, handle style using responsive styles function. Else, use default stylee.
-       */
-      // Responsive styles handler
-      if (breakpoint) {
-        this.applyResponsiveStyles(breakpoint, type, value, unitOrValue);
-      } else {
-        // Apply default styles
+      // handle prefix of the element classname
+      if (prefix) {
+        // handle hover effect classname
+        if (prefix.startsWith("hover")) {
+          this.applyHoverStyles(type, value, unitOrValue);
+        }
+        // handle responsive classname
+        else {
+          this.applyResponsiveStyles(prefix, type, value, unitOrValue);
+        }
+      }
+      // use default styler
+      else {
         this.applyStyle(type, value, unitOrValue);
       }
     }
@@ -356,33 +385,6 @@ function makeStyles(...stylesObjects: Styles[]): Styles {
   return definedStyles;
 }
 
-// applyHovers function
-function applyHovers(hovers: object) {
-  Object.entries(hovers).forEach(
-    ([selector, [notHover, isHover, styles = ""]]: string[]) => {
-      // selector
-      const elements = document.querySelectorAll(selector);
-      elements.forEach((element: Element) => {
-        // makeTenoxUI instance
-        const styler = new makeTenoxUI(element as HTMLElement, allProps);
-        // applying default styles
-        // styler.applyMultiStyles(`${notHover} ${styles}`);
-        styler.applyMultiStyles(styles);
-        // when the element is hovered
-        element.addEventListener("mouseenter", () => {
-          // apply hover style
-          styler.applyMultiStyles(isHover);
-        });
-        // default style / when element not hovered
-        element.addEventListener("mouseleave", () => {
-          // apply default style
-          styler.applyMultiStyles(notHover);
-        });
-      });
-    }
-  );
-}
-// `use` function to define custom breakpoints, types and properties
 function use(customConfig: { breakpoint?: Breakpoint; property?: Property[] }) {
   // custom breakpoints
   if (customConfig.breakpoint) {
@@ -428,7 +430,6 @@ export {
   allProps,
   makeStyle,
   makeStyles,
-  applyHovers,
   makeTenoxUI,
   use,
   tenoxui as default
