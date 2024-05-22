@@ -3,7 +3,7 @@
  * Copyright (c) 2024 NOuSantx
  * Licensed under the MIT License (https://github.com/tenoxui/css/blob/main/LICENSE)
  */
- const property = {
+export const property = {
   p: "padding",
   pt: "paddingTop",
   pb: "paddingBottom",
