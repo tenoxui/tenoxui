@@ -42,7 +42,8 @@ const classNames = [
   "m-20%",
   "sm:bg-blue",
   "[--tenox]-blue",
-  "[--bg-opa]-1"
+  "[--bg-opa]-1",
+  "hover:bg-blue",
 ];
 classNames.forEach(className => {
   testClassName(className);
