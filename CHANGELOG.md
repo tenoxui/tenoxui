@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Hover feature 🔥🔥😈
 - Add CSS variable declaration directly to the element
 - Define breakpoints inside `use` function
+- Use another styels from defined selector using `makeStyles` function
 
 ### Changed
 
