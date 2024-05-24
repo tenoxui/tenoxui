@@ -1,7 +1,6 @@
 /*!
- * tenoxui/css v0.10.0 (https://github.com/tenoxui/css)
- * Copyright (c) 2024 NOuSantx
- * Licensed under the MIT License (https://github.com/tenoxui/css/blob/main/LICENSE)
+ * TenoxUI CSS v0.10.0
+ * Licensed under MIT (https://github.com/tenoxui/css/blob/main/LICENSE)
  */
 
 // types and properties type
@@ -12,12 +11,15 @@ type Breakpoint = { name: string; min?: number; max?: number }[];
 type Classes = String[];
 // selector type
 type AllClasses = NodeListOf<HTMLElement>;
+// styles registry
+type StylesRegistry = Record<string, string[]>;
 
 // global variable to passing all values from `tenoxui`
 let allProps: Property,
   breakpoints: Breakpoint,
   classes: Classes,
-  allClasses: AllClasses;
+  allClasses: AllClasses,
+  styleRegistry: StylesRegistry;
 
 // Define the breakpoints
 breakpoints = [
@@ -28,7 +30,8 @@ breakpoints = [
   { name: "max-lg", max: 1023.9 },
   { name: "lg", min: 1024 },
   { name: "max-xl", max: 1279.9 },
-  { name: "xl", min: 1280 }
+  { name: "xl", min: 1280 },
+  { name: "custom", min: 500, max: 1000 }
 ];
 
 // tenoxui style handler
@@ -66,50 +69,6 @@ class makeTenoxUI {
         properties = [properties];
       }
       properties.forEach((property: string | number) => {
-        // filter property styles handler
-        if (property === "ftr") {
-          this.element.style.filter = `${type}(${value}${unit})`;
-        }
-        // backdrop filter styles handler
-        else if (property === "bFt") {
-          //? backdrop-filter function shorthand
-          const filters = [
-            "blur",
-            "sepia",
-            "saturate",
-            "grayscale",
-            "brightness",
-            "invert",
-            "contrast"
-          ];
-          const backdropFunctions: { [key: string]: string } = {};
-          filters.forEach(filter => {
-            backdropFunctions[`back-${filter}`] = filter;
-          });
-          const backdropFunction = backdropFunctions[type];
-          if (backdropFunction) {
-            this.element.style.backdropFilter = `${backdropFunction}(${value}${unit})`;
-          }
-        }
-        // Transform single value
-        else if (property === "tra") {
-          const transformFunctions: { [key: string]: string } = {
-            translate: "translate",
-            "move-x": "translateX",
-            "move-y": "translateY",
-            matrix: "matrix",
-            "matrix-3d": "matrix3d",
-            "scale-3d": "scale3d",
-            "scale-x": "scaleX",
-            "scale-y": "scaleY",
-            "skew-x": "skewX",
-            "skew-y": "skewY"
-          };
-          const transformFunction = transformFunctions[type];
-          if (transformFunction) {
-            this.element.style.transform = `${transformFunction}(${value}${unit})`;
-          }
-        }
         /*
          * CSS Variable Support 🎋
          *
@@ -117,7 +76,7 @@ class makeTenoxUI {
          * if so then this is treated as css variable, css value.
          */
         // Check if the value is a CSS variable
-        else if (value.startsWith("$")) {
+        if (value.startsWith("$")) {
           // remove the "$" prefix
           const cssValue = value.slice(1);
           // use css variables as value
@@ -167,9 +126,9 @@ class makeTenoxUI {
       this.applyStyle(type, value, unit);
     };
     // store the initial styles
-    const initialStyle = this.element.style.getPropertyValue(
-      this.styles[type] as string
-    );
+    // const initialStyle = this.element.style.getPropertyValue(
+    // this.styles[type] as string
+    // );
 
     // apply responsive styles
     const applyResponsiveStyles = () => {
@@ -197,8 +156,11 @@ class makeTenoxUI {
         applyStyle();
       } else {
         // reapply the initial styles when not not inside breakpoints anymore
-        // this.element.style.setProperty(this.styles[type] as string, initialStyle);
         this.element.style[type] = "";
+        // this.element.style.setProperty(
+        //  this.styles[type] as string,
+        //  initialStyle
+        // );
       }
     };
 
@@ -228,6 +190,7 @@ class makeTenoxUI {
     });
   }
 
+  // styler handler
   public applyStyles(className: string): void {
     const match = className.match(
       /(?:([a-z-]+):)?(-?[a-zA-Z0-9_]+(?:-[a-zA-Z0-9_]+)*|\[--[a-zA-Z0-9_-]+\])-(-?(?:\d+(\.\d+)?)|(?:[a-zA-Z0-9_]+(?:-[a-zA-Z0-9_]+)*(?:-[a-zA-Z0-9_]+)*)|(?:#[0-9a-fA-F]+)|(?:\[[^\]]+\])|(?:\$[^\s]+))([a-zA-Z%]*)/
@@ -272,60 +235,37 @@ class makeTenoxUI {
   }
 }
 
-// Applied multi style into all elements with the specified element, possible to all selector
-function makeStyle(
-  selector: string,
-  styles: string | Record<string, string>
-): void {
-  const applyStylesToElement = (element: HTMLElement, styles: string): void => {
-    // styler helper
-    const styler = new makeTenoxUI(element, allProps);
-    styler.applyMultiStyles(styles);
-  };
-  // default style handler
-  if (typeof styles === "string") {
-    // If styles is a string, apply it to the specified selector
-    const elements = document.querySelectorAll(selector);
-    elements.forEach((element: Element) =>
-      applyStylesToElement(element as HTMLElement, styles)
-    );
-  }
-  // error handling (unnecessary actually :D)
-  else {
-    console.warn(
-      `Invalid styles format for "${selector}". Make sure you provide style correctly`
-    );
-  }
+// Define type for nested styles
+interface TypeObjects {
+  [key: string]: string | TypeObjects;
 }
-
-// type for nested hell styles :)
-interface typeObjects {
-  [key: string]: string | typeObjects;
-}
-type Styles = typeObjects | Record<string, typeObjects>;
+type Styles = TypeObjects | Record<string, TypeObjects[]>;
 
 // Function to apply styles from selectors
 function makeStyles(...stylesObjects: Styles[]): Styles {
   // Store defined styles into an object
   const definedStyles: Styles = {};
-  // Helper function to apply styles into elements
+
+  // Helper function to apply styles to an element
   const applyStylesToElement = (
     element: HTMLElement,
     styles: string | Record<string, string>
   ): void => {
     // Define new styler
     const styler = new makeTenoxUI(element, allProps);
+
     // If the styles is a string, like: "p-20px m-1rem fs-2rem" / Stacked classes
     if (typeof styles === "string") {
-      // Handled using `applyMultiStyles`
+      // Handle using `applyMultiStyles`
       styler.applyMultiStyles(styles);
     } else {
-      // Handle nested styles / if the value is new object
+      // Handle nested styles / if the value is a new object
       Object.entries(styles).forEach(([prop, value]) => {
         styler.applyStyle(prop, value, "");
       });
     }
   };
+
   // Recursive function to handle nested styles
   const applyNestedStyles = (parentSelector: string, styles: Styles): void => {
     // Handle nested style
@@ -336,52 +276,63 @@ function makeStyles(...stylesObjects: Styles[]): Styles {
       // Apply nested styles if the value is an object / new object as value
       if (typeof childStyles === "object" && !Array.isArray(childStyles)) {
         applyNestedStyles(`${parentSelector} ${childSelector}`, childStyles);
-      }
-      // Apply direct styles if not overridden by nested styles / default style
-      else {
-        // Default handler if style is a string / default styler (e.g. "p-1rem fs-1rem")
+      } else {
+        // Default handler if style is a string / default styler (e.g., "p-1rem fs-1rem")
         elements.forEach(element => {
           if (
             typeof childStyles === "string" ||
             (typeof childStyles === "object" && !Array.isArray(childStyles))
           ) {
             applyStylesToElement(element, childStyles);
-          } else {
-            console.warn("Invalid nested style for :", childStyles);
+          }
+          // error handling for childStyles
+          else {
+            console.warn("Invalid nested style for:", childStyles);
           }
         });
       }
     });
   };
-  // Handle styling logic, nested style or only default
+
+  // Handle styling logic, nested style, or only default
   stylesObjects.forEach(stylesObject => {
     Object.entries(stylesObject).forEach(([selector, styles]) => {
-      // If the styles is an object or nested style, use `applyNestedStyles` function to apply nested style logic
-      if (typeof styles === "object" && !Array.isArray(styles)) {
-        applyNestedStyles(selector, styles);
-      }
-      // If the styles is not overridden by nested style, apply styles using default styler
-      else {
-        // Stacking selector and
-        const elements = document.querySelectorAll<HTMLElement>(selector);
-        // Apply direct styles into element using default styler
-        elements.forEach(element => {
-          if (
-            typeof styles === "string" ||
-            (typeof styles === "object" && !Array.isArray(styles))
-          ) {
-            applyStylesToElement(element, styles);
-          } else {
-            console.warn("Invalid styles type:", styles);
-          }
-        });
-      }
       // Store defined styles for reuse
-      definedStyles[selector] = styles;
+      if (typeof styles === "string") {
+        // Split the style string by spaces to support multiple classes
+        const styleArray = styles.split(" ");
+        styleRegistry[selector] = styleArray;
+        definedStyles[selector] = styles;
+      } else {
+        definedStyles[selector] = styles;
+      }
+
+      // Select elements based on the selector
+      const elements = document.querySelectorAll<HTMLElement>(selector);
+      // iterate elements
+      elements.forEach(element => {
+        if (typeof styles === "string") {
+          // Resolve stacked styles by looking them up in the registry
+          const styleArray = styles.split(" ");
+          const resolvedStyles = styleArray
+            .map(style => {
+              // If the style is a reference to another class, get its styles
+              return styleRegistry[style]
+                ? styleRegistry[style].join(" ")
+                : style;
+            })
+            .join(" ");
+          applyStylesToElement(element, resolvedStyles);
+        } else if (typeof styles === "object" && !Array.isArray(styles)) {
+          applyStylesToElement(element, styles);
+        } else {
+          console.warn("Invalid styles type:", styles);
+        }
+      });
     });
   });
 
-  // returning defined styles
+  // Return the defined styles
   return definedStyles;
 }
 
@@ -398,7 +349,7 @@ function use(customConfig: { breakpoint?: Breakpoint; property?: Property[] }) {
 }
 
 // Applying the style to all elements ✨
-function tenoxui(...customPropsArray: object[]) {
+function tenoxui(...customPropsArray: Property[]) {
   let styles = Object.assign({}, allProps, ...customPropsArray);
 
   // passing for global values
@@ -407,7 +358,7 @@ function tenoxui(...customPropsArray: object[]) {
   // Generate className from property key name, or property type
   classes = Object.keys(allProps).map(className => `[class*="${className}-"]`);
 
-  // css variable className
+  // css variable global classes
   // classes.push(`[class*="[--"]`);
 
   // selectors from classes
@@ -427,8 +378,8 @@ function tenoxui(...customPropsArray: object[]) {
 }
 
 export {
-  allProps,
-  makeStyle,
+  allProps
+  ,
   makeStyles,
   makeTenoxUI,
   use,
