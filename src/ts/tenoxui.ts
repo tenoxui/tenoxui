@@ -28,7 +28,8 @@ breakpoints = [
   { name: "max-lg", max: 1023.9 },
   { name: "lg", min: 1024 },
   { name: "max-xl", max: 1279.9 },
-  { name: "xl", min: 1280 }
+  { name: "xl", min: 1280 },
+  { name: "custom", min: 500, max: 1000 }
 ];
 
 // tenoxui style handler
@@ -66,50 +67,6 @@ class makeTenoxUI {
         properties = [properties];
       }
       properties.forEach((property: string | number) => {
-        // filter property styles handler
-        if (property === "ftr") {
-          this.element.style.filter = `${type}(${value}${unit})`;
-        }
-        // backdrop filter styles handler
-        else if (property === "bFt") {
-          //? backdrop-filter function shorthand
-          const filters = [
-            "blur",
-            "sepia",
-            "saturate",
-            "grayscale",
-            "brightness",
-            "invert",
-            "contrast"
-          ];
-          const backdropFunctions: { [key: string]: string } = {};
-          filters.forEach(filter => {
-            backdropFunctions[`back-${filter}`] = filter;
-          });
-          const backdropFunction = backdropFunctions[type];
-          if (backdropFunction) {
-            this.element.style.backdropFilter = `${backdropFunction}(${value}${unit})`;
-          }
-        }
-        // Transform single value
-        else if (property === "tra") {
-          const transformFunctions: { [key: string]: string } = {
-            translate: "translate",
-            "move-x": "translateX",
-            "move-y": "translateY",
-            matrix: "matrix",
-            "matrix-3d": "matrix3d",
-            "scale-3d": "scale3d",
-            "scale-x": "scaleX",
-            "scale-y": "scaleY",
-            "skew-x": "skewX",
-            "skew-y": "skewY"
-          };
-          const transformFunction = transformFunctions[type];
-          if (transformFunction) {
-            this.element.style.transform = `${transformFunction}(${value}${unit})`;
-          }
-        }
         /*
          * CSS Variable Support 🎋
          *
@@ -117,7 +74,7 @@ class makeTenoxUI {
          * if so then this is treated as css variable, css value.
          */
         // Check if the value is a CSS variable
-        else if (value.startsWith("$")) {
+        if (value.startsWith("$")) {
           // remove the "$" prefix
           const cssValue = value.slice(1);
           // use css variables as value
@@ -167,9 +124,9 @@ class makeTenoxUI {
       this.applyStyle(type, value, unit);
     };
     // store the initial styles
-    const initialStyle = this.element.style.getPropertyValue(
-      this.styles[type] as string
-    );
+    // const initialStyle = this.element.style.getPropertyValue(
+    // this.styles[type] as string
+    // );
 
     // apply responsive styles
     const applyResponsiveStyles = () => {
@@ -197,8 +154,11 @@ class makeTenoxUI {
         applyStyle();
       } else {
         // reapply the initial styles when not not inside breakpoints anymore
-        // this.element.style.setProperty(this.styles[type] as string, initialStyle);
         this.element.style[type] = "";
+        // this.element.style.setProperty(
+        //  this.styles[type] as string,
+        //  initialStyle
+        // );
       }
     };
 
@@ -228,6 +188,7 @@ class makeTenoxUI {
     });
   }
 
+  // styler handler
   public applyStyles(className: string): void {
     const match = className.match(
       /(?:([a-z-]+):)?(-?[a-zA-Z0-9_]+(?:-[a-zA-Z0-9_]+)*|\[--[a-zA-Z0-9_-]+\])-(-?(?:\d+(\.\d+)?)|(?:[a-zA-Z0-9_]+(?:-[a-zA-Z0-9_]+)*(?:-[a-zA-Z0-9_]+)*)|(?:#[0-9a-fA-F]+)|(?:\[[^\]]+\])|(?:\$[^\s]+))([a-zA-Z%]*)/
