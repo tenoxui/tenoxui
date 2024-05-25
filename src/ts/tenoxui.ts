@@ -19,7 +19,7 @@ let allProps: Property,
   breakpoints: Breakpoint,
   classes: Classes,
   allClasses: AllClasses,
-  styleRegistry: StylesRegistry;
+  styleRegistry: StylesRegistry = {};
 
 // Define the breakpoints
 breakpoints = [
@@ -30,8 +30,7 @@ breakpoints = [
   { name: "max-lg", max: 1023.9 },
   { name: "lg", min: 1024 },
   { name: "max-xl", max: 1279.9 },
-  { name: "xl", min: 1280 },
-  { name: "custom", min: 500, max: 1000 }
+  { name: "xl", min: 1280 }
 ];
 
 // tenoxui style handler
@@ -115,12 +114,7 @@ class makeTenoxUI {
   }
 
   // responsive styles helper
-  private applyResponsiveStyles(
-    breakpoint: string,
-    type: string,
-    value: string,
-    unit: string
-  ): void {
+  private applyResponsiveStyles(breakpoint: string, type: string, value: string, unit: string): void {
     // applyStyle helper
     const applyStyle = () => {
       this.applyStyle(type, value, unit);
@@ -173,9 +167,7 @@ class makeTenoxUI {
   // hover effect handler
   private applyHoverStyles(type: string, value: string, unit: string): void {
     // get the initial style before hover
-    const initialStyle = this.element.style.getPropertyValue(
-      this.styles[type] as string
-    );
+    const initialStyle = this.element.style.getPropertyValue(this.styles[type] as string);
 
     // spplyStyle helper
     const applyStyle = () => {
@@ -192,12 +184,10 @@ class makeTenoxUI {
 
   // styler handler
   public applyStyles(className: string): void {
-    const match = className.match(
-      /(?:([a-z-]+):)?(-?[a-zA-Z0-9_]+(?:-[a-zA-Z0-9_]+)*|\[--[a-zA-Z0-9_-]+\])-(-?(?:\d+(\.\d+)?)|(?:[a-zA-Z0-9_]+(?:-[a-zA-Z0-9_]+)*(?:-[a-zA-Z0-9_]+)*)|(?:#[0-9a-fA-F]+)|(?:\[[^\]]+\])|(?:\$[^\s]+))([a-zA-Z%]*)/
-    );
+    const match = className.match(/(?:([a-z-]+):)?(-?[a-zA-Z0-9_]+(?:-[a-zA-Z0-9_]+)*|\[--[a-zA-Z0-9_-]+\])-(-?(?:\d+(\.\d+)?)|(?:[a-zA-Z0-9_]+(?:-[a-zA-Z0-9_]+)*(?:-[a-zA-Z0-9_]+)*)|(?:#[0-9a-fA-F]+)|(?:\[[^\]]+\])|(?:\$[^\s]+))([a-zA-Z%]*)/);
 
     if (match) {
-      // breakpoint = responsive handler. Example: `sm:`, `lg:`, and etc.
+      // prefix before classname. Example: `sm:`, `lg:`, `hover:`, and etc.
       const prefix = match[1];
       // type = property class. Example: p-, m-, flex-, fx-, filter-, etc.
       const type = match[2];
@@ -247,10 +237,7 @@ function makeStyles(...stylesObjects: Styles[]): Styles {
   const definedStyles: Styles = {};
 
   // Helper function to apply styles to an element
-  const applyStylesToElement = (
-    element: HTMLElement,
-    styles: string | Record<string, string>
-  ): void => {
+  const applyStylesToElement = (element: HTMLElement, styles: string | Record<string, string>): void => {
     // Define new styler
     const styler = new makeTenoxUI(element, allProps);
 
@@ -270,19 +257,14 @@ function makeStyles(...stylesObjects: Styles[]): Styles {
   const applyNestedStyles = (parentSelector: string, styles: Styles): void => {
     // Handle nested style
     Object.entries(styles).forEach(([childSelector, childStyles]) => {
-      const elements = document.querySelectorAll<HTMLElement>(
-        `${parentSelector} ${childSelector}`
-      );
+      const elements = document.querySelectorAll<HTMLElement>(`${parentSelector} ${childSelector}`);
       // Apply nested styles if the value is an object / new object as value
       if (typeof childStyles === "object" && !Array.isArray(childStyles)) {
         applyNestedStyles(`${parentSelector} ${childSelector}`, childStyles);
       } else {
         // Default handler if style is a string / default styler (e.g., "p-1rem fs-1rem")
         elements.forEach(element => {
-          if (
-            typeof childStyles === "string" ||
-            (typeof childStyles === "object" && !Array.isArray(childStyles))
-          ) {
+          if (typeof childStyles === "string" || (typeof childStyles === "object" && !Array.isArray(childStyles))) {
             applyStylesToElement(element, childStyles);
           }
           // error handling for childStyles
@@ -317,9 +299,7 @@ function makeStyles(...stylesObjects: Styles[]): Styles {
           const resolvedStyles = styleArray
             .map(style => {
               // If the style is a reference to another class, get its styles
-              return styleRegistry[style]
-                ? styleRegistry[style].join(" ")
-                : style;
+              return styleRegistry[style] ? styleRegistry[style].join(" ") : style;
             })
             .join(" ");
           applyStylesToElement(element, resolvedStyles);

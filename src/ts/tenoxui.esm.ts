@@ -19,7 +19,7 @@ let allProps: Property,
   breakpoints: Breakpoint,
   classes: Classes,
   allClasses: AllClasses,
-  styleRegistry: StylesRegistry;
+  styleRegistry: StylesRegistry = {};
 
 // Define the breakpoints
 breakpoints = [
@@ -30,8 +30,7 @@ breakpoints = [
   { name: "max-lg", max: 1023.9 },
   { name: "lg", min: 1024 },
   { name: "max-xl", max: 1279.9 },
-  { name: "xl", min: 1280 },
-  { name: "custom", min: 500, max: 1000 }
+  { name: "xl", min: 1280 }
 ];
 
 // tenoxui style handler
@@ -377,11 +376,4 @@ function tenoxui(...customPropsArray: Property[]) {
   });
 }
 
-export {
-  allProps
-  ,
-  makeStyles,
-  makeTenoxUI,
-  use,
-  tenoxui as default
-};
+export { allProps, makeStyles, makeTenoxUI, use, tenoxui as default };
