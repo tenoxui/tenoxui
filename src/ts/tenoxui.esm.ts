@@ -114,12 +114,7 @@ class makeTenoxUI {
   }
 
   // responsive styles helper
-  private applyResponsiveStyles(
-    breakpoint: string,
-    type: string,
-    value: string,
-    unit: string
-  ): void {
+  private applyResponsiveStyles(breakpoint: string, type: string, value: string, unit: string): void {
     // applyStyle helper
     const applyStyle = () => {
       this.applyStyle(type, value, unit);
@@ -172,9 +167,7 @@ class makeTenoxUI {
   // hover effect handler
   private applyHoverStyles(type: string, value: string, unit: string): void {
     // get the initial style before hover
-    const initialStyle = this.element.style.getPropertyValue(
-      this.styles[type] as string
-    );
+    const initialStyle = this.element.style.getPropertyValue(this.styles[type] as string);
 
     // spplyStyle helper
     const applyStyle = () => {
@@ -196,7 +189,7 @@ class makeTenoxUI {
     );
 
     if (match) {
-      // breakpoint = responsive handler. Example: `sm:`, `lg:`, and etc.
+      // prefix before classname. Example: `sm:`, `lg:`, `hover:`, and etc.
       const prefix = match[1];
       // type = property class. Example: p-, m-, flex-, fx-, filter-, etc.
       const type = match[2];
@@ -246,10 +239,7 @@ function makeStyles(...stylesObjects: Styles[]): Styles {
   const definedStyles: Styles = {};
 
   // Helper function to apply styles to an element
-  const applyStylesToElement = (
-    element: HTMLElement,
-    styles: string | Record<string, string>
-  ): void => {
+  const applyStylesToElement = (element: HTMLElement, styles: string | Record<string, string>): void => {
     // Define new styler
     const styler = new makeTenoxUI(element, allProps);
 
@@ -267,25 +257,28 @@ function makeStyles(...stylesObjects: Styles[]): Styles {
 
   // Recursive function to handle nested styles
   const applyNestedStyles = (parentSelector: string, styles: Styles): void => {
-    // Handle nested style
     Object.entries(styles).forEach(([childSelector, childStyles]) => {
-      const elements = document.querySelectorAll<HTMLElement>(
-        `${parentSelector} ${childSelector}`
-      );
-      // Apply nested styles if the value is an object / new object as value
+      const fullSelector = `${parentSelector} ${childSelector}`.trim();
+      const elements = document.querySelectorAll<HTMLElement>(fullSelector);
+
       if (typeof childStyles === "object" && !Array.isArray(childStyles)) {
-        applyNestedStyles(`${parentSelector} ${childSelector}`, childStyles);
+        // Recursively apply nested styles
+        applyNestedStyles(fullSelector, childStyles);
       } else {
-        // Default handler if style is a string / default styler (e.g., "p-1rem fs-1rem")
+        // Apply direct styles if not overridden by nested styles / default style
         elements.forEach(element => {
-          if (
-            typeof childStyles === "string" ||
-            (typeof childStyles === "object" && !Array.isArray(childStyles))
-          ) {
+          if (typeof childStyles === "string") {
+            const styleArray = childStyles.split(" ");
+            const resolvedStyles = styleArray
+              .map(style => {
+                // If the style is a reference to another class, get its styles
+                return styleRegistry[style] ? styleRegistry[style].join(" ") : style;
+              })
+              .join(" ");
+            applyStylesToElement(element, resolvedStyles);
+          } else if (typeof childStyles === "object" && !Array.isArray(childStyles)) {
             applyStylesToElement(element, childStyles);
-          }
-          // error handling for childStyles
-          else {
+          } else {
             console.warn("Invalid nested style for:", childStyles);
           }
         });
@@ -308,7 +301,6 @@ function makeStyles(...stylesObjects: Styles[]): Styles {
 
       // Select elements based on the selector
       const elements = document.querySelectorAll<HTMLElement>(selector);
-      // iterate elements
       elements.forEach(element => {
         if (typeof styles === "string") {
           // Resolve stacked styles by looking them up in the registry
@@ -316,9 +308,7 @@ function makeStyles(...stylesObjects: Styles[]): Styles {
           const resolvedStyles = styleArray
             .map(style => {
               // If the style is a reference to another class, get its styles
-              return styleRegistry[style]
-                ? styleRegistry[style].join(" ")
-                : style;
+              return styleRegistry[style] ? styleRegistry[style].join(" ") : style;
             })
             .join(" ");
           applyStylesToElement(element, resolvedStyles);
@@ -328,6 +318,11 @@ function makeStyles(...stylesObjects: Styles[]): Styles {
           console.warn("Invalid styles type:", styles);
         }
       });
+
+      // Handle nested styles
+      if (typeof styles === "object" && !Array.isArray(styles)) {
+        applyNestedStyles(selector, styles);
+      }
     });
   });
 
@@ -375,5 +370,6 @@ function tenoxui(...customPropsArray: Property[]) {
     });
   });
 }
+
 
 export { allProps, makeStyles, makeTenoxUI, use, tenoxui as default };
