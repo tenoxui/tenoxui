@@ -1,36 +1,25 @@
 {
   "name": "tenoxui",
-  "version": "0.10.0-alpha.3",
+  "version": "0.10.0-alpha.5",
   "description": "A CSS Framework without CSS file :D",
   "type": "module",
   "main": "./dist/js/tenoxui.js",
   "style": "./dist/css/tenoxui.css",
   "module": "./dist/js/tenoxui.esm.js",
   "types": "./dist/js/tenoxui.esm.d.ts",
-  "files": [
-    "dist/*",
-    "package.json",
-    "README.md",
-    "LICENSE"
-  ],
+  "files": ["dist/*", "package.json", "README.md", "LICENSE"],
   "scripts": {
     "dev": "tsc --watch",
-    "build": "tsup",
     "build-js": "terser src/js/tenoxui.js -o dist/js/tenoxui.min.js --mangle --source-map url='tenoxui.min.js.map' && cp src/js/tenoxui.js src/js/tenoxui.d.ts src/js/tenoxui.js.map dist/js/",
     "build-esm": "terser src/js/tenoxui.esm.js -o dist/js/tenoxui.esm.min.js --mangle --source-map url='tenoxui.esm.min.js.map' && cp src/js/tenoxui.esm.js src/js/tenoxui.esm.d.ts src/js/tenoxui.esm.js.map dist/js/",
     "build-css": "cleancss src/css/tenoxui.css -o dist/css/tenoxui.min.css --source-map && cp src/css/tenoxui.css dist/css/",
-    "build-all": "tsc && prettier -w src/js/tenoxui.js src/js/tenoxui.esm.js src/js/tenoxui.d.ts src/js/tenoxui.esm.d.ts && npm run build-js && npm run build-esm && npm run build-css"
+    "build": "tsc && prettier -w src/js/tenoxui.js src/js/tenoxui.esm.js src/js/tenoxui.d.ts src/js/tenoxui.esm.d.ts && npm run build-js && npm run build-esm && npm run build-css"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tenoxui/css.git"
   },
-  "keywords": [
-    "framework",
-    "css",
-    "css-in-js",
-    "utility-first"
-  ],
+  "keywords": ["framework", "css", "css-in-js", "utility-first"],
   "author": "NOuSantx",
   "license": "MIT",
   "bugs": {
