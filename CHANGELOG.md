@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Responsive feature 🔥🔥
-- Hover feature 🔥🔥😈
+- Hover and foxus pseudo handler 🔥🔥😈
 - Add CSS variable declaration directly to the element
 - Define breakpoints inside `use` function
 - Use another styels from defined selector using `makeStyles` function
