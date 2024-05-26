@@ -48,8 +48,13 @@ class makeTenoxUI {
     this.styles = styledProps || {};
   }
 
+  // Utility function to convert camelCase to kebab-case
+  private camelToKebab(str: string): string {
+    return str.replace(/[A-Z]/g, match => `-${match.toLowerCase()}`);
+  }
+
   // `applyStyle`: Handle the styling and custom value for property
-  public applyStyle(type: string, value: string, unit: string): void {
+  public addStyle(type: string, value: string, unit: string): void {
     // handle custom CSS properties directly
     if (type.startsWith("[--") && type.endsWith("]")) {
       // remove the square brackets
@@ -114,10 +119,10 @@ class makeTenoxUI {
   }
 
   // responsive styles helper
-  private applyResponsiveStyles(breakpoint: string, type: string, value: string, unit: string): void {
+  private handleResponsive(breakpoint: string, type: string, value: string, unit: string): void {
     // applyStyle helper
     const applyStyle = () => {
-      this.applyStyle(type, value, unit);
+      this.addStyle(type, value, unit);
     };
     // store the initial styles
     // const initialStyle = this.element.style.getPropertyValue(
@@ -125,11 +130,11 @@ class makeTenoxUI {
     // );
 
     // apply responsive styles
-    const applyResponsiveStyles = () => {
+    const handleResponsive = () => {
       // viewport size / screen size helper
       const viewportWidth = window.innerWidth;
       // helper for matching the className with correct breakpoint
-      const matchedBreakpoint = breakpoints.find(bp => {
+      const matchPoint = breakpoints.find(bp => {
         // it's hard to explain :p
         if (bp.name === breakpoint) {
           if (bp.min !== undefined && bp.max !== undefined) {
@@ -146,7 +151,7 @@ class makeTenoxUI {
       });
 
       // apply responsive if matched breakpoint
-      if (matchedBreakpoint) {
+      if (matchPoint) {
         applyStyle();
       } else {
         // reapply the initial styles when not not inside breakpoints anymore
@@ -159,61 +164,53 @@ class makeTenoxUI {
     };
 
     // init the styles
-    applyResponsiveStyles();
+    handleResponsive();
     // Add event listener to update styles when the viewport is resized
-    window.addEventListener("resize", applyResponsiveStyles);
+    window.addEventListener("resize", handleResponsive);
   }
 
-  // hover effect handler
-  private applyHoverStyles(type: string, value: string, unit: string): void {
-    // get the initial style before hover
-    const initialStyle = this.element.style.getPropertyValue(this.styles[type] as string);
-
-    // spplyStyle helper
+  // Method to handle pseudo-class styles
+  private pseudoStyles(type: string, value: string, unit: string, pseudoEvent: string, revertEvent: string): void {
+    const initialStyle = this.element.style.getPropertyValue(this.camelToKebab(this.styles[type] as string));
     const applyStyle = () => {
-      this.applyStyle(type, value, unit);
+      this.addStyle(type, value, unit);
     };
-
-    // applyStyle when the mouse enter
-    this.element.addEventListener("mouseover", applyStyle);
-    // give back the initialStyle when the mouse leave
-    this.element.addEventListener("mouseout", () => {
-      this.element.style.setProperty(this.styles[type] as string, initialStyle);
+    const revertStyle = () => {
+      this.element.style.setProperty(this.camelToKebab(this.styles[type] as string), initialStyle);
+    };
+    this.element.addEventListener(pseudoEvent, event => {
+      applyStyle();
     });
+    this.element.addEventListener(revertEvent, revertStyle);
   }
-
-  // styler handler
+  // Method to apply multiple styles
   public applyStyles(className: string): void {
-    const match = className.match(/(?:([a-z-]+):)?(-?[a-zA-Z0-9_]+(?:-[a-zA-Z0-9_]+)*|\[--[a-zA-Z0-9_-]+\])-(-?(?:\d+(\.\d+)?)|(?:[a-zA-Z0-9_]+(?:-[a-zA-Z0-9_]+)*(?:-[a-zA-Z0-9_]+)*)|(?:#[0-9a-fA-F]+)|(?:\[[^\]]+\])|(?:\$[^\s]+))([a-zA-Z%]*)/);
+    const match = className.match(
+      /(?:([a-z-]+):)?(-?[a-zA-Z0-9_]+(?:-[a-zA-Z0-9_]+)*|\[--[a-zA-Z0-9_-]+\])-(-?(?:\d+(\.\d+)?)|(?:[a-zA-Z0-9_]+(?:-[a-zA-Z0-9_]+)*(?:-[a-zA-Z0-9_]+)*)|(?:#[0-9a-fA-F]+)|(?:\[[^\]]+\])|(?:\$[^\s]+))([a-zA-Z%]*)/
+    );
 
     if (match) {
-      // prefix before classname. Example: `sm:`, `lg:`, `hover:`, and etc.
       const prefix = match[1];
-      // type = property class. Example: p-, m-, flex-, fx-, filter-, etc.
       const type = match[2];
-      // value = possible value. Example: 10, red, blue, etc.
       const value = match[3];
-      // unit = possible unit. Example: px, rem, em, s, %, etc.
       const unitOrValue = match[5];
 
-      // handle prefix of the element classname
       if (prefix) {
-        // handle hover effect classname
-        if (prefix.startsWith("hover")) {
-          this.applyHoverStyles(type, value, unitOrValue);
+        switch (prefix) {
+          case "hover":
+            this.pseudoStyles(type, value, unitOrValue, "mouseover", "mouseout");
+            break;
+          case "focus":
+            this.pseudoStyles(type, value, unitOrValue, "focus", "blur");
+            break;
+          default:
+            this.handleResponsive(prefix, type, value, unitOrValue);
         }
-        // handle responsive classname
-        else {
-          this.applyResponsiveStyles(prefix, type, value, unitOrValue);
-        }
-      }
-      // use default styler
-      else {
-        this.applyStyle(type, value, unitOrValue);
+      } else {
+        this.addStyle(type, value, unitOrValue);
       }
     }
   }
-
   // Multi styler function, style through javascript.
   public applyMultiStyles(styles: string): void {
     // Splitting the styles
@@ -248,27 +245,35 @@ function makeStyles(...stylesObjects: Styles[]): Styles {
     } else {
       // Handle nested styles / if the value is a new object
       Object.entries(styles).forEach(([prop, value]) => {
-        styler.applyStyle(prop, value, "");
+        styler.addStyle(prop, value, "");
       });
     }
   };
 
   // Recursive function to handle nested styles
   const applyNestedStyles = (parentSelector: string, styles: Styles): void => {
-    // Handle nested style
     Object.entries(styles).forEach(([childSelector, childStyles]) => {
-      const elements = document.querySelectorAll<HTMLElement>(`${parentSelector} ${childSelector}`);
-      // Apply nested styles if the value is an object / new object as value
+      const fullSelector = `${parentSelector} ${childSelector}`.trim();
+      const elements = document.querySelectorAll<HTMLElement>(fullSelector);
+
       if (typeof childStyles === "object" && !Array.isArray(childStyles)) {
-        applyNestedStyles(`${parentSelector} ${childSelector}`, childStyles);
+        // Recursively apply nested styles
+        applyNestedStyles(fullSelector, childStyles);
       } else {
-        // Default handler if style is a string / default styler (e.g., "p-1rem fs-1rem")
+        // Apply direct styles if not overridden by nested styles / default style
         elements.forEach(element => {
-          if (typeof childStyles === "string" || (typeof childStyles === "object" && !Array.isArray(childStyles))) {
+          if (typeof childStyles === "string") {
+            const styleArray = childStyles.split(" ");
+            const resolvedStyles = styleArray
+              .map(style => {
+                // If the style is a reference to another class, get its styles
+                return styleRegistry[style] ? styleRegistry[style].join(" ") : style;
+              })
+              .join(" ");
+            applyStylesToElement(element, resolvedStyles);
+          } else if (typeof childStyles === "object" && !Array.isArray(childStyles)) {
             applyStylesToElement(element, childStyles);
-          }
-          // error handling for childStyles
-          else {
+          } else {
             console.warn("Invalid nested style for:", childStyles);
           }
         });
@@ -291,7 +296,6 @@ function makeStyles(...stylesObjects: Styles[]): Styles {
 
       // Select elements based on the selector
       const elements = document.querySelectorAll<HTMLElement>(selector);
-      // iterate elements
       elements.forEach(element => {
         if (typeof styles === "string") {
           // Resolve stacked styles by looking them up in the registry
@@ -309,6 +313,11 @@ function makeStyles(...stylesObjects: Styles[]): Styles {
           console.warn("Invalid styles type:", styles);
         }
       });
+
+      // Handle nested styles
+      if (typeof styles === "object" && !Array.isArray(styles)) {
+        applyNestedStyles(selector, styles);
+      }
     });
   });
 
