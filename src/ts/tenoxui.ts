@@ -211,7 +211,7 @@ class makeTenoxUI {
       /(?:([a-z-]+):)?(-?[a-zA-Z0-9_]+(?:-[a-zA-Z0-9_]+)*|\[--[a-zA-Z0-9_-]+\])-(-?(?:\d+(\.\d+)?)|(?:[a-zA-Z0-9_]+(?:-[a-zA-Z0-9_]+)*(?:-[a-zA-Z0-9_]+)*)|(?:#[0-9a-fA-F]+)|(?:\[[^\]]+\])|(?:\$[^\s]+))([a-zA-Z%]*)/
     );
 
-// matching all classnames
+    // matching all classnames
     if (match) {
       // prefix = prefix for type. Example: md:, sm:, hover:, etc.
       const prefix = match[1];
@@ -253,6 +253,17 @@ class makeTenoxUI {
       this.applyStyles(style);
     });
   }
+}
+
+// Applied multi style into all elements with the specified element, possible to all selector
+function makeStyle(selector: string, styles: string): void {
+  const applyStylesToElement = (element: HTMLElement, styles: string): void => {
+    const styler = new makeTenoxUI(element, allProps);
+    styler.applyMultiStyles(styles);
+  };
+  // If styles is a string, apply it to the specified selector
+  const elements = document.querySelectorAll(selector);
+  elements.forEach((element: Element) => applyStylesToElement(element as HTMLElement, styles));
 }
 
 // Define type for the styles
