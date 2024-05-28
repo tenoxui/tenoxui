@@ -74,13 +74,24 @@ class makeTenoxUI {
       }
       properties.forEach((property: string | number) => {
         /*
+         * CSS Variable type
+         *
+         * Check if the defined property start with `--`,
+         * like { "my-shadow": "--shadow-color" }.
+         * Then, instead of trating it as css property, it will set property for that css variable. Simple right :D
+         */
+        if (typeof property === "string" && property.startsWith("--")) {
+          // Set the CSS variable
+          this.element.style.setProperty(property, value + unit);
+        }
+        /*
          * CSS Variable Support 🎋
          *
          * Check className if the `value` is started with `$`,
          * if so then this is treated as css variable, css value.
          */
         // Check if the value is a CSS variable
-        if (value.startsWith("$")) {
+        else if (value.startsWith("$")) {
           // remove the "$" prefix
           const cssValue = value.slice(1);
           // use css variables as value
@@ -115,7 +126,6 @@ class makeTenoxUI {
         }
       });
     }
-    // console.log(this.styles);
   }
 
   // responsive styles helper
@@ -171,42 +181,65 @@ class makeTenoxUI {
 
   // Method to handle pseudo-class styles
   private pseudoStyles(type: string, value: string, unit: string, pseudoEvent: string, revertEvent: string): void {
+    // store the initial styles for selected element
     const initialStyle = this.element.style.getPropertyValue(this.camelToKebab(this.styles[type] as string));
+
+    // applyStyle helper
     const applyStyle = () => {
       this.addStyle(type, value, unit);
     };
+
+    // helper for resetting the styles to the stored initial style
     const revertStyle = () => {
       this.element.style.setProperty(this.camelToKebab(this.styles[type] as string), initialStyle);
     };
+
+    // add event listener to start the event
     this.element.addEventListener(pseudoEvent, event => {
+      // apply style if the event fulfilled
       applyStyle();
     });
+
+    // event listener to reverting the styles when done
     this.element.addEventListener(revertEvent, revertStyle);
   }
+
   // Method to apply multiple styles
   public applyStyles(className: string): void {
+    // the regexp for matches all possible classname, using AI actually :D
     const match = className.match(
       /(?:([a-z-]+):)?(-?[a-zA-Z0-9_]+(?:-[a-zA-Z0-9_]+)*|\[--[a-zA-Z0-9_-]+\])-(-?(?:\d+(\.\d+)?)|(?:[a-zA-Z0-9_]+(?:-[a-zA-Z0-9_]+)*(?:-[a-zA-Z0-9_]+)*)|(?:#[0-9a-fA-F]+)|(?:\[[^\]]+\])|(?:\$[^\s]+))([a-zA-Z%]*)/
     );
 
+    // matching all classnames
     if (match) {
+      // prefix = prefix for type. Example: md:, sm:, hover:, etc.
       const prefix = match[1];
+      // type = property class. Example: p-, m-, flex-, fx-, filter-, etc.
       const type = match[2];
+      // value = possible value. Example: 10, red, blue, etc.
       const value = match[3];
+      // unit = possible unit. Example: px, rem, em, s, %, etc.
       const unitOrValue = match[5];
 
+      // handle prefix of the element classname
       if (prefix) {
         switch (prefix) {
+          // hover effect handler
           case "hover":
             this.pseudoStyles(type, value, unitOrValue, "mouseover", "mouseout");
             break;
+          // focus effect handler
           case "focus":
             this.pseudoStyles(type, value, unitOrValue, "focus", "blur");
             break;
+          // else was responsive handler
           default:
             this.handleResponsive(prefix, type, value, unitOrValue);
         }
-      } else {
+      }
+      // default styles handler
+      else {
         this.addStyle(type, value, unitOrValue);
       }
     }
@@ -222,10 +255,12 @@ class makeTenoxUI {
   }
 }
 
-// Define type for nested styles
+// Define type for the styles
 interface TypeObjects {
   [key: string]: string | TypeObjects;
 }
+
+// Styles type
 type Styles = TypeObjects | Record<string, TypeObjects[]>;
 
 // Function to apply styles from selectors
@@ -347,9 +382,6 @@ function tenoxui(...customPropsArray: Property[]) {
   // Generate className from property key name, or property type
   classes = Object.keys(allProps).map(className => `[class*="${className}-"]`);
 
-  // css variable global classes
-  // classes.push(`[class*="[--"]`);
-
   // selectors from classes
   allClasses = document.querySelectorAll(classes.join(", "));
   // Iterate over elements with AllClasses
@@ -365,5 +397,4 @@ function tenoxui(...customPropsArray: Property[]) {
     });
   });
 }
-
 export { allProps, makeStyles, makeTenoxUI, use, tenoxui as default };
