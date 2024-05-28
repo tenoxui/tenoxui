@@ -29,6 +29,7 @@ declare class makeTenoxUI {
   applyStyles(className: string): void;
   applyMultiStyles(styles: string): void;
 }
+declare function makeStyle(selector: string, styles: string): void;
 interface TypeObjects {
   [key: string]: string | TypeObjects;
 }

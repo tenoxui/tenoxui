@@ -219,6 +219,16 @@ class makeTenoxUI {
     });
   }
 }
+// Applied multi style into all elements with the specified element, possible to all selector
+function makeStyle(selector, styles) {
+  const applyStylesToElement = (element, styles) => {
+    const styler = new makeTenoxUI(element, allProps);
+    styler.applyMultiStyles(styles);
+  };
+  // If styles is a string, apply it to the specified selector
+  const elements = document.querySelectorAll(selector);
+  elements.forEach((element) => applyStylesToElement(element, styles));
+}
 // Function to apply styles from selectors
 function makeStyles(...stylesObjects) {
   // Store defined styles into an object

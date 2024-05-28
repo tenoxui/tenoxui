@@ -22,6 +22,7 @@ declare class makeTenoxUI {
   applyStyles(className: string): void;
   applyMultiStyles(styles: string): void;
 }
+declare function makeStyle(selector: string, styles: string): void;
 interface TypeObjects {
   [key: string]: string | TypeObjects;
 }
@@ -29,4 +30,4 @@ type Styles = TypeObjects | Record<string, TypeObjects[]>;
 declare function makeStyles(...stylesObjects: Styles[]): Styles;
 declare function use(customConfig: { breakpoint?: Breakpoint; property?: Property[] }): void;
 declare function tenoxui(...customPropsArray: Property[]): void;
-export { allProps, makeStyles, makeTenoxUI, use, tenoxui as default };
+export { allProps, makeStyle, makeStyles, makeTenoxUI, use, tenoxui as default };
