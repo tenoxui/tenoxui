@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Responsive feature 🔥🔥
 - Hover and foxus pseudo handler 🔥🔥😈
+- Can define CSS variable as property, `{ "my-color": "--tx-color" }`
 - Add CSS variable declaration directly to the element
 - Define breakpoints inside `use` function
 - Use another styels from defined selector using `makeStyles` function
