@@ -1,5 +1,5 @@
 /*!
- * TenoxUI CSS v0.10.0
+ * TenoxUI CSS v0.11.0-alpha.1
  * Licensed under MIT (https://github.com/tenoxui/css/blob/main/LICENSE)
  */
 
@@ -13,39 +13,34 @@ type Classes = String[];
 type AllClasses = NodeListOf<HTMLElement>;
 // styles registry
 type StylesRegistry = Record<string, string[]>;
+// defined styles
+type DefinedValue = { [key: string]: string };
 
 // global variable to passing all values from `tenoxui`
-let allProps: Property,
-  breakpoints: Breakpoint,
-  classes: Classes,
-  allClasses: AllClasses,
-  styleRegistry: StylesRegistry = {};
-
-// Define the breakpoints
-breakpoints = [
-  { name: "max-sm", max: 639.9 },
-  { name: "sm", min: 640 },
-  { name: "max-md", max: 767.9 },
-  { name: "md", min: 768 },
-  { name: "max-lg", max: 1023.9 },
-  { name: "lg", min: 1024 },
-  { name: "max-xl", max: 1279.9 },
-  { name: "xl", min: 1280 }
-];
+let ALL_PROPS: Property,
+  BREAKPOINTS: Breakpoint,
+  CLASSES: Classes,
+  ALL_CLASSES: AllClasses,
+  STYLE_REGISTRY: StylesRegistry,
+  VALUE_REGISTRY: DefinedValue;
 
 // tenoxui style handler
 class makeTenoxUI {
   // basically selector :D
-  private element: HTMLElement;
+  private ELEMENT: HTMLElement;
   // all types and properties
-  private styles: Property;
+  private STYLES: Property;
+  // defined values
+  private DEFINED_VALUE: DefinedValue;
 
   // TenoxUI constructor
-  constructor(element: HTMLElement, styledProps?: Property) {
+  constructor(element: HTMLElement, styledProps?: Property, definedValue?: DefinedValue) {
     // basically selector
-    this.element = element;
+    this.ELEMENT = element;
     // all types and properties
-    this.styles = styledProps || {};
+    this.STYLES = styledProps || {};
+    // defined value helper
+    this.DEFINED_VALUE = definedValue || {};
   }
 
   // Utility function to convert camelCase to kebab-case
@@ -53,76 +48,78 @@ class makeTenoxUI {
     return str.replace(/[A-Z]/g, match => `-${match.toLowerCase()}`);
   }
 
-  // `applyStyle`: Handle the styling and custom value for property
+  // `addStyle`: Handle the styling and custom value for property
   public addStyle(type: string, value: string, unit: string): void {
-    // handle custom CSS properties directly
-    if (type.startsWith("[--") && type.endsWith("]")) {
-      // remove the square brackets
-      const cssProperty = type.slice(1, -1);
-      // add css variables into element
-      this.element.style.setProperty(cssProperty, value + unit);
+    /* Warning! */
+    /* You will see a lot of if statement from here :p */
+
+    let PROPERTIES = this.STYLES[type];
+    // resolve value: use `defined value` if available or regular `value`
+    let RESOLVE_VALUE = this.DEFINED_VALUE[value] || value;
+    let NEXT_VALUE = RESOLVE_VALUE + unit;
+
+    /*
+     * CSS Variable Value 🎋
+     *
+     * Check className if the `value` is started with `$`,
+     * if so then this is treated as css variable, css value.
+     *
+     * example :
+     * usage: `m-$size`
+     * output: `margin: var(--size)`
+     */
+    if (value.startsWith("$")) {
+      // remove the "$" prefix
+      NEXT_VALUE = `var(--${value.slice(1)})`;
+    } else if (value.startsWith("[") && value.endsWith("]")) {
+      /*
+       * Custom Values Support 🪐
+       *
+       * Check className if the `value` is wrapped with square bracket `[]`,
+       * if so then this is treated as custom value and ignore default value.
+       *
+       * example :
+       * usage: `m-[calc(10rem\_-\_100px)]`
+       * output: `margin: calc(10rem - 100px)`
+       */
+      // Handle custom values wrapped in square brackets
+      NEXT_VALUE = value.slice(1, -1).replace(/\\_/g, " ");
+      // Check if the value is a CSS variable
+      if (NEXT_VALUE.startsWith("--")) {
+        NEXT_VALUE = `var(${NEXT_VALUE})`;
+      }
     }
 
-    // get type's from allProps constant
-    let properties = this.styles[type];
-    // If properties matched the `type` or `property` from `allProps`
-    if (properties) {
-      // If properties has only one css property and it was string, not wrapped inside an array
-      if (!Array.isArray(properties)) {
-        // Convert the string value from property into an array
-        properties = [properties];
+    // handle custom CSS properties directly
+    if (type.startsWith("[--") && type.endsWith("]")) {
+      // add css variables into element
+      this.ELEMENT.style.setProperty(type.slice(1, -1), NEXT_VALUE);
+    }
+
+    // If properties matched the `type` or `property` from `ALL_PROPS`
+    if (PROPERTIES) {
+      // Ensure properties is an array
+      if (!Array.isArray(PROPERTIES)) {
+        PROPERTIES = [PROPERTIES];
       }
-      properties.forEach((property: string | number) => {
+
+      // iterate the PROPERTIES's values
+      PROPERTIES.forEach((property: string | number) => {
         /*
-         * CSS Variable type
+         * CSS Variable `type` 📖
          *
          * Check if the defined property start with `--`,
          * like { "my-shadow": "--shadow-color" }.
          * Then, instead of trating it as css property, it will set property for that css variable. Simple right :D
          */
         if (typeof property === "string" && property.startsWith("--")) {
-          // Set the CSS variable
-          this.element.style.setProperty(property, value + unit);
-        }
-        /*
-         * CSS Variable Support 🎋
-         *
-         * Check className if the `value` is started with `$`,
-         * if so then this is treated as css variable, css value.
-         */
-        // Check if the value is a CSS variable
-        else if (value.startsWith("$")) {
-          // remove the "$" prefix
-          const cssValue = value.slice(1);
-          // use css variables as value
-          this.element.style[property as number] = `var(--${cssValue})`;
-        }
-        /*
-         * Custom values support 🪐
-         *
-         * Check className if the `value` is wrapped with square bracket `[]`,
-         * if so then this is treated as custom value and ignore default value.
-         */
-        // Check if the value is a CSS variable enclosed in square bracket `[]`
-        else if (value.startsWith("[") && value.endsWith("]")) {
-          // remove the wrapper and replace `\_` with space (if there any)
-          const values = value.slice(1, -1).replace(/\\_/g, " ");
-
-          //? css variable value handler
-          // if value start with `--`, treat value as css variable
-          if (values.startsWith("--")) {
-            this.element.style[property as number] = `var(${values})`;
-          }
-          // else, will use custom `values`
-          else {
-            this.element.style[property as number] = values;
-          }
+          this.ELEMENT.style.setProperty(property, NEXT_VALUE);
         } else {
           /*
            * Default value handler 🎏
            * All types will have this as default values, no additional value
            */
-          this.element.style[property as number] = `${value}${unit}`;
+          this.ELEMENT.style[property as number] = NEXT_VALUE;
         }
       });
     }
@@ -135,25 +132,25 @@ class makeTenoxUI {
       this.addStyle(type, value, unit);
     };
     // store the initial styles
-    // const initialStyle = this.element.style.getPropertyValue(
-    // this.styles[type] as string
+    // const STYLE_INIT_VALUE = this.ELEMENT.style.getPropertyValue(
+    // this.STYLES[type] as string
     // );
 
     // apply responsive styles
     const handleResponsive = () => {
       // viewport size / screen size helper
-      const viewportWidth = window.innerWidth;
+      const VIEWPORT = window.innerWidth;
       // helper for matching the className with correct breakpoint
-      const matchPoint = breakpoints.find(bp => {
+      const MATCH_POINT = BREAKPOINTS.find(bp => {
         // it's hard to explain :p
         if (bp.name === breakpoint) {
           if (bp.min !== undefined && bp.max !== undefined) {
-            return viewportWidth >= bp.min && viewportWidth <= bp.max;
+            return VIEWPORT >= bp.min && VIEWPORT <= bp.max;
           }
-          if (bp.min !== undefined && viewportWidth >= bp.min) {
+          if (bp.min !== undefined && VIEWPORT >= bp.min) {
             return true;
           }
-          if (bp.max !== undefined && viewportWidth <= bp.max) {
+          if (bp.max !== undefined && VIEWPORT <= bp.max) {
             return true;
           }
         }
@@ -161,14 +158,14 @@ class makeTenoxUI {
       });
 
       // apply responsive if matched breakpoint
-      if (matchPoint) {
+      if (MATCH_POINT) {
         applyStyle();
       } else {
         // reapply the initial styles when not not inside breakpoints anymore
-        this.element.style[type] = "";
-        // this.element.style.setProperty(
-        //  this.styles[type] as string,
-        //  initialStyle
+        this.ELEMENT.style[type] = "";
+        // this.ELEMENT.style.setProperty(
+        //  this.STYLES[type] as string,
+        //  STYLE_INIT_VALUE
         // );
       }
     };
@@ -182,7 +179,7 @@ class makeTenoxUI {
   // Method to handle pseudo-class styles
   private pseudoStyles(type: string, value: string, unit: string, pseudoEvent: string, revertEvent: string): void {
     // store the initial styles for selected element
-    const initialStyle = this.element.style.getPropertyValue(this.camelToKebab(this.styles[type] as string));
+    const STYLE_INIT_VALUE = this.ELEMENT.style.getPropertyValue(this.camelToKebab(this.STYLES[type] as string));
 
     // applyStyle helper
     const applyStyle = () => {
@@ -191,17 +188,17 @@ class makeTenoxUI {
 
     // helper for resetting the styles to the stored initial style
     const revertStyle = () => {
-      this.element.style.setProperty(this.camelToKebab(this.styles[type] as string), initialStyle);
+      this.ELEMENT.style.setProperty(this.camelToKebab(this.STYLES[type] as string), STYLE_INIT_VALUE);
     };
 
     // add event listener to start the event
-    this.element.addEventListener(pseudoEvent, event => {
+    this.ELEMENT.addEventListener(pseudoEvent, event => {
       // apply style if the event fulfilled
       applyStyle();
     });
 
     // event listener to reverting the styles when done
-    this.element.addEventListener(revertEvent, revertStyle);
+    this.ELEMENT.addEventListener(revertEvent, revertStyle);
   }
 
   // Method to apply multiple styles
@@ -246,10 +243,8 @@ class makeTenoxUI {
   }
   // Multi styler function, style through javascript.
   public applyMultiStyles(styles: string): void {
-    // Splitting the styles
-    const styleArray = styles.split(/\s+/);
     // Applying the styles using forEach and `applyStyles`
-    styleArray.forEach((style: string) => {
+    styles.split(/\s+/).forEach((style: string) => {
       this.applyStyles(style);
     });
   }
@@ -258,7 +253,7 @@ class makeTenoxUI {
 // Applied multi style into all elements with the specified element, possible to all selector
 function makeStyle(selector: string, styles: string): void {
   const applyStylesToElement = (element: HTMLElement, styles: string): void => {
-    const styler = new makeTenoxUI(element, allProps);
+    const styler = new makeTenoxUI(element, ALL_PROPS, VALUE_REGISTRY);
     styler.applyMultiStyles(styles);
   };
   // If styles is a string, apply it to the specified selector
@@ -277,12 +272,13 @@ type Styles = TypeObjects | Record<string, TypeObjects[]>;
 // Function to apply styles from selectors
 function makeStyles(...stylesObjects: Styles[]): Styles {
   // Store defined styles into an object
-  const definedStyles: Styles = {};
+  const STORED_STYLES: Styles = {};
+  STYLE_REGISTRY = {};
 
   // Helper function to apply styles to an element
   const applyStylesToElement = (element: HTMLElement, styles: string | Record<string, string>): void => {
-    // Define new styler
-    const styler = new makeTenoxUI(element, allProps);
+    // styler helper
+    const styler = new makeTenoxUI(element, ALL_PROPS, VALUE_REGISTRY);
 
     // If the styles is a string, like: "p-20px m-1rem fs-2rem" / Stacked classes
     if (typeof styles === "string") {
@@ -297,30 +293,28 @@ function makeStyles(...stylesObjects: Styles[]): Styles {
   };
 
   // Recursive function to handle nested styles
-  const applyNestedStyles = (parentSelector: string, styles: Styles): void => {
-    Object.entries(styles).forEach(([childSelector, childStyles]) => {
-      const fullSelector = `${parentSelector} ${childSelector}`.trim();
-      const elements = document.querySelectorAll<HTMLElement>(fullSelector);
+  const applyNestedStyles = (PARENT_SELECTOR: string, styles: Styles): void => {
+    Object.entries(styles).forEach(([CHILD_SELECTOR, CHILD_STYLE]) => {
+      const ELEMENT_CLASS = `${PARENT_SELECTOR} ${CHILD_SELECTOR}`.trim();
+      const elements = document.querySelectorAll<HTMLElement>(ELEMENT_CLASS);
 
-      if (typeof childStyles === "object" && !Array.isArray(childStyles)) {
+      if (typeof CHILD_STYLE === "object" && !Array.isArray(CHILD_STYLE)) {
         // Recursively apply nested styles
-        applyNestedStyles(fullSelector, childStyles);
+        applyNestedStyles(ELEMENT_CLASS, CHILD_STYLE);
       } else {
         // Apply direct styles if not overridden by nested styles / default style
         elements.forEach(element => {
-          if (typeof childStyles === "string") {
-            const styleArray = childStyles.split(" ");
-            const resolvedStyles = styleArray
-              .map(style => {
-                // If the style is a reference to another class, get its styles
-                return styleRegistry[style] ? styleRegistry[style].join(" ") : style;
-              })
-              .join(" ");
-            applyStylesToElement(element, resolvedStyles);
-          } else if (typeof childStyles === "object" && !Array.isArray(childStyles)) {
-            applyStylesToElement(element, childStyles);
+          if (typeof CHILD_STYLE === "string") {
+            const STYLE_ARRAY = CHILD_STYLE.split(" ");
+            const STYLE_RESOLVE = STYLE_ARRAY.map(style => {
+              // If the style is a reference to another class, get its styles
+              return STYLE_REGISTRY[style] ? STYLE_REGISTRY[style].join(" ") : style;
+            }).join(" ");
+            applyStylesToElement(element, STYLE_RESOLVE);
+          } else if (typeof CHILD_STYLE === "object" && !Array.isArray(CHILD_STYLE)) {
+            applyStylesToElement(element, CHILD_STYLE);
           } else {
-            console.warn("Invalid nested style for:", childStyles);
+            console.warn("Invalid nested style for:", CHILD_STYLE);
           }
         });
       }
@@ -328,16 +322,16 @@ function makeStyles(...stylesObjects: Styles[]): Styles {
   };
 
   // Handle styling logic, nested style, or only default
-  stylesObjects.forEach(stylesObject => {
-    Object.entries(stylesObject).forEach(([selector, styles]) => {
+  stylesObjects.forEach(STYLE_OBJECT => {
+    Object.entries(STYLE_OBJECT).forEach(([selector, styles]) => {
       // Store defined styles for reuse
       if (typeof styles === "string") {
         // Split the style string by spaces to support multiple classes
-        const styleArray = styles.split(" ");
-        styleRegistry[selector] = styleArray;
-        definedStyles[selector] = styles;
+        const STYLE_ARRAY = styles.split(" ");
+        STYLE_REGISTRY[selector] = STYLE_ARRAY;
+        STORED_STYLES[selector] = styles;
       } else {
-        definedStyles[selector] = styles;
+        STORED_STYLES[selector] = styles;
       }
 
       // Select elements based on the selector
@@ -345,14 +339,12 @@ function makeStyles(...stylesObjects: Styles[]): Styles {
       elements.forEach(element => {
         if (typeof styles === "string") {
           // Resolve stacked styles by looking them up in the registry
-          const styleArray = styles.split(" ");
-          const resolvedStyles = styleArray
-            .map(style => {
-              // If the style is a reference to another class, get its styles
-              return styleRegistry[style] ? styleRegistry[style].join(" ") : style;
-            })
-            .join(" ");
-          applyStylesToElement(element, resolvedStyles);
+          const STYLE_ARRAY = styles.split(" ");
+          const STYLE_RESOLVE = STYLE_ARRAY.map(style => {
+            // If the style is a reference to another class, get its styles
+            return STYLE_REGISTRY[style] ? STYLE_REGISTRY[style].join(" ") : style;
+          }).join(" ");
+          applyStylesToElement(element, STYLE_RESOLVE);
         } else if (typeof styles === "object" && !Array.isArray(styles)) {
           applyStylesToElement(element, styles);
         } else {
@@ -368,40 +360,45 @@ function makeStyles(...stylesObjects: Styles[]): Styles {
   });
 
   // Return the defined styles
-  return definedStyles;
+  return STORED_STYLES;
 }
 
-function use(customConfig: { breakpoint?: Breakpoint; property?: Property[] }) {
+function use(customConfig: { breakpoint?: Breakpoint; property?: Property[]; values?: DefinedValue }) {
   // custom breakpoints
   if (customConfig.breakpoint) {
-    breakpoints = [...breakpoints, ...customConfig.breakpoint];
+    BREAKPOINTS = [...BREAKPOINTS, ...customConfig.breakpoint];
   }
 
   // types and properties to execute
   if (customConfig.property) {
-    allProps = { ...allProps, ...Object.assign({}, ...customConfig.property) };
+    ALL_PROPS = { ...ALL_PROPS, ...Object.assign({}, ...customConfig.property) };
+  }
+
+  // value registry handler
+  if (customConfig.values) {
+    VALUE_REGISTRY = customConfig.values;
   }
 }
 
 // Applying the style to all elements ✨
 function tenoxui(...customPropsArray: Property[]) {
-  let styles = Object.assign({}, allProps, ...customPropsArray);
+  let OBJECT_PROPS = Object.assign({}, ALL_PROPS, ...customPropsArray);
 
   // passing for global values
-  allProps = styles;
+  ALL_PROPS = OBJECT_PROPS;
 
   // Generate className from property key name, or property type
-  classes = Object.keys(allProps).map(className => `[class*="${className}-"]`);
+  CLASSES = Object.keys(ALL_PROPS).map(className => `[class*="${className}-"]`);
 
   // selectors from classes
-  allClasses = document.querySelectorAll(classes.join(", "));
+  ALL_CLASSES = document.querySelectorAll(CLASSES.join(", "));
   // Iterate over elements with AllClasses
-  allClasses.forEach((element: Element) => {
+  ALL_CLASSES.forEach((element: Element) => {
     // Get the list of classes for the current element
     const htmlELement = element as HTMLElement;
     const classes = htmlELement.classList;
     // styler helper
-    const styler = new makeTenoxUI(htmlELement, allProps);
+    const styler = new makeTenoxUI(htmlELement, ALL_PROPS, VALUE_REGISTRY);
     // Iterate over classes and apply styles using makeTenoxUI
     classes.forEach(className => {
       styler.applyStyles(className);
