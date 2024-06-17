@@ -1,6 +1,6 @@
 {
   "name": "tenoxui",
-  "version": "0.10.0",
+  "version": "0.11.0-alpha.1",
   "description": "A CSS Framework without CSS file :D",
   "main": "./dist/js/tenoxui.js",
   "style": "./dist/css/tenoxui.css",
@@ -9,10 +9,10 @@
   "files": ["dist/*", "package.json", "README.md", "LICENSE"],
   "scripts": {
     "dev": "tsc --watch",
-    "build-js": "terser src/js/tenoxui.js -o dist/js/tenoxui.min.js --mangle --source-map url='tenoxui.min.js.map' && cp src/js/tenoxui.js src/js/tenoxui.d.ts src/js/tenoxui.js.map dist/js/",
-    "build-esm": "terser src/js/tenoxui.esm.js -o dist/js/tenoxui.esm.min.js --mangle --source-map url='tenoxui.esm.min.js.map' && cp src/js/tenoxui.esm.js src/js/tenoxui.esm.d.ts src/js/tenoxui.esm.js.map dist/js/",
     "build-css": "cleancss src/css/tenoxui.css -o dist/css/tenoxui.min.css --source-map && cp src/css/tenoxui.css dist/css/",
-    "build": "tsc && prettier -w src/js/tenoxui.js src/js/tenoxui.esm.js src/js/tenoxui.d.ts src/js/tenoxui.esm.d.ts && npm run build-js && npm run build-esm && npm run build-css"
+    "build-js": "uglifyjs ./src/js/tenoxui.js -c -m toplevel --mangle-props -o dist/js/tenoxui.min.js --source-map \"url='tenoxui.min.js.map'\" --comments \"/^!/\" --keep-fnames && uglifyjs src/js/tenoxui.js --beautify -o dist/js/tenoxui.js --source-map \"url='tenoxui.js.map'\" --comments \"/^!/\" && cp src/js/tenoxui.d.ts src/js/tenoxui.js.map dist/js && prettier -w dist/js/tenoxui.js dist/js/tenoxui.d.ts",
+    "build-esm": "uglifyjs ./src/js/tenoxui.esm.js -c -m toplevel --mangle-props -o dist/js/tenoxui.esm.min.js --source-map \"url='tenoxui.esm.min.js.map'\" --comments \"/^!/\" && uglifyjs ./src/js/tenoxui.esm.js --beautify -o dist/js/tenoxui.esm.js --source-map \"url='tenoxui.esm.js.map'\" --comments \"/^!/\" && cp src/js/tenoxui.esm.d.ts  src/js/tenoxui.esm.js.map dist/js && prettier -w dist/js/tenoxui.esm.js dist/js/tenoxui.esm.d.ts",
+    "build": "tsc && npm run build-js && npm run build-esm && npm run build-css && echo '\\033[92m Have Fun :D'"
   },
   "repository": {
     "type": "git",
@@ -28,7 +28,7 @@
   "devDependencies": {
     "clean-css-cli": "^5.6.3",
     "prettier": "^3.2.5",
-    "terser": "^5.30.3",
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "uglify-js": "^3.18.0"
   }
 }
