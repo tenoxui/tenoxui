@@ -4,7 +4,7 @@
  >
 </a>
 </p>
-<h1 align="center">TenoxUI v0.10</h1>
+<h1 align="center">TenoxUI v0.11</h1>
 <p align="center">
 A CSS Framework without css file :D
 <br>
