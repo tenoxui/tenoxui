@@ -1,6 +1,6 @@
 {
   "name": "tenoxui",
-  "version": "0.11.0-alpha.1",
+  "version": "0.11.0-alpha.3",
   "description": "A CSS Framework without CSS file :D",
   "main": "./dist/js/tenoxui.js",
   "style": "./dist/css/tenoxui.css",
@@ -10,8 +10,8 @@
   "scripts": {
     "dev": "tsc --watch",
     "build-css": "cleancss src/css/tenoxui.css -o dist/css/tenoxui.min.css --source-map && cp src/css/tenoxui.css dist/css/",
-    "build-js": "uglifyjs ./src/js/tenoxui.js -c -m toplevel --mangle-props -o dist/js/tenoxui.min.js --source-map \"url='tenoxui.min.js.map'\" --comments \"/^!/\" --keep-fnames && uglifyjs src/js/tenoxui.js --beautify -o dist/js/tenoxui.js --source-map \"url='tenoxui.js.map'\" --comments \"/^!/\" && cp src/js/tenoxui.d.ts src/js/tenoxui.js.map dist/js && prettier -w dist/js/tenoxui.js dist/js/tenoxui.d.ts",
-    "build-esm": "uglifyjs ./src/js/tenoxui.esm.js -c -m toplevel --mangle-props -o dist/js/tenoxui.esm.min.js --source-map \"url='tenoxui.esm.min.js.map'\" --comments \"/^!/\" && uglifyjs ./src/js/tenoxui.esm.js --beautify -o dist/js/tenoxui.esm.js --source-map \"url='tenoxui.esm.js.map'\" --comments \"/^!/\" && cp src/js/tenoxui.esm.d.ts  src/js/tenoxui.esm.js.map dist/js && prettier -w dist/js/tenoxui.esm.js dist/js/tenoxui.esm.d.ts",
+    "build-js": "uglifyjs ./src/js/tenoxui.js -c -m toplevel  -o dist/js/tenoxui.min.js --source-map \"url='tenoxui.min.js.map'\" --comments \"/^!/\" --keep-fnames && uglifyjs src/js/tenoxui.js --beautify -o dist/js/tenoxui.js --source-map \"url='tenoxui.js.map'\" --comments \"/^!/\" && cp src/js/tenoxui.d.ts src/js/tenoxui.js.map dist/js && prettier -w dist/js/tenoxui.js dist/js/tenoxui.d.ts",
+    "build-esm": "uglifyjs ./src/js/tenoxui.esm.js -c -m toplevel -o dist/js/tenoxui.esm.min.js --source-map \"url='tenoxui.esm.min.js.map'\" --comments \"/^!/\" --keep-fnames && uglifyjs ./src/js/tenoxui.esm.js --beautify -o dist/js/tenoxui.esm.js --source-map \"url='tenoxui.esm.js.map'\" --comments \"/^!/\" && cp src/js/tenoxui.esm.d.ts  src/js/tenoxui.esm.js.map dist/js && prettier -w dist/js/tenoxui.esm.js dist/js/tenoxui.esm.d.ts",
     "build": "tsc && npm run build-js && npm run build-esm && npm run build-css && echo '\\033[92m Have Fun :D'"
   },
   "repository": {
