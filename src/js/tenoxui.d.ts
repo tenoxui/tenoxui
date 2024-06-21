@@ -1,39 +1,48 @@
 /*!
- * TenoxUI CSS v0.10.0
+ * TenoxUI CSS v0.11.0-alpha.3
  * Licensed under MIT (https://github.com/tenoxui/css/blob/main/LICENSE)
  */
+interface TypeObjects {
+    [key: string]: string | TypeObjects;
+}
+type Styles = TypeObjects | Record<string, TypeObjects[]>;
 type Property = {
-  [key: string]: string | string[];
+    [key: string]: string | string[];
 };
 type Breakpoint = {
-  name: string;
-  min?: number;
-  max?: number;
+    name: string;
+    min?: number;
+    max?: number;
 }[];
 type Classes = String[];
 type AllClasses = NodeListOf<HTMLElement>;
 type StylesRegistry = Record<string, string[]>;
-declare let allProps: Property,
-  breakpoints: Breakpoint,
-  classes: Classes,
-  allClasses: AllClasses,
-  styleRegistry: StylesRegistry;
+type DefinedValue = {
+    [key: string]: string;
+};
+declare let ALL_PROPS: Property;
+declare let BREAKPOINTS: Breakpoint;
+declare let CLASSES: Classes;
+declare let ALL_CLASSES: AllClasses;
+declare let VALUE_REGISTRY: DefinedValue;
+declare let GLOBAL_STYLES_REGISTRY: string | Styles;
 declare class makeTenoxUI {
-  private element;
-  private styles;
-  constructor(element: HTMLElement, styledProps?: Property);
-  private camelToKebab;
-  addStyle(type: string, value: string, unit: string): void;
-  private handleResponsive;
-  private pseudoStyles;
-  applyStyles(className: string): void;
-  applyMultiStyles(styles: string): void;
+    private ELEMENT;
+    private STYLES;
+    constructor(element: HTMLElement, styledProps?: Property);
+    private camelToKebab;
+    addStyle(type: string, value: string, unit: string): void;
+    private handleResponsive;
+    private pseudoHandler;
+    private pseudoObjectHandler;
+    applyStyles(className: string): void;
+    applyMultiStyles(styles: string): void;
 }
 declare function makeStyle(selector: string, styles: string): void;
-interface TypeObjects {
-  [key: string]: string | TypeObjects;
-}
-type Styles = TypeObjects | Record<string, TypeObjects[]>;
 declare function makeStyles(...stylesObjects: Styles[]): Styles;
-declare function use(customConfig: { breakpoint?: Breakpoint; property?: Property[] }): void;
+declare function use(customConfig: {
+    breakpoint?: Breakpoint;
+    property?: Property[];
+    values?: DefinedValue;
+}): void;
 declare function tenoxui(...customPropsArray: Property[]): void;
