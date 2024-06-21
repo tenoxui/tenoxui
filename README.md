@@ -117,7 +117,7 @@ const App = () => {
 export default App;
 ```
 
-You can see all types and properties on [GitHub Repository](https://github.com/tenoxui/property) or [Here](https://tenoxui.github.io/property)
+You can see all types and properties on [GitHub Repository](https://github.com/tenoxui/property) or [Here](https://tenoxui.github.io/property).
 
 <h4>More</h4>
 
