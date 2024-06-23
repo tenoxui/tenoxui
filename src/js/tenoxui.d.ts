@@ -1,13 +1,22 @@
 /*!
- * TenoxUI CSS v0.11.0-alpha.3
+ * TenoxUI CSS v0.11.0-alpha.4
  * Licensed under MIT (https://github.com/tenoxui/css/blob/main/LICENSE)
  */
 interface TypeObjects {
     [key: string]: string | TypeObjects;
 }
+interface CustomValue {
+    [key: string]: {
+        property?: string;
+        customValue?: string;
+    };
+}
 type Styles = TypeObjects | Record<string, TypeObjects[]>;
 type Property = {
-    [key: string]: string | string[];
+    [key: string]: string | string[] | {
+        property?: string | string[];
+        customValue?: string;
+    };
 };
 type Breakpoint = {
     name: string;
@@ -30,9 +39,9 @@ declare class makeTenoxUI {
     private ELEMENT;
     private STYLES;
     constructor(element: HTMLElement, styledProps?: Property);
-    private camelToKebab;
     addStyle(type: string, value: string, unit: string): void;
     private handleResponsive;
+    private camelToKebab;
     private pseudoHandler;
     private pseudoObjectHandler;
     applyStyles(className: string): void;

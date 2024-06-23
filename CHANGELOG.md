@@ -9,8 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- New `values` attribute inside `use` function.
+- Custom value feature for type and property
+- Define css value with `use` function
 
 ### Fixed
 
-- CSS variable faeture custom `values` not handled properly.
+- CSS variable custom `values` not handled properly.
+
+### Removed
+
+- Remove default breakpoint on main code
