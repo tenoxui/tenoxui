@@ -1,5 +1,5 @@
 /*!
- * TenoxUI CSS v0.11.0-alpha.4
+ * TenoxUI CSS v0.11.0-alpha.6
  * Licensed under MIT (https://github.com/tenoxui/css/blob/main/LICENSE)
  */
 
@@ -22,19 +22,19 @@ type Property = {
 // Breakpoint type
 type Breakpoint = { name: string; min?: number; max?: number }[];
 // Classes type
-type Classes = String[];
+type Classes = string[];
 // selector type
 type AllClasses = NodeListOf<HTMLElement>;
 // styles registry
 type StylesRegistry = Record<string, string[]>;
 // defined styles
-type DefinedValue = { [key: string]: string };
+type DefinedValue = { [key: string]: { [key: string]: string } | string };
 
 let ALL_PROPS: Property; // global variable to passing all `types` and `properties` from `tenoxui`
 let BREAKPOINTS: Breakpoint; // global breakpoints
 let CLASSES: Classes; // store generated selector for tenoxui from defined types and properties
 let ALL_CLASSES: AllClasses; // select all possible classname from `CLASSES`
-let VALUE_REGISTRY: DefinedValue; // global value registry to store all custom values
+let VALUE_REGISTRY: DefinedValue = {}; // global value registry to store all custom values
 let GLOBAL_STYLES_REGISTRY: string | Styles = {}; // all defined classname from the `makeStyles` function as an object
 
 // tenoxui style handler
@@ -60,7 +60,7 @@ class makeTenoxUI {
     // get `type` from ALL_PROPS
     let PROPERTIES = this.STYLES[type];
     // resolve value: use `defined value` if available or regular `value`
-    let RESOLVE_VALUE = VALUE_REGISTRY[value] || value;
+    let RESOLVE_VALUE = (VALUE_REGISTRY[value] as string) || value;
 
     // recursive function to `generate/handle` custom/special values
     const SPECIAL_VALUE = (value: string, unit: string) => {
