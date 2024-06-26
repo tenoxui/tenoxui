@@ -1,5 +1,5 @@
 /*!
- * TenoxUI CSS v0.11.0-alpha.6
+ * TenoxUI CSS v0.11.0-alpha.7
  * Licensed under MIT (https://github.com/tenoxui/css/blob/main/LICENSE)
  */
 
@@ -249,7 +249,9 @@ class makeTenoxUI {
     );
 
     // store initial value for the type
-    let styleInitValue = this.htmlElement.style.getPropertyValue(propsName);
+    let styleInitValue = this.htmlElement.style.getPropertyValue(
+      this.camelToKebab(this.styleAttribute[type] as string)
+    );
 
     // apply the styles when the event started
     this.htmlElement.addEventListener(pseudoEvent, () => {
@@ -262,9 +264,10 @@ class makeTenoxUI {
       if (propsName.startsWith("--")) {
         this.htmlElement.style.setProperty(propsName, styleInitValue);
       }
+
       // default css property
       else {
-        this.htmlElement.style[propsName] = styleInitValue;
+        this.htmlElement.style.setProperty(this.camelToKebab(this.styleAttribute[type] as string), styleInitValue);
       }
     });
   }
@@ -523,3 +526,5 @@ function tenoxui(...customPropsArray: Property[]): void {
     });
   });
 }
+
+export { makeStyle, makeStyles, makeTenoxUI, use, tenoxui as default };
