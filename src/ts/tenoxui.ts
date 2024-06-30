@@ -1,5 +1,5 @@
 /*!
- * TenoxUI CSS v0.11.0-alpha.7
+ * TenoxUI CSS v0.11.0-alpha.8
  * Licensed under MIT (https://github.com/tenoxui/css/blob/main/LICENSE)
  */
 
@@ -264,7 +264,7 @@ class makeTenoxUI {
       if (propsName.startsWith("--")) {
         this.htmlElement.style.setProperty(propsName, styleInitValue);
       }
-      
+
       // default css property
       else {
         this.htmlElement.style.setProperty(this.camelToKebab(this.styleAttribute[type] as string), styleInitValue);
@@ -298,7 +298,7 @@ class makeTenoxUI {
   public applyStyles(className: string): void {
     // the regexp for matches all possible classname, with help of an AI 🤖
     const match = className.match(
-      /(?:([a-z-]+):)?(-?[a-zA-Z0-9_]+(?:-[a-zA-Z0-9_]+)*|\[--[a-zA-Z0-9_-]+\])-(-?(?:\d+(\.\d+)?)|(?:[a-zA-Z0-9_]+(?:-[a-zA-Z0-9_]+)*(?:-[a-zA-Z0-9_]+)*)|(?:#[0-9a-fA-F]+)|(?:\[[^\]]+\])|(?:\$[^\s]+))([a-zA-Z%]*)/
+      /(?:([a-zA-Z0-9-]+):)?(-?[a-zA-Z0-9_]+(?:-[a-zA-Z0-9_]+)*|\[--[a-zA-Z0-9_-]+\])-(-?(?:\d+(\.\d+)?)|(?:[a-zA-Z0-9_]+(?:-[a-zA-Z0-9_]+)*(?:-[a-zA-Z0-9_]+)*)|(?:#[0-9a-fA-F]+)|(?:\[[^\]]+\])|(?:\$[^\s]+))([a-zA-Z%]*)/
     );
 
     // matching all classnames
