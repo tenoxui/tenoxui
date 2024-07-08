@@ -1,333 +1,64 @@
-<!-- TenoxUI Page Tester: v0.6: Nested style -->
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#0d0d0d" />
-    <meta name="description" content="TenoxUI Lab" />
-    <title>TenoxUI Lab</title>
-    <link rel="stylesheet" href="src/css/tenoxui.css" />
-    <!-- Tenk7css by nousantx -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tenk7css" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Cabin:wght@400;500;600;700&family=Figtree:wght@400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
-
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
     <style>
-      :root {
-        font-family: "figtree", sans-serif;
-        --text-light: #fafafa;
-        --primary: #d2e603;
-        --background: #0d0d0d;
-        --nav-bg: rgba(13, 13, 13, 0.3);
-        --blurred: #0d0d0d70;
-        --para-color: #aaa;
-        --sb: space-between;
+      .parent {
+        --size: 3rem;
       }
-      /* a,
-      a:hover {
-        text-decoration-color: var(--primary);
-      } */
-
-      /* nav div a,
-      section a {
-        color: white;
-        text-decoration: underline var(--primary);
-        &:hover {
-          text-decoration: none;
-        }
-      } */
+      .parent:hover {
+        --size: 10rem;
+      }
     </style>
-    <!-- <script src="./test/plain-tui.test.js"></script> -->
-    <!-- <script src="./src/js/tenoxui.js"></script> -->
-  </head>
-  <body class="bg-[background] tc-white h-mn-100vh">
-    <!-- Navbar -->
-    <nav
-      class="position-fixed bg-[background] ph-10vw pv-1rem t-0 l-0 r-0 display-flex ai-center jc-[sb] z-999"
-    >
-      <header>
-        <a
-          target="_blank"
-          href="https://tenoxui.web.app/"
-          class="display-flex gap-8px flex-parent-center"
-        >
-          <!-- This is tenoxui logo, generated using background image -->
-          <div class="size-2rem tenoxui-logo fullsize"></div>
-          <!-- End Logo -->
-          <h1 class="fw-600 fs-1.2rem">
-            <span class="tc-white">TUI</span>
-            <span class="tc-#d2e603 fs-12px fw-500"
-              >v<span class="v"></span
-            ></span>
-          </h1>
-        </a>
-      </header>
-      <div class="display-flex flex-parent-center gap-1rem">
-        <a target="_blank" href="https://github.com/nousantx/tenoxui">
-          GitHub
-        </a>
-        <a target="_blank" href="https://jsdelivr.com/package/npm/tenoxui">
-          JSDelivr
-        </a>
-      </div>
-    </nav>
-    <!-- Main Content -->
-    <main class="ph-10vw pt-5rem">
-      <header class="head-title">
-        <a target="_blank" href="https://tenoxui.web.app/">
-          <h1 class="fw-600 tc-[para-color] grayscale-100% blur-3px">
-            <span class="tc-white">Tenox</span
-            ><span class="text-#d2e603">UI</span> CSS Framework
-          </h1>
-        </a>
-      </header>
-      <!-- hover tester -->
-      <div class="center gap-1rem">
-        <div class="hover-me box-100px center rounded cursor-pointer">
-          <h1 class="fs-1rem fw-500">Hover Me!</h1>
-        </div>
-
-        <div class="hover-me-2 position-relative center cursor-pointer">
-          <div class="box-100px bg-pink"></div>
-          <div class="box-100px bg-lightblue"></div>
-          <h1 class="position-absolute fs-1rem fw-500">Hover Me Too!</h1>
-        </div>
-      </div>
-
-      <!-- Remove `none` className to see nested class example -->
-      <div class="card none">
-        <h1 class="title">Nested CSS</h1>
-        <p class="desc">
-          This card is styled using new Nested Feature TenoxUI.
-        </p>
-      </div>
-      <div class="card none">
-        <h1 class="title">Nested CSS</h1>
-        <p class="desc">
-          This card is styled using new Nested Feature TenoxUI.
-        </p>
-      </div>
-      <!-- About Section -->
-      <section class="about">
-        <h2>About</h2>
-        <p class="w-mx-1000px tc-[para-color] lh-1.4 fw-500 ta-justify">
-          TenoxUI stands as a nimble Utility-First CSS framework meticulously
-          crafted to elevate web development by enhancing speed and efficiency.
-          It delivers a curated collection of customizable styles and embraces a
-          utility-first approach, simplifying and expediting the styling process
-          for developers.
-        </p>
-      </section>
-      <!-- Features Section -->
-      <section class="features">
-        <header>
-          <h2>Features</h2>
-        </header>
-        <ul>
-          <li>
-            <p class="tc-[para-color] ta-justify">
-              <span class="tc-white fw-600">Fast and Efficient:</span>
-              The majority of classes are managed through JavaScript, ensuring a
-              lightweight and fast user experience.
-            </p>
-          </li>
-          <li class="mt-1em">
-            <p class="tc-[para-color] ta-justify">
-              <span class="tc-white fw-600">No CSS:</span>
-              No more generated CSS files. Elevate your design journey as styles
-              are seamlessly applied directly to each element, unleashing
-              simplicity and efficiency.
-            </p>
-          </li>
-          <li class="mt-1em">
-            <p class="tc-[para-color] ta-justify">
-              <span class="tc-white fw-600">Utility-First Approach:</span>
-              Seamlessly apply pre-defined utility classes to elements by simply
-              invoking their associated classes, fostering a utility-first
-              approach to styling.
-            </p>
-          </li>
-          <li class="mt-1em">
-            <p class="tc-[para-color] ta-justify">
-              <span class="tc-white fw-600">Tailored to Your Taste:</span>
-              Easily customize your unique style with user-friendly
-              configuration options, providing a personalized and bespoke design
-              experience.
-            </p>
-          </li>
-        </ul>
-        <div class="container none">
-          <div class="wrapper">
-            <h1 class="title">Hello World</h1>
-          </div>
-        </div>
-      </section>
-      <!-- Docs Section -->
-      <section class="docs">
-        <header>
-          <h2>Documentation</h2>
-        </header>
-        <p class="tc-[para-color] ta-justify">
-          Documentation available on
-          <a target="_blank" href="https://tenoxui.web.app/">TenoxUI Docs</a>.
-          Or visit the repository on
-          <a target="_blank" href="https://github.com/nousantx/tenoxui"
-            >GitHub</a
-          >.
-        </p>
-      </section>
-    </main>
-    <!-- Footer -->
-    <footer
-      class="w-100% p-1rem ph-10vw display-flex flex-parent-center mt-2rem"
-    >
-      <p class="tc-[para-color] ta-center fs-12px">
-        Copyright &copy; 2024 nousantx.
-      </p>
-    </footer>
-    <!-- Script -->
-
-    <!-- <script type="module">
-      import tenoxui, {
-        defineProps,
-        makeStyles,
-      } from "./src/js/tenoxui.esm.js";
-      // Storing the styles
-
-
-      const styles = makeStyles({
-        primary: "bg-[primary]",
-        red: "bg-#f00",
-        white: "bg-#fff",
+    <script src="./src/js/tenoxui.js"></script>
+    <script src="./src/lib/property.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        use({
+          property: [
+            property,
+            {
+              tr: "transition",
+              bgr: {
+                property: ["background"],
+                value: "linear-gradient(to right, {value}, blue, {value})",
+              },
+              tres: ["background", "color"],
+              tx: { property: ["background", "--color"] },
+              "c-var": "--my-color",
+              "child-display": "--child",
+              size: "--size",
+            },
+          ],
+        });
+        console.log(allProps);
+        tenoxui();
       });
-
-      makeStyles({
-        ".card": {
-          // empty string will give style into parent element
-          "": `${styles["primary"]} p-2rem tc-black radius-top-1em`,
-          h1: "fs-3rem fw-700",
-          p: "fw-500 fs-14px",
-        },
-
-        ".card:nth-child(3)": `${styles["white"]} radius-top-0 radius-bottom-1em`,
-      });
-    </script> -->
-
-    <!-- <script> -->
-    <script type="module">
-      import tenoxui, {
-        defineProps,
-        makeStyle,
-        makeStyles,
-        applyHover,
-        applyHovers,
-        makeTenoxUI,
-      } from "./src/js/tenoxui.esm.js";
-
-      // Custom type and property
-      defineProps({
-        text: "color",
-        size: ["width", "height"],
-        td: "textDecoration",
-        "td-c": "textDecorationColor",
-      });
-
-      // custom styles
-      makeStyles({
-        a: "td-c-[primary]",
-        // re-usable class
-        ".fullsize": "bg-size-cover",
-        ".center": "display-flex flex-parent-center",
-        ".rounded": "br-0.25rem",
-        // make the `none` class always on the bottom to ensure this class will apply lastly
-        ".none, [hidden]": "display-none",
-      });
-
-      const styles = makeStyles({
-        primary: "bg-[primary]",
-        red: "bg-#f00",
-        white: "bg-#fff",
-      });
-
-      makeStyles({
-        ".card": {
-          // empty string will give style into parent element
-          "": `${styles["primary"]} p-2rem tc-black radius-top-1em`,
-          h1: "fs-3rem fw-700",
-          p: "fw-500 fs-14px",
-        },
-        ".card:nth-child(3)": `${styles["white"]} radius-top-0 radius-bottom-1em`,
-      });
-
-      // Manual Styler Example 1
-      // Tested js and esm
-      // const element = document.querySelector(".about");
-      // const styler = new makeTenoxUI(element);
-      // styler.applyStyle("mt", "2", "rem");
-
-      // Manual Styler Example 2
-      // new makeTenoxUI(document.querySelector(".features")).applyStyle(
-      //   "mt",
-      //   "2",
-      //   "rem"
-      // );
-
-      // defining selector
-      const elements = document.querySelectorAll("section");
-      // iterate elements
-      elements.forEach((element) => {
-        // makeTenoxUI instance
-        const styler = new makeTenoxUI(element);
-        styler.applyStyle("mt", "2", "rem");
-      });
-
-      // nested style test
-      makeStyles({
-        ".container": {
-          "": "bg-red p-1rem",
-          ".wrapper": {
-            "": "bg-blue",
-            ".title": "tc-pink",
-          },
-        },
-      });
-
-      // TenoxUI Logo
-      new makeTenoxUI(document.querySelector(".tenoxui-logo")).applyStyle(
-        // type for background-image proeprty
-        "bg-image",
-        // {value} : image url
-        "https://tenoxui.web.app/img/tenoxui.svg"
-      );
-
-      // new function (v0.7 update)
-      const all_trans = "tr-prop-all tr-time-1s tr-timing-ease";
-
-      // applyHover
-      applyHover("a", "td-c-[primary]", "", `${all_trans}`);
-
-      // applyHovers function
-      applyHovers({
-        "nav div a, section a": [
-          "tc-white td-underline td-c-[primary]",
-          "td-none td-c-[primary]",
-          `tc-white td-underline td-c-[primary]`,
-        ],
-        ".hover-me": [
-          "bg-red scale-0.97",
-          "bg-blue scale-1.03",
-          `${all_trans} bg-red`,
-        ],
-        ".hover-me-2": ["move-x--30px", "move-x-30px", `${all_trans}`],
-      });
-
-      tenoxui();
     </script>
-    <script defer src="./version.js"></script>
+  </head>
+  <body>
+    <div class="bgr-red hover:bgr-orange">hello</div>
+    <div class="tc-red">hello</div>
+
+    <h1 class="bg-red tc-yellow hover:bg-yellow hover:tc-red tr-0.4s p-1rem br-1rem">hello</h1>
+
+    <h1 class="tres-red hover:tc-blue p-10px br-8px tr-0.4s">hello</h1>
+
+    <h1 class="bgr-$my-color tc-$my-color tr-0.4s">Hwllo World</h1>
+
+    <div
+      class="size-2rem hover:size-10rem [--gr]-4rem tx-blue bg-yellow hover:bg-green tc-$tre-color position-relative box-200px tr-time-0.3s"
+    >
+      <div class="p-1rem tc-$left bg-blue b-$child position-absolute l-$size tr-0.3s">hello</div>
+    </div>
+
+    <div class="[--color]-red hover:[--color]-blue tr-0.3s p-1rem bg-$color">hello</div>
+
+    <div class="size-1rem hover:size-6rem box-100px bg-red position-relative">
+      <div class="b-$size position-absolute tr-time-0.5s tr-timing-[ease-in-out]">Hello</div>
+    </div>
   </body>
 </html>
