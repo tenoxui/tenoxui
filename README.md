@@ -121,6 +121,7 @@ You can see all types and properties on [GitHub Repository](https://github.com/t
 
 <h4>More</h4>
 
+- [tenoxui/css](https://github.com/tenoxui/core)
 - [tenoxui/css](https://github.com/tenoxui/css)
 - [tenoxui/website](https://github.com/tenoxui/website)
 - [tenoxui/property](https://github.com/tenoxui/property)
