@@ -9,12 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Custom value feature for type and property
+- Custom values
 - Define css value with `use` function
+- Custom class names from css property
 
 ### Fixed
 
 - CSS variable custom `values` not handled properly.
+- Hover for custom type and property
 
 ### Removed
 
