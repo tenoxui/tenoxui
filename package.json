@@ -1,6 +1,6 @@
 {
   "name": "tenoxui",
-  "version": "0.11.0",
+  "version": "0.11.1",
   "description": "A CSS Framework without CSS file :D",
   "main": "./dist/js/tenoxui.js",
   "style": "./dist/css/tenoxui.css",
