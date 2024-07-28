@@ -1,16 +1,7 @@
 /*!
- * tenoxui/css v0.11.1
+ * tenoxui/css v0.11.2
  * Licensed under MIT (https://github.com/tenoxui/css/blob/main/LICENSE)
  */
-
-interface TypeObjects {
-  [type: string]: string | TypeObjects;
-}
-type StylesRegistry = Record<string, string[]>;
-type Styles = TypeObjects | Record<string, TypeObjects[]>;
-type Selector = string[];
-type AllClasses = NodeListOf<HTMLElement>;
-
 
 // makeTenoxUI constructor bparam
 interface MakeTenoxUIParams {
@@ -209,8 +200,10 @@ class makeTenoxUI {
     unit: string,
     propKey?: string
   ): void {
+    // get property from the type
     const properties = this.styleAttribute[type];
 
+    // handle responsive prefix
     const handleResize = () => {
       const windowWidth = window.innerWidth;
       const matchPoint = this.breakpoints.find(bp => this.matchBreakpoint(bp, breakpointPrefix, windowWidth));
@@ -232,6 +225,8 @@ class makeTenoxUI {
       }
     };
 
+    // apply responsive style when the page loaded
+    handleResize();
     // apply when the screen size is changing
     window.addEventListener("resize", handleResize);
   }
@@ -351,6 +346,33 @@ class makeTenoxUI {
 
     // compute values
     let resolvedValue = this.valueHandler(type, value, unit || "");
+
+    // handle transition when the page fire up
+    if (properties === "transition" || properties === "transitionDuration") {
+      // set initial value
+      this.htmlElement.style.transition = "none";
+      this.htmlElement.style.transitionDuration = "0s";
+      // forcing reflow
+      void this.htmlElement.offsetHeight;
+
+      // instead of using setTimeout(0), use requestAnimationFrame to ensure the transition is applied as fast as possible
+      requestAnimationFrame(() => {
+        // remove the temporary transition styles
+        this.htmlElement.style.transition = "";
+        this.htmlElement.style.transitionDuration = "";
+        // re-force a reflow
+        void this.htmlElement.offsetHeight;
+
+        // re-apply the styles for transition property
+        if (properties === "transition") {
+          this.htmlElement.style.transition = resolvedValue;
+        } else {
+          this.htmlElement.style.transitionDuration = resolvedValue;
+        }
+      });
+
+      return;
+    }
 
     // other condition to apply the styles
     // css variable className
@@ -505,6 +527,14 @@ class makeTenoxUI {
   }
 }
 
+// tenoxui type
+interface TypeObjects {
+  [type: string]: string | TypeObjects;
+}
+type StylesRegistry = Record<string, string[]>;
+type Styles = TypeObjects | Record<string, TypeObjects[]>;
+type Selector = string[];
+type AllClasses = NodeListOf<HTMLElement>;
 
 // stored values
 let allProps: Property;
