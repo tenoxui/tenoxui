@@ -1,13 +1,9 @@
 /*!
- * tenoxui/css v0.11.2
- * Licensed under MIT (https://github.com/tenoxui/css/blob/main/LICENSE)
- */
-/*!
- * tenoxui/css v0.11.2
+ * tenoxui/css v0.11.3
  * Licensed under MIT (https://github.com/tenoxui/css/blob/main/LICENSE)
  */
 
-// makeTenoxUI constructor bparam
+// makeTenoxUI constructor param
 interface MakeTenoxUIParams {
   element: HTMLElement | NodeListOf<HTMLElement>;
   property: Property;
@@ -15,33 +11,36 @@ interface MakeTenoxUIParams {
   breakpoint?: Breakpoint[];
   classes?: Classes;
 }
+// CSS properties mapping
+type CSSProperty = keyof CSSStyleDeclaration;
+type CSSPropertyOrVariable = CSSProperty | `--${string}`;
+type GetCSSProperty = CSSPropertyOrVariable | CSSPropertyOrVariable[];
+
 // type and property
 type Property = {
-  [type: string]: string | string[] | { property?: string | string[]; value?: string };
+  [type: string]: GetCSSProperty | { property?: GetCSSProperty; value?: string };
 };
-// Breakpoint
+
+// breakpoint
 type Breakpoint = { name: string; min?: number; max?: number };
+
 // value registry
 type DefinedValue = { [type: string]: { [value: string]: string } | string };
-// defined class name with exact property
+
+// defined class name from exact CSS property
 type Classes = {
-  [property: string]: {
+  [property in CSSPropertyOrVariable]?: {
     [className: string]: string;
   };
 };
 
 // makeTenoxUI
 class makeTenoxUI {
-  // selectors
-  private readonly htmlElement: HTMLElement;
-  // types and properties
-  private readonly styleAttribute: Property;
-  // stored values
-  private readonly valueRegistry: DefinedValue;
-  // breakpoints
-  private readonly breakpoints: Breakpoint[];
-  // classes
-  private readonly classes: Classes;
+  /*
+   * WARNING: Entering this function
+   * is like stepping into a maze with no exit.
+   * Good luck :)
+   */
   // makeTenoxUI constructor
   constructor({ element, property = {}, values = {}, breakpoint = [], classes = {} }: MakeTenoxUIParams) {
     this.htmlElement = element instanceof HTMLElement ? element : element[0];
@@ -54,14 +53,23 @@ class makeTenoxUI {
     this.scanAndApplyStyles();
     this.setupClassObserver();
   }
-
+  // selectors
+  private readonly htmlElement: HTMLElement;
+  // types and properties
+  private readonly styleAttribute: Property;
+  // stored values
+  private readonly valueRegistry: DefinedValue;
+  // breakpoints
+  private readonly breakpoints: Breakpoint[];
+  // classes
+  private readonly classes: Classes;
   // get the classlist from the input selector, and apply the styles from element's classname
   private scanAndApplyStyles(): void {
+    // get class names of the element
     const classes = this.htmlElement.className.split(/\s+/);
     classes.forEach(className => {
-      if (className) {
-        this.applyStyles(className);
-      }
+      // apply styles (it's clear :/)
+      this.applyStyles(className);
     });
   }
   // style update/resetter
@@ -83,6 +91,7 @@ class makeTenoxUI {
     });
     observer.observe(this.htmlElement, {
       attributes: true,
+      // observe the className changes
       attributeFilter: ["class"]
     });
   }
@@ -90,11 +99,36 @@ class makeTenoxUI {
   private valueHandler(type: string, value: string, unit: string): string {
     // use `values` from `valueRegistry` if match
     const registryValue = this.valueRegistry[value] as string;
+    // get property and custom values (if available) from type
     const properties = this.styleAttribute[type];
-    // use `values` from registry or default value
+    // use `values` from valueRegistry or default value
     let resolvedValue = registryValue || value;
     // If no value is provided, and properties has a predefined value, use it
-    if (typeof properties === "object" && "value" in properties && !properties.value.includes("{value}")) {
+
+    /*
+     * fixed: Defining values in `valueRegistry` caused the `value` with same value with unit to error. Example :
+     *
+     * new makeTenoxUI({
+     *   element: ...,
+     *   property: { p: "padding" },
+     *   values: { 2: "10px" }
+     * })
+     *
+     * Output :
+     * `p-2` _ padding: 10px;
+     * `p-2rem` _ padding: 10pxrem;
+     *
+     * After Fixed :
+     * `p-2` _ padding: 10px;
+     * `p-2rem` _ padding: 2rem;
+     */
+    if ((value + unit).length !== value.toString().length && unit !== "") {
+      // use inputted `value`
+      resolvedValue = value;
+    }
+    // Handle custom values from `this.styleAttribute`
+    else if (typeof properties === "object" && "value" in properties && !properties.value.includes("{value}")) {
+      // get the value from `this.styleAttribute[type].value`
       return properties.value;
     }
     // css variable classname, started with `$` and the value after it will treated as css variable
@@ -325,74 +359,6 @@ class makeTenoxUI {
     this.htmlElement.addEventListener(revertEvent, revertStyle);
   }
 
-  // main styler, handling the type, property, and value
-  public addStyle(type: string, value?: string, unit?: string, classProp?: string): void {
-    // get css property from styleAttribute
-    const properties = this.styleAttribute[type];
-    // get class name from custom class
-    const definedClass = this.classes;
-
-    // use className from `definedClass` instead
-    if (definedClass[classProp]) {
-      // apply style using setCustomClass method
-      this.setCustomClass(classProp, value);
-      return;
-    }
-
-    // if no value is provided and properties is an object with a 'value' key, use that value
-    if (!value && this.isObjectWithValue(properties)) {
-      // use value from custom value
-      value = properties.value;
-    }
-
-    // don't process type with no value
-    if (!value) return;
-
-    // compute values
-    let resolvedValue = this.valueHandler(type, value, unit || "");
-
-    // handle transition when the page fire up
-    if (properties === "transition" || properties === "transitionDuration") {
-      // set initial value
-      this.htmlElement.style.transition = "none";
-      this.htmlElement.style.transitionDuration = "0s";
-      // forcing reflow
-      void this.htmlElement.offsetHeight;
-
-      // instead of using setTimeout(0), use requestAnimationFrame to ensure the transition is applied as fast as possible
-      requestAnimationFrame(() => {
-        // remove the temporary transition styles
-        this.htmlElement.style.transition = "";
-        this.htmlElement.style.transitionDuration = "";
-        // re-force a reflow
-        void this.htmlElement.offsetHeight;
-
-        // re-apply the styles for transition property
-        if (properties === "transition") {
-          this.htmlElement.style.transition = resolvedValue;
-        } else {
-          this.htmlElement.style.transitionDuration = resolvedValue;
-        }
-      });
-
-      return;
-    }
-
-    // other condition to apply the styles
-    // css variable className
-    if (type.startsWith("[--") && type.endsWith("]")) {
-      this.setCssVar(type.slice(1, -1), resolvedValue);
-    }
-    // custom value handler
-    else if (typeof properties === "object" && "property" in properties) {
-      this.setCustomValue(properties as { property: string | string[]; value?: string }, resolvedValue);
-    }
-    // regular/default value handler
-    else if (properties) {
-      this.setDefaultValue(properties as string | string[], resolvedValue);
-    }
-  }
-
   // function to match the classnames with the correct handler
   private parseClassName(
     className: string
@@ -425,7 +391,6 @@ class makeTenoxUI {
     // return an array of available properties of the className
     return matchingProperties;
   }
-
   // get value from custom value
   private isObjectWithValue(typeAttribute: any): typeAttribute is { property: string | string[]; value: string } {
     return (
@@ -439,8 +404,7 @@ class makeTenoxUI {
       "property" in typeAttribute
     );
   }
-
-  // default styles parser
+  // default style parser
   private parseDefaultStyle(prefix: string | undefined, type: string, value: string, unit: string | undefined): void {
     if (prefix) {
       // prexied className
@@ -465,7 +429,8 @@ class makeTenoxUI {
         // responsive handler
         this.handleResponsive(prefix, type, value, unit, propKey);
     }
-  } // handle custom value fron `this.styleAttribute` if the type was an object
+  }
+  // handle custom value fron `this.styleAttribute` if the type was an object
   private handlePredefinedStyle(type: string, prefix?: string): boolean {
     const properties = this.styleAttribute[type];
     if (properties && this.isObjectWithValue(properties)) {
@@ -502,6 +467,74 @@ class makeTenoxUI {
     }
     return false;
   }
+  // main styler, handling the type, property, and value
+  public addStyle(type: string, value?: string, unit?: string, classProp?: string): void {
+    // get css property from styleAttribute
+    const properties = this.styleAttribute[type];
+    // get class name from custom class
+    const definedClass = this.classes;
+
+    // use className from `definedClass` instead
+    if (definedClass[classProp]) {
+      // apply style using setCustomClass method
+      this.setCustomClass(classProp, value);
+      return;
+    }
+
+    // if no value is provided and properties is an object with a 'value' key, use that value
+    if (!value && this.isObjectWithValue(properties)) {
+      // use value from custom value
+      value = properties.value;
+    }
+
+    // don't process type with no value
+    if (!value) return;
+
+    // compute values
+    let resolvedValue = this.valueHandler(type, value, unit || "");
+
+    // handle transition when the page fire up
+    if (properties === "transition" || properties === "transitionDuration") {
+      // set initial value
+      this.htmlElement.style.transition = "none";
+      this.htmlElement.style.transitionDuration = "0s";
+      // forcing reflow
+      void this.htmlElement.offsetHeight;
+
+      // instead of using setTimeout(0), use requestAnimationFrame to ensure the transition is applied as fast as possible
+
+      requestAnimationFrame(() => {
+        // remove the temporary transition styles
+        this.htmlElement.style.transition = "";
+        this.htmlElement.style.transitionDuration = "";
+        // re-force a reflow
+        void this.htmlElement.offsetHeight;
+
+        // re-apply the styles for transition property
+        if (properties === "transition") {
+          this.htmlElement.style.transition = resolvedValue;
+        } else {
+          this.htmlElement.style.transitionDuration = resolvedValue;
+        }
+      });
+
+      return;
+    }
+
+    // other condition to apply the styles
+    // css variable className
+    if (type.startsWith("[--") && type.endsWith("]")) {
+      this.setCssVar(type.slice(1, -1), resolvedValue);
+    }
+    // custom value handler
+    else if (typeof properties === "object" && "property" in properties) {
+      this.setCustomValue(properties as { property: string | string[]; value?: string }, resolvedValue);
+    }
+    // regular/default value handler
+    else if (properties) {
+      this.setDefaultValue(properties as string | string[], resolvedValue);
+    }
+  }
   // compute styles for the className
   public applyStyles(className: string): void {
     // split className, get the prefix and the actual className
@@ -524,7 +557,6 @@ class makeTenoxUI {
     // use default styler if method above isn't used
     this.parseDefaultStyle(parsedPrefix, parsedType, value, unit);
   }
-  // just applyStyles, but with more confidential :)
   public applyMultiStyles(styles: string): void {
     // splitting the styles and apply each styles with applyStyles method
     styles.split(/\s+/).forEach(style => this.applyStyles(style));
@@ -579,7 +611,7 @@ function makeStyles(...stylesObjects: Styles[]): Styles {
   const applyStylesToElement = (element: HTMLElement, styles: string | Record<string, string>): void => {
     // styler helper
     const styler = new makeTenoxUI({
-      element: element,
+      element: element as HTMLElement,
       property: allProps,
       values: globalValues,
       classes: globalClass,
@@ -588,12 +620,11 @@ function makeStyles(...stylesObjects: Styles[]): Styles {
 
     // If the styles is a string, like: "p-20px m-1rem fs-2rem" / Stacked classes
     if (typeof styles === "string") {
-      // handle using `applyMultiStyles`
       styler.applyMultiStyles(styles);
     } else {
       // handle nested styles / if the value is a new object
-      Object.entries(styles).forEach(([prop, value]) => {
-        styler.addStyle(prop, value, "");
+      Object.entries(styles).forEach(style => {
+        console.log(style);
       });
     }
   };
@@ -678,7 +709,7 @@ function makeStyles(...stylesObjects: Styles[]): Styles {
 // [ Feature ] - Adding custom configuration
 function use(customConfig: {
   breakpoint?: Breakpoint[];
-  property?: Property[];
+  property?: Property;
   values?: DefinedValue;
   classes?: Classes;
 }) {
@@ -691,7 +722,7 @@ function use(customConfig: {
   if (customConfig.property) {
     allProps = {
       ...allProps,
-      ...Object.assign({}, ...customConfig.property)
+      ...customConfig.property
     };
   }
 
