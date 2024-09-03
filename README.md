@@ -1,17 +1,17 @@
 <p align="center">
-<a href="https://tenoxui.web.app/">
-<img src="https://tenoxui.web.app/img/tenoxui.svg" alt="TenoxUI Logo" width='300' height='300'
+  <a href="https://tenoxui.web.app/">
+    <img src="https://tenoxui.web.app/img/tenoxui.svg" alt="TenoxUI Logo" width='300' height='300'
  >
-</a>
+  </a>
 </p>
 <h1 align="center">TenoxUI v0.11.0</h1>
 <p align="center">
-A CSS Framework without css file :D
-<br>
-<a href="https://tenoxui.web.app/docs/start">Full Documentation</a>
+  Very lightweight and easy to configure, utility-first CSS framework.
+  <br>
+  <a href="https://tenoxui.web.app/docs/start">Documentation</a>
 </p>
 
-<h2>Installation</h2>
+## Installation
 
 Using npm:
 
@@ -25,9 +25,7 @@ Using CDN :
 <script src="https://cdn.jsdelivr.net/npm/tenoxui@latest/dist/js/tenoxui.min.js"></script>
 ```
 
-<h2>Setup Project</h2>
-
-Here is simple usage of tenoxui on your project.
+## Start a Project
 
 ### HTML :
 
@@ -35,7 +33,7 @@ Here is simple usage of tenoxui on your project.
 <!doctype html>
 <html>
   <head>
-    <title>Tester</title>
+    <title>TenoxUI</title>
     <script src="https://cdn.jsdelivr.net/npm/tenoxui"></script>
   </head>
   <body>
@@ -49,14 +47,6 @@ Here is simple usage of tenoxui on your project.
 
 ### React :
 
-First, you need to add tenoxui to your project :
-
-```sh
-npm i tenoxui --save-dev
-```
-
-Then, on your app.jsx file :
-
 ```jsx
 import { useLayoutEffect } from "react";
 import tenoxui from "tenoxui";
@@ -66,13 +56,14 @@ const App = () => {
     // add tenoxui
     tenoxui({ text: "color", fs: "fontSize" });
   }, []);
+
   return <h1 className="text-#ccf654 fs-4rem">Hello World!</h1>;
 };
 
 export default App;
 ```
 
-<h2>Types and Properties</h2>
+## Types and Properties
 
 TenoxUI also provide a library of defined types and properties that you can use without defining it one by one. You can add the `property` to your project using CDN or install it using npm :
 
@@ -91,7 +82,7 @@ import tenoxui from "tenoxui";
 import property from "@tenoxui/property";
 ```
 
-To use the `property` you can simply attach it inside tenoxui function as its parameter. Like this :
+### Usage example
 
 ```html
 <script>
@@ -111,6 +102,7 @@ const App = () => {
     // add tenoxui
     tenoxui(property); // use tenoxui property
   }, []);
+
   return <h1 className="tc-red">Hello World!</h1>;
 };
 
@@ -119,7 +111,7 @@ export default App;
 
 You can see all types and properties on [GitHub Repository](https://github.com/tenoxui/property) or [Here](https://tenoxui.github.io/property).
 
-<h4>More</h4>
+#### Other Packages
 
 - [tenoxui/core](https://github.com/tenoxui/core)
 - [tenoxui/css](https://github.com/tenoxui/css)
