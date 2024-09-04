@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/bin/node
 const { execSync } = require("child_process");
 const fs = require("fs");
 const path = require("path");
@@ -98,7 +98,7 @@ function getPackageManagerCommand(packageManager, workspace, scriptName) {
       return `npm run ${scriptName} --workspace=${workspace}`;
     case "yarn":
       return `yarn workspace ${workspace} run ${scriptName}`;
-    // not too recommend
+    // not too recommend, use pnpm-workspace instead 🗿
     case "pnpm":
       return `pnpm --filter ${workspace} run ${scriptName}`;
     default:
