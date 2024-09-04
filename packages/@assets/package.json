@@ -1,0 +1,20 @@
+{
+  "name": "@tenoxui/assets",
+  "version": "1.0.0-alpha.3",
+  "description": "Assets library tenoxui",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo 'hello!'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tenoxui/tenoxui.git"
+  },
+  "keywords": ["script", "javascript"],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tenoxui/tenoxui/issues"
+  },
+  "homepage": "https://github.com/tenoxui/tenoxui#readme"
+}

@@ -1,0 +1,45 @@
+/*!
+ * TenoxUI CSS v0.11.0
+ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+ul[class] {
+  list-style: none;
+}
+blockquote,
+q {
+  quotes: none;
+}
+blockquote:after,
+blockquote:before,
+q:after,
+q:before {
+  content: "";
+  content: none;
+}
+a {
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+a,
+button {
+  cursor: pointer;
+}
+button,
+input {
+  font-family: inherit;
+}
+:where([hidden]),
+.none {
+  display: none !important;
+}
+/* it's just "formality" css file :D Doesn't need to include this to your project :3 */
