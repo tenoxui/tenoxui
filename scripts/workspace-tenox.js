@@ -1,8 +1,9 @@
 #!/bin/node
-const { execSync } = require("child_process");
-const fs = require("fs");
-const path = require("path");
-const readline = require("readline");
+
+const { execSync } = require("node:child_process");
+const fs = require("node:fs");
+const path = require("node:path");
+const readline = require("node:readline");
 
 // default color
 const colors = {

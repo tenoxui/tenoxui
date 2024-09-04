@@ -7,9 +7,9 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "publish:tenoxui": "./script/workspace-tenox.js run tenoxui prepublish",
-    "wst:build": "mkdir script/.temp && uglifyjs ./script/workspace-tenox.js -c -m toplevel  -o ./script/.temp/wst.temp.js && bash ./script/wst-build.sh && rm -rf script/.temp",
-    "wst:start": "./script/workspace-tenox.js interactive"
+    "publish:tenoxui": "./scripts/workspace-tenox.js run tenoxui prepublish",
+    "wst:build": "mkdir ./scripts/.temp && uglifyjs ./scripts/workspace-tenox.js -c -m toplevel  -o ./scripts/.temp/wst.temp.js && bash ./scripts/wst-build.sh && rm -rf ./scripts/.temp",
+    "wst:start": "./scripts/workspace-tenox.js interactive"
   },
   "workspaces": [
     "packages/*"

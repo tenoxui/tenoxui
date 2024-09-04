@@ -36,12 +36,12 @@ set_install_dir
 # Ensure the installation directory exists
 mkdir -p "$INSTALL_DIR"
 
-# Path to the workspace-tenox.js file
+# Path to the wst file
 WORKSPACE_SCRIPT="$SCRIPT_DIR/$WST_SCRIPT"
 
-# Check if the workspace-tenox.js file exists
+# Check if the wst file exists
 if [ ! -f "$WORKSPACE_SCRIPT" ]; then
-    echo "Error: workspace-tenox.js not found in $SCRIPT_DIR"
+    echo "Error: wst file not found in $SCRIPT_DIR"
     exit 1
 fi
 
