@@ -9,7 +9,8 @@
   "scripts": {
     "publish:tenoxui": "./scripts/workspace-tenox.js run tenoxui prepublish",
     "wst:build": "mkdir ./scripts/.temp && uglifyjs ./scripts/workspace-tenox.js -c -m toplevel  -o ./scripts/.temp/wst.temp.js && bash ./scripts/wst-build.sh && rm -rf ./scripts/.temp",
-    "wst:start": "./scripts/workspace-tenox.js interactive"
+    "wst:start": "./scripts/workspace-tenox.js interactive",
+    "module:cleanup": "find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +"
   },
   "workspaces": [
     "packages/*"
