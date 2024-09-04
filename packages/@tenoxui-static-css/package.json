@@ -1,0 +1,23 @@
+{
+  "name": "@tenoxui/static-css",
+  "version": "1.0.0",
+  "main": "./src/js/index.js",
+  "scripts": {
+    "build": "uglifyjs ./src/js/index.js -c -m toplevel --mangle-props -o dist/index.min.js --source-map \"url='index.min.js.map'\" --comments \"/^!/\" --keep-fnames && cp ./src/js/index.js ./dist/index.js",
+    "test": "vitest"
+  },
+  "bin": {
+    "tui-css": "./src/js/index.js"
+  },
+  "keywords": [],
+  "author": "NOuSantx",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "chokidar": "^3.6.0",
+    "commander": "^12.1.0",
+    "glob": "^11.0.0",
+    "node-html-parser": "^6.1.13",
+    "vitest": "^1.0.0"
+  }
+}
