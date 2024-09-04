@@ -8,9 +8,13 @@
   "private": true,
   "scripts": {
     "publish:tenoxui": "./script/workspace-tenox.js run tenoxui prepublish",
+    "wst:build": "mkdir script/.temp && uglifyjs ./script/workspace-tenox.js -c -m toplevel  -o ./script/.temp/wst.temp.js && bash ./script/wst-build.sh && rm -rf script/.temp",
     "wst:start": "./script/workspace-tenox.js interactive"
   },
   "workspaces": [
     "packages/*"
-  ]
+  ],
+  "dependencies": {
+    "uglify-js": "^3.19.3"
+  }
 }
