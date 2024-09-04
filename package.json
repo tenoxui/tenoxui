@@ -7,7 +7,8 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "publish:tenoxui": "./script/index.js run tenoxui prepublish"
+    "publish:tenoxui": "./script/workspace-tenox.js run tenoxui prepublish",
+    "wst:start": "./script/workspace-tenox.js interactive"
   },
   "workspaces": [
     "packages/*"
