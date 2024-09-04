@@ -128,8 +128,9 @@ out
 .yarn/install-state.gz
 .pnp.*
 
-# bash
-*.sh
-*.zsh
+# dist
+**/dist
 
-dist
+# backup file
+**/*.bak
+**/*.bak.*

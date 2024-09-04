@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Working with hover | @tenoxui/core</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tenoxui/core@1.0.0/dist/js/tenoxui.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const element = document.querySelector(".style-this");
+
+        new makeTenoxUI({
+          element,
+          property: {
+            bg: "background",
+            text: "color",
+            p: "padding",
+            tr: "transition"
+          }
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <main>
+      <!-- yeah, added new mutation observer for class attribute -->
+      <div class="style-this p-1rem text-white bg-blue hover:bg-red tr-0.3s">Hello</div>
+    </main>
+  </body>
+</html>

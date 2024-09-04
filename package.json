@@ -2,16 +2,12 @@
   "name": "tenoxui-workspace",
   "version": "1.0.0",
   "description": "TenoxUI framework workspace.",
-  "main": "index.js",
   "repository": "https://github.com/tenoxui/tenoxui",
-  "author": "nousantx <nousantx@gmail.com>",
+  "author": "NOuSantx <nousantx@gmail.com>",
   "license": "MIT",
   "private": true,
   "scripts": {
-    "publish:tenoxui": "script/index.js run tenoxui prepublish",
-    "dev": "echo 'done!'"
+    "publish:tenoxui": "./script/index.js run tenoxui prepublish",
   },
-  "workspaces": [
-    "packages/*"
-  ]
+  "workspaces": ["packages/*"]
 }

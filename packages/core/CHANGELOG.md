@@ -1,30 +1,20 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
-
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-
-## [0.11.0] - [2024-7-16] 
-
-### Changed
-
-- Use `tenoxui/core@1.0.3`. See [more](https://github.com/tenoxui/core/blob/main/CHANGELOG.md#fixed)
-
-
-## [0.11.0] - [2024-7-16]
-
-### Added
-
-- Custom values
-- Define css value with `use` function
-- Custom class names from css property
+## [Unreleased]
 
 ### Fixed
 
-- CSS variable custom `values` not handled properly.
-- Hover for custom type and property
+- Unstyled to styled state transition when the class has transition property.
+- Responsive style back to style without breakpoint when the page reloaded on the different screen.
 
-### Removed
+## [1.0.2] - [2024-7-27]
 
-- Remove default breakpoint on main code
+### Fixed
+
+- Can't use same className on custom classes.
+
+## [1.0.1] - [2024-7-22]
+
+### Fixed
+
+- Not removing remain `console.log` on main code
