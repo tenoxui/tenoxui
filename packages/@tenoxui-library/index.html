@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>@tenoxui/property | nousantx</title>
+    <meta name="description" content="@tenoxui/property simple usage for development." />
+    <script src="https://cdn.jsdelivr.net/npm/tenoxui@0.11"></script>
+    <script src="./src/umd/full.js"></script>
+  </head>
+  <body class="m-0 family-[sans-serif] bg-#14161b c-#e4e5e9">
+    <main class="w-mx-1440px mx-auto p-2rem">
+      <header>
+        <h1>It's tenoxui/property</h1>
+        <p class="mt-8px">Hello, ignore this message, and use tenoxui instead :D</p>
+
+        <div class="mt-2rem">
+          <p>Install :</p>
+
+          <code
+            class="d-block bg-[rgba(49,54,65,0.30)] p-8px br-2px transform rotate-45deg scale-[1.3] filter blur-1.7px hue-rotate-90deg"
+          >
+            npm i tenoxui @tenoxui/property --save-dev
+          </code>
+          <div class="pn-absolute box-100px bg-#f002 backdrop back-blur-3.7px"></div>
+          <code class="d-block mt-1.5rem bg-[rgba(49,54,65,0.30)] p-8px br-2px lh-1.5">
+            import tenoxui, { use } from "tenoxui";
+
+            <br />
+
+            import property from "@tenoxui/property";
+          </code>
+
+          <p class="my-1.5rem pl-1rem">or cdn :</p>
+
+          <code class="d-block bg-[rgba(49,54,65,0.30)] p-8px br-2px lh-1.5">
+            &lt;script src="https://cdn.jsdelivr.net/npm/tenoxui"&gt;&lt;/script&gt;
+
+            <br />
+
+            &lt;script src="https://cdn.jsdelivr.net/npm/@tenoxui/property"&gt;&lt;/script&gt;
+          </code>
+
+          <p class="mt-1.5rem">Usage example :</p>
+
+          <code class="d-block bg-[rgba(49,54,65,0.30)] p-8px br-2px lh-1.5">
+            &lt;script&gt;
+
+            <br />
+
+            &nbsp;&nbsp;use({ property: [property] }); // use property
+
+            <br />
+
+            &nbsp;&nbsp;tenoxui(); // init tenoxui
+
+            <br />
+
+            &lt;/script&gt;
+          </code>
+        </div>
+      </header>
+    </main>
+    <script>
+      console.log(fullProps);
+      tenoxui(fullProps);
+    </script>
+  </body>
+</html>
