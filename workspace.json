@@ -1,0 +1,4 @@
+{
+  "packageManager": "yarn",
+  "workspacesDir": "packages"
+}

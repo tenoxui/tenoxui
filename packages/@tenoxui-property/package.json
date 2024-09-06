@@ -1,0 +1,38 @@
+{
+  "name": "@tenoxui/property",
+  "version": "1.0.0-alpha.0",
+  "description": "Default types and properties for TenoxUI CSS framework.",
+  "author": "NOuSantx <nousantx@gmail.com>",
+  "license": "MIT",
+  "homepage": "https://tenoxui.web.app",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tenoxui/tenoxui.git",
+    "directory": "packages/@tenoxui-property"
+  },
+  "bugs": {
+    "url": "https://github.com/tenoxui/css/issues"
+  },
+  "keywords": [
+    "css",
+    "css-framework",
+    "css-in-js"
+  ],
+  "main": "dist/umd/default.js",
+  "module": "dist/esm/default.js",
+  "files": [
+    "dist/*",
+    "README.md",
+    "LICENSE",
+    "package.json"
+  ],
+  "scripts": {
+    "build:umd": "terser -o dist/umd/default.min.js src/umd/default.js -m && terser -o dist/umd/full.min.js src/umd/full.js -m && cp src/umd/* dist/umd/",
+    "build:esm": "terser -o dist/esm/default.min.js src/esm/default.js -m && terser -o dist/esm/full.min.js src/esm/full.js -m && cp src/esm/* dist/esm/",
+    "build": "mkdir -p dist dist/umd dist/esm && npm run build:umd && npm run build:esm",
+    "prepublish": "cp ../../LICENSE . && npm pack --dry-run && rm LICENSE"
+  },
+  "devDependencies": {
+    "terser": "^5.31.6"
+  }
+}

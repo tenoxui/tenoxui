@@ -1,0 +1,32 @@
+{
+  "name": "@tenoxui/static-css",
+  "version": "0.0.0-alpha.0",
+  "description": "Generate static CSS file with tenoxui rules and class names.",
+  "author": "NOuSantx <nousantx@gmail.com>",
+  "license": "MIT",
+  "keywords": ["cli", "css-framework", "tenoxui"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tenoxui/tenoxui.git",
+    "directory": "packages/@tenoxui-static-css"
+  },
+  "bugs": {
+    "url": "https://github.com/tenoxui/tenoxui/issues"
+  },  "files": ["dist/*", "package.json", "README.md", "LICENSE"],
+  "bin": {
+    "tui-css": "./dist/index.min.js"
+  },
+  "scripts": {
+    "build": "mkdir -p dist && uglifyjs ./src/js/index.js -c -o dist/index.min.js --source-map \"url='index.min.js.map'\" --comments \"/^!/\" && cp src/js/index.js dist",
+    "test": "vitest"
+  },
+  "devDependencies": {
+    "vitest": "^2.0.5"
+  },
+  "dependencies": {
+    "chokidar": "^3.6.0",
+    "commander": "^12.1.0",
+    "glob": "^11.0.0",
+    "node-html-parser": "^6.1.13"
+  }
+}
