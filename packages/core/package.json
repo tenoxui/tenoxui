@@ -2,6 +2,7 @@
   "name": "@tenoxui/core",
   "version": "1.0.4",
   "description": "Core component of tenoxui.",
+  "type": "module",
   "main": "./dist/js/tenoxui.js",
   "style": "./dist/css/tenoxui.css",
   "module": "./dist/js/tenoxui.esm.js",
@@ -9,9 +10,11 @@
   "files": ["dist/*", "package.json", "README.md", "LICENSE"],
   "scripts": {
     "dev": "tsc --watch",
-    "build-js": "uglifyjs ./src/js/tenoxui.js -c -m toplevel  -o dist/js/tenoxui.min.js --source-map \"url='tenoxui.min.js.map'\" --comments \"/^!/\" --keep-fnames && uglifyjs src/js/tenoxui.js --beautify -o dist/js/tenoxui.js --source-map \"url='tenoxui.js.map'\" --comments \"/^!/\" && cp src/js/tenoxui.d.ts src/js/tenoxui.js.map dist/js && prettier -w dist/js/tenoxui.js dist/js/tenoxui.d.ts",
-    "build-esm": "uglifyjs ./src/js/tenoxui.esm.js -c -m toplevel -o dist/js/tenoxui.esm.min.js --source-map \"url='tenoxui.esm.min.js.map'\" --comments \"/^!/\" --keep-fnames && uglifyjs ./src/js/tenoxui.esm.js --beautify -o dist/js/tenoxui.esm.js --source-map \"url='tenoxui.esm.js.map'\" --comments \"/^!/\" && cp src/js/tenoxui.esm.d.ts  src/js/tenoxui.esm.js.map dist/js && prettier -w dist/js/tenoxui.esm.js dist/js/tenoxui.esm.d.ts",
-    "build": "tsc && npm run build-js && npm run build-esm && echo '\\033[92m Have Fun :D'"
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "build:js": "uglifyjs ./src/js/tenoxui.js -c -m toplevel  -o dist/js/tenoxui.min.js --source-map \"url='tenoxui.min.js.map'\" --comments \"/^!/\" --keep-fnames && uglifyjs src/js/tenoxui.js --beautify -o dist/js/tenoxui.js --source-map \"url='tenoxui.js.map'\" --comments \"/^!/\" && cp src/js/tenoxui.d.ts src/js/tenoxui.js.map dist/js && prettier -w dist/js/tenoxui.js dist/js/tenoxui.d.ts",
+    "build:esm": "uglifyjs ./src/js/tenoxui.esm.js -c -m toplevel -o dist/js/tenoxui.esm.min.js --source-map \"url='tenoxui.esm.min.js.map'\" --comments \"/^!/\" --keep-fnames && uglifyjs ./src/js/tenoxui.esm.js --beautify -o dist/js/tenoxui.esm.js --source-map \"url='tenoxui.esm.js.map'\" --comments \"/^!/\" && cp src/js/tenoxui.esm.d.ts  src/js/tenoxui.esm.js.map dist/js && prettier -w dist/js/tenoxui.esm.js dist/js/tenoxui.esm.d.ts",
+    "build": "tsc && npm run build:js && npm run build:esm && echo '\\033[92m Have Fun :D'"
   },
   "repository": {
     "type": "git",
@@ -25,9 +28,13 @@
   },
   "homepage": "https://tenoxui.web.app",
   "devDependencies": {
+    "@tenoxui/library": "1.0.0-alpha.0",
     "clean-css-cli": "^5.6.3",
+    "jsdom": "^25.0.0",
     "prettier": "^3.2.5",
     "typescript": "^5.4.5",
-    "uglify-js": "^3.18.0"
-  }
+    "uglify-js": "^3.18.0",
+    "vitest": "^2.0.5"
+  },
+  "dependencies": {}
 }
