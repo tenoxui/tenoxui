@@ -3,8 +3,8 @@
   "version": "1.0.0-alpha.0",
   "description": "Default types and properties for tenoxui css framework.",
   "types": "types.d.ts",
-  "main": "dist/umd/property.umd.js",
-  "module": "dist/esm/property.esm.js",
+  "main": "src/umd/property.umd.js",
+  "module": "src/esm/default.js",
   "scripts": {
     "build": "terser -o dist/umd/property.umd.min.js dist/umd/property.umd.js -m --source-map url='property.umd.min.js.map' && terser -o dist/esm/property.esm.min.js dist/esm/property.esm.js -m --source-map url='property.esm.min.js.map'"
   },
