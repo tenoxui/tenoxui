@@ -39,7 +39,7 @@ class makeTenoxUI {
   /*
    * WARNING: Entering this function
    * is like stepping into a maze with no exit.
-   * Good luck 🗿
+   * Good luck :)
    */
   // makeTenoxUI constructor
   constructor({ element, property = {}, values = {}, breakpoint = [], classes = {} }: MakeTenoxUIParams) {
@@ -97,6 +97,7 @@ class makeTenoxUI {
   }
   // logic for handling all defined value from the classnames
   private valueHandler(type: string, value: string, unit: string): string {
+    
     // use `values` from `valueRegistry` if match
     const registryValue = this.valueRegistry[value] as string;
     // get property and custom values (if available) from type
@@ -557,6 +558,9 @@ class makeTenoxUI {
     // use default styler if method above isn't used
     this.parseDefaultStyle(parsedPrefix, parsedType, value, unit);
   }
+  public applyMultiStyles(styles: string): void {
+    // splitting the styles and apply each styles with applyStyles method
+    styles.split(/\s+/).forEach(style => this.applyStyles(style));
+  }
 }
-
 export { makeTenoxUI };

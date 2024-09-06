@@ -64,4 +64,5 @@ declare class makeTenoxUI {
     private handleCustomClass;
     addStyle(type: string, value?: string, unit?: string, classProp?: string): void;
     applyStyles(className: string): void;
+    applyMultiStyles(styles: string): void;
 }

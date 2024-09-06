@@ -1,14 +1,9 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { setupJSDOM, createStyler } from "./init";
 
-describe("makeTenoxUI", () => {
+describe("types & propeties", () => {
   let element: HTMLElement;
   let useStyles: (config?: any) => ReturnType<typeof createStyler>;
-
-  // create simple types and properties
-  const testProps = {
-    p: "padding"
-  };
 
   beforeEach(() => {
     setupJSDOM();
@@ -25,9 +20,8 @@ describe("makeTenoxUI", () => {
   });
 
   it("should apply single style into element correctly", () => {
-    // creating styler
     const styler = useStyles({
-      props: { p: "padding" }
+      property: { p: "padding" }
     });
 
     // apply the style into element
@@ -37,9 +31,8 @@ describe("makeTenoxUI", () => {
   });
 
   it("should apply multiple styles into element correctly", () => {
-    // creating styler
     const styler = useStyles({
-      props: { p: "padding", bg: "background" }
+      property: { p: "padding", bg: "background" }
     });
 
     // apply the style into element
@@ -51,9 +44,8 @@ describe("makeTenoxUI", () => {
   });
 
   it("should apply multi styles with applyMultiStyles method", () => {
-    // creating styler
     const styler = useStyles({
-      props: { p: "padding", bg: "background", text: "color" }
+      property: { p: "padding", bg: "background", text: "color" }
     });
 
     // apply the style into element
@@ -62,5 +54,31 @@ describe("makeTenoxUI", () => {
     expect(element.style.padding).toBe("2.5rem");
     expect(element.style.background).toBe("black");
     expect(element.style.color).toBe("rgb(204, 246, 84)");
+  });
+
+  it("should add value into css variable", () => {
+    const styler = useStyles({
+      property: { psize: "--padding-size", "my-color": "--my-color" }
+    });
+
+    styler.applyMultiStyles("psize-2.5rem my-color-blue");
+
+    expect(element.style.getPropertyValue("--padding-size")).toBe("2.5rem");
+    expect(element.style.getPropertyValue("--my-color")).toBe("blue");
+  });
+
+  it("should have correctly use custom value property", () => {
+    const styler = useStyles({
+      property: {
+        p: {
+          property: "padding",
+          value: "1rem {value} 2rem {value}"
+        }
+      }
+    });
+
+    styler.applyMultiStyles("p-10px");
+
+    expect(element.style.padding).toBe("1rem 10px 2rem 10px");
   });
 });

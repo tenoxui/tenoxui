@@ -490,5 +490,9 @@ class makeTenoxUI {
         // use default styler if method above isn't used
         this.parseDefaultStyle(parsedPrefix, parsedType, value, unit);
     }
+    applyMultiStyles(styles) {
+        // splitting the styles and apply each styles with applyStyles method
+        styles.split(/\s+/).forEach(style => this.applyStyles(style));
+    }
 }
 //# sourceMappingURL=tenoxui.js.map

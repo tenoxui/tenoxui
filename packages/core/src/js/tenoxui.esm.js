@@ -7,7 +7,7 @@ class makeTenoxUI {
     /*
      * WARNING: Entering this function
      * is like stepping into a maze with no exit.
-     * Good luck 🗿
+     * Good luck :)
      */
     // makeTenoxUI constructor
     constructor({ element, property = {}, values = {}, breakpoint = [], classes = {} }) {
@@ -489,6 +489,10 @@ class makeTenoxUI {
         const [parsedPrefix, parsedType, value, unit] = parts;
         // use default styler if method above isn't used
         this.parseDefaultStyle(parsedPrefix, parsedType, value, unit);
+    }
+    applyMultiStyles(styles) {
+        // splitting the styles and apply each styles with applyStyles method
+        styles.split(/\s+/).forEach(style => this.applyStyles(style));
     }
 }
 export { makeTenoxUI };
