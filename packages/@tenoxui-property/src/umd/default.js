@@ -1,4 +1,4 @@
-export const defaultProps = {
+const defaultProps = {
   // padding
   p: "padding",
   pt: "paddingTop",
@@ -99,5 +99,5 @@ export const defaultProps = {
   shadow: "boxShadow",
   // custom property
   box: ["width", "height"],
-  "fx-parent": ["justifyContent", "alignItems"]
+  "fx-parent": ["justifyContent", "alignItems"],
 };

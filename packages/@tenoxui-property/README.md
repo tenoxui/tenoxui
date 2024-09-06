@@ -26,7 +26,7 @@ const App = () => {
   useLayoutEffect(() => {
     // add tenoxui
     tenoxui({
-      tc: "color"
+      tc: "color",
     }); // defining types and properties one by one as you desire
   }, []);
   return <h1 className="tc-red">Hello World!</h1>;
