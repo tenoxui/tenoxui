@@ -1,5 +1,5 @@
 /*!
- * tenoxui/core v1.0.4
+ * tenoxui/core v1.0.5
  * Licensed under MIT (https://github.com/tenoxui/css/blob/main/LICENSE)
  */
 
@@ -41,6 +41,16 @@ class makeTenoxUI {
    * is like stepping into a maze with no exit.
    * Good luck :)
    */
+  // selectors
+  private readonly htmlElement: HTMLElement;
+  // types and properties
+  private readonly styleAttribute: Property;
+  // stored values
+  private readonly valueRegistry: DefinedValue;
+  // breakpoints
+  private readonly breakpoints: Breakpoint[];
+  // classes
+  private readonly classes: Classes;
   // makeTenoxUI constructor
   constructor({ element, property = {}, values = {}, breakpoint = [], classes = {} }: MakeTenoxUIParams) {
     this.htmlElement = element instanceof HTMLElement ? element : element[0];
@@ -53,16 +63,7 @@ class makeTenoxUI {
     this.scanAndApplyStyles();
     this.setupClassObserver();
   }
-  // selectors
-  private readonly htmlElement: HTMLElement;
-  // types and properties
-  private readonly styleAttribute: Property;
-  // stored values
-  private readonly valueRegistry: DefinedValue;
-  // breakpoints
-  private readonly breakpoints: Breakpoint[];
-  // classes
-  private readonly classes: Classes;
+
   // get the classlist from the input selector, and apply the styles from element's classname
   private scanAndApplyStyles(): void {
     // get class names of the element
@@ -557,6 +558,7 @@ class makeTenoxUI {
     // use default styler if method above isn't used
     this.parseDefaultStyle(parsedPrefix, parsedType, value, unit);
   }
+  // just pretend to be applyStyles
   public applyMultiStyles(styles: string): void {
     // splitting the styles and apply each styles with applyStyles method
     styles.split(/\s+/).forEach(style => this.applyStyles(style));

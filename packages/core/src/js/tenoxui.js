@@ -1,14 +1,9 @@
 /*!
- * tenoxui/core v1.0.4
+ * tenoxui/core v1.0.5
  * Licensed under MIT (https://github.com/tenoxui/css/blob/main/LICENSE)
  */
 // makeTenoxUI
 class makeTenoxUI {
-    /*
-     * WARNING: Entering this function
-     * is like stepping into a maze with no exit.
-     * Good luck :)
-     */
     // makeTenoxUI constructor
     constructor({ element, property = {}, values = {}, breakpoint = [], classes = {} }) {
         this.htmlElement = element instanceof HTMLElement ? element : element[0];
@@ -490,6 +485,7 @@ class makeTenoxUI {
         // use default styler if method above isn't used
         this.parseDefaultStyle(parsedPrefix, parsedType, value, unit);
     }
+    // just pretend to be applyStyles
     applyMultiStyles(styles) {
         // splitting the styles and apply each styles with applyStyles method
         styles.split(/\s+/).forEach(style => this.applyStyles(style));
