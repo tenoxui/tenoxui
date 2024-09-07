@@ -1,5 +1,5 @@
 /*!
- * tenoxui/core v1.0.4
+ * tenoxui/core v1.0.5
  * Licensed under MIT (https://github.com/tenoxui/css/blob/main/LICENSE)
  */
 interface MakeTenoxUIParams {
@@ -34,12 +34,12 @@ type Classes = {
     };
 };
 declare class makeTenoxUI {
-    constructor({ element, property, values, breakpoint, classes }: MakeTenoxUIParams);
     private readonly htmlElement;
     private readonly styleAttribute;
     private readonly valueRegistry;
     private readonly breakpoints;
     private readonly classes;
+    constructor({ element, property, values, breakpoint, classes }: MakeTenoxUIParams);
     private scanAndApplyStyles;
     private updateStyles;
     private setupClassObserver;
