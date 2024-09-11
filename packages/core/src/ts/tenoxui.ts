@@ -68,14 +68,14 @@ class makeTenoxUI {
 
   private scanAndApplyStyles(): void {
     const classes = this.htmlElement.className.split(/\s+/);
-    classes.forEach(className => {
+    classes.forEach((className) => {
       this.applyStyles(className);
     });
   }
 
   private setupClassObserver(): void {
-    const observer = new MutationObserver(mutations => {
-      mutations.forEach(mutation => {
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
         if (mutation.type === "attributes" && mutation.attributeName === "class") {
           this.updateStyles();
         }
@@ -83,7 +83,7 @@ class makeTenoxUI {
     });
     observer.observe(this.htmlElement, {
       attributes: true,
-      attributeFilter: ["class"]
+      attributeFilter: ["class"],
     });
   }
 
@@ -177,7 +177,7 @@ class makeTenoxUI {
         (this.htmlElement.style as any)[property] = finalValue;
       }
     } else if (Array.isArray(property)) {
-      property.forEach(prop => {
+      property.forEach((prop) => {
         if (typeof prop === "string" && prop.startsWith("--")) {
           this.setCssVar(prop, finalValue);
         } else {
@@ -191,7 +191,7 @@ class makeTenoxUI {
   private setDefaultValue(properties: string | string[], resolvedValue: string): void {
     const arrayOfProperty = Array.isArray(properties) ? properties : [properties];
 
-    arrayOfProperty.forEach(property => {
+    arrayOfProperty.forEach((property) => {
       if (typeof property === "string" && property.startsWith("--")) {
         this.setCssVar(property, resolvedValue);
       } else {
@@ -236,7 +236,7 @@ class makeTenoxUI {
 
   // Utility to convert `camelCase` into `kebab-case`
   private camelToKebab(str: string): string {
-    return str.replace(/[A-Z]/g, match => `-${match.toLowerCase()}`);
+    return str.replace(/[A-Z]/g, (match) => `-${match.toLowerCase()}`);
     //? The pseudo handler not working properly whenever the property defined with `camelCase`, e.g. 'backgroundColor' need to be 'background-color'.
   }
 
@@ -253,7 +253,7 @@ class makeTenoxUI {
     // Handle screen resizing
     const handleResize = () => {
       const windowWidth = window.innerWidth;
-      const matchPoint = this.breakpoints.find(bp => this.matchBreakpoint(bp, breakpointPrefix, windowWidth));
+      const matchPoint = this.breakpoints.find((bp) => this.matchBreakpoint(bp, breakpointPrefix, windowWidth));
 
       // If className's prefix match current screen size
       if (matchPoint) {
@@ -310,7 +310,7 @@ class makeTenoxUI {
   // Utility to revert style to its initial value
   private revertStyle(propsName: string | string[], styleInitValue: { [key: string]: string } | string): void {
     if (Array.isArray(propsName)) {
-      propsName.forEach(propName => {
+      propsName.forEach((propName) => {
         this.setCssVar(propName, (styleInitValue as { [key: string]: string })[propName]);
       });
     } else {
@@ -449,7 +449,7 @@ class makeTenoxUI {
     const propKeys = this.getParentClass(type);
 
     if (propKeys.length > 0) {
-      propKeys.forEach(propKey => {
+      propKeys.forEach((propKey) => {
         const value = this.classes[propKey][type];
         if (prefix) {
           this.applyPrefixedStyle(prefix, type, value, "", propKey);
@@ -588,7 +588,6 @@ class makeTenoxUI {
   }
 
   public applyMultiStyles(styles: string): void {
-    styles.split(/\s+/).forEach(style => this.applyStyles(style));
+    styles.split(/\s+/).forEach((style) => this.applyStyles(style));
   }
 }
-
