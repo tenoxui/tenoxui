@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { setupJSDOM, createStyler } from "./init";
+import { setupJSDOM, createStyler } from "./utils/init";
 
 describe("types & propeties", () => {
   let element: HTMLElement;
@@ -21,18 +21,19 @@ describe("types & propeties", () => {
 
   it("should apply single style into element correctly", () => {
     const styler = useStyles({
-      property: { p: "padding" }
+      property: { p: "padding" },
     });
 
     // apply the style into element
-    styler.applyStyles("p-1rem");
-
+    // styler.applyStyles("p-1rem");
+    styler.htmlElement.classList.add("p-1rem");
+    styler.useDOM();
     expect(element.style.padding).toBe("1rem");
   });
 
   it("should apply multiple styles into element correctly", () => {
     const styler = useStyles({
-      property: { p: "padding", bg: "background" }
+      property: { p: "padding", bg: "background" },
     });
 
     // apply the style into element
@@ -45,7 +46,7 @@ describe("types & propeties", () => {
 
   it("should apply multi styles with applyMultiStyles method", () => {
     const styler = useStyles({
-      property: { p: "padding", bg: "background", text: "color" }
+      property: { p: "padding", bg: "background", text: "color" },
     });
 
     // apply the style into element
@@ -58,7 +59,7 @@ describe("types & propeties", () => {
 
   it("should add value into css variable", () => {
     const styler = useStyles({
-      property: { psize: "--padding-size", "my-color": "--my-color" }
+      property: { psize: "--padding-size", "my-color": "--my-color" },
     });
 
     styler.applyMultiStyles("psize-2.5rem my-color-blue");
@@ -72,9 +73,9 @@ describe("types & propeties", () => {
       property: {
         p: {
           property: "padding",
-          value: "1rem {value} 2rem {value}"
-        }
-      }
+          value: "1rem {value} 2rem {value}",
+        },
+      },
     });
 
     styler.applyMultiStyles("p-10px");
