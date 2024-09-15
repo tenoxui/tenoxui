@@ -36,8 +36,8 @@ describe("makeTenoxUI", () => {
   it("should convert values correctly", () => {
     const styler = useStyles({
       values: {
-        primary: "#ccf654"
-      }
+        primary: "#ccf654",
+      },
     });
 
     expect(styler.valueHandler("", styler.parseClassName("bg-primary")[2], "")).toBe("#ccf654");
@@ -60,8 +60,8 @@ describe("makeTenoxUI", () => {
         text: "color",
         bg: "background",
         box: ["width", "height"],
-        br: ["webkitBorderRadius", "mozBorderRadius", "borderRadius"]
-      }
+        br: ["webkitBorderRadius", "mozBorderRadius", "borderRadius"],
+      },
     });
 
     styler.applyMultiStyles("text-red bg-black box-100px br-8px");
@@ -80,13 +80,13 @@ describe("makeTenoxUI", () => {
         color45: ["--color4", "--color5"],
         color6: {
           property: "--color6",
-          value: "linear-gradient(to right, {value}, blue, var(--tx))"
+          value: "linear-gradient(to right, {value}, blue, var(--tx))",
         },
         color7: {
           property: "--color7",
-          value: "var(--tx)"
-        }
-      }
+          value: "var(--tx)",
+        },
+      },
     });
 
     styler.applyStyles("[--color1]-red");
@@ -121,13 +121,13 @@ describe("makeTenoxUI", () => {
       property: {
         bg: "background",
         bgC: "backgroundColor",
-        px: ["paddingLeft", "paddingRight"]
+        px: ["paddingLeft", "paddingRight"],
       },
       classes: {
         backgroundColor: {
-          tx: "red"
-        }
-      }
+          tx: "red",
+        },
+      },
     });
 
     expect(styler.getPropName("[--tx]")).toBe("--tx");
@@ -143,23 +143,19 @@ describe("makeTenoxUI", () => {
       property: {
         bg: "background",
         bgC: "backgroundColor",
-        px: ["paddingLeft", "paddingRight"]
+        px: ["paddingLeft", "paddingRight"],
       },
       classes: {
         backgroundColor: {
-          tx: "red"
-        }
-      }
+          tx: "red",
+        },
+      },
     });
 
     styler.applyMultiStyles("bg-red px-1rem");
-    
-    
-    
+
     console.log(styler.getInitialValue(["paddingLeft", "paddingRight"]));
-    
-    
-    
+
     expect(styler.getInitialValue("background")).toBe("red");
     expect(styler.getInitialValue(["paddingLeft", "paddingRight"])).toBe("1rem");
   });
