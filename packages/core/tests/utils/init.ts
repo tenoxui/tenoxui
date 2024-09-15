@@ -1,10 +1,13 @@
 import { JSDOM } from "jsdom";
 import { makeTenoxUI } from "../../src/ts/tenoxui.esm";
 
+// use build ready module
+// import { makeTenoxUI } from "../../dist/js/tenoxui.esm";
+
 export function setupJSDOM() {
   const dom = new JSDOM("<!DOCTYPE html><html><body></body></html>", {
     url: "http://localhost",
-    pretendToBeVisual: true
+    pretendToBeVisual: true,
   });
   global.window = dom.window;
   global.document = dom.window.document;
@@ -12,12 +15,6 @@ export function setupJSDOM() {
   global.MutationObserver = dom.window.MutationObserver;
 }
 
-export function createStyler(element, { property = {}, values = {}, classes = {}, breakpoints=[] } = {}) {
-  return new makeTenoxUI({
-    element,
-    property,
-    values,
-    breakpoints,
-    classes
-  });
+export function createStyler(element, { property = {}, values = {}, classes = {}, breakpoints = [] } = {}) {
+  return new makeTenoxUI({ element, property, values, breakpoints, classes });
 }

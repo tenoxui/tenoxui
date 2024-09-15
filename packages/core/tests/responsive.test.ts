@@ -46,21 +46,18 @@ describe("Responsive feature/apply styles on different screen", () => {
     expect(styler.matchBreakpoint(bp, bp.name, 800)).toBe(false);
   });
 
-
-
-
   /**
    * Apply different styles in different screen size
    */
   it("should apply styles in different screen size", () => {
     const styler = useStyles({
       property: {
-        p: "padding"
+        p: "padding",
       },
       breakpoints: [
         { name: "sm", min: 0, max: 639 },
-        { name: "md", min: 640, max: 767 }
-      ]
+        { name: "md", min: 640, max: 767 },
+      ],
     });
 
     styler.applyMultiStyles("p-0.5rem sm:p-1rem md:p-2rem lg:p-3rem");

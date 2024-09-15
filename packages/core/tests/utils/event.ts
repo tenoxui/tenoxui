@@ -11,7 +11,7 @@ export function unHover(elem: HTMLElement) {
 }
 
 export function screenSize(width: number, height: number) {
-    Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: width });
-    Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: height });
-    window.dispatchEvent(new Event('resize'));
-  }
+  Object.defineProperty(window, "innerWidth", { writable: true, configurable: true, value: width });
+  Object.defineProperty(window, "innerHeight", { writable: true, configurable: true, value: height });
+  window.dispatchEvent(new Event("resize"));
+}

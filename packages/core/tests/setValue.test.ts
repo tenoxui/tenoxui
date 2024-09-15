@@ -26,8 +26,8 @@ describe("Value handler and applying styles", () => {
       // create custom alias for values
       values: {
         primary: "#ccf654",
-        size: "calc(10rem - 20px)"
-      }
+        size: "calc(10rem - 20px)",
+      },
     });
 
     expect(styler.valueHandler("", styler.parseClassName("bg-primary")[2], "")).toBe("#ccf654");
@@ -90,8 +90,6 @@ describe("Value handler and applying styles", () => {
     expect(element.style.padding).toBe("10px 2rem 20px 2rem");
   });
 
-
-
   /**
    * TenoxUI main styler test.
    * Using `addStyle` method, testing its behavior for applying the styles -
@@ -107,21 +105,21 @@ describe("Value handler and applying styles", () => {
         td: "textDecorationColor",
         myImg: {
           property: "backgroundImage",
-          value: "url(/{value}.png)"
-        }
+          value: "url(/{value}.png)",
+        },
       },
       values: {
-        prim: "rgb(100, 97, 223)"
+        prim: "rgb(100, 97, 223)",
       },
       classes: {
         backgroundColor: {
           primary: "#ccf654",
-          tx: "blue"
+          tx: "blue",
         },
         borderColor: {
-          "bdr-blue": "blue"
-        }
-      }
+          "bdr-blue": "blue",
+        },
+      },
     });
 
     // create regular styles
@@ -139,7 +137,7 @@ describe("Value handler and applying styles", () => {
 
     // create custom classes
     // get value from custom classes
-    const customValue = classname => styler.classes[styler.getParentClass(className)][className];
+    const customValue = (classname) => styler.classes[styler.getParentClass(className)][className];
 
     let className = "primary";
     styler.addStyle(className, customValue(className), "", "backgroundColor");
@@ -159,8 +157,8 @@ describe("Value handler and applying styles", () => {
     const styler = useStyles({
       property: {
         bg: "background",
-        text: "color"
-      }
+        text: "color",
+      },
     });
 
     styler.applyMultiStyles("bg-red text-black hover:bg-blue hover:text-white");
@@ -182,19 +180,19 @@ describe("Value handler and applying styles", () => {
         transformClasses({
           btn: {
             color: "red",
-            backgroundColor: "blue"
-          }
+            backgroundColor: "blue",
+          },
         }),
         {
           backgroundColor: {
             tenox: "red",
-            primary: "#ccf654"
+            primary: "#ccf654",
           },
           borderRadius: {
-            "radius-md": "6px"
-          }
+            "radius-md": "6px",
+          },
         }
-      )
+      ),
     });
 
     styler.applyMultiStyles("btn radius-md");
@@ -209,13 +207,13 @@ describe("Value handler and applying styles", () => {
       classes: transformClasses({
         btn: {
           color: "red",
-          backgroundColor: "blue"
+          backgroundColor: "blue",
         },
         "btn-primary": {
           color: "purple",
-          backgroundColor: "white"
-        }
-      })
+          backgroundColor: "white",
+        },
+      }),
     });
 
     styler.applyMultiStyles("btn hover:btn-primary");

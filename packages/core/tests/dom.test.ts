@@ -23,8 +23,8 @@ describe("all methods", () => {
       property: {
         p: "padding",
         bg: "background",
-        text: "color"
-      }
+        text: "color",
+      },
     });
     // styler.applyStyles("bg-red");
     // adding styles directly to the element's classList
@@ -60,7 +60,7 @@ describe("all methods", () => {
       element.classList.add("bg-red", "text-white");
     }, 0);
 
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
 
     expect(element.style.background).toBe("red");
     expect(element.style.color).toBe("white");
@@ -70,10 +70,9 @@ describe("all methods", () => {
       element.classList.add("p-1rem");
     }, 0);
 
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
 
     expect(element.style.background).toBe("");
     expect(element.style.padding).toBe("1rem");
   });
-
 });
