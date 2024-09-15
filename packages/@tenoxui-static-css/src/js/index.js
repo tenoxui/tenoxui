@@ -1,27 +1,19 @@
-#!/usr/bin/env node
+import fs from "node:fs";
+import path from "node:path";
+import { glob } from "glob";
+import { parse } from "node-html-parser";
 
-const fs = require("fs");
-const path = require("path");
-const { parse } = require("node-html-parser");
-const glob = require("glob");
-const { Command } = require("commander");
-const chokidar = require("chokidar");
-
-class GenerateCSS {
+export class GenerateCSS {
   constructor(config) {
-    // validate the config at initialization
     this.validateConfig(config);
-    // get config
     this.config = config;
-    // stored css
     this.generatedCSS = new Set();
+    this.responsiveCSS = new Map();
   }
 
-  // utility to validate the config
   validateConfig(config) {
-    // required fields, config must have certain fields
     const requiredFields = ["input", "output", "property"];
-    requiredFields.forEach(field => {
+    requiredFields.forEach((field) => {
       if (!config[field]) {
         console.error(`Missing required configuration field: ${field}`);
       }
@@ -29,53 +21,218 @@ class GenerateCSS {
 
     config.values = config.values || {};
     config.classes = config.classes || {};
+    config.breakpoints = config.breakpoints || [];
   }
 
-  // utility to convert kebab-type to camelCase
   static toCamelCase(str) {
-    return str.replace(/-([a-z])/g, g => g[1].toUpperCase());
+    return str.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
   }
 
-  // utility to convert camelCase to kebab-type
   static toKebabCase(str) {
-    return str.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`);
+    return str.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
   }
 
-  // add \ (backslash) for some cases
   static escapeCSSSelector(str) {
     return str.replace(/([ #.;?%&,@+*~'"!^$[\]()=>|])/g, "\\$1");
   }
 
-  // utilityto break the className into few parts
   matchClass(className) {
     const regex =
       /(?:([a-zA-Z0-9-]+):)?(-?[a-zA-Z0-9_]+(?:-[a-zA-Z0-9_]+)*|\[--[a-zA-Z0-9_-]+\])-(-?(?:\d+(\.\d+)?)|(?:[a-zA-Z0-9_]+(?:-[a-zA-Z0-9_]+)*(?:-[a-zA-Z0-9_]+)*)|(?:#[0-9a-fA-F]+)|(?:\[[^\]]+\])|(?:\$[^\s]+))([a-zA-Z%]*)/;
     return className.match(regex)?.slice(1) || null;
   }
 
-  // html parser
+  extractClassNames(root) {
+    return Array.from(
+      new Set(root.querySelectorAll("*").flatMap((element) => element.getAttribute("class")?.split(/\s+/) || []))
+    );
+  }
+  extractClassNamesFromMethodCall(content) {
+    const classNames = new Set();
+    const parts = content.split(",").map((part) => part.trim());
+    parts.forEach((part) => {
+      if (part.startsWith("'") || part.startsWith('"')) {
+        const className = part.slice(1, -1);
+        if (className) classNames.add(className);
+      }
+    });
+    return Array.from(classNames);
+  }
+  extractClassNamesFromAssignment(content) {
+    const classNames = new Set();
+    const match = content.match(/["'`]([^"'`]+)["'`]/);
+    if (match) {
+      match[1].split(/\s+/).forEach((className) => classNames.add(className));
+    }
+    return Array.from(classNames);
+  }
+  extractClassNamesFromTemplateLiteral(content) {
+    const classNames = new Set();
+    const parts = content.split(/\${[^}]+}/);
+    parts.forEach((part) => {
+      part.split(/\s+/).forEach((className) => {
+        if (className) classNames.add(className);
+      });
+    });
+    return Array.from(classNames);
+  }
+  extractClassNamesFromConditional(content) {
+    const classNames = new Set();
+    const parts = content.split(/[?:]/);
+    parts.forEach((part) => {
+      const match = part.match(/["'`]([^"'`]+)["'`]/);
+      if (match) {
+        match[1].split(/\s+/).forEach((className) => classNames.add(className));
+      }
+    });
+    return Array.from(classNames);
+  }
+
   parseHTML(content) {
     const root = parse(content);
     return this.extractClassNames(root);
   }
 
-  // react js parser
   parseJSX(content) {
-    const classNameRegex = /className\s*=\s*{?["'`]([^"'`]+)["'`]?}?/g;
+    return this.parseJSLike(content);
+  }
+
+  parseTSX(content) {
+    return this.parseJSLike(content);
+  }
+
+  parseJS(content) {
+    return this.parseJSLike(content);
+  }
+
+  parseTS(content) {
+    return this.parseJSLike(content);
+  }
+
+  parseJSLike(content) {
     const classNames = new Set();
+
+    // Regular className
+    const classNameRegex = /className\s*=\s*{?["'`]([^"'`]+)["'`]?}?/g;
     let match;
     while ((match = classNameRegex.exec(content)) !== null) {
-      match[1].split(/\s+/).forEach(className => classNames.add(className));
+      match[1].split(/\s+/).forEach((className) => classNames.add(className));
     }
+
+    // Template literals
+    const templateLiteralRegex = /className\s*=\s*{?`([^`]+)`}?/g;
+    while ((match = templateLiteralRegex.exec(content)) !== null) {
+      this.extractClassNamesFromTemplateLiteral(match[1]).forEach((className) => classNames.add(className));
+    }
+
+    // Conditional class names
+    const conditionalRegex = /className\s*=\s*{([^}]+)}/g;
+    while ((match = conditionalRegex.exec(content)) !== null) {
+      this.extractClassNamesFromConditional(match[1]).forEach((className) => classNames.add(className));
+    }
+
+    // classList.add
+    const classListAddRegex = /classList\.add\(([^)]+)\)/g;
+    while ((match = classListAddRegex.exec(content)) !== null) {
+      this.extractClassNamesFromMethodCall(match[1]).forEach((className) => classNames.add(className));
+    }
+
+    // classList.toggle
+    const classListToggleRegex = /classList\.toggle\(([^)]+)\)/g;
+    while ((match = classListToggleRegex.exec(content)) !== null) {
+      this.extractClassNamesFromMethodCall(match[1]).forEach((className) => classNames.add(className));
+    }
+
+    // setAttribute for class
+    const setAttributeRegex = /setAttribute\(\s*["']class["']\s*,\s*([^)]+)\)/g;
+    while ((match = setAttributeRegex.exec(content)) !== null) {
+      this.extractClassNamesFromMethodCall(match[1]).forEach((className) => classNames.add(className));
+    }
+
+    // className assignment
+    const classNameAssignmentRegex = /\.className\s*=\s*([^;]+)/g;
+    while ((match = classNameAssignmentRegex.exec(content)) !== null) {
+      this.extractClassNamesFromAssignment(match[1]).forEach((className) => classNames.add(className));
+    }
+
     return Array.from(classNames);
   }
 
-  // mdx parser
-  parseMDX(content) {
-    return [...new Set([...this.parseHTML(content), ...this.parseJSX(content)])];
+  parseVue(content) {
+    const classNames = new Set();
+
+    // Template section
+    const templateMatch = content.match(/<template>([\s\S]*?)<\/template>/);
+    if (templateMatch) {
+      const templateContent = templateMatch[1];
+      this.parseHTML(templateContent).forEach((className) => classNames.add(className));
+    }
+
+    // Script section
+    const scriptMatch = content.match(/<script>([\s\S]*?)<\/script>/);
+    if (scriptMatch) {
+      const scriptContent = scriptMatch[1];
+      this.parseJSLike(scriptContent).forEach((className) => classNames.add(className));
+    }
+
+    return Array.from(classNames);
   }
 
-  // file parser
+  parseSvelte(content) {
+    const classNames = new Set();
+
+    // Regular class attributes
+    const classRegex = /class\s*=\s*["'`]([^"'`]+)["'`]/g;
+    let match;
+    while ((match = classRegex.exec(content)) !== null) {
+      match[1].split(/\s+/).forEach((className) => classNames.add(className));
+    }
+
+    // class: directives
+    const classDirectiveRegex = /class:(\S+)\s*=\s*{[^}]+}/g;
+    while ((match = classDirectiveRegex.exec(content)) !== null) {
+      classNames.add(match[1]);
+    }
+
+    // JavaScript-like class handling in script tags
+    const scriptMatch = content.match(/<script>([\s\S]*?)<\/script>/);
+    if (scriptMatch) {
+      const scriptContent = scriptMatch[1];
+      this.parseJSLike(scriptContent).forEach((className) => classNames.add(className));
+    }
+
+    return Array.from(classNames);
+  }
+
+  parseAstro(content) {
+    const classNames = new Set();
+    const classRegex = /class\s*=\s*["'`]([^"'`]+)["'`]/g;
+    let match;
+
+    while ((match = classRegex.exec(content)) !== null) {
+      match[1].split(/\s+/).forEach((className) => classNames.add(className));
+    }
+
+    // Astro's class:list directive
+    const classListRegex = /class:list\s*=\s*{([^}]+)}/g;
+    while ((match = classListRegex.exec(content)) !== null) {
+      this.extractClassNamesFromConditional(match[1]).forEach((className) => classNames.add(className));
+    }
+
+    // JavaScript-like class handling in script tags
+    const scriptMatch = content.match(/<script>([\s\S]*?)<\/script>/);
+    if (scriptMatch) {
+      const scriptContent = scriptMatch[1];
+      this.parseJSLike(scriptContent).forEach((className) => classNames.add(className));
+    }
+
+    return Array.from(classNames);
+  }
+
+  parseMDX(content) {
+    return [...new Set([...this.parseHTML(content), ...this.parseJSLike(content)])];
+  }
+
   parseFile(filePath) {
     try {
       const content = fs.readFileSync(filePath, "utf-8");
@@ -83,8 +240,13 @@ class GenerateCSS {
       const parsers = {
         ".html": this.parseHTML,
         ".jsx": this.parseJSX,
-        ".tsx": this.parseJSX,
-        ".mdx": this.parseMDX
+        ".tsx": this.parseTSX,
+        ".js": this.parseJS,
+        ".ts": this.parseTS,
+        ".vue": this.parseVue,
+        ".svelte": this.parseSvelte,
+        ".astro": this.parseAstro,
+        ".mdx": this.parseMDX,
       };
       const parser = parsers[extension];
 
@@ -100,88 +262,47 @@ class GenerateCSS {
     }
   }
 
-  // classNames extractor
-  extractClassNames(root) {
-    return Array.from(
-      new Set(root.querySelectorAll("*").flatMap(element => element.getAttribute("class")?.split(/\s+/) || []))
-    );
+  isBreakpoint(prefix) {
+    return this.config.breakpoints.some((bp) => bp.name === prefix);
   }
 
-  // parsimg the className
-  parseClass(className) {
-    const [prefix, type] = className.split(":");
-    const getType = type || prefix;
-    const getPrefix = type ? prefix : undefined;
+  generateMediaQuery(breakpoint) {
+    const bp = this.config.breakpoints.find((b) => b.name === breakpoint);
 
-    const customCSS = this.processCustomClass(getPrefix, getType);
-    if (customCSS) {
-      this.generatedCSS.add(customCSS);
-      return customCSS;
-    }
+    if (!bp) return "";
 
-    const matcher = this.matchClass(className);
-    if (!matcher) return null;
+    let query = "@media screen and";
 
-    const [parsedPrefix, parsedType, parsedValue, , unit] = matcher;
-    const properties = this.config.property[parsedType];
-    const finalValue = this.processFinalValue(parsedValue, unit);
+    if (bp.min !== undefined) query += ` (min-width: ${bp.min}px)`;
+    if (bp.min !== undefined && bp.max !== undefined) query += " and";
+    if (bp.max !== undefined) query += ` (max-width: ${bp.max}px)`;
 
-    const cssRule = this.generateCSSRuleFromProperties(
-      parsedType,
-      parsedValue + unit,
-      properties,
-      finalValue,
-      parsedPrefix
-    );
-    if (cssRule) {
-      this.generatedCSS.add(cssRule);
-    }
-    return cssRule;
+    return query;
   }
 
-  // tenoxui value matcher
-  processFinalValue(value, unit) {
-    const customValue = this.config.values[value];
-    if (customValue) return customValue;
-    if (value.startsWith("$")) {
-      return `var(--${value.slice(1)})`;
-    }
-    if (value.startsWith("[") && value.endsWith("]")) {
-      const solidValue = value.slice(1, -1).replace(/\\_/g, " ");
-      return solidValue.startsWith("--") ? `var(${solidValue})` : solidValue;
-    }
-    return value + (unit || "");
-  }
-
-  // rules output
   generateCSSRule(selector, property, value, prefix) {
     const rule = value ? `${property}: ${value}` : property;
     const escapedSelector = GenerateCSS.escapeCSSSelector(selector);
-    return prefix ? `.${prefix}\\:${escapedSelector}:${prefix} { ${rule}; }` : `.${escapedSelector} { ${rule}; }`;
+
+    if (prefix) {
+      if (this.isBreakpoint(prefix)) {
+        // For breakpoint prefixes, don't add the prefix at the end
+        return `.${prefix}\\:${escapedSelector} { ${rule}; }`;
+      } else {
+        // For other prefixes (like hover, focus), keep the original behavior
+        return `.${prefix}\\:${escapedSelector}:${prefix} { ${rule}; }`;
+      }
+    } else {
+      return `.${escapedSelector} { ${rule}; }`;
+    }
   }
 
-  // rules generator logic
   generateCSSRuleFromProperties(type, value, properties, finalValue, prefix) {
     if (Array.isArray(properties)) {
-      const rules = properties.map(prop => `${GenerateCSS.toKebabCase(prop)}: ${finalValue}`).join("; ");
+      const rules = properties.map((prop) => `${GenerateCSS.toKebabCase(prop)}: ${finalValue}`).join("; ");
       return this.generateCSSRule(`${type}-${value}`, rules, null, prefix);
     }
-    if (typeof properties === "object" && properties !== null) {
-      if (properties.property && properties.value) {
-        const propValue = properties.value.replace(/{value}/g, finalValue);
-        if (Array.isArray(properties.property)) {
-          const rules = properties.property.map(prop => `${GenerateCSS.toKebabCase(prop)}: ${propValue}`).join("; ");
-          return this.generateCSSRule(`${type}-${value}`, rules, null, prefix);
-        }
-        return this.generateCSSRule(
-          `${type}-${value}`,
-          GenerateCSS.toKebabCase(properties.property),
-          propValue,
-          prefix
-        );
-      }
-      return this.generateCSSRule(`${type}-${value}`, properties, finalValue, prefix);
-    }
+
     if (type.startsWith("[--") && type.endsWith("]")) {
       const variable = type.slice(1, -1).replace(/\\_/g, " ");
       return this.generateCSSRule(`[${variable}]-${value}`, variable, finalValue, prefix);
@@ -192,7 +313,24 @@ class GenerateCSS {
     return null;
   }
 
-  // tenoxui.classes handler
+  processCustomValue(type, prefix) {
+    const properties = this.config.property[type];
+
+    if (typeof properties === "object" && properties !== null) {
+      if (properties.property && properties.value) {
+        const propValue = properties.value;
+
+        if (Array.isArray(properties.property)) {
+          const rules = properties.property.map((prop) => `${GenerateCSS.toKebabCase(prop)}: ${propValue}`).join("; ");
+
+          return this.generateCSSRule(`${type}`, rules, null, prefix);
+        }
+        return this.generateCSSRule(`${type}`, GenerateCSS.toKebabCase(properties.property), properties.value, prefix);
+      }
+      return this.generateCSSRule(`${type}`, properties, properties.value, prefix);
+    }
+  }
+
   processCustomClass(prefix, className) {
     const properties = Object.entries(this.config.classes)
       .filter(([, classObj]) => classObj.hasOwnProperty(className))
@@ -211,20 +349,90 @@ class GenerateCSS {
     return null;
   }
 
-  // create rules
-  create(classNames) {
-    (Array.isArray(classNames) ? classNames : classNames.split(/\s+/)).forEach(className => this.parseClass(className));
-    return Array.from(this.generatedCSS).join("\n");
+  processFinalValue(value, unit) {
+    const customValue = this.config.values[value];
+    if (customValue) return customValue;
+    if (value.startsWith("$")) {
+      return `var(--${value.slice(1)})`;
+    }
+    if (value.startsWith("[") && value.endsWith("]")) {
+      const solidValue = value.slice(1, -1).replace(/\\_/g, " ");
+      return solidValue.startsWith("--") ? `var(${solidValue})` : solidValue;
+    }
+    return value + (unit || "");
   }
 
-  // create and scan from files
+  addCSSRule(rule, prefix) {
+    if (this.isBreakpoint(prefix)) {
+      if (!this.responsiveCSS.has(prefix)) {
+        this.responsiveCSS.set(prefix, new Set());
+      }
+      this.responsiveCSS.get(prefix).add(rule);
+    } else {
+      this.generatedCSS.add(rule);
+    }
+  }
+
+  parseClass(className) {
+    const [prefix, type] = className.split(":");
+    const getType = type || prefix;
+    const getPrefix = type ? prefix : undefined;
+
+    const customValueProperty = this.processCustomValue(getType, getPrefix);
+
+    if (customValueProperty) {
+      this.addCSSRule(customValueProperty, getPrefix);
+      return customValueProperty;
+    }
+
+    const customCSSClass = this.processCustomClass(getPrefix, getType);
+
+    if (customCSSClass) {
+      this.addCSSRule(customCSSClass, getPrefix);
+      return customCSSClass;
+    }
+
+    const matcher = this.matchClass(className);
+    if (!matcher) return null;
+
+    const [parsedPrefix, parsedType, parsedValue, , unit] = matcher;
+    const properties = this.config.property[parsedType];
+    const finalValue = this.processFinalValue(parsedValue, unit);
+    const cssRule = this.generateCSSRuleFromProperties(
+      parsedType,
+      parsedValue + unit,
+      properties,
+      finalValue,
+      parsedPrefix
+    );
+    if (cssRule) {
+      this.addCSSRule(cssRule, parsedPrefix);
+    }
+    return cssRule;
+  }
+
+  create(classNames) {
+    (Array.isArray(classNames) ? classNames : classNames.split(/\s+/)).forEach((className) =>
+      this.parseClass(className)
+    );
+
+    let cssContent = Array.from(this.generatedCSS).join("\n");
+
+    this.responsiveCSS.forEach((rules, breakpoint) => {
+      const mediaQuery = this.generateMediaQuery(breakpoint);
+      cssContent += `\n${mediaQuery} {\n  ${Array.from(rules).join("\n  ")}\n}`;
+    });
+
+    return cssContent;
+  }
+
   generateFromFiles() {
     const classNames = new Set();
 
     if (this.config.input) {
-      this.config.input.forEach(pattern => {
-        glob.sync(pattern).forEach(file => {
-          this.parseFile(file).forEach(className => classNames.add(className));
+      this.config.input.forEach((pattern) => {
+        glob.sync(pattern).forEach((file) => {
+          this.parseFile(file).forEach((className) => classNames.add(className));
         });
       });
 
@@ -239,55 +447,3 @@ class GenerateCSS {
     }
   }
 }
-
-function main() {
-  const program = new Command();
-
-  program
-    .version("1.0.0")
-    .description("Generate CSS from class names in your project files.")
-    .option("-w, --watch", "Watch mode to regenerate CSS on file changes")
-    .option("-c, --config <path>", "Path to the configuration file", "tenoxui.config.js")
-    .parse(process.argv);
-
-  const options = program.opts();
-  const configPath = path.resolve(process.cwd(), options.config);
-
-  if (!fs.existsSync(configPath)) {
-    console.error("No configuration file found!");
-    process.exit(1);
-  }
-
-  let config = require(configPath);
-  let generator = new GenerateCSS(config);
-
-  // Measure and display compilation time
-  const generateWithTiming = () => {
-    console.time("CSS generated in");
-    generator.generateFromFiles();
-    console.timeEnd("CSS generated in");
-  };
-
-  // Initial generation
-  generateWithTiming();
-
-  if (options.watch) {
-    const watcher = chokidar.watch([...config.input, configPath], { ignoreInitial: true });
-
-    watcher.on("all", (event, filePath) => {
-      if (filePath === configPath) {
-        console.log(`Config file changed, reloading...`);
-        delete require.cache[require.resolve(configPath)];
-        config = require(configPath);
-        generator = new GenerateCSS(config);
-      }
-      generateWithTiming();
-    });
-  }
-}
-
-if (require.main === module) {
-  main();
-}
-
-module.exports = GenerateCSS;

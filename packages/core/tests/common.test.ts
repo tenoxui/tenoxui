@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { setupJSDOM, createStyler } from "./init";
+import { setupJSDOM, createStyler } from "./utils/init";
 
 describe("makeTenoxUI", () => {
   let element: HTMLElement;
@@ -73,8 +73,6 @@ describe("makeTenoxUI", () => {
     expect(element.style).toHaveProperty("borderRadius", "8px");
   });
 
-
-
   it("should have correct value for css variable", () => {
     const styler = useStyles({
       property: {
@@ -105,5 +103,64 @@ describe("makeTenoxUI", () => {
     expect(element.style.getPropertyValue("--color5")).toBe("green");
     expect(element.style.getPropertyValue("--color6")).toBe("linear-gradient(to right, red, blue, var(--tx))");
     expect(element.style.getPropertyValue("--color7")).toBe("var(--tx)");
+  });
+
+  it("should convert `camelType` into `kebab-type`", () => {
+    const styler = useStyles();
+
+    expect(styler.camelToKebab("itsTenox")).toBe("its-tenox");
+    // camelToKebab method is used to convert camelCase css property -
+    // into kebab-type css property
+    expect(styler.camelToKebab("backgroundColor")).toBe("background-color");
+    expect(styler.camelToKebab("borderRadius")).toBe("border-radius");
+    expect(styler.camelToKebab("color")).toBe("color");
+  });
+
+  it("should return correct css properties or variables", () => {
+    const styler = useStyles({
+      property: {
+        bg: "background",
+        bgC: "backgroundColor",
+        px: ["paddingLeft", "paddingRight"]
+      },
+      classes: {
+        backgroundColor: {
+          tx: "red"
+        }
+      }
+    });
+
+    expect(styler.getPropName("[--tx]")).toBe("--tx");
+    expect(styler.getPropName("bg")).toBe("background");
+    expect(styler.getPropName("bgC")).toBe("background-color");
+    expect(styler.getPropName("px")).toStrictEqual(["padding-left", "padding-right"]);
+    // custom css property
+    expect(styler.getPropName("", "backgroundColor")).toBe("background-color");
+  });
+
+  it("should get initial value of the element", () => {
+    const styler = useStyles({
+      property: {
+        bg: "background",
+        bgC: "backgroundColor",
+        px: ["paddingLeft", "paddingRight"]
+      },
+      classes: {
+        backgroundColor: {
+          tx: "red"
+        }
+      }
+    });
+
+    styler.applyMultiStyles("bg-red px-1rem");
+    
+    
+    
+    console.log(styler.getInitialValue(["paddingLeft", "paddingRight"]));
+    
+    
+    
+    expect(styler.getInitialValue("background")).toBe("red");
+    expect(styler.getInitialValue(["paddingLeft", "paddingRight"])).toBe("1rem");
   });
 });

@@ -1,7 +1,5 @@
 import { JSDOM } from "jsdom";
-import { makeTenoxUI } from "./src/ts/tenoxui.esm";
-
-
+import { makeTenoxUI } from "../../src/ts/tenoxui.esm";
 
 export function setupJSDOM() {
   const dom = new JSDOM("<!DOCTYPE html><html><body></body></html>", {
@@ -14,11 +12,12 @@ export function setupJSDOM() {
   global.MutationObserver = dom.window.MutationObserver;
 }
 
-export function createStyler(element, { property = {}, values = {}, classes = {} } = {}) {
+export function createStyler(element, { property = {}, values = {}, classes = {}, breakpoints=[] } = {}) {
   return new makeTenoxUI({
     element,
     property,
     values,
+    breakpoints,
     classes
   });
 }

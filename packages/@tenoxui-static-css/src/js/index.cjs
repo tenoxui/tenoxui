@@ -1,11 +1,13 @@
 #!/usr/bin/env node
 
-import fs from "fs";
-import { glob } from "glob";
-import path from "path";
-import { parse } from "node-html-parser";
+const fs = require("fs");
+const path = require("path");
+const { parse } = require("node-html-parser");
+const glob = require("glob");
+const { Command } = require("commander");
+const chokidar = require("chokidar");
 
-export class GenerateCSS {
+class GenerateCSS {
   constructor(config) {
     // validate the config at initialization
     this.validateConfig(config);
@@ -19,7 +21,7 @@ export class GenerateCSS {
   validateConfig(config) {
     // required fields, config must have certain fields
     const requiredFields = ["input", "output", "property"];
-    requiredFields.forEach(field => {
+    requiredFields.forEach((field) => {
       if (!config[field]) {
         console.error(`Missing required configuration field: ${field}`);
       }
@@ -31,12 +33,12 @@ export class GenerateCSS {
 
   // utility to convert kebab-type to camelCase
   static toCamelCase(str) {
-    return str.replace(/-([a-z])/g, g => g[1].toUpperCase());
+    return str.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
   }
 
   // utility to convert camelCase to kebab-type
   static toKebabCase(str) {
-    return str.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`);
+    return str.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
   }
 
   // add \ (backslash) for some cases
@@ -63,28 +65,9 @@ export class GenerateCSS {
     const classNames = new Set();
     let match;
     while ((match = classNameRegex.exec(content)) !== null) {
-      match[1].split(/\s+/).forEach(className => classNames.add(className));
+      match[1].split(/\s+/).forEach((className) => classNames.add(className));
     }
     return Array.from(classNames);
-  }
-  parseVue(content) {
-    const templateClassNames = this.parseHTML(content.match(/<template>([\s\S]*?)<\/template>/i)?.[1] || "");
-    const scriptClassNames = this.parseJSX(content.match(/<script>([\s\S]*?)<\/script>/i)?.[1] || "");
-    return [...new Set([...templateClassNames, ...scriptClassNames])];
-  }
-
-  parseSvelte(content) {
-    const htmlClassNames = this.parseHTML(content);
-    const scriptClassNames = this.parseJSX(content.match(/<script>([\s\S]*?)<\/script>/i)?.[1] || "");
-    return [...new Set([...htmlClassNames, ...scriptClassNames])];
-  }
-
-  parseAstro(content) {
-    const frontmatterRegex = /---\s*([\s\S]*?)\s*---/;
-    const contentWithoutFrontmatter = content.replace(frontmatterRegex, "");
-    const htmlClassNames = this.parseHTML(contentWithoutFrontmatter);
-    const jsxClassNames = this.parseJSX(contentWithoutFrontmatter);
-    return [...new Set([...htmlClassNames, ...jsxClassNames])];
   }
 
   // mdx parser
@@ -101,7 +84,7 @@ export class GenerateCSS {
         ".html": this.parseHTML,
         ".jsx": this.parseJSX,
         ".tsx": this.parseJSX,
-        ".mdx": this.parseMDX
+        ".mdx": this.parseMDX,
       };
       const parser = parsers[extension];
 
@@ -120,7 +103,7 @@ export class GenerateCSS {
   // classNames extractor
   extractClassNames(root) {
     return Array.from(
-      new Set(root.querySelectorAll("*").flatMap(element => element.getAttribute("class")?.split(/\s+/) || []))
+      new Set(root.querySelectorAll("*").flatMap((element) => element.getAttribute("class")?.split(/\s+/) || []))
     );
   }
 
@@ -180,14 +163,14 @@ export class GenerateCSS {
   // rules generator logic
   generateCSSRuleFromProperties(type, value, properties, finalValue, prefix) {
     if (Array.isArray(properties)) {
-      const rules = properties.map(prop => `${GenerateCSS.toKebabCase(prop)}: ${finalValue}`).join("; ");
+      const rules = properties.map((prop) => `${GenerateCSS.toKebabCase(prop)}: ${finalValue}`).join("; ");
       return this.generateCSSRule(`${type}-${value}`, rules, null, prefix);
     }
     if (typeof properties === "object" && properties !== null) {
       if (properties.property && properties.value) {
         const propValue = properties.value.replace(/{value}/g, finalValue);
         if (Array.isArray(properties.property)) {
-          const rules = properties.property.map(prop => `${GenerateCSS.toKebabCase(prop)}: ${propValue}`).join("; ");
+          const rules = properties.property.map((prop) => `${GenerateCSS.toKebabCase(prop)}: ${propValue}`).join("; ");
           return this.generateCSSRule(`${type}-${value}`, rules, null, prefix);
         }
         return this.generateCSSRule(
@@ -230,7 +213,9 @@ export class GenerateCSS {
 
   // create rules
   create(classNames) {
-    (Array.isArray(classNames) ? classNames : classNames.split(/\s+/)).forEach(className => this.parseClass(className));
+    (Array.isArray(classNames) ? classNames : classNames.split(/\s+/)).forEach((className) =>
+      this.parseClass(className)
+    );
     return Array.from(this.generatedCSS).join("\n");
   }
 
@@ -239,9 +224,9 @@ export class GenerateCSS {
     const classNames = new Set();
 
     if (this.config.input) {
-      this.config.input.forEach(pattern => {
-        glob.sync(pattern).forEach(file => {
-          this.parseFile(file).forEach(className => classNames.add(className));
+      this.config.input.forEach((pattern) => {
+        glob.sync(pattern).forEach((file) => {
+          this.parseFile(file).forEach((className) => classNames.add(className));
         });
       });
 
@@ -256,3 +241,55 @@ export class GenerateCSS {
     }
   }
 }
+
+function main() {
+  const program = new Command();
+
+  program
+    .version("1.0.0")
+    .description("Generate CSS from class names in your project files.")
+    .option("-w, --watch", "Watch mode to regenerate CSS on file changes")
+    .option("-c, --config <path>", "Path to the configuration file", "tenoxui.config.js")
+    .parse(process.argv);
+
+  const options = program.opts();
+  const configPath = path.resolve(process.cwd(), options.config);
+
+  if (!fs.existsSync(configPath)) {
+    console.error("No configuration file found!");
+    process.exit(1);
+  }
+
+  let config = require(configPath);
+  let generator = new GenerateCSS(config);
+
+  // Measure and display compilation time
+  const generateWithTiming = () => {
+    console.time("CSS generated in");
+    generator.generateFromFiles();
+    console.timeEnd("CSS generated in");
+  };
+
+  // Initial generation
+  generateWithTiming();
+
+  if (options.watch) {
+    const watcher = chokidar.watch([...config.input, configPath], { ignoreInitial: true });
+
+    watcher.on("all", (event, filePath) => {
+      if (filePath === configPath) {
+        console.log(`Config file changed, reloading...`);
+        delete require.cache[require.resolve(configPath)];
+        config = require(configPath);
+        generator = new GenerateCSS(config);
+      }
+      generateWithTiming();
+    });
+  }
+}
+
+if (require.main === module) {
+  main();
+}
+
+module.exports = GenerateCSS;

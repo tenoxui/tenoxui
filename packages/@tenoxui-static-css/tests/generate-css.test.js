@@ -13,24 +13,24 @@ describe("GenerateCSS", () => {
         text: "color",
         p: "padding",
         br: "border-radius",
-        size: ["width", "height"]
+        size: ["width", "height"],
       },
       values: {
-        primary: "#ccf654"
+        primary: "#ccf654",
       },
       classes: {
         display: {
-          center: "flex"
+          center: "flex",
         },
         alignItems: {
-          center: "center"
+          center: "center",
         },
         justifyContent: {
-          center: "center"
-        }
+          center: "center",
+        },
       },
       input: [path.resolve(process.cwd(), "src/apps/index.html")],
-      output: path.resolve(process.cwd(), "test-output.css")
+      output: path.resolve(process.cwd(), "test-output.css"),
     };
     generator = new GenerateCSS(config);
   });

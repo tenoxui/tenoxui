@@ -22,7 +22,7 @@ npm install @nousantx/static-css-tenoxui
 1. Create a configuration file (e.g., `tenoxui.config.js`):
 
 ```javascript
-const path = require('path');
+const path = require("path");
 
 module.exports = {
   property: {
@@ -38,34 +38,34 @@ module.exports = {
     // custom value property
     gradient: {
       property: "backgroundImage",
-      value: "linear-gradient(to right, purple, {value})"
+      value: "linear-gradient(to right, purple, {value})",
     },
     flex: {
       property: ["justifyContent", "alignItems"],
-      value: "{value}"
-    }
+      value: "{value}",
+    },
   },
   // custom value
   values: {
     primary: "#ccf654", // usage _ text-primary = .text-primary { color: #ccf654; }
-    rex: "#0000ff"
+    rex: "#0000ff",
   },
   // custom classes. property-based className
   classes: {
     display: {
       "se-flex": "flex",
       iflex: "inline-flex", // .iflex { display: inline-flex; }
-      "b-tenox": "block"
+      "b-tenox": "block",
     },
     alignItems: {
-      "se-flex": "center"
-    }
+      "se-flex": "center",
+    },
     // output `se-flex` _ .se-flex { display: flex; align-items: center; }
   },
   // input file
   input: ["index.html", "src/**/*.jsx"],
   // where's the output should written
-  output: "dist/styles.css"
+  output: "dist/styles.css",
 };
 ```
 
@@ -78,14 +78,15 @@ module.exports = {
 2. Create a script to run the generator (e.g., `generate-css.js`):
 
 ```javascript
-const { GenerateCSS } = require('@nousantx/static-css-tenoxui');
-const config = require('./tenoxui.config.js');
+const { GenerateCSS } = require("@nousantx/static-css-tenoxui");
+const config = require("./tenoxui.config.js");
 
 const generator = new GenerateCSS(config);
 generator.generateFromFiles();
 ```
 
 3. Or, run with the cli
+
 ```bash
 static-tcss
 ```
@@ -101,5 +102,5 @@ static-tcss -c tenoxui.config.cjs
 Adding watch-mode by adding `-w` or `--watch` flag :
 
 ```bash
-static-tcss -w -c tenoxui.config.js 
+static-tcss -w -c tenoxui.config.js
 ```

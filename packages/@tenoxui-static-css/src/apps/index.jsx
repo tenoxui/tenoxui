@@ -1,1 +1,3 @@
-const Home = () => <div className="gradient-yellow"></div>;
+const Home = () => {
+  return <div className="bg-#ff0"></div>;
+};
