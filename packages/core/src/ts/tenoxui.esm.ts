@@ -38,7 +38,7 @@ export type Classes = {
 // makeTenoxUI
 class makeTenoxUI {
   /**
-   * WARNING: Entering this function
+   * WARNING: Entering this hell
    * is like stepping into a maze with no exit.
    * Good luck :)
    */
