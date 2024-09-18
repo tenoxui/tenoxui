@@ -14,30 +14,68 @@ const colors = {
   green: "\x1b[32m",
   yellow: "\x1b[33m",
   blue: "\x1b[34m",
-  cyan: "\x1b[36m"
+  cyan: "\x1b[36m",
 };
 
 // default config
 const defaultConfig = {
   packageManager: "npm",
-  workspacesDir: "packages"
+  workspacesDirs: ["packages/*"],
 };
 
-// Finding root directory from current workspaces
-function findRootDir(workspacesDir = "packages") {
-  let currentDir = process.cwd();
+// Utility function to match simple glob patterns (e.g., "packages/*")
+function matchPattern(pattern, dirName) {
+  if (pattern === "*") return true;
+  return pattern === dirName;
+}
 
-  while (!fs.existsSync(path.join(currentDir, workspacesDir)) && currentDir !== path.parse(currentDir).root) {
+// Function to list directories matching a glob pattern (basic support for "*") 🗿
+function resolveWorkspaces(pattern, baseDir) {
+  const parts = pattern.split(path.sep);
+  const rootPart = parts[0];
+  const subPattern = parts.slice(1).join(path.sep);
+
+  let results = [];
+
+  // Read all directories from the baseDir
+  const dirContent = fs.readdirSync(baseDir, { withFileTypes: true });
+
+  dirContent.forEach((dirent) => {
+    if (dirent.isDirectory() && matchPattern(rootPart, dirent.name)) {
+      const fullPath = path.join(baseDir, dirent.name);
+
+      // If there's no more sub-pattern to match, it's a final match
+      if (!subPattern) {
+        results.push(fullPath);
+      } else {
+        // Recurse into the directory to match the rest of the pattern
+        results = results.concat(resolveWorkspaces(subPattern, fullPath));
+      }
+    }
+  });
+
+  return results;
+}
+
+// Find the root directory by checking if any workspace directory exists
+function findRootDir(workspacesDirs = defaultConfig.workspacesDirs) {
+  let currentDir = process.cwd();
+  const root = path.parse(currentDir).root;
+
+  // Check for any directory that matches the workspace directories
+  while (
+    !workspacesDirs.some((wsDir) => fs.existsSync(path.join(currentDir, wsDir.replace(/\*/g, "")))) &&
+    currentDir !== root
+  ) {
     currentDir = path.dirname(currentDir);
   }
 
-  return currentDir !== path.parse(currentDir).root ? currentDir : process.cwd();
+  return currentDir !== root ? currentDir : process.cwd();
 }
 
 // Load config
 function loadConfig() {
-  // get config file at root directory
-  const rootDir = findRootDir(defaultConfig.workspacesDir);
+  const rootDir = findRootDir(defaultConfig.workspacesDirs);
   const configPath = path.join(rootDir, "workspace.json");
   let config = defaultConfig;
 
@@ -47,7 +85,6 @@ function loadConfig() {
       config = { ...config, ...userConfig };
     } catch (error) {
       console.error(`${colors.red}Error reading config file: ${error.message}${colors.reset}`);
-      //return;
     }
   }
 
@@ -55,22 +92,32 @@ function loadConfig() {
 }
 
 const packageJson = JSON.parse(
-  fs.readFileSync(path.join(findRootDir(loadConfig().workspacesDir), "package.json"), "utf-8")
+  fs.readFileSync(path.join(findRootDir(loadConfig().workspacesDirs), "package.json"), "utf-8")
 );
 const config = loadConfig();
 
-// Get workspaces directory from config
+// Get all workspace directories based on the workspacesDirs config
 function getPackages() {
-  const rootDir = findRootDir(config.workspacesDir);
-  const packagesDir = path.join(rootDir, config.workspacesDir);
+  const rootDir = findRootDir(config.workspacesDirs);
+  let allPackages = [];
 
-  return fs
-    .readdirSync(packagesDir, { withFileTypes: true })
-    .filter(dirent => dirent.isDirectory())
-    .map(dirent => ({
-      name: dirent.name,
-      path: path.join(packagesDir, dirent.name)
-    }));
+  // Loop over each workspaceDir and resolve the pattern using custom glob-like logic
+  config.workspacesDirs.forEach((workspaceDir) => {
+    const packagesDir = path.join(rootDir, workspaceDir);
+    const matchedDirs = resolveWorkspaces(workspaceDir, rootDir);
+
+    matchedDirs.forEach((dir) => {
+      if (fs.existsSync(dir) && fs.lstatSync(dir).isDirectory()) {
+        const dirName = path.basename(dir);
+        allPackages.push({
+          name: dirName,
+          path: dir,
+        });
+      }
+    });
+  });
+
+  return allPackages;
 }
 
 // Get every scripts from all workspaces
@@ -79,14 +126,13 @@ function getScripts(packagePath) {
 
   if (fs.existsSync(packageJsonPath)) {
     const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"));
-
     return packageJson.scripts || {};
   }
 
   return {};
 }
 
-// Listing available scripts from workspace
+// List available scripts from all workspaces
 function listScripts() {
   const packages = getPackages();
 
@@ -186,14 +232,14 @@ function displaySearchResults(results) {
 function interactiveMode() {
   const rl = readline.createInterface({
     input: process.stdin,
-    output: process.stdout
+    output: process.stdout,
   });
 
   console.log(`${colors.bright}Interactive Mode${colors.reset}`);
   console.log("Type 'exit' to quit, 'list' to show all scripts, or 'search <term>' to search scripts.");
 
   rl.prompt();
-  rl.on("line", input => {
+  rl.on("line", (input) => {
     const [command, ...args] = input.trim().split(" ");
 
     switch (command.toLowerCase()) {
