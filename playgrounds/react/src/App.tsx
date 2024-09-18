@@ -2,11 +2,11 @@ import { styler } from "./utils/styler";
 
 function App() {
   styler({
-    opacity:"opacity",
+    opacity: "opacity",
     blur: {
       property: "filter",
-      value: "blur({value})"
-    }
+      value: "blur({value})",
+    },
   });
   return (
     <main className="p-2rem w-100% w-mx-1440px mx-auto">

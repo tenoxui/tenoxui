@@ -6,7 +6,7 @@ export function styler(property?) {
   // Using the `useLayoutEffect` hook to ensure the effect runs immediately after DOM mutations 😜
   useLayoutEffect(() => {
     // Query all elements that have a `class` attribute
-    document.querySelectorAll("*[class]").forEach(element => {
+    document.querySelectorAll("*[class]").forEach((element) => {
       // Create new instance for every elements
       const tenoxui = new makeTenoxUI({ element, property: { ...txProps, ...property } });
 
