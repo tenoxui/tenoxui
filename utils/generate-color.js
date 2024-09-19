@@ -10,7 +10,7 @@ function createRGBColors(colors, prefix, selectedColors) {
   const shadeMapping = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950];
   const colorObject = {};
   const colorsToProcess = selectedColors && selectedColors.length > 0 ? selectedColors : Object.keys(colors);
-  colorsToProcess.forEach(color => {
+  colorsToProcess.forEach((color) => {
     const shades = colors[color].length === 11 ? shadeMapping : shadeMapping.slice(1, 10);
     shades.forEach((shade, index) => {
       const hex = colors[color][index];
@@ -23,7 +23,7 @@ function createColors(colors, prefix, selectedColors) {
   const shadeMapping = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950];
   const colorObject = {};
   const colorsToProcess = selectedColors && selectedColors.length > 0 ? selectedColors : Object.keys(colors);
-  colorsToProcess.forEach(color => {
+  colorsToProcess.forEach((color) => {
     const shades = colors[color].length === 11 ? shadeMapping : shadeMapping.slice(1, 10);
     shades.forEach((shade, index) => {
       const hex = colors[color][index];
