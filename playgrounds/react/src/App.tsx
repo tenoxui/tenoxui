@@ -2,18 +2,23 @@ import { styler } from "./utils/styler";
 
 function App() {
   styler({
-    opacity: "opacity",
-    blur: {
-      property: "filter",
-      value: "blur({value})",
+    property: {
+      opacity: "opacity",
+      blur: {
+        property: "filter",
+        value: "blur({value})",
+      },
     },
   });
   return (
-    <main className="p-2rem w-100% w-mx-1440px mx-auto">
-      <header className="tw-balance">
-        <h1 className="fw-2.5rem fw-500 lh-1 ls--0.025em">Welcome to tenoxui workspace!</h1>
-
-        <div className="box-100px bg-#ccf654 blur-40px opacity-0.2"></div>
+    <main className="h-mn-100vh w-100% w-mx-1440px mx-auto p-2rem center fx-d-column pn-relative">
+      <header className="tw-balance ta-center">
+        <h1 className="fs-2rem lh-1 ls--0.025em">Welcome to tenoxui workspace!</h1>
+        <p className="mt-12px fs-14px lh-1.4em ls--0.035em">
+          Ready to get lorem ipsumed? Start edit{" "}
+          <code className="code fw-500 [--bg-opa]-0.1 bg-neutral-800">App.tsx</code>
+        </p>
+        <div className="box-100px bg-secondary-500 blur-40px opacity-0.4 pn-absolute t-50% r-20% z--9"></div>
       </header>
     </main>
   );

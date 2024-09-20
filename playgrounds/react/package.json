@@ -1,10 +1,10 @@
 {
-  "name": "react",
+  "name": "tenoxui-react-playground",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "rm node_modules/@tenoxui -fr && vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
