@@ -18,23 +18,23 @@
     "css-framework",
     "css-in-js"
   ],
-  "types": "types/default.d.ts",
-  "module": "dist/esm/default.js",
-  "main": "dist/umd/default.js",
+  "types": "./types/default.d.ts",
+  "module": "./dist/esm/default.js",
+  "main": "./dist/umd/default.js",
   "exports": {
     ".": {
-      "types": "types/default.d.ts",
-      "import": "dist/esm/default.js",
-      "require": "dist/umd/default.js"
+      "types": "./types/default.d.ts",
+      "import": "./dist/esm/default.js",
+      "require": "./dist/umd/default.js"
     },
     "./full": {
-      "types": "types/full.d.ts",
-      "import": "dist/esm/full.js",
-      "require": "dist/umd/full.js"
+      "types": "./types/full.d.ts",
+      "import": "./dist/esm/full.js",
+      "require": "./dist/umd/full.js"
     }
   },
   "files": [
-    "types",
+    "types/*",
     "dist/*",
     "README.md",
     "LICENSE",
