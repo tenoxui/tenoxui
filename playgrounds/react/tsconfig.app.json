@@ -13,7 +13,11 @@
     "moduleDetection": "force",
     "noEmit": true,
     "jsx": "react-jsx",
-
+    "paths": {
+      "@/*": ["./src/*"],
+      "@style/*": ["./src/styles/*"],
+      "@styler": ["./src/utils/styler.ts"]
+    },
     /* Linting */
     // "strict": true,
     "noUnusedLocals": true,
