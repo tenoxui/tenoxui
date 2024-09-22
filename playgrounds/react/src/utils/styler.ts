@@ -1,14 +1,27 @@
 import { useLayoutEffect, useMemo } from "react";
-import { makeTenoxUI, MakeTenoxUIParams } from "@tenoxui/core/src/ts/tenoxui.esm";
-import { defaultProps as txProps } from "@tenoxui/property/src/esm/default.js";
+import { makeTenoxUI, MakeTenoxUIParams, Property } from "@tenoxui/core/src/js/tenoxui.esm";
+import { fullProps as txProps } from "@tenoxui/property/full";
 import { classes as txClasses } from "../styles/classes";
 import { values as txValues } from "../styles/values";
 import { merge } from "../../../../utils/merge";
 
+type StylerConfig = Omit<MakeTenoxUIParams, "element">;
+interface StylesObject {
+  [selector: string]: string;
+}
+
+function applyStyles(styledElement: StylesObject, txConfig: StylerConfig) {
+  Object.entries(styledElement).forEach(([selector, styles]) => {
+    document.querySelectorAll(selector).forEach((element) => {
+      new makeTenoxUI({ ...txConfig, element: element as HTMLElement }).applyMultiStyles(styles);
+    });
+  });
+}
+
 export function styler({ property = {}, values = {}, classes = {} } = {}) {
-  const config = useMemo<Omit<MakeTenoxUIParams, "element">>(
+  const config = useMemo<StylerConfig>(
     () => ({
-      property: { bsize: "boxSizing", ...txProps, ...property },
+      property: { ...txProps, ...property } as Property,
       values: merge(txValues, values),
       classes: merge(txClasses, classes),
     }),
@@ -16,24 +29,19 @@ export function styler({ property = {}, values = {}, classes = {} } = {}) {
   );
 
   useLayoutEffect(() => {
-    // document.querySelectorAll<HTMLElement>("*[class]").forEach(element => { new makeTenoxUI({ element, ...config }).useDOM()});
-
-    // Read all elements's class attribute
     const elements = document.querySelectorAll<HTMLElement>("*[class]");
-
-    // Applying tenoxui instance for every single elements
     elements.forEach((element) => {
-      const tenoxui = new makeTenoxUI({ element, ...config });
-
-      // Adding DOM functionality
+      const tenoxui = new makeTenoxUI({ ...config, element });
       tenoxui.useDOM();
     });
 
-    // Adding global styles for body and p tags
-    document.body.setAttribute("class", "h-mn-100vh bg-neutral-100 c-neutral-900");
-    document.querySelectorAll("p").forEach((p) => {
-      p.classList.add("c-neutral-700");
-    });
+    applyStyles(
+      {
+        body: "h-mn-100vh bg-slate-100 c-slate-900",
+        "p, a": "c-slate-800 ls--0.030em lh-1.4",
+      },
+      config
+    );
   }, [config]);
 
   return config;

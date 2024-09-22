@@ -1,4 +1,4 @@
-import { styler } from "./utils/styler";
+import { styler } from "@styler";
 
 function App() {
   styler({
@@ -14,7 +14,7 @@ function App() {
     <main className="h-mn-100vh w-100% w-mx-1440px mx-auto p-2rem center fx-d-column pn-relative">
       <header className="tw-balance ta-center">
         <h1 className="fs-2rem lh-1 ls--0.025em">Welcome to tenoxui workspace!</h1>
-        <p className="mt-12px fs-14px lh-1.4em ls--0.035em">
+        <p className="mt-12px fs-14px">
           Ready to get lorem ipsumed? Start edit{" "}
           <code className="code fw-500 [--bg-opa]-0.1 bg-neutral-800">App.tsx</code>
         </p>
