@@ -6,7 +6,8 @@ function hexToRgb(hex) {
   const b = bigint & 255;
   return `${r} ${g} ${b}`;
 }
-function createRGBColors(colors, prefix, selectedColors) {
+
+export function createRGBColors(colors, prefix, selectedColors) {
   const shadeMapping = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950];
   const colorObject = {};
   const colorsToProcess = selectedColors && selectedColors.length > 0 ? selectedColors : Object.keys(colors);
@@ -19,7 +20,8 @@ function createRGBColors(colors, prefix, selectedColors) {
   });
   return colorObject;
 }
-function createColors(colors, prefix, selectedColors) {
+
+export function createColors(colors, prefix, selectedColors) {
   const shadeMapping = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950];
   const colorObject = {};
   const colorsToProcess = selectedColors && selectedColors.length > 0 ? selectedColors : Object.keys(colors);

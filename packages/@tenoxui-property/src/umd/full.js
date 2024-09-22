@@ -1,6 +1,5 @@
 ((root, factory) => {
   if (typeof define === "function" && define.amd) {
-    // AMD (Asynchronous Module Definition)
     define([], factory);
   } else if (typeof exports === "object" && typeof module === "object") {
     module.exports = factory();

@@ -1,6 +1,6 @@
-import { fullProps } from "../@tenoxui-property/src/esm/full.js";
+const { fullProps } = require("../@tenoxui-property/src/umd/full.js");
 
-export default {
+module.exports = {
   input: ["index.html", "src/**/*.{html,js,jsx,ts,tsx,vue,svelte,astro}"],
   output: "styles.css",
   property: fullProps,

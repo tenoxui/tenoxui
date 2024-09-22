@@ -1,28 +1,41 @@
 {
   "name": "@tenoxui/static-css",
-  "version": "0.0.0-alpha.1",
+  "version": "1.0.0-pre.1",
   "description": "Generate static CSS file with tenoxui rules and class names.",
   "author": "NOuSantx <nousantx@gmail.com>",
   "license": "MIT",
-  "keywords": ["cli", "css-framework", "tenoxui"],
+  "keywords": [
+    "cli",
+    "css-framework",
+    "tenoxui"
+  ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/tenoxui/tenoxui.git",
+    "url": "git+https://github.com/tenoxui/tenoxui.git",
     "directory": "packages/@tenoxui-static-css"
   },
   "bugs": {
     "url": "https://github.com/tenoxui/tenoxui/issues"
   },
-  "files": ["dist/*", "package.json", "README.md", "LICENSE", "cli.js"],
+  "files": [
+    "dist/*",
+    "package.json",
+    "README.md",
+    "LICENSE",
+    "cli.js",
+    "cli.min.js"
+  ],
   "bin": {
-    "tui-css": "./cli.js"
+    "tui-css": "cli.min.js"
   },
   "type": "module",
   "scripts": {
-    "build": "mkdir -p dist && uglifyjs ./src/js/index.js -c -o dist/index.min.js --source-map \"url='index.min.js.map'\" --comments \"/^!/\" && cp src/js/index.js dist",
-    "test": "vitest"
+    "build": "mkdir -p dist && uglifyjs ./src/js/static-css.js -c -o dist/static-css.min.js --source-map \"url='static-css.min.js.map'\" --comments \"/^!/\" && cp src/js/static-css.js dist && uglifyjs cli.js -c -m toplevel  -o cli.min.js",
+    "test": "vitest",
+    "pack": "cp ../../LICENSE . && npm pack --dry-run && rm LICENSE"
   },
   "devDependencies": {
+    "uglify-js": "^3.19.3",
     "vitest": "^2.0.5"
   },
   "dependencies": {

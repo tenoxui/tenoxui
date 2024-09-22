@@ -4,11 +4,11 @@
  * @param {Object} input - An object where keys are class names and values are objects of CSS properties.
  * @returns {Object} An object where keys are CSS properties and values are objects mapping class names to property values.
  */
-function transformClasses(input) {
+export function transformClasses(input) {
   const output = {};
 
   // Iterate over each class in the input object
-  Object.keys(input).forEach(className => {
+  Object.keys(input).forEach((className) => {
     // Iterate over each property-value pair in the class
     Object.entries(input[className]).forEach(([property, value]) => {
       // If the property doesn't exist in the output, initialize it as an empty object

@@ -1,6 +1,6 @@
-function merge(...objects) {
+export function merge(...objects) {
   return objects.reduce((result, obj) => {
-    Object.keys(obj).forEach(key => {
+    Object.keys(obj).forEach((key) => {
       if (typeof obj[key] === "object" && obj[key] !== null && !Array.isArray(obj[key])) {
         result[key] = merge(result[key] || {}, obj[key]);
       } else {
