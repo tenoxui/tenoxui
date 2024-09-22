@@ -9,10 +9,8 @@ import ora from "ora";
 import chalk from "chalk";
 import { GenerateCSS } from "./dist/static-css.min.js";
 
-const packageJson = JSON.parse(fs.readFileSync("./package.json"), "utf-8");
-
 program
-  .version(packageJson.version)
+  .version("1.0.0")
   .option("-c, --config <path>", "Path to the configuration file")
   .option("-w, --watch", "Watch for file changes")
   .option("-o, --output <path>", "Output file path (overrides config file)")
