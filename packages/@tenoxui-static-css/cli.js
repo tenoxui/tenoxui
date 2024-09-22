@@ -3,14 +3,16 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { GenerateCSS } from "./dist/index.min.js";
 import { program } from "commander";
 import chokidar from "chokidar";
 import ora from "ora";
 import chalk from "chalk";
+import { GenerateCSS } from "./dist/static-css.min.js";
+
+const packageJson = JSON.parse(fs.readFileSync("./package.json"), "utf-8");
 
 program
-  .version("1.0.0")
+  .version(packageJson.version)
   .option("-c, --config <path>", "Path to the configuration file")
   .option("-w, --watch", "Watch for file changes")
   .option("-o, --output <path>", "Output file path (overrides config file)")
@@ -55,10 +57,8 @@ async function loadConfig(configPath) {
     }
   } catch (error) {
     if (error.code === "ERR_REQUIRE_ESM") {
-      // File is ES module, but we tried to require it
       configModule = await import(fileURLToPath(new URL(fullPath, import.meta.url)));
     } else if (error.code === "ERR_MODULE_NOT_FOUND") {
-      // File is CommonJS, but we tried to import it
       configModule = require(fullPath);
     } else {
       throw error;
@@ -69,8 +69,8 @@ async function loadConfig(configPath) {
 }
 
 function initConfig() {
-  const configTemplate = `module.exports = {
-  input: ["src/**/*.{html,js,jsx,ts,tsx,vue,svelte,astro}"],
+  const configTemplate = `export default {
+  input: ["src/**/*.{html,jsx}"],
   output: "dist/styles.css",
   property: {
     text: "color",
@@ -103,7 +103,6 @@ async function run() {
   }
 
   const spinner = ora("Loading configuration...").start();
-
   let config;
 
   try {
@@ -126,10 +125,11 @@ async function run() {
 
     try {
       const result = generator.generateFromFiles();
+
       generateSpinner.succeed("CSS generation complete");
       if (options.verbose) {
         console.log(chalk.cyan("Generated CSS Preview: \n"));
-        console.log(result.slice(0, 500) + (result.length > 500 ? "..." : ""));
+        console.log(result.slice(0, 500) + (result.length > 500 ? " ..." : ""));
       }
     } catch (error) {
       generateSpinner.fail("CSS generation failed");
