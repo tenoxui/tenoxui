@@ -7,14 +7,15 @@ export default defineConfig({
   plugins: [
     react(),
     generouted({
-      output: "./src/routes/router.ts"
-    })
+      output: "./src/routes/router.ts",
+    }),
   ],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
       "@style": path.resolve(__dirname, "./src/styles"),
-      "@styler": path.resolve(__dirname, "./src/utils/styler.ts")
-    }
-  }
+      "@styler": path.resolve(__dirname, "./src/utils/styler.ts"),
+      "@ui": path.resolve(__dirname, "./src/ui"),
+    },
+  },
 });
