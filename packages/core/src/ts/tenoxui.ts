@@ -1,10 +1,10 @@
 /*!
- * tenoxui/core v1.0.5
+ * tenoxui/core v1.1.0
  * Licensed under MIT (https://github.com/tenoxui/tenoxui/blob/main/LICENSE)
  */
 
 // makeTenoxUI constructor param
-interface MakeTenoxUIParams {
+export interface MakeTenoxUIParams {
   element: HTMLElement | NodeListOf<HTMLElement>;
   property: Property;
   values?: DefinedValue;
@@ -23,7 +23,7 @@ export type Property = {
 };
 
 // breakpoint
-type Breakpoint = { name: string; min?: number; max?: number };
+export type Breakpoint = { name: string; min?: number; max?: number };
 
 // value registry
 export type DefinedValue = { [type: string]: { [value: string]: string } | string };
@@ -552,7 +552,7 @@ class makeTenoxUI {
     }
   }
 
-  // Match and apply the styles based on the class names rules
+  // Match and apply the styles based on the class name rules
   public applyStyles(className: string): void {
     const [prefix, type] = className.split(":");
     const getType = type || prefix;
