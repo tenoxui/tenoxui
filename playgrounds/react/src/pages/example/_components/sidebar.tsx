@@ -17,7 +17,7 @@ const Sidebar = () => {
   };
 
   useEffect(() => {
-    const handleClickOutside = event => {
+    const handleClickOutside = (event) => {
       if (
         isMenuOpen &&
         menuRef.current &&

@@ -1,5 +1,5 @@
 import { styler } from "@styler";
-import  { buttonStyles } from "./_components/ui/Button";
+import { buttonStyles } from "./_components/ui/Button";
 import { Link } from "react-router-dom";
 
 function App() {

@@ -5,7 +5,7 @@ export const typography = {
   heading2: "fs-2rem fw-600 lh-1 ls--0.030em",
   heading3: "fs-1.5rem fw-500 lh-1 ls--0.025em",
   heading4: "fs-1.2rem fw-500 lh-1.2 ls--0.025em",
-  paragraph: "fs-1rem lh-1.2 ls--0.030em w-mx-600px"
+  paragraph: "fs-1rem lh-1.2 ls--0.030em w-mx-600px",
 };
 
 const Typography = () => {

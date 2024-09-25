@@ -20,8 +20,8 @@ export const shadowClasses = {
       "0 20px 25px -5px rgb(var(--shadow-color, 0 0 0) / var(--shadow-opa, 0.1)), 0 8px 10px -6px rgb(var(--shadow-color, 0 0 0) / var(--shadow-opa, 0.1))",
     "shadow-2xl": "0 25px 50px -12px rgb(var(--shadow-color, 0 0 0) / var(--shadow-opa, 0.25))",
     "shadow-inner": "inset 0 2px 4px 0 rgb(var(--shadow-color, 0 0 0) / var(--shadow-opa, 0.05))",
-    "shadow-none": "0 0 #0000"
-  }
+    "shadow-none": "0 0 #0000",
+  },
 };
 
 const Shadow = () => {
