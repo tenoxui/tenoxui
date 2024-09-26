@@ -1,5 +1,5 @@
 /*!
- * tenoxui/core v1.0.5
+ * tenoxui/core v1.1.0
  * Licensed under MIT (https://github.com/tenoxui/tenoxui/blob/main/LICENSE)
  */
 // makeTenoxUI
@@ -449,7 +449,7 @@ class makeTenoxUI {
             this.setDefaultValue(properties, resolvedValue);
         }
     }
-    // Match and apply the styles based on the class names rules
+    // Match and apply the styles based on the class name rules
     applyStyles(className) {
         const [prefix, type] = className.split(":");
         const getType = type || prefix;

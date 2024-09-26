@@ -1,8 +1,8 @@
 /*!
- * tenoxui/core v1.0.5
+ * tenoxui/core v1.1.0
  * Licensed under MIT (https://github.com/tenoxui/tenoxui/blob/main/LICENSE)
  */
-interface MakeTenoxUIParams {
+export interface MakeTenoxUIParams {
     element: HTMLElement | NodeListOf<HTMLElement>;
     property: Property;
     values?: DefinedValue;
@@ -18,7 +18,7 @@ export type Property = {
         value?: string;
     };
 };
-type Breakpoint = {
+export type Breakpoint = {
     name: string;
     min?: number;
     max?: number;
