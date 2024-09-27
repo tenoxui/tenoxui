@@ -1,23 +1,61 @@
-import { defaultProps } from "./default.js";
+import { property as defaultProps } from "./default.js";
 
-export const fullProps = {
+export const property = {
   ...defaultProps,
   ...{
+    all: "all",
     order: "order",
-    "a-c": "alignContent",
-    "a-s": "alignSelf",
-    "j-i": "justifyItems",
-    "j-s": "justifySelf",
-    // Border Radius
-    "br-t": ["borderTopRightRadius", "borderTopLeftRadius"],
-    "br-b": ["borderBottomRightRadius", "borderBottomLeftRadius"],
-    "br-l": ["borderBottomLeftRadius", "borderTopLeftRadius"],
-    "br-r": ["borderBottomRightRadius", "borderTopRightRadius"],
-    "br-tr": "borderTopRightRadius",
-    "br-tl": "borderTopLeftRadius",
-    "br-br": "borderBottomRightRadius",
-    "br-bl": "borderBottomLeftRadius",
-    // Animation
+    visibility: "visibility",
+    resize: "resize",
+    float: "float",
+    isolation: "isolation",
+    col: "columns",
+    "box-si": "boxSizing",
+    // place like
+    "pc-i": "placeItems",
+    "pc-c": "placeContents",
+    "pc-s": "placeSelf",
+
+    // border extended
+    "bg-att": "backgroundAttachment",
+    "bg-ori": "backgroundOrigin",
+    "bg-clip": "backgroundClip",
+    "bg-p-x": "backgroundPositionX",
+    "bg-p-y": "backgroundPositionY",
+    "bg-r-x": "backgroundRepeatX",
+    "bg-r-y": "backgroundRepeaty",
+    // align and justify
+    "align-c": "alignContent",
+    "align-s": "alignSelf",
+    "justify-i": "justifyItems",
+    "justify-s": "justifySelf",
+    // border color
+    "bdr-c-t": "borderTopColor",
+    "bdr-c-b": "borderBottomColor",
+    "bdr-c-l": "borderLeftColor",
+    "bdr-c-r": "borderRightColor",
+    // border style
+    "bdr-s-t": "borderTopStyle",
+    "bdr-s-b": "borderBottomStyle",
+    "bdr-s-l": "borderLeftStyle",
+    "bdr-s-r": "borderRightStyle",
+    // border Radius
+    "bdr-r-t": ["borderTopRightRadius", "borderTopLeftRadius"],
+    "bdr-r-b": ["borderBottomRightRadius", "borderBottomLeftRadius"],
+    "bdr-r-l": ["borderBottomLeftRadius", "borderTopLeftRadius"],
+    "bdr-r-r": ["borderBottomRightRadius", "borderTopRightRadius"],
+    "bdr-r-tl": "borderTopLeftRadius",
+    "bdr-r-tr": "borderTopRightRadius",
+    "bdr-r-bl": "borderBottomLeftRadius",
+    "bdr-r-br": "borderBottomRightRadius",
+    // other border
+    "bdr-img": "borderImage",
+    // list style
+    "list-s": "listStyle",
+    "list-s-img": "listStyleImage",
+    "list-s-pn": "listStylePosition",
+    "list-s-type": "listStyleType",
+    // animation
     animation: "animation",
     "an-name": "animationName",
     "an-direction": "animationDirection",
@@ -29,8 +67,7 @@ export const fullProps = {
     // transform
     transform: {
       property: "transform",
-      value: `
-rotate(var(--tx_rotate, 0))
+      value: `rotate(var(--tx_rotate, 0))
 rotateY(var(--tx_rotate-y, 0))
 rotateX(var(--tx_rotate-x, 0))
 rotateZ(var(--tx_rotate-z, 0))
@@ -44,8 +81,7 @@ skewX(var(--tx_skew-x, 0))
 translate(var(--tx_translate, 0))
 translateY(var(--tx_translate-y, 0))
 translateX(var(--tx_translate-x, 0))
-translateZ(var(--tx_translate-z, 0))
-  `,
+translateZ(var(--tx_translate-z, 0))`,
     },
     rotate: "--tx_rotate",
     "rotate-y": "--tx_rotate-y",
@@ -65,8 +101,7 @@ translateZ(var(--tx_translate-z, 0))
     // filter
     filter: {
       property: "filter",
-      value: `
-blur(var(--tx_blur, 0)) 
+      value: `blur(var(--tx_blur, 0)) 
 brightness(var(--tx_brightness, 1)) 
 contrast(var(--tx_contrast, 1)) 
 grayscale(var(--tx_grayscale, 0)) 
@@ -75,8 +110,7 @@ invert(var(--tx_invert, 0))
 opacity(var(--tx_opacity, 1)) 
 saturate(var(--tx_saturate, 1)) 
 sepia(var(--tx_sepia, 0))
-drop-shadow(var(--tx_drop-shadow, 0 0 0 rgb(0 0 0 / 0)))
-  `,
+drop-shadow(var(--tx_drop-shadow, 0 0 0 rgb(0 0 0 / 0)))`,
     },
     blur: "--tx_blur",
     brightness: "--tx_brightness",
@@ -90,8 +124,7 @@ drop-shadow(var(--tx_drop-shadow, 0 0 0 rgb(0 0 0 / 0)))
     // backdrop-filter
     backdrop: {
       property: "backdropFilter",
-      value: `
-blur(var(--back_blur, 0)) 
+      value: `blur(var(--back_blur, 0)) 
 brightness(var(--back_brightness, 1)) 
 contrast(var(--back_contrast, 1)) 
 grayscale(var(--back_grayscale, 0)) 
@@ -99,8 +132,7 @@ hue-rotate(var(--back_hue-rotate, 0))
 invert(var(--back_invert, 0)) 
 opacity(var(--back_opacity, 1)) 
 saturate(var(--back_saturate, 1)) 
-sepia(var(--back_sepia, 0))
-  `,
+sepia(var(--back_sepia, 0))`,
     },
     "back-blur": "--back_blur",
     "back-brightness": "--back_brightness",

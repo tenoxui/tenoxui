@@ -1,7 +1,7 @@
 {
   "name": "@tenoxui/property",
-  "version": "1.4.0-alpha.3",
-  "description": "TenoxUI type shorthand and property library.",
+  "version": "1.4.0-alpha.4",
+  "description": "TenoxUI type shorthands and properties library.",
   "author": "NOuSantx <nousantx@gmail.com>",
   "license": "MIT",
   "homepage": "https://tenoxui.web.app",
@@ -19,18 +19,18 @@
     "css-in-js"
   ],
   "types": "./types/default.d.ts",
-  "module": "./dist/esm/default.js",
-  "main": "./dist/umd/default.js",
+  "module": "./dist/esm/default.min.js",
+  "main": "./dist/umd/default.min.js",
   "exports": {
     ".": {
       "types": "./types/default.d.ts",
-      "import": "./dist/esm/default.js",
-      "require": "./dist/umd/default.js"
+      "import": "./dist/esm/default.min.js",
+      "require": "./dist/umd/default.min.js"
     },
     "./full": {
       "types": "./types/full.d.ts",
-      "import": "./dist/esm/full.js",
-      "require": "./dist/umd/full.js"
+      "import": "./dist/esm/full.min.js",
+      "require": "./dist/umd/full.min.js"
     }
   },
   "files": [
