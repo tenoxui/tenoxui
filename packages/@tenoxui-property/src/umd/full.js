@@ -4,12 +4,12 @@
   } else if (typeof exports === "object" && typeof module === "object") {
     module.exports = factory();
   } else if (typeof exports === "object") {
-    exports.fullProps = factory().fullProps;
+    exports.property = factory().property;
   } else {
-    root.fullProps = factory().fullProps;
+    root.property = factory().property;
   }
 })(typeof self !== "undefined" ? self : this, () => {
-  const fullProps = {
+  const property = {
     // padding
     p: "padding",
     pt: "paddingTop",
@@ -18,7 +18,7 @@
     pl: "paddingLeft",
     py: ["paddingTop", "paddingBottom"],
     px: ["paddingLeft", "paddingRight"],
-    // Margin
+    // margin
     m: "margin",
     mt: "marginTop",
     mb: "marginBottom",
@@ -26,13 +26,14 @@
     ml: "marginLeft",
     my: ["marginTop", "marginBottom"],
     mx: ["marginLeft", "marginRight"],
-    // Text and font
+    // font and text style
+    font: "font",
     fs: "fontSize",
     fw: "fontWeight",
     lh: "lineHeight",
     ls: "letterSpacing",
     ta: "textAlign",
-    c: "color",
+    text: "color",
     td: "textDecoration",
     ti: "textIndent",
     tn: "textTransform",
@@ -41,92 +42,128 @@
     family: "fontFamily",
     "font-s": "fontStyle",
     "white-space": "whiteSpace",
-    // Positioning
+    // positioning
     pn: "position",
     z: "zIndex",
     t: "top",
     b: "bottom",
     r: "right",
     l: "left",
-    // Display
+    // display
     d: "display",
-    // Width and Height
+    // size
     w: "width",
     "w-mx": "maxWidth",
     "w-mn": "minWidth",
     h: "height",
     "h-mx": "maxHeight",
     "h-mn": "minHeight",
-    // Background
+    // background
     bg: "background",
     "bg-c": "backgroundColor",
-    "bg-i": "backgroundImage",
-    "bg-a": "backgroundAttachment",
-    "bg-or": "backgroundOrigin",
-    "bg-s": "backgroundSize",
+    "bg-img": "backgroundImage",
+    "bg-size": "backgroundSize",
     "bg-r": "backgroundRepeat",
-    "bg-p": "backgroundPosition",
-    "bg-clip": "backgroundClip",
-    // Flex
-    fx: "flex",
-    "fx-d": "flexDirection",
-    "fx-w": "flexWrap",
-    "fx-b": "flexBasis",
-    "fx-g": "flexGrow",
-    "fx-s": "flexShrink",
-    // Gap
-    g: "gap",
-    "g-y": "columnGap",
-    "g-x": "rowGap",
-    // Align
-    "a-i": "alignItems",
-    // Justify
-    "j-c": "justifyContent",
-    // Border
-    border: "border",
-    bc: "borderColor",
-    br: "borderRadius",
-    bs: "borderStyle",
-    bw: "borderWidth",
-    "bw-l": "borderLeftWidth",
-    "bw-r": "borderRightWidth",
-    "bw-t": "borderTopWidth",
-    "bw-b": "borderBottomWidth",
-    // Cursor
+    "bg-pn": "backgroundPosition",
+    // flex
+    flex: "flex",
+    "flex-d": "flexDirection",
+    "flex-w": "flexWrap",
+    "flex-b": "flexBasis",
+    "flex-g": "flexGrow",
+    "flex-s": "flexShrink",
+    // gap
+    gap: "gap",
+    "gap-y": "columnGap",
+    "gap-x": "rowGap",
+    // align
+    "align-i": "alignItems",
+    // justify
+    "justify-c": "justifyContent",
+    // border
+    bdr: "border",
+    "bdr-c": "borderColor",
+    "bdr-r": "borderRadius",
+    "bdr-s": "borderStyle",
+    "bdr-w": "borderWidth",
+    "bdr-w-l": "borderLeftWidth",
+    "bdr-w-r": "borderRightWidth",
+    "bdr-w-t": "borderTopWidth",
+    "bdr-w-b": "borderBottomWidth",
+    // cursor
     cursor: "cursor",
-    // Overflow
+    // overflow
     over: "overflow",
     "over-y": "overflowY",
     "over-x": "overflowX",
-    // Aspect Ratio
+    // aspect Ratio
     ratio: "aspectRatio",
-    // Transition
+    // transition
     transition: "transition",
     "tr-time": "transitionDuration",
     "tr-prop": "transitionProperty",
     "tr-timing": "transitionTimingFunction",
     "tr-delay": "transitionDelay",
-    // More
+    // more
     shadow: "boxShadow",
     // custom property
     box: ["width", "height"],
-    "fx-parent": ["justifyContent", "alignItems"],
+    "flex-parent": ["justifyContent", "alignItems"],
 
+    // full properties
+    all: "all",
     order: "order",
-    "a-c": "alignContent",
-    "a-s": "alignSelf",
-    "j-i": "justifyItems",
-    "j-s": "justifySelf",
-    // Border Radius
-    "br-t": ["borderTopRightRadius", "borderTopLeftRadius"],
-    "br-b": ["borderBottomRightRadius", "borderBottomLeftRadius"],
-    "br-l": ["borderBottomLeftRadius", "borderTopLeftRadius"],
-    "br-r": ["borderBottomRightRadius", "borderTopRightRadius"],
-    "br-tr": "borderTopRightRadius",
-    "br-tl": "borderTopLeftRadius",
-    "br-br": "borderBottomRightRadius",
-    "br-bl": "borderBottomLeftRadius",
-    // Animation
+    visibility: "visibility",
+    resize: "resize",
+    float: "float",
+    isolation: "isolation",
+    col: "columns",
+    "box-si": "boxSizing",
+    // place like
+    "pc-i": "placeItems",
+    "pc-c": "placeContents",
+    "pc-s": "placeSelf",
+
+    // border extended
+    "bg-att": "backgroundAttachment",
+    "bg-ori": "backgroundOrigin",
+    "bg-clip": "backgroundClip",
+    "bg-p-x": "backgroundPositionX",
+    "bg-p-y": "backgroundPositionY",
+    "bg-r-x": "backgroundRepeatX",
+    "bg-r-y": "backgroundRepeaty",
+    // align and justify
+    "align-c": "alignContent",
+    "align-s": "alignSelf",
+    "justify-i": "justifyItems",
+    "justify-s": "justifySelf",
+    // border color
+    "bdr-c-t": "borderTopColor",
+    "bdr-c-b": "borderBottomColor",
+    "bdr-c-l": "borderLeftColor",
+    "bdr-c-r": "borderRightColor",
+    // border style
+    "bdr-s-t": "borderTopStyle",
+    "bdr-s-b": "borderBottomStyle",
+    "bdr-s-l": "borderLeftStyle",
+    "bdr-s-r": "borderRightStyle",
+    // border Radius
+    "bdr-r-t": ["borderTopRightRadius", "borderTopLeftRadius"],
+    "bdr-r-b": ["borderBottomRightRadius", "borderBottomLeftRadius"],
+    "bdr-r-l": ["borderBottomLeftRadius", "borderTopLeftRadius"],
+    "bdr-r-r": ["borderBottomRightRadius", "borderTopRightRadius"],
+    "bdr-r-tl": "borderTopLeftRadius",
+    "bdr-r-tr": "borderTopRightRadius",
+    "bdr-r-bl": "borderBottomLeftRadius",
+    "bdr-r-br": "borderBottomRightRadius",
+    // other border
+    "bdr-img": "borderImage",
+    // list style
+    "list-s": "listStyle",
+    "list-s-img": "listStyleImage",
+    "list-s-pn": "listStylePosition",
+    "list-s-type": "listStyleType",
+    // animation
     animation: "animation",
     "an-name": "animationName",
     "an-direction": "animationDirection",
@@ -138,8 +175,7 @@
     // transform
     transform: {
       property: "transform",
-      value: `
-rotate(var(--tx_rotate, 0))
+      value: `rotate(var(--tx_rotate, 0))
 rotateY(var(--tx_rotate-y, 0))
 rotateX(var(--tx_rotate-x, 0))
 rotateZ(var(--tx_rotate-z, 0))
@@ -153,8 +189,7 @@ skewX(var(--tx_skew-x, 0))
 translate(var(--tx_translate, 0))
 translateY(var(--tx_translate-y, 0))
 translateX(var(--tx_translate-x, 0))
-translateZ(var(--tx_translate-z, 0))
-  `,
+translateZ(var(--tx_translate-z, 0))`,
     },
     rotate: "--tx_rotate",
     "rotate-y": "--tx_rotate-y",
@@ -174,8 +209,7 @@ translateZ(var(--tx_translate-z, 0))
     // filter
     filter: {
       property: "filter",
-      value: `
-blur(var(--tx_blur, 0)) 
+      value: `blur(var(--tx_blur, 0)) 
 brightness(var(--tx_brightness, 1)) 
 contrast(var(--tx_contrast, 1)) 
 grayscale(var(--tx_grayscale, 0)) 
@@ -184,8 +218,7 @@ invert(var(--tx_invert, 0))
 opacity(var(--tx_opacity, 1)) 
 saturate(var(--tx_saturate, 1)) 
 sepia(var(--tx_sepia, 0))
-drop-shadow(var(--tx_drop-shadow, 0 0 0 rgb(0 0 0 / 0)))
-  `,
+drop-shadow(var(--tx_drop-shadow, 0 0 0 rgb(0 0 0 / 0)))`,
     },
     blur: "--tx_blur",
     brightness: "--tx_brightness",
@@ -199,8 +232,7 @@ drop-shadow(var(--tx_drop-shadow, 0 0 0 rgb(0 0 0 / 0)))
     // backdrop-filter
     backdrop: {
       property: "backdropFilter",
-      value: `
-blur(var(--back_blur, 0)) 
+      value: `blur(var(--back_blur, 0)) 
 brightness(var(--back_brightness, 1)) 
 contrast(var(--back_contrast, 1)) 
 grayscale(var(--back_grayscale, 0)) 
@@ -208,8 +240,7 @@ hue-rotate(var(--back_hue-rotate, 0))
 invert(var(--back_invert, 0)) 
 opacity(var(--back_opacity, 1)) 
 saturate(var(--back_saturate, 1)) 
-sepia(var(--back_sepia, 0))
-  `,
+sepia(var(--back_sepia, 0))`,
     },
     "back-blur": "--back_blur",
     "back-brightness": "--back_brightness",
@@ -221,5 +252,5 @@ sepia(var(--back_sepia, 0))
     "back-saturate": "--back_saturate",
     "back-sepia": "--back_sepia",
   };
-  return { fullProps };
+  return { property };
 });

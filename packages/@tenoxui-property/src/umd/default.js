@@ -4,12 +4,12 @@
   } else if (typeof exports === "object" && typeof module === "object") {
     module.exports = factory();
   } else if (typeof exports === "object") {
-    exports.defaultProps = factory().defaultProps;
+    exports.property = factory().property;
   } else {
-    root.defaultProps = factory().defaultProps;
+    root.property = factory().property;
   }
 })(typeof self !== "undefined" ? self : this, () => {
-  const defaultProps = {
+  const property = {
     // padding
     p: "padding",
     pt: "paddingTop",
@@ -18,7 +18,7 @@
     pl: "paddingLeft",
     py: ["paddingTop", "paddingBottom"],
     px: ["paddingLeft", "paddingRight"],
-    // Margin
+    // margin
     m: "margin",
     mt: "marginTop",
     mb: "marginBottom",
@@ -26,13 +26,14 @@
     ml: "marginLeft",
     my: ["marginTop", "marginBottom"],
     mx: ["marginLeft", "marginRight"],
-    // Text and font
+    // font and text style
+    font: "font",
     fs: "fontSize",
     fw: "fontWeight",
     lh: "lineHeight",
     ls: "letterSpacing",
     ta: "textAlign",
-    c: "color",
+    text: "color",
     td: "textDecoration",
     ti: "textIndent",
     tn: "textTransform",
@@ -41,76 +42,73 @@
     family: "fontFamily",
     "font-s": "fontStyle",
     "white-space": "whiteSpace",
-    // Positioning
+    // positioning
     pn: "position",
     z: "zIndex",
     t: "top",
     b: "bottom",
     r: "right",
     l: "left",
-    // Display
+    // display
     d: "display",
-    // Width and Height
+    // size
     w: "width",
     "w-mx": "maxWidth",
     "w-mn": "minWidth",
     h: "height",
     "h-mx": "maxHeight",
     "h-mn": "minHeight",
-    // Background
+    // background
     bg: "background",
     "bg-c": "backgroundColor",
-    "bg-i": "backgroundImage",
-    "bg-a": "backgroundAttachment",
-    "bg-or": "backgroundOrigin",
-    "bg-s": "backgroundSize",
+    "bg-img": "backgroundImage",
+    "bg-size": "backgroundSize",
     "bg-r": "backgroundRepeat",
-    "bg-p": "backgroundPosition",
-    "bg-clip": "backgroundClip",
-    // Flex
-    fx: "flex",
-    "fx-d": "flexDirection",
-    "fx-w": "flexWrap",
-    "fx-b": "flexBasis",
-    "fx-g": "flexGrow",
-    "fx-s": "flexShrink",
-    // Gap
-    g: "gap",
-    "g-y": "columnGap",
-    "g-x": "rowGap",
-    // Align
-    "a-i": "alignItems",
-    // Justify
-    "j-c": "justifyContent",
-    // Border
-    border: "border",
-    bc: "borderColor",
-    br: "borderRadius",
-    bs: "borderStyle",
-    bw: "borderWidth",
-    "bw-l": "borderLeftWidth",
-    "bw-r": "borderRightWidth",
-    "bw-t": "borderTopWidth",
-    "bw-b": "borderBottomWidth",
-    // Cursor
+    "bg-pn": "backgroundPosition",
+    // flex
+    flex: "flex",
+    "flex-d": "flexDirection",
+    "flex-w": "flexWrap",
+    "flex-b": "flexBasis",
+    "flex-g": "flexGrow",
+    "flex-s": "flexShrink",
+    // gap
+    gap: "gap",
+    "gap-y": "columnGap",
+    "gap-x": "rowGap",
+    // align
+    "align-i": "alignItems",
+    // justify
+    "justify-c": "justifyContent",
+    // border
+    bdr: "border",
+    "bdr-c": "borderColor",
+    "bdr-r": "borderRadius",
+    "bdr-s": "borderStyle",
+    "bdr-w": "borderWidth",
+    "bdr-w-l": "borderLeftWidth",
+    "bdr-w-r": "borderRightWidth",
+    "bdr-w-t": "borderTopWidth",
+    "bdr-w-b": "borderBottomWidth",
+    // cursor
     cursor: "cursor",
-    // Overflow
+    // overflow
     over: "overflow",
     "over-y": "overflowY",
     "over-x": "overflowX",
-    // Aspect Ratio
+    // aspect Ratio
     ratio: "aspectRatio",
-    // Transition
+    // transition
     transition: "transition",
     "tr-time": "transitionDuration",
     "tr-prop": "transitionProperty",
     "tr-timing": "transitionTimingFunction",
     "tr-delay": "transitionDelay",
-    // More
+    // more
     shadow: "boxShadow",
     // custom property
     box: ["width", "height"],
-    "fx-parent": ["justifyContent", "alignItems"],
+    "flex-parent": ["justifyContent", "alignItems"],
   };
-  return { defaultProps };
+  return { property };
 });
