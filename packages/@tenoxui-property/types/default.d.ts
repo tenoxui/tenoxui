@@ -4,4 +4,4 @@ type GetCSSProperty = CSSPropertyOrVariable | CSSPropertyOrVariable[];
 export type Property = {
   [type: string]: GetCSSProperty | { property?: GetCSSProperty; value?: string };
 };
-export const defaultProps: Property;
+export const property: Property;
