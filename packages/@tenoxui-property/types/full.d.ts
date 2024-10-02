@@ -1,3 +1,3 @@
 import { Property } from "./default";
 
-export const fullProps: Property;
+export const property: Property;

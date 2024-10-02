@@ -5,19 +5,19 @@
  * @returns {Object} An object where keys are CSS properties and values are objects mapping class names to property values.
  */
 export function transformClasses(input) {
-  const output = {};
+  const output = {}
 
   // Iterate over each class in the input object
   Object.keys(input).forEach((className) => {
     // Iterate over each property-value pair in the class
     Object.entries(input[className]).forEach(([property, value]) => {
       // If the property doesn't exist in the output, initialize it as an empty object
-      output[property] = output[property] || {};
+      output[property] = output[property] || {}
 
       // Add the class name and its value to the property in the output
-      output[property][className] = value;
-    });
-  });
+      output[property][className] = value
+    })
+  })
 
-  return output;
+  return output
 }
