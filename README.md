@@ -11,22 +11,22 @@ TenoxUI makes styling as easy as pie; and who doesn't like pie? It's super easy 
 Here’s how you can use TenoxUI in React in just a few lines of code:
 
 ```jsx
-import { useLayoutEffect } from "react";
-import tenoxui from "tenoxui";
+import { useLayoutEffect } from 'react'
+import tenoxui from 'tenoxui'
 
 const App = () => {
   useLayoutEffect(() => {
     tenoxui({
       // shorthand: cssProperty
-      bg: "background",
-      text: "text",
-    });
-  }, []);
+      bg: 'background',
+      text: 'text'
+    })
+  }, [])
 
-  return <h1 className="bg-green text-white">Hello World!</h1>;
-};
+  return <h1 className="bg-green text-white">Hello World!</h1>
+}
 
-export default App;
+export default App
 ```
 
 That’s all it takes to use TenoxUI in your ReactJS app.
@@ -46,9 +46,9 @@ Plain HTML? No problem! 🤨🙌
     <script>
       tenoxui({
         // shorthand: cssProperty
-        bg: "background",
-        text: "color",
-      });
+        bg: 'background',
+        text: 'color'
+      })
     </script>
   </body>
 </html>
@@ -95,26 +95,26 @@ Boom! You’re ready to build your awesome apps! 💥
 Want to explore the core features? Here’s how to use the `@tenoxui/core` package in React:
 
 ```jsx
-import { useLayoutEffect } from "react";
-import { makeTenoxUI } from "@tenoxui/core";
+import { useLayoutEffect } from 'react'
+import { makeTenoxUI } from '@tenoxui/core'
 
 const App = () => {
   useLayoutEffect(() => {
-    document.querySelectorAll("*[class]").forEach((element) => {
+    document.querySelectorAll('*[class]').forEach((element) => {
       new makeTenoxUI({
         element,
         property: {
-          bg: "background",
-          text: "color",
-        },
-      }).useDOM();
-    });
-  }, []);
+          bg: 'background',
+          text: 'color'
+        }
+      }).useDOM()
+    })
+  }, [])
 
-  return <h1 className="bg-red text-white">Hello World!</h1>;
-};
+  return <h1 className="bg-red text-white">Hello World!</h1>
+}
 
-export default App;
+export default App
 ```
 
 A bit _uhh_ but it works!
@@ -144,19 +144,19 @@ There are two variants you can get, if you prefer smaller and on-demand/commonly
 `esmodule` usage:
 
 ```js
-import { property } from "@tenoxui/property";
+import { property } from '@tenoxui/property'
 
 // full properties
-import { property } from "@tenoxui/property/full";
+import { property } from '@tenoxui/property/full'
 ```
 
 For `commonjs`, try:
 
 ```js
-const { property } = require("@tenoxui/property");
+const { property } = require('@tenoxui/property')
 
 // full properties
-const { property } = require("@tenoxui/property/full");
+const { property } = require('@tenoxui/property/full')
 ```
 
 #### React Example
@@ -164,22 +164,22 @@ const { property } = require("@tenoxui/property/full");
 Still React? Here's a quick setup:
 
 ```jsx
-import { useLayoutEffect } from "react";
-import { makeTenoxUI } from "@tenoxui/core";
-import { property } from "@tenoxui/property";
+import { useLayoutEffect } from 'react'
+import { makeTenoxUI } from '@tenoxui/core'
+import { property } from '@tenoxui/property'
 
 const App = () => {
   useLayoutEffect(() => {
-    document.querySelectorAll("*[class]").forEach((element) => {
-      const tenoxui = new makeTenoxUI({ element, property });
-      tenoxui.useDOM();
-    });
-  }, []);
+    document.querySelectorAll('*[class]').forEach((element) => {
+      const tenoxui = new makeTenoxUI({ element, property })
+      tenoxui.useDOM()
+    })
+  }, [])
 
-  return <h1 className="bg-red text-white">Hello World!</h1>;
-};
+  return <h1 className="bg-red text-white">Hello World!</h1>
+}
 
-export default App;
+export default App
 ```
 
 #### Plain HTML
@@ -196,9 +196,9 @@ You can use the property library in plain HTML too:
   <body class="bg-yellow">
     <div class="bg-red hover:bg-blue">Hello World!</div>
     <script>
-      use({ property });
+      use({ property })
       // or
-      tenoxui(property);
+      tenoxui(property)
     </script>
   </body>
 </html>
