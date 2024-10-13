@@ -61,7 +61,7 @@ const config = {
       ]
     }
   ],
-  plugins: [typescript({ tsconfig: './tsconfig.rollup.json' }), resolve(), commonjs()]
+  plugins: [typescript(), resolve(), commonjs()]
 }
 
 export default config

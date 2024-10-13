@@ -1,4 +1,4 @@
-import { Property, Classes, DefinedValue, GetCSSProperty, CSSPropertyOrVariable } from './types'
+import { Property, Classes, CSSPropertyOrVariable } from './types'
 import { StyleHandler } from './styleHandler'
 import { Responsive } from './responsive'
 import { Pseudo } from './pseudoClass'
@@ -6,7 +6,6 @@ import { isObjectWithValue } from '../utils/valueObject'
 
 export class ParseStyles {
   private readonly styleAttribute: Property
-  private readonly valueRegistry: DefinedValue
   private readonly classes: Classes
   private readonly styler: StyleHandler
   private readonly pseudo: Pseudo
@@ -14,14 +13,12 @@ export class ParseStyles {
 
   constructor(
     property: Property,
-    values: DefinedValue,
     classes: Classes,
     styler: StyleHandler,
     pseudo: Pseudo,
     responsive: Responsive
   ) {
     this.styleAttribute = property
-    this.valueRegistry = values
     this.classes = classes
     this.styler = styler
     this.pseudo = pseudo

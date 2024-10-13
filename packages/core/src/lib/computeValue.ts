@@ -1,23 +1,14 @@
-import {
-  Property,
-  DefinedValue,
-  GetCSSProperty,
-  Classes,
-  CSSPropertyOrVariable,
-  CSSVariable
-} from './types'
+import { Property, DefinedValue, GetCSSProperty, CSSPropertyOrVariable } from './types'
 
 export class ComputeValue {
   private readonly htmlElement: HTMLElement
   private readonly styleAttribute: Property
   private readonly valueRegistry: DefinedValue
-  private readonly classes: Classes
 
-  constructor(element: HTMLElement, properties: Property, values: DefinedValue, classes: Classes) {
+  constructor(element: HTMLElement, properties: Property, values: DefinedValue) {
     this.htmlElement = element
     this.styleAttribute = properties
     this.valueRegistry = values
-    this.classes = classes
   }
 
   public valueHandler(type: string, value: string, unit: string): string {

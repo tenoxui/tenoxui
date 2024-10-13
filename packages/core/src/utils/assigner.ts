@@ -1,11 +1,4 @@
-import {
-  Classes,
-  Property,
-  MakeTenoxUIParams,
-  Breakpoint,
-  DefinedValue,
-  GetCSSProperty
-} from '../lib/types'
+import { Classes, Property, MakeTenoxUIParams, Breakpoint, DefinedValue } from '../lib/types'
 import { Observer } from '../lib/observer'
 import { Parser } from '../lib/classNameParser'
 import { ComputeValue } from '../lib/computeValue'
@@ -38,12 +31,7 @@ export class TenoxUIContext {
 
 export function createTenoxUIComponents(context: TenoxUIContext) {
   const parser = new Parser(context.property)
-  const computeValue = new ComputeValue(
-    context.element,
-    context.property,
-    context.values,
-    context.classes
-  )
+  const computeValue = new ComputeValue(context.element, context.property, context.values)
   const styler = new StyleHandler(
     context.element,
     context.property,
@@ -65,14 +53,7 @@ export function createTenoxUIComponents(context: TenoxUIContext) {
     styler
   )
   const observer = new Observer(context.element)
-  const parseStyles = new ParseStyles(
-    context.property,
-    context.values,
-    context.classes,
-    styler,
-    pseudo,
-    responsive
-  )
+  const parseStyles = new ParseStyles(context.property, context.classes, styler, pseudo, responsive)
 
   return { parser, computeValue, styler, responsive, observer, pseudo, parseStyles }
 }

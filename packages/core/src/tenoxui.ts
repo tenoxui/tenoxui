@@ -1,14 +1,5 @@
-import {
-  Classes,
-  Property,
-  MakeTenoxUIParams,
-  Breakpoint,
-  DefinedValue,
-  GetCSSProperty
-} from './lib/types'
+import { MakeTenoxUIParams } from './lib/types'
 import { TenoxUIContext, createTenoxUIComponents } from './utils/assigner'
-import { isObjectWithValue } from './utils/valueObject'
-import { camelToKebab } from './utils/converter'
 
 // makeTenoxUI
 class makeTenoxUI {

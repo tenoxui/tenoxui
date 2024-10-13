@@ -23,12 +23,7 @@ export class StyleHandler {
     this.valueRegistry = values
     this.classes = classes
 
-    this.computeValue = new ComputeValue(
-      this.htmlElement,
-      this.styleAttribute,
-      this.valueRegistry,
-      this.classes
-    )
+    this.computeValue = new ComputeValue(this.htmlElement, this.styleAttribute, this.valueRegistry)
   }
 
   private isInitialLoad: boolean = true
