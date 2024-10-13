@@ -77,19 +77,17 @@
     'gap-y': 'columnGap',
     'gap-x': 'rowGap',
     // align
-    'align-i': 'alignItems',
+    ai: 'alignItems',
     // justify
-    'justify-c': 'justifyContent',
+    jc: 'justifyContent',
+    // place -
+    'pc-i': 'placeItems',
     // border
     bdr: 'border',
-    'bdr-c': 'borderColor',
-    'bdr-r': 'borderRadius',
-    'bdr-s': 'borderStyle',
-    'bdr-w': 'borderWidth',
-    'bdr-w-l': 'borderLeftWidth',
-    'bdr-w-r': 'borderRightWidth',
-    'bdr-w-t': 'borderTopWidth',
-    'bdr-w-b': 'borderBottomWidth',
+    bc: 'borderColor',
+    br: 'borderRadius',
+    bs: 'borderStyle',
+    bw: 'borderWidth',
     // cursor
     cursor: 'cursor',
     // overflow
@@ -99,7 +97,7 @@
     // aspect Ratio
     ratio: 'aspectRatio',
     // transition
-    transition: 'transition',
+    tr: 'transition',
     'tr-time': 'transitionDuration',
     'tr-prop': 'transitionProperty',
     'tr-timing': 'transitionTimingFunction',
@@ -109,8 +107,6 @@
     // custom property
     box: ['width', 'height'],
     'flex-parent': ['justifyContent', 'alignItems'],
-
-    // full properties
     all: 'all',
     order: 'order',
     visibility: 'visibility',
@@ -118,14 +114,12 @@
     float: 'float',
     isolation: 'isolation',
     col: 'columns',
-    'box-si': 'boxSizing',
+    'box-s': 'boxSizing',
     // place like
-    'pc-i': 'placeItems',
     'pc-c': 'placeContents',
     'pc-s': 'placeSelf',
-
     // border extended
-    'bg-att': 'backgroundAttachment',
+    'bg-at': 'backgroundAttachment',
     'bg-ori': 'backgroundOrigin',
     'bg-clip': 'backgroundClip',
     'bg-p-x': 'backgroundPositionX',
@@ -133,29 +127,29 @@
     'bg-r-x': 'backgroundRepeatX',
     'bg-r-y': 'backgroundRepeaty',
     // align and justify
-    'align-c': 'alignContent',
-    'align-s': 'alignSelf',
-    'justify-i': 'justifyItems',
-    'justify-s': 'justifySelf',
+    ac: 'alignContent',
+    as: 'alignSelf',
+    ji: 'justifyItems',
+    js: 'justifySelf',
     // border color
-    'bdr-c-t': 'borderTopColor',
-    'bdr-c-b': 'borderBottomColor',
-    'bdr-c-l': 'borderLeftColor',
-    'bdr-c-r': 'borderRightColor',
+    'bc-t': 'borderTopColor',
+    'bc-b': 'borderBottomColor',
+    'bc-l': 'borderLeftColor',
+    'bc-r': 'borderRightColor',
     // border style
-    'bdr-s-t': 'borderTopStyle',
-    'bdr-s-b': 'borderBottomStyle',
-    'bdr-s-l': 'borderLeftStyle',
-    'bdr-s-r': 'borderRightStyle',
+    'bs-t': 'borderTopStyle',
+    'bs-b': 'borderBottomStyle',
+    'bs-l': 'borderLeftStyle',
+    'bs-r': 'borderRightStyle',
     // border Radius
-    'bdr-r-t': ['borderTopRightRadius', 'borderTopLeftRadius'],
-    'bdr-r-b': ['borderBottomRightRadius', 'borderBottomLeftRadius'],
-    'bdr-r-l': ['borderBottomLeftRadius', 'borderTopLeftRadius'],
-    'bdr-r-r': ['borderBottomRightRadius', 'borderTopRightRadius'],
-    'bdr-r-tl': 'borderTopLeftRadius',
-    'bdr-r-tr': 'borderTopRightRadius',
-    'bdr-r-bl': 'borderBottomLeftRadius',
-    'bdr-r-br': 'borderBottomRightRadius',
+    'br-t': ['borderTopRightRadius', 'borderTopLeftRadius'],
+    'br-b': ['borderBottomRightRadius', 'borderBottomLeftRadius'],
+    'br-l': ['borderBottomLeftRadius', 'borderTopLeftRadius'],
+    'br-r': ['borderBottomRightRadius', 'borderTopRightRadius'],
+    'br-tl': 'borderTopLeftRadius',
+    'br-tr': 'borderTopRightRadius',
+    'br-bl': 'borderBottomLeftRadius',
+    'br-br': 'borderBottomRightRadius',
     // other border
     'bdr-img': 'borderImage',
     // list style
@@ -164,7 +158,7 @@
     'list-s-pn': 'listStylePosition',
     'list-s-type': 'listStyleType',
     // animation
-    animation: 'animation',
+    an: 'animation',
     'an-name': 'animationName',
     'an-direction': 'animationDirection',
     'an-fill-mode': 'animationFillMode',

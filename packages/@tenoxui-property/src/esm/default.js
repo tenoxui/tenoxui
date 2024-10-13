@@ -86,7 +86,7 @@ export const property = {
   // aspect Ratio
   ratio: 'aspectRatio',
   // transition
-  transition: 'transition',
+  tr: 'transition',
   'tr-time': 'transitionDuration',
   'tr-prop': 'transitionProperty',
   'tr-timing': 'transitionTimingFunction',

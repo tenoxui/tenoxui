@@ -77,19 +77,17 @@
     'gap-y': 'columnGap',
     'gap-x': 'rowGap',
     // align
-    'align-i': 'alignItems',
+    ai: 'alignItems',
     // justify
-    'justify-c': 'justifyContent',
+    jc: 'justifyContent',
+    // place -
+    'pc-i': 'placeItems',
     // border
     bdr: 'border',
-    'bdr-c': 'borderColor',
-    'bdr-r': 'borderRadius',
-    'bdr-s': 'borderStyle',
-    'bdr-w': 'borderWidth',
-    'bdr-w-l': 'borderLeftWidth',
-    'bdr-w-r': 'borderRightWidth',
-    'bdr-w-t': 'borderTopWidth',
-    'bdr-w-b': 'borderBottomWidth',
+    bc: 'borderColor',
+    br: 'borderRadius',
+    bs: 'borderStyle',
+    bw: 'borderWidth',
     // cursor
     cursor: 'cursor',
     // overflow
@@ -99,7 +97,7 @@
     // aspect Ratio
     ratio: 'aspectRatio',
     // transition
-    transition: 'transition',
+    tr: 'transition',
     'tr-time': 'transitionDuration',
     'tr-prop': 'transitionProperty',
     'tr-timing': 'transitionTimingFunction',
