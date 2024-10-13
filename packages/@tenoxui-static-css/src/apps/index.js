@@ -1,4 +1,4 @@
-const element = document.querySelector('.my-nigg')
+const element = document.querySelector('.my-sunshine')
 
 element.classList.add('bg-#973dd0')
 element.classList.toggle('bg-#d03d3d')
