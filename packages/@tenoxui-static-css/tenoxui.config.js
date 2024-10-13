@@ -1,23 +1,23 @@
-import { fullProps } from "../@tenoxui-property/src/esm/full.js";
+import { property } from '../@tenoxui-property/src/esm/full.js'
 
 export default {
-  input: ["index.html", "src/**/*.{html,js,jsx,ts,tsx,vue,svelte,astro}"],
-  output: "styles.css",
-  property: fullProps,
+  input: ['index.html', 'src/**/*.{html,js,jsx,ts,tsx,vue,svelte,astro}'],
+  output: 'styles.css',
+  property: property,
   classes: {
     display: {
-      center: "flex",
+      center: 'flex'
     },
     alignItems: {
-      center: "center",
+      center: 'center'
     },
     justifyContent: {
-      center: "center",
-    },
+      center: 'center'
+    }
   },
   breakpoints: [
-    { name: "sm", max: 640 },
-    { name: "md", min: 641, max: 768 },
-    { name: "lg", min: 769 },
-  ],
-};
+    { name: 'sm', max: 640 },
+    { name: 'md', min: 641, max: 768 },
+    { name: 'lg', min: 769 }
+  ]
+}
