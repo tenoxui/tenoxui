@@ -26,47 +26,47 @@ Create a configuration file (e.g., `tenoxui.config.js` or define with extensions
 ```javascript
 module.exports = {
   // input file
-  input: ["index.html", "src/**/*.jsx"],
+  input: ['index.html', 'src/**/*.jsx'],
   // where's the output should written
-  output: "dist/styles.css",
+  output: 'dist/styles.css',
   property: {
     // regular type & property
-    bg: "backgroundColor",
-    text: "color",
-    p: "padding",
-    br: "borderRadius",
+    bg: 'backgroundColor',
+    text: 'color',
+    p: 'padding',
+    br: 'borderRadius',
     // multiple property
-    size: ["width", "height"],
+    size: ['width', 'height'],
     // variable property
-    "border-color": "--bdr-clr",
+    'border-color': '--bdr-clr',
     // custom value property
     gradient: {
-      property: "backgroundImage",
-      value: "linear-gradient(to right, purple, {value})",
+      property: 'backgroundImage',
+      value: 'linear-gradient(to right, purple, {value})'
     },
     flex: {
-      property: ["justifyContent", "alignItems"],
-      value: "{value}",
-    },
+      property: ['justifyContent', 'alignItems'],
+      value: '{value}'
+    }
   },
   // custom value
   values: {
-    primary: "#ccf654", // usage _ text-primary = .text-primary { color: #ccf654; }
-    rex: "#0000ff",
+    primary: '#ccf654', // usage _ text-primary = .text-primary { color: #ccf654; }
+    rex: '#0000ff'
   },
   // custom classes. property-based className
   classes: {
     display: {
-      "se-flex": "flex",
-      iflex: "inline-flex", // .iflex { display: inline-flex; }
-      "b-tenox": "block",
+      'se-flex': 'flex',
+      iflex: 'inline-flex', // .iflex { display: inline-flex; }
+      'b-tenox': 'block'
     },
     alignItems: {
-      "se-flex": "center",
-    },
+      'se-flex': 'center'
+    }
     // output `se-flex` _ .se-flex { display: flex; align-items: center; }
-  },
-};
+  }
+}
 ```
 
 - `input`: Array of glob patterns for input files

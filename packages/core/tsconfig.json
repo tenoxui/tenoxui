@@ -1,15 +1,19 @@
 {
   "compilerOptions": {
-    "target": "ES2017",
-    "module": "ES2015",
-    "outDir": "./src/js",
-    "rootDir": "./src/ts",
+    "target": "es2017",
+    "module": "esnext",
+    "lib": ["es2017", "dom"],
+    "outDir": "./dist",
+    "rootDir": "./src",
     "esModuleInterop": true,
     "skipLibCheck": true,
+    "strict": true,
     "forceConsistentCasingInFileNames": true,
     "sourceMap": true,
+    "removeComments": true,
+    "noUnusedLocals": true,
     "declaration": true
   },
-  "include": ["./src/ts/**/*"],
+  "include": ["./src"],
   "exclude": ["node_modules"]
 }

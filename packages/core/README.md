@@ -25,22 +25,22 @@ Example for observing only single element.
 // create tenoxui instance
 const tx = new makeTenoxUI({
   // after adding the element, you can actually add classNames directly in the element's class attribute
-  element: document.querySelector(".my-element"),
+  element: document.querySelector('.my-element'),
   property: {
-    bg: "background",
-    text: "color",
-    p: "padding",
-    px: ["paddingLeft", "paddingRight"],
-  },
-});
+    bg: 'background',
+    text: 'color',
+    p: 'padding',
+    px: ['paddingLeft', 'paddingRight']
+  }
+})
 
 // add styles
-tx.applyMultiStyles("p-1rem bg-black text-#ccf654");
+tx.applyMultiStyles('p-1rem bg-black text-#ccf654')
 
 // or use DOM
-tx.htmlElement.classList.add("p-1rem");
-tx.htmlElement.classList.add("bg-black");
-tx.htmlElement.classList.add("text-#ccf654");
+tx.htmlElement.classList.add('p-1rem')
+tx.htmlElement.classList.add('bg-black')
+tx.htmlElement.classList.add('text-#ccf654')
 ```
 
 ### Creating Mass Styler
@@ -49,25 +49,25 @@ It's not utility-first if it cannot access the element's className directly. So,
 
 ```js
 // this is not only selectors you can use, you can always create something else :p
-const selectors = document.querySelectorAll("*[class]");
+const selectors = document.querySelectorAll('*[class]')
 
 selectors.forEach((selector) => {
   const styler = new makeTenoxUI({
     element: selector,
     property: {
-      bg: "background",
-      text: "color",
-      p: "padding",
-      br: "border-radius",
-      mt: "marginTop",
-    }, // add your type and property here
-  });
+      bg: 'background',
+      text: 'color',
+      p: 'padding',
+      br: 'border-radius',
+      mt: 'marginTop'
+    } // add your type and property here
+  })
 
   selector.classList.forEach((className) => {
     // this method will every single className and execute it one by one
-    styler.applyStyles(className);
-  });
-});
+    styler.applyStyles(className)
+  })
+})
 ```
 
 Then, inside your html :
@@ -87,7 +87,7 @@ npm i @tenoxui/core --save-dev
 Add it by importing the `makeTenoxUI` :
 
 ```javascript
-import { makeTenoxUI } from "@tenoxui/core";
+import { makeTenoxUI } from '@tenoxui/core'
 ```
 
 ### CDN
@@ -106,23 +106,29 @@ import { makeTenoxUI } from "@tenoxui/core";
 
 ```typescript
 class makeTenoxUI {
-  constructor({ element, property = {}, values = {}, breakpoint = [], classes = {} }: MakeTenoxUIParams) {
-    this.htmlElement = element instanceof HTMLElement ? element : element[0];
-    this.styleAttribute = property;
-    this.valueRegistry = values;
-    this.breakpoints = breakpoint;
-    this.classes = classes;
+  constructor({
+    element,
+    property = {},
+    values = {},
+    breakpoint = [],
+    classes = {}
+  }: MakeTenoxUIParams) {
+    this.htmlElement = element instanceof HTMLElement ? element : element[0]
+    this.styleAttribute = property
+    this.valueRegistry = values
+    this.breakpoints = breakpoint
+    this.classes = classes
   }
   // selectors
-  private readonly htmlElement: HTMLElement;
+  private readonly htmlElement: HTMLElement
   // types and properties
-  private readonly styleAttribute: Property;
+  private readonly styleAttribute: Property
   // stored values
-  private readonly valueRegistry: DefinedValue;
+  private readonly valueRegistry: DefinedValue
   // breakpoints
-  private readonly breakpoints: Breakpoint[];
+  private readonly breakpoints: Breakpoint[]
   // classes
-  private readonly classes: Classes;
+  private readonly classes: Classes
 
   /* ... */
 }
@@ -136,9 +142,9 @@ Usage :
 
 ```javascript
 new makeTenoxUI({
-  element: document.querySelector(".my-element"),
+  element: document.querySelector('.my-element')
   /* ... */
-});
+})
 ```
 
 #### `property`
@@ -152,9 +158,9 @@ This is the basic example for defining the `type` and `property` :
 ```javascript
 const props = {
   // type: property
-  m: "margin",
-  p: "padding",
-};
+  m: 'margin',
+  p: 'padding'
+}
 ```
 
 Usage :
@@ -178,11 +184,11 @@ You can use an array of property to add same value into multiple propeties, here
 
 ```javascript
 const props = {
-  d: "display",
-  size: ["width", "height"],
-  "flex-parent": ["alignItems", "justify-content"], // you can define with both `camelCase` or `kebab-case`
-  transition: ["transition", "-webkit-transition"],
-};
+  d: 'display',
+  size: ['width', 'height'],
+  'flex-parent': ['alignItems', 'justify-content'], // you can define with both `camelCase` or `kebab-case`
+  transition: ['transition', '-webkit-transition']
+}
 ```
 
 Usage :
@@ -208,9 +214,9 @@ div {
 
 ```javascript
 const props = {
-  color: "--my-color",
-  text: "color",
-};
+  color: '--my-color',
+  text: 'color'
+}
 ```
 
 Usage :
@@ -235,14 +241,14 @@ You can also define custom value. You can set where the value will take place. E
 ```javascript
 const props = {
   gradient: {
-    property: "background",
-    value: "linear-gradient(to right, {value}, blue, {value})",
+    property: 'background',
+    value: 'linear-gradient(to right, {value}, blue, {value})'
   },
   blur: {
-    property: "filter",
-    value: "blur({value})",
-  },
-};
+    property: 'filter',
+    value: 'blur({value})'
+  }
+}
 ```
 
 The `{value}` will replaced with the value from your class names.
@@ -268,18 +274,18 @@ You can define your `values` that class names can use. Example :
 
 ```javascript
 new makeTenoxUI({
-  element: "...",
+  element: '...',
   property: {
-    w: "width",
-    p: "padding",
+    w: 'width',
+    p: 'padding'
   },
   values: {
-    full: "100%",
-    size: "200px",
-    2: "4px",
-  },
+    full: '100%',
+    size: '200px',
+    2: '4px'
+  }
   /* ... */
-});
+})
 ```
 
 Usage :
@@ -331,19 +337,19 @@ If you want to use the responsive feature, you must use it like the code above, 
 
 ```typescript
 interface MakeTenoxUIParams {
-  element: HTMLElement | NodeListOf<HTMLElement>;
-  property: Property;
-  values?: DefinedValue;
-  breakpoint?: Breakpoint[];
-  classes?: Classes;
+  element: HTMLElement | NodeListOf<HTMLElement>
+  property: Property
+  values?: DefinedValue
+  breakpoint?: Breakpoint[]
+  classes?: Classes
 }
-type CSSProperty = keyof CSSStyleDeclaration;
-type CSSPropertyOrVariable = CSSProperty | `--${string}`;
-type GetCSSProperty = CSSPropertyOrVariable | CSSPropertyOrVariable[];
-type Property = { [type: string]: GetCSSProperty | { property?: GetCSSProperty; value?: string } };
-type Breakpoint = { name: string; min?: number; max?: number };
-type DefinedValue = { [type: string]: { [value: string]: string } | string };
-type Classes = { [property in CSSPropertyOrVariable]?: { [className: string]: string } };
+type CSSProperty = keyof CSSStyleDeclaration
+type CSSPropertyOrVariable = CSSProperty | `--${string}`
+type GetCSSProperty = CSSPropertyOrVariable | CSSPropertyOrVariable[]
+type Property = { [type: string]: GetCSSProperty | { property?: GetCSSProperty; value?: string } }
+type Breakpoint = { name: string; min?: number; max?: number }
+type DefinedValue = { [type: string]: { [value: string]: string } | string }
+type Classes = { [property in CSSPropertyOrVariable]?: { [className: string]: string } }
 ```
 
 #### `addStyle`
@@ -357,10 +363,10 @@ public addStyle(type: string, value: string, unit: string): void {}
 Usage :
 
 ```javascript
-const styler = new makeTenoxUI();
+const styler = new makeTenoxUI()
 
-styler.addStyle("p", "10", "px");
-styler.addStyle("m", "1", "rem");
+styler.addStyle('p', '10', 'px')
+styler.addStyle('m', '1', 'rem')
 ```
 
 ### `applyStyles`
@@ -376,10 +382,10 @@ public applyStyles(className: string): void {}
 Usage :
 
 ```javascript
-const styler = new makeTenoxUI();
+const styler = new makeTenoxUI()
 
-styler.applyStyles("p-10px");
-styler.applyStyles("m-1rem");
+styler.applyStyles('p-10px')
+styler.applyStyles('m-1rem')
 ```
 
 ## Usage
@@ -398,16 +404,16 @@ Then, add the styler instance :
 
 ```javascript
 // define selector
-const selector = document.querySelector(".my-element");
+const selector = document.querySelector('.my-element')
 // create tenoxui instance
 const styler = new makeTenoxUI({
   element: selector,
-  property: { bg: "background", text: "color" },
-});
+  property: { bg: 'background', text: 'color' }
+})
 
 // apply the styles
-styler.applyStyles("bg-red");
-styler.applyStyles("text-blue");
+styler.applyStyles('bg-red')
+styler.applyStyles('text-blue')
 ```
 
 ### Multi Elements
@@ -425,19 +431,19 @@ Then, add the styler instance :
 
 ```javascript
 // define selector
-const selectors = document.querySelectorAll(".my-element");
+const selectors = document.querySelectorAll('.my-element')
 
 selectors.forEach((selector) => {
   // create tenoxui instance
   const styler = new makeTenoxUI({
     element: selector,
-    property: { bg: "background", text: "color" },
-  });
+    property: { bg: 'background', text: 'color' }
+  })
 
   // apply the styles
-  styler.applyStyles("bg-red");
-  styler.applyStyles("text-blue");
-});
+  styler.applyStyles('bg-red')
+  styler.applyStyles('text-blue')
+})
 ```
 
 ### Auto-Styler (complex usage)
@@ -461,10 +467,10 @@ Let's add some `types` and `properties` you need :
 
 ```javascript
 const props = {
-  bg: "background",
-  p: "padding",
-  br: "borderRadius",
-};
+  bg: 'background',
+  p: 'padding',
+  br: 'borderRadius'
+}
 ```
 
 #### Creating a Selector
@@ -472,9 +478,9 @@ const props = {
 After defining some `types`, you need to create a selector from the defined `types` key's name :
 
 ```javascript
-const classes = Object.keys(props).map((className) => `[class*="${className}-"]`);
+const classes = Object.keys(props).map((className) => `[class*="${className}-"]`)
 
-const selectors = document.querySelectorAll(classes.join(", "));
+const selectors = document.querySelectorAll(classes.join(', '))
 ```
 
 #### Putting All Together
@@ -486,7 +492,7 @@ First, we will iterate the `selectors` :
 ```javascript
 selectors.forEach((selector) => {
   /* ... */
-});
+})
 ```
 
 Adding styler instance :
@@ -496,56 +502,56 @@ const styler = new makeTenoxUI({
   // get each selector
   element: selector,
   // the propeties we define earlier
-  property: props,
-});
+  property: props
+})
 ```
 
 Finally, get all element's class name and applying each styles from the element's `classList` :
 
 ```javascript
 selector.classList.forEach((className) => {
-  styler.applyStyles(className);
-});
+  styler.applyStyles(className)
+})
 ```
 
 Or, you can be more specific for scanning only the possible classes :
 
 ```javascript
 selector.classList.forEach((className) => {
-  const strippedClassName = className.replace(/^[a-z-]*:/, "");
-  const prefix = strippedClassName.split("-")[0];
+  const strippedClassName = className.replace(/^[a-z-]*:/, '')
+  const prefix = strippedClassName.split('-')[0]
   if (props[prefix]) {
-    styler.applyStyles(className);
-    console.log(className);
+    styler.applyStyles(className)
+    console.log(className)
   }
-});
+})
 ```
 
 The final code will looks like this :
 
 ```javascript
 const props = {
-  bg: "background",
-  text: "color",
-  p: "padding",
-  br: "border-radius",
-  mt: "marginTop",
-};
+  bg: 'background',
+  text: 'color',
+  p: 'padding',
+  br: 'border-radius',
+  mt: 'marginTop'
+}
 
-const classes = Object.keys(props).map((className) => `[class*="${className}-"]`);
+const classes = Object.keys(props).map((className) => `[class*="${className}-"]`)
 
-const selectors = document.querySelectorAll(classes.join(", "));
+const selectors = document.querySelectorAll(classes.join(', '))
 
 selectors.forEach((selector) => {
   const styler = new makeTenoxUI({
     element: selector,
-    property: props,
-  });
+    property: props
+  })
 
   selector.classList.forEach((className) => {
-    styler.applyStyles(className);
-  });
-});
+    styler.applyStyles(className)
+  })
+})
 ```
 
 And done ✅. Easy right? :)
