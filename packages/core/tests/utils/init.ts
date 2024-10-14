@@ -1,8 +1,9 @@
 import { JSDOM } from 'jsdom'
+// dev
 import { makeTenoxUI } from '../../src/tenoxui'
 
-// use build ready module
-// import { makeTenoxUI } from "../../dist/js/tenoxui.esm";
+// use build ready
+// import { makeTenoxUI } from '../../dist/tenoxui.esm.js'
 
 export function setupJSDOM() {
   const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', {
