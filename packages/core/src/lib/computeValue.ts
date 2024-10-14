@@ -19,12 +19,14 @@ export class ComputeValue {
     if ((value + unit).length !== value.toString().length && unit !== '') {
       resolvedValue = value
     } else if (
+      // is custom value property
       typeof properties === 'object' &&
+      // has `value` field
       'value' in properties &&
       properties.value &&
-      !properties.value.includes('{value}')
+      !properties.value.includes('{value}') // but got no `{value}` string
     ) {
-      return properties.value
+      return properties.value // use its value without needs to add any value
     }
     // CSS variable property
     else if (resolvedValue.startsWith('$')) {
@@ -32,7 +34,10 @@ export class ComputeValue {
     }
     // Custom value
     else if (resolvedValue.startsWith('[') && resolvedValue.endsWith(']')) {
-      const solidValue = resolvedValue.slice(1, -1).replace(/\\_/g, ' ')
+      const solidValue = resolvedValue
+        .slice(1, -1)
+        // .replace(/\\_/g, ' ') // old with `\_` instead of `_`
+        .replace(/_/g, ' ')
       return solidValue.startsWith('--') ? `var(${solidValue})` : solidValue
     }
 
@@ -98,7 +103,7 @@ export class ComputeValue {
     })
   }
 
-  // Custom class or this.classes's utility.
+  // Custom class or Classes's utility.
   public setCustomClass(propKey: CSSPropertyOrVariable, value: string): void {
     if ((propKey as string).startsWith('--')) {
       this.setCssVar(propKey, value)

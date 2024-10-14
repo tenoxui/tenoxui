@@ -29,47 +29,28 @@ export class StyleHandler {
   private isInitialLoad: boolean = true
 
   public addStyle(
-    type: string,
+    type: string, // shorthand prefixes or class name for Classes
     value?: string,
     unit?: string,
-    classProp?: CSSPropertyOrVariable
+    classProp?: CSSPropertyOrVariable // for Classes css property
   ): void {
     const properties = this.styleAttribute[type]
     const definedClass = this.classes
 
-    // Use className from `definedClass` instead
+    // Use className from definedClass or Classes instead
     if (classProp && value && definedClass[classProp]) {
       this.computeValue.setCustomClass(classProp, value)
     }
 
-    /**
-     * Creating custom className from custom value property.
-     *
-     * Example :
-     * _ property config :
-     * {
-     *   bg: {
-     *     property: 'background',
-     *     value: '{value}'
-     *   },
-     *   myBg: {
-     *     property: 'background',
-     *     value: 'red'
-     *   }
-     * }
-     *
-     * _ element class name
-     * <div class='bg-red'></div>
-     * <div class='myBg'></div>
-     *
-     * Both elements will have same background color, but `myBg` doesn't need any value to pass.
-     */
+    // No value included and is custom value property
+    // e.g. { myBg: { property: 'background' value: 'blue'} }
+    // use as _ <div class="myBg"></div> _ for `background: blue;``
     if (!value && isObjectWithValue(properties)) {
       value = properties.value
     }
 
     if (!value) return
-    // Compute the value
+
     const resolvedValue = this.computeValue.valueHandler(type, value, unit || '')
 
     /**

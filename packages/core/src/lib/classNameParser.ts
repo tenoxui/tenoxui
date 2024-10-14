@@ -32,7 +32,14 @@ export class Parser {
     const classNameRegEx: RegExp = this.generateClassNameRegEx()
 
     const match = className.match(classNameRegEx)
+
     if (!match) return null
+
+    // e.g. _ `hover:p-20px` _ it will divided as :
+    // prefix: hover
+    // type: p (will matches with the key's name of Property)
+    // value: 20
+    // unit: px
 
     const [, prefix, type, value, unit] = match
 

@@ -99,7 +99,7 @@ describe('Value handler and applying styles', () => {
     expect(
       styler.create['computeValue'].valueHandler(
         '',
-        styler.create['parser'].parseClassName('bg-[rgb(221\\_183\\_124\\_/\\_0.3)]')[2],
+        styler.create['parser'].parseClassName('bg-[rgb(221_183_124_/_0.3)]')[2],
         ''
       )
     ).toBe('rgb(221 183 124 / 0.3)')
