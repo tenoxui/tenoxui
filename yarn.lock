@@ -445,10 +445,10 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@nousantx/nwm@1.0.0-alpha.1":
-  version "1.0.0-alpha.1"
-  resolved "https://registry.yarnpkg.com/@nousantx/nwm/-/nwm-1.0.0-alpha.1.tgz#8ae2a859e9ba1c983c83a083976599d27c8fe859"
-  integrity sha512-82amLcSSaN/97gpEVGavrrUb069max/DK2teaLcDXdZOBR7YVCCsw/n6e0iUwFqnSkZhfd2Jioc0ZB2oWBaH5w==
+"@nousantx/nwm@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@nousantx/nwm/-/nwm-1.1.0.tgz#619ca397f449074e415ef2583cea2b681fa1c253"
+  integrity sha512-DnLPmS6H7QrK4U8u8yypD2a7naMFOaIG/EfuZYIacE1ivhfxkpCppt+RIXz2qb+EXYoheoVk2amoIRra6ycCdA==
 
 "@pkgjs/parseargs@^0.11.0":
   version "0.11.0"
@@ -669,11 +669,6 @@
   version "4.24.0"
   resolved "https://registry.yarnpkg.com/@rollup/rollup-win32-x64-msvc/-/rollup-win32-x64-msvc-4.24.0.tgz#0574d7e87b44ee8511d08cc7f914bcb802b70818"
   integrity sha512-fbMkAF7fufku0N2dE5TBXcNlg0pt0cJue4xBRE2Qc5Vqikxr4VCgKj/ht6SMdFcOacVA9rqF70APJ8RN/4vMJw==
-
-"@tenoxui/core@*":
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/@tenoxui/core/-/core-1.0.4.tgz#ec9699c57e24be539c67df8247f5e7f0df17ea4d"
-  integrity sha512-CuuD3hE+OHNzLOcnpIXEBemR/lgWAjUbUmRVT0CgxXYX269yOVgU/odERG6tLeLCae5U6w2ZTQOpEacFKZ/Uxg==
 
 "@types/babel__core@^7.20.5":
   version "7.20.5"
@@ -2761,11 +2756,6 @@ symbol-tree@^3.2.4:
   version "3.2.4"
   resolved "https://registry.npmjs.org/symbol-tree/-/symbol-tree-3.2.4.tgz"
   integrity sha512-9QNk5KwDF+Bvz+PyObkmSYjI5ksVUYtjW7AU22r2NKcfLJcXp96hkDWU3+XndOsUb+AQ9QhfzfCT2O+CNWT5Tw==
-
-tenoxui@0.12.0.alpha.0:
-  version "0.11.3"
-  resolved "https://registry.yarnpkg.com/tenoxui/-/tenoxui-0.11.3.tgz#20c7af4b91c43d768595e94eab3946688648774f"
-  integrity sha512-fVPiIZ8Nxeel5gtl2QbrIDQI71izEX7G1+EIIaAEiDPnx7sYbqVXiMLAsSO7ZP9MfYwv+CzLZqZz/qy0PHg+UQ==
 
 terser@^5.17.4:
   version "5.34.1"
