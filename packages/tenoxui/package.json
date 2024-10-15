@@ -1,30 +1,42 @@
 {
   "name": "tenoxui",
-  "version": "0.11.4",
+  "version": "0.12.0-alpha.1",
   "description": "A CSS Framework without CSS file :D",
   "author": "NOuSantx <nousantx@gmail.com>",
   "license": "MIT",
   "homepage": "https://tenoxui.web.app",
   "repository": {
     "type": "git",
-    "url": "https://github.com/tenoxui/tenoxui.git",
+    "url": "git+https://github.com/tenoxui/tenoxui.git",
     "directory": "packages/tenoxui"
   },
   "bugs": {
     "url": "https://github.com/tenoxui/tenoxui/issues"
   },
-  "keywords": ["framework", "css", "css-in-js", "utility-first"],
+  "keywords": [
+    "framework",
+    "css",
+    "css-in-js",
+    "utility-first"
+  ],
+  "type": "module",
+  "types": "./dist/js/tenoxui.d.ts",
   "main": "./dist/js/tenoxui.js",
-  "style": "./dist/css/tenoxui.css",
   "module": "./dist/js/tenoxui.esm.js",
-  "types": "./dist/js/tenoxui.esm.d.ts",
-  "files": ["dist/*", "package.json", "README.md", "LICENSE"],
+  "style": "./dist/css/tenoxui.css",
+  "files": [
+    "dist/*",
+    "package.json",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
-    "dev": "tsc --watch",
+    "dev": "rollup -c -w",
+    "build": "rollup -c",
     "build:css": "cleancss src/css/tenoxui.css -o dist/css/tenoxui.min.css --source-map && cp src/css/tenoxui.css dist/css/",
     "build:js": "uglifyjs ./src/js/tenoxui.js -c -m toplevel  -o dist/js/tenoxui.min.js --source-map \"url='tenoxui.min.js.map'\" --comments \"/^!/\" --keep-fnames && uglifyjs src/js/tenoxui.js --beautify -o dist/js/tenoxui.js --source-map \"url='tenoxui.js.map'\" --comments \"/^!/\" && cp src/js/tenoxui.d.ts src/js/tenoxui.js.map dist/js && prettier -w dist/js/tenoxui.js dist/js/tenoxui.d.ts",
     "build:esm": "uglifyjs ./src/js/tenoxui.esm.js -c -m toplevel -o dist/js/tenoxui.esm.min.js --source-map \"url='tenoxui.esm.min.js.map'\" --comments \"/^!/\" --keep-fnames && uglifyjs ./src/js/tenoxui.esm.js --beautify -o dist/js/tenoxui.esm.js --source-map \"url='tenoxui.esm.js.map'\" --comments \"/^!/\" && cp src/js/tenoxui.esm.d.ts src/js/tenoxui.esm.js.map dist/js && prettier -w dist/js/tenoxui.esm.js dist/js/tenoxui.esm.d.ts",
-    "build": "tsc && yarn build:css && yarn build:js && yarn build:esm && echo '\\033[92mHave Fun :D\\033[0m'",
+    "build:old": "tsc && yarn build:css && yarn build:js && yarn build:esm && echo '\\033[92mHave Fun :D\\033[0m'",
     "test": "echo '\\033[92mHave Fun :D\\033[0m'",
     "prepublish": "npm pack --dry-run"
   },
@@ -32,6 +44,16 @@
     "clean-css-cli": "^5.6.3",
     "prettier": "^3.2.5",
     "typescript": "^5.4.5",
-    "uglify-js": "^3.18.0"
+    "uglify-js": "^3.19.3"
+  },
+  "dependencies": {
+    "@rollup/plugin-commonjs": "^28.0.0",
+    "@rollup/plugin-node-resolve": "^15.3.0",
+    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-typescript": "^12.1.0",
+    "@tenoxui/core": "^1.1.2",
+    "@types/node": "^22.7.5",
+    "rollup": "^4.24.0",
+    "tslib": "^2.7.0"
   }
 }
