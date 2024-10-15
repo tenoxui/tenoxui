@@ -33,12 +33,7 @@
   "scripts": {
     "dev": "rollup -c -w",
     "build": "rollup -c",
-    "build:css": "cleancss src/css/tenoxui.css -o dist/css/tenoxui.min.css --source-map && cp src/css/tenoxui.css dist/css/",
-    "build:js": "uglifyjs ./src/js/tenoxui.js -c -m toplevel  -o dist/js/tenoxui.min.js --source-map \"url='tenoxui.min.js.map'\" --comments \"/^!/\" --keep-fnames && uglifyjs src/js/tenoxui.js --beautify -o dist/js/tenoxui.js --source-map \"url='tenoxui.js.map'\" --comments \"/^!/\" && cp src/js/tenoxui.d.ts src/js/tenoxui.js.map dist/js && prettier -w dist/js/tenoxui.js dist/js/tenoxui.d.ts",
-    "build:esm": "uglifyjs ./src/js/tenoxui.esm.js -c -m toplevel -o dist/js/tenoxui.esm.min.js --source-map \"url='tenoxui.esm.min.js.map'\" --comments \"/^!/\" --keep-fnames && uglifyjs ./src/js/tenoxui.esm.js --beautify -o dist/js/tenoxui.esm.js --source-map \"url='tenoxui.esm.js.map'\" --comments \"/^!/\" && cp src/js/tenoxui.esm.d.ts src/js/tenoxui.esm.js.map dist/js && prettier -w dist/js/tenoxui.esm.js dist/js/tenoxui.esm.d.ts",
-    "build:old": "tsc && yarn build:css && yarn build:js && yarn build:esm && echo '\\033[92mHave Fun :D\\033[0m'",
-    "test": "echo '\\033[92mHave Fun :D\\033[0m'",
-    "prepublish": "npm pack --dry-run"
+    "build:css": "cleancss src/css/tenoxui.css -o dist/css/tenoxui.min.css --source-map && cp src/css/tenoxui.css dist/css/"
   },
   "devDependencies": {
     "clean-css-cli": "^5.6.3",
