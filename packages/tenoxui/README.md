@@ -4,7 +4,7 @@
  >
   </a>
 </p>
-<h1 align="center">TenoxUI v0.11.0</h1>
+<h1 align="center">TenoxUI v0.12.0</h1>
 <p align="center">
   Very lightweight and easy to configure, utility-first CSS framework.
   <br>
