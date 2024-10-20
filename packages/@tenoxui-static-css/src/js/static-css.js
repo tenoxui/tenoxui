@@ -13,7 +13,7 @@ export class GenerateCSS {
 
   validateConfig(config) {
     const requiredFields = ['input', 'output', 'property']
-    requiredFields.forEach((field) => {
+    requiredFields.forEach(field => {
       if (!config[field]) {
         console.error(`Missing required configuration field: ${field}`)
       }
@@ -25,18 +25,66 @@ export class GenerateCSS {
   }
 
   static toCamelCase(str) {
-    return str.replace(/-([a-z])/g, (g) => g[1].toUpperCase())
+    return str.replace(/-([a-z])/g, g => g[1].toUpperCase())
   }
 
   static toKebabCase(str) {
-    return str.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)
+    const prefixes = ['webkit', 'moz', 'ms', 'o']
+    for (const prefix of prefixes) {
+      if (str.toLowerCase().startsWith(prefix)) {
+        return (
+          `-${prefix}` +
+          str.slice(prefix.length).replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`)
+        )
+      }
+    }
+    // Handle regular camelCase to kebab-case
+    return str.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`)
   }
 
   static escapeCSSSelector(str) {
     return str.replace(/([ #.;?%&,@+*~'"!^$[\]()=>|])/g, '\\$1')
   }
 
+  getTypePrefixes() {
+    // Fixed
+    // Maybe there some type or shorthand with same prefix, like `w` with `w-mx`, or `p` with `p-x`.
+    // it will lead to mismatching type.
+    // example: `w-mx-1000px`, it will divided into `w` as type, `mx-1000` as value, and `px` as unit.
+    // It needs to divide `w-mx` as one type and `w` is another type as well
+
+    return Object.keys(this.config.property)
+      .sort((a, b) => b.length - a.length)
+      .join('|')
+  }
+
+  generateClassNameRegEx() {
+    const typePrefixes = this.getTypePrefixes()
+
+    return new RegExp(
+      `(?:([a-zA-Z0-9-]+):)?(${typePrefixes}|\\[--[a-zA-Z0-9_-]+\\])-(-?(?:\\d+(?:\\.\\d+)?)|(?:[a-zA-Z0-9_]+(?:-[a-zA-Z0-9_]+)*(?:-[a-zA-Z0-9_]+)*)|(?:#[0-9a-fA-F]+)|(?:\\[[^\\]]+\\])|(?:\\$[^\\s]+))([a-zA-Z%]*)`
+    )
+  }
+
   matchClass(className) {
+    const classNameRegEx = this.generateClassNameRegEx()
+
+    const match = className.match(classNameRegEx)
+
+    if (!match) return null
+
+    // e.g. _ `hover:p-20px` _ it will divided as :
+    // prefix: hover
+    // type: p (will matches with the key's name of Property)
+    // value: 20
+    // unit: px
+
+    const [, prefix, type, value, unit] = match
+
+    return [prefix, type, value, unit]
+  }
+
+  matchClassOld(className) {
     const regex =
       /(?:([a-zA-Z0-9-]+):)?(-?[a-zA-Z0-9_]+(?:-[a-zA-Z0-9_]+)*|\[--[a-zA-Z0-9_-]+\])-(-?(?:\d+(\.\d+)?)|(?:[a-zA-Z0-9_]+(?:-[a-zA-Z0-9_]+)*(?:-[a-zA-Z0-9_]+)*)|(?:#[0-9a-fA-F]+)|(?:\[[^\]]+\])|(?:\$[^\s]+))([a-zA-Z%]*)/
     return className.match(regex)?.slice(1) || null
@@ -47,14 +95,14 @@ export class GenerateCSS {
       new Set(
         root
           .querySelectorAll('*')
-          .flatMap((element) => element.getAttribute('class')?.split(/\s+/) || [])
+          .flatMap(element => element.getAttribute('class')?.split(/\s+/) || [])
       )
     )
   }
   extractClassNamesFromMethodCall(content) {
     const classNames = new Set()
-    const parts = content.split(',').map((part) => part.trim())
-    parts.forEach((part) => {
+    const parts = content.split(',').map(part => part.trim())
+    parts.forEach(part => {
       if (part.startsWith("'") || part.startsWith('"')) {
         const className = part.slice(1, -1)
         if (className) classNames.add(className)
@@ -66,15 +114,15 @@ export class GenerateCSS {
     const classNames = new Set()
     const match = content.match(/["'`]([^"'`]+)["'`]/)
     if (match) {
-      match[1].split(/\s+/).forEach((className) => classNames.add(className))
+      match[1].split(/\s+/).forEach(className => classNames.add(className))
     }
     return Array.from(classNames)
   }
   extractClassNamesFromTemplateLiteral(content) {
     const classNames = new Set()
     const parts = content.split(/\${[^}]+}/)
-    parts.forEach((part) => {
-      part.split(/\s+/).forEach((className) => {
+    parts.forEach(part => {
+      part.split(/\s+/).forEach(className => {
         if (className) classNames.add(className)
       })
     })
@@ -83,10 +131,10 @@ export class GenerateCSS {
   extractClassNamesFromConditional(content) {
     const classNames = new Set()
     const parts = content.split(/[?:]/)
-    parts.forEach((part) => {
+    parts.forEach(part => {
       const match = part.match(/["'`]([^"'`]+)["'`]/)
       if (match) {
-        match[1].split(/\s+/).forEach((className) => classNames.add(className))
+        match[1].split(/\s+/).forEach(className => classNames.add(className))
       }
     })
     return Array.from(classNames)
@@ -120,13 +168,13 @@ export class GenerateCSS {
     const classNameRegex = /className\s*=\s*{?["'`]([^"'`]+)["'`]?}?/g
     let match
     while ((match = classNameRegex.exec(content)) !== null) {
-      match[1].split(/\s+/).forEach((className) => classNames.add(className))
+      match[1].split(/\s+/).forEach(className => classNames.add(className))
     }
 
     // Template literals
     const templateLiteralRegex = /className\s*=\s*{?`([^`]+)`}?/g
     while ((match = templateLiteralRegex.exec(content)) !== null) {
-      this.extractClassNamesFromTemplateLiteral(match[1]).forEach((className) =>
+      this.extractClassNamesFromTemplateLiteral(match[1]).forEach(className =>
         classNames.add(className)
       )
     }
@@ -134,7 +182,7 @@ export class GenerateCSS {
     // Conditional class names
     const conditionalRegex = /className\s*=\s*{([^}]+)}/g
     while ((match = conditionalRegex.exec(content)) !== null) {
-      this.extractClassNamesFromConditional(match[1]).forEach((className) =>
+      this.extractClassNamesFromConditional(match[1]).forEach(className =>
         classNames.add(className)
       )
     }
@@ -142,34 +190,26 @@ export class GenerateCSS {
     // classList.add
     const classListAddRegex = /classList\.add\(([^)]+)\)/g
     while ((match = classListAddRegex.exec(content)) !== null) {
-      this.extractClassNamesFromMethodCall(match[1]).forEach((className) =>
-        classNames.add(className)
-      )
+      this.extractClassNamesFromMethodCall(match[1]).forEach(className => classNames.add(className))
     }
 
     // classList.toggle
     const classListToggleRegex = /classList\.toggle\(([^)]+)\)/g
     while ((match = classListToggleRegex.exec(content)) !== null) {
-      this.extractClassNamesFromMethodCall(match[1]).forEach((className) =>
-        classNames.add(className)
-      )
+      this.extractClassNamesFromMethodCall(match[1]).forEach(className => classNames.add(className))
     }
 
     // setAttribute for class
     const setAttributeRegex = /setAttribute\(\s*["']class["']\s*,\s*([^)]+)\)/g
     while ((match = setAttributeRegex.exec(content)) !== null) {
-      console.log(match)
-      this.extractClassNamesFromMethodCall(match[1]).forEach((className) =>
-        classNames.add(className)
-      )
+      
+      this.extractClassNamesFromMethodCall(match[1]).forEach(className => classNames.add(className))
     }
 
     // className assignment
     const classNameAssignmentRegex = /\.className\s*=\s*([^;]+)/g
     while ((match = classNameAssignmentRegex.exec(content)) !== null) {
-      this.extractClassNamesFromAssignment(match[1]).forEach((className) =>
-        classNames.add(className)
-      )
+      this.extractClassNamesFromAssignment(match[1]).forEach(className => classNames.add(className))
     }
 
     return Array.from(classNames)
@@ -182,14 +222,14 @@ export class GenerateCSS {
     const templateMatch = content.match(/<template>([\s\S]*?)<\/template>/)
     if (templateMatch) {
       const templateContent = templateMatch[1]
-      this.parseHTML(templateContent).forEach((className) => classNames.add(className))
+      this.parseHTML(templateContent).forEach(className => classNames.add(className))
     }
 
     // Script section
     const scriptMatch = content.match(/<script>([\s\S]*?)<\/script>/)
     if (scriptMatch) {
       const scriptContent = scriptMatch[1]
-      this.parseJSLike(scriptContent).forEach((className) => classNames.add(className))
+      this.parseJSLike(scriptContent).forEach(className => classNames.add(className))
     }
 
     return Array.from(classNames)
@@ -202,7 +242,7 @@ export class GenerateCSS {
     const classRegex = /class\s*=\s*["'`]([^"'`]+)["'`]/g
     let match
     while ((match = classRegex.exec(content)) !== null) {
-      match[1].split(/\s+/).forEach((className) => classNames.add(className))
+      match[1].split(/\s+/).forEach(className => classNames.add(className))
     }
 
     // class: directives
@@ -215,7 +255,7 @@ export class GenerateCSS {
     const scriptMatch = content.match(/<script>([\s\S]*?)<\/script>/)
     if (scriptMatch) {
       const scriptContent = scriptMatch[1]
-      this.parseJSLike(scriptContent).forEach((className) => classNames.add(className))
+      this.parseJSLike(scriptContent).forEach(className => classNames.add(className))
     }
 
     return Array.from(classNames)
@@ -227,13 +267,13 @@ export class GenerateCSS {
     let match
 
     while ((match = classRegex.exec(content)) !== null) {
-      match[1].split(/\s+/).forEach((className) => classNames.add(className))
+      match[1].split(/\s+/).forEach(className => classNames.add(className))
     }
 
     // Astro's class:list directive
     const classListRegex = /class:list\s*=\s*{([^}]+)}/g
     while ((match = classListRegex.exec(content)) !== null) {
-      this.extractClassNamesFromConditional(match[1]).forEach((className) =>
+      this.extractClassNamesFromConditional(match[1]).forEach(className =>
         classNames.add(className)
       )
     }
@@ -242,7 +282,7 @@ export class GenerateCSS {
     const scriptMatch = content.match(/<script>([\s\S]*?)<\/script>/)
     if (scriptMatch) {
       const scriptContent = scriptMatch[1]
-      this.parseJSLike(scriptContent).forEach((className) => classNames.add(className))
+      this.parseJSLike(scriptContent).forEach(className => classNames.add(className))
     }
 
     return Array.from(classNames)
@@ -282,11 +322,11 @@ export class GenerateCSS {
   }
 
   isBreakpoint(prefix) {
-    return this.config.breakpoints.some((bp) => bp.name === prefix)
+    return this.config.breakpoints.some(bp => bp.name === prefix)
   }
 
   generateMediaQuery(breakpoint) {
-    const bp = this.config.breakpoints.find((b) => b.name === breakpoint)
+    const bp = this.config.breakpoints.find(b => b.name === breakpoint)
 
     if (!bp) return ''
 
@@ -301,6 +341,7 @@ export class GenerateCSS {
 
   generateCSSRule(selector, property, value, prefix) {
     const rule = value ? `${property}: ${value}` : property
+
     const escapedSelector = GenerateCSS.escapeCSSSelector(selector)
 
     if (prefix) {
@@ -319,8 +360,9 @@ export class GenerateCSS {
   generateCSSRuleFromProperties(type, value, properties, finalValue, prefix) {
     if (Array.isArray(properties)) {
       const rules = properties
-        .map((prop) => `${GenerateCSS.toKebabCase(prop)}: ${finalValue}`)
+        .map(prop => `${GenerateCSS.toKebabCase(prop)}: ${finalValue}`)
         .join('; ')
+      
       return this.generateCSSRule(`${type}-${value}`, rules, null, prefix)
     }
 
@@ -348,7 +390,7 @@ export class GenerateCSS {
 
         if (Array.isArray(properties.property)) {
           const rules = properties.property
-            .map((prop) => `${GenerateCSS.toKebabCase(prop)}: ${propValue}`)
+            .map(prop => `${GenerateCSS.toKebabCase(prop)}: ${propValue}`)
             .join('; ')
 
           return this.generateCSSRule(`${type}`, rules, null, prefix)
@@ -389,7 +431,7 @@ export class GenerateCSS {
       return `var(--${value.slice(1)})`
     }
     if (value.startsWith('[') && value.endsWith(']')) {
-      const solidValue = value.slice(1, -1).replace(/\\_/g, ' ')
+      const solidValue = value.slice(1, -1).replace(/_/g, ' ')
       return solidValue.startsWith('--') ? `var(${solidValue})` : solidValue
     }
     return value + (unit || '')
@@ -428,7 +470,7 @@ export class GenerateCSS {
     const matcher = this.matchClass(className)
     if (!matcher) return null
 
-    const [parsedPrefix, parsedType, parsedValue, , unit] = matcher
+    const [parsedPrefix, parsedType, parsedValue, unit = ''] = matcher
     const properties = this.config.property[parsedType]
     const finalValue = this.processFinalValue(parsedValue, unit)
     const cssRule = this.generateCSSRuleFromProperties(
@@ -445,7 +487,7 @@ export class GenerateCSS {
   }
 
   create(classNames) {
-    ;(Array.isArray(classNames) ? classNames : classNames.split(/\s+/)).forEach((className) =>
+    ;(Array.isArray(classNames) ? classNames : classNames.split(/\s+/)).forEach(className =>
       this.parseClass(className)
     )
 
@@ -463,9 +505,9 @@ export class GenerateCSS {
     const classNames = new Set()
 
     if (this.config.input) {
-      this.config.input.forEach((pattern) => {
-        glob.sync(pattern).forEach((file) => {
-          this.parseFile(file).forEach((className) => classNames.add(className))
+      this.config.input.forEach(pattern => {
+        glob.sync(pattern).forEach(file => {
+          this.parseFile(file).forEach(className => classNames.add(className))
         })
       })
 

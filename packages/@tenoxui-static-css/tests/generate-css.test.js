@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { GenerateCSS } from '../src/js/index.mjs'
+import { GenerateCSS } from '../src/js/static-css'
 import fs from 'fs'
 import path from 'path'
 
@@ -13,6 +13,7 @@ describe('GenerateCSS', () => {
         text: 'color',
         p: 'padding',
         br: 'border-radius',
+        jc: 'justifyContent',
         size: ['width', 'height']
       },
       values: {
@@ -35,14 +36,36 @@ describe('GenerateCSS', () => {
     generator = new GenerateCSS(config)
   })
 
+  it('should convert prefixes properties correctly', () => {
+    expect(GenerateCSS.toKebabCase('justifyContent')).toBe('justify-content')
+    expect(GenerateCSS.toKebabCase('webkitAnimation')).toBe('-webkit-animation')
+  })
+
   it('should escape CSS selectors', () => {
     expect(GenerateCSS.escapeCSSSelector('bg-#fff')).toBe('bg-\\#fff')
     expect(GenerateCSS.escapeCSSSelector('p-[1rem]')).toBe('p-\\[1rem\\]')
   })
 
   it('should match class components correctly', () => {
-    const result = generator.matchClass('hover:p-2rem')
-    expect(result).toEqual(['hover', 'p', '2', undefined, 'rem'])
+    expect(generator.matchClass('hover:p-2rem')).toEqual(['hover', 'p', '2', 'rem'])
+    expect(generator.matchClass('focus:bg-red')).toEqual(['focus', 'bg', 'red', ''])
+  })
+
+  it('should convert arbitrary value correctly', () => {
+    expect(generator.parseClass('bg-[rgb(75,_104,_229)]')).toBe(
+      '.bg-\\[rgb\\(75\\,_104\\,_229\\)\\] { background-color: rgb(75, 104, 229); }'
+    )
+
+    
+  })
+
+  it('should use multi words value correctly without arbitrary class', () => {
+    expect(generator.parseClass('jc-space-between')).toBe(
+      '.jc-space-between { justify-content: space-between; }'
+    )
+    expect(generator.parseClass('jc-flex-start')).toBe(
+      '.jc-flex-start { justify-content: flex-start; }'
+    )
   })
 
   it('should parse HTML and extract class names', () => {
@@ -78,10 +101,10 @@ describe('GenerateCSS', () => {
   })
 
   it('should generate CSS from multiple class names', () => {
-    const css = generator.create(['bg-primary', 'text-white', 'p-[calc(1rem\\_+\\_10px)]'])
+    const css = generator.create(['bg-primary', 'text-white', 'p-[calc(1rem_+_10px)]'])
     expect(css).toContain('.bg-primary { background-color: #ccf654; }')
     expect(css).toContain('.text-white { color: white; }')
-    expect(css).toContain('.p-\\[calc\\(1rem\\_\\+\\_10px\\)\\] { padding: calc(1rem + 10px); }')
+    expect(css).toContain('.p-\\[calc\\(1rem_\\+_10px\\)\\] { padding: calc(1rem + 10px); }')
   })
 
   it('should generate CSS file from input files', () => {
