@@ -1,4 +1,5 @@
-import { makeTenoxUI, MakeTenoxUIParams, Breakpoint } from '@tenoxui/core'
+import { makeTenoxUI, MakeTenoxUIParams } from '@tenoxui/core'
+import { merge } from '@nousantx/someutils'
 
 type TenoxUIConfig = Omit<MakeTenoxUIParams, 'element'>
 
@@ -9,14 +10,23 @@ let config: TenoxUIConfig = {
   breakpoints: []
 }
 
-function use(customConfig: Partial<TenoxUIConfig>): TenoxUIConfig {
+export function use(customConfig: Partial<TenoxUIConfig>): TenoxUIConfig {
   config = {
     ...config,
     ...customConfig,
     property: { ...config.property, ...customConfig.property },
-    values: { ...config.values, ...customConfig.values },
-    classes: { ...config.classes, ...customConfig.classes },
-    breakpoints: [...(config.breakpoints as Breakpoint[]), ...(customConfig.breakpoints || [])]
+    values: merge(
+      config.values as object,
+      (customConfig.values || {}) as object
+    ) as TenoxUIConfig['values'],
+    classes: merge(
+      config.classes as object,
+      (customConfig.classes || {}) as object
+    ) as TenoxUIConfig['classes'],
+    breakpoints: [
+      ...(config.breakpoints || []),
+      ...(customConfig.breakpoints || [])
+    ] as TenoxUIConfig['breakpoints']
   }
 
   return config
@@ -34,19 +44,21 @@ interface StylesObject {
  *   'header > h1': 'fs-3rem fw-600'
  * }
  */
-function applyStyles(styledElement: StylesObject): void {
+export function applyStyles(styledElement: StylesObject): void {
   Object.entries(styledElement).forEach(([selector, styles]) => {
     const elements = document.querySelectorAll(selector)
     if (elements.length === 0) {
       console.warn(`No elements found for selector: ${selector}`)
     }
-    elements.forEach((element) => {
+    elements.forEach(element => {
       new makeTenoxUI({ ...config, element: element as HTMLElement }).applyMultiStyles(styles)
     })
   })
 }
 
-interface TenoxUIOptions {
+type EngineConstructor = new (params: MakeTenoxUIParams) => InstanceType<typeof makeTenoxUI>
+
+interface  TenoxUIOptions {
   property?: TenoxUIConfig['property']
   values?: TenoxUIConfig['values']
   classes?: TenoxUIConfig['classes']
@@ -54,30 +66,32 @@ interface TenoxUIOptions {
   selector?: string
   useDom?: boolean
   useClass?: boolean
+  customEngine?: EngineConstructor
 }
 
-function tenoxui(options: TenoxUIOptions = {}): void {
+export function tenoxui(options: TenoxUIOptions = {}): void {
   const {
-    property,
-    values,
-    classes,
-    breakpoints,
+    property = {},
+    values = {},
+    classes = {},
+    breakpoints = [],
     selector = '*[class]',
     useDom = true,
-    useClass = false
+    useClass = false,
+    customEngine = makeTenoxUI
   } = options
 
   if (property) {
     config.property = { ...config.property, ...property }
   }
   if (values) {
-    config.values = { ...config.values, ...values }
+    config.values = merge(config.values as object, values) as TenoxUIConfig['values']
   }
   if (classes) {
-    config.classes = { ...config.classes, ...classes }
+    config.classes = merge(config.classes as object, classes as object) as TenoxUIConfig['classes']
   }
   if (breakpoints) {
-    config.breakpoints = [...(config.breakpoints as Breakpoint[]), ...breakpoints]
+    config.breakpoints = [...(config.breakpoints || []), ...breakpoints]
   }
   if (useDom && useClass)
     console.warn('Both `useDom` and `useClass` options are set to `true`. Please enable only one.')
@@ -94,7 +108,7 @@ function tenoxui(options: TenoxUIOptions = {}): void {
   }
 
   elements.forEach((element: HTMLElement) => {
-    const styler = new makeTenoxUI({
+    const styler = new customEngine({
       ...config,
       element
     })
@@ -117,11 +131,11 @@ function tenoxui(options: TenoxUIOptions = {}): void {
      * This option will disabling DOM compability!
      */
     if (useClass)
-      element.classList.forEach((className) => {
+      element.classList.forEach(className => {
         styler.applyMultiStyles(className)
       })
   })
 }
 
 export * from '@tenoxui/core'
-export { makeTenoxUI, use, applyStyles, tenoxui }
+export default { makeTenoxUI, use, applyStyles, tenoxui }
