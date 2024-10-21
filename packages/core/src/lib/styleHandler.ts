@@ -16,17 +16,22 @@ export class StyleHandler {
   private readonly valueRegistry: DefinedValue
   private readonly classes: Classes
   private readonly computeValue: ComputeValue
+  private readonly isInitialLoad: WeakMap<HTMLElement, boolean>
 
   constructor(element: HTMLElement, property: Property, values: DefinedValue, classes: Classes) {
     this.htmlElement = element
     this.styleAttribute = property
     this.valueRegistry = values
     this.classes = classes
-
     this.computeValue = new ComputeValue(this.htmlElement, this.styleAttribute, this.valueRegistry)
+    this.isInitialLoad = new WeakMap<HTMLElement, boolean>()
+
+    if (!this.isInitialLoad.has(element)) {
+      this.isInitialLoad.set(element, true)
+    }
   }
 
-  private isInitialLoad: boolean = true
+  // private isInitialLoad: boolean = true
 
   public addStyle(
     type: string, // shorthand prefixes or class name for Classes
@@ -58,14 +63,16 @@ export class StyleHandler {
      * when the page loaded. It also ensures the element doesn't create unnecessary -
      * layout shift because tenoxui compute every styles at the same time when -
      * the page loaded.
+     *
+     * Ima struggle with this. Really :(
      */
     if (properties === 'transition' || properties === 'transitionDuration') {
-      if (this.isInitialLoad) {
-        // Disabling transition at initial load
+      const isInitialLoad = this.isInitialLoad.get(this.htmlElement)
+
+      if (isInitialLoad) {
         this.htmlElement.style.transition = 'none'
         this.htmlElement.style.transitionDuration = '0s'
 
-        // Schedule re-enabling of transitions
         requestAnimationFrame(() => {
           requestAnimationFrame(() => {
             this.htmlElement.style.transition = ''
@@ -75,11 +82,10 @@ export class StyleHandler {
             } else {
               this.htmlElement.style.transitionDuration = resolvedValue
             }
-            this.isInitialLoad = false
+            this.isInitialLoad.set(this.htmlElement, false)
           })
         })
       } else {
-        // Apply transitions normally after initial load
         if (properties === 'transition') {
           this.htmlElement.style.transition = resolvedValue
         } else {
