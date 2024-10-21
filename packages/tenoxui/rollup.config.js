@@ -4,7 +4,6 @@ import typescript from '@rollup/plugin-typescript'
 import resolve from '@rollup/plugin-node-resolve'
 import commonjs from '@rollup/plugin-commonjs'
 import terser from '@rollup/plugin-terser'
-import stripBanner from 'rollup-plugin-strip-banner'
 
 const packageJson = JSON.parse(fs.readFileSync(path.resolve('package.json'), 'utf-8'))
 const name = 'TenoxUI'
