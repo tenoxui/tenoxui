@@ -82,8 +82,8 @@ export class Pseudo {
     type: string,
     value: string,
     unit: string,
-    secondValue?: string,
-    secondUnit?: string,
+    secondValue: string | undefined,
+    secondUnit: string | undefined,
     pseudoEvent: string,
     revertEvent: string,
     propKey?: CSSPropertyOrVariable
@@ -97,7 +97,7 @@ export class Pseudo {
     const applyStyle = () => {
       if (isObjectWithValue(properties)) {
         if (properties.value.includes('{value}')) {
-          this.styler.addStyle(type, value, unit, secon, secondUnit)
+          this.styler.addStyle(type, value, unit, secondValue, secondUnit)
         } else {
           this.styler.addStyle(type)
         }
@@ -108,9 +108,9 @@ export class Pseudo {
         this.classes[propKey] !== null &&
         type in (this.classes[propKey] as Record<string, unknown>)
       ) {
-        this.styler.addStyle(type, value, '', secondValue, secondUnit, propKey)
+        this.styler.addStyle(type, value, '', '', '', propKey)
       } else {
-        this.styler.addStyle(type, value, unit, secondValue, secondUnit)
+        this.styler.addStyle(type, value, unit)
       }
     }
 
