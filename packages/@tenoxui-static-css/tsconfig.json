@@ -4,16 +4,14 @@
     "module": "esnext",
     "lib": ["es2017", "dom"],
     "outDir": "./dist",
-    "rootDir": "./src",
+    "rootDir": "./src/ts",
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "strict": true,
+
     "forceConsistentCasingInFileNames": true,
-    "sourceMap": true,
-    "removeComments": true,
-    "noUnusedLocals": true,
-    "declaration": true
+
+    "removeComments": true
   },
-  "include": ["./src"],
+  "include": ["./src/ts"],
   "exclude": ["node_modules"]
 }

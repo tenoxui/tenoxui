@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { GenerateCSS } from '../src/js/static-css'
+import { GenerateCSS, toKebabCase, escapeCSSSelector } from '../dist/static-css'
+
 import fs from 'fs'
 import path from 'path'
 
@@ -37,13 +38,13 @@ describe('GenerateCSS', () => {
   })
 
   it('should convert prefixes properties correctly', () => {
-    expect(GenerateCSS.toKebabCase('justifyContent')).toBe('justify-content')
-    expect(GenerateCSS.toKebabCase('webkitAnimation')).toBe('-webkit-animation')
+    expect(toKebabCase('justifyContent')).toBe('justify-content')
+    expect(toKebabCase('webkitAnimation')).toBe('-webkit-animation')
   })
 
   it('should escape CSS selectors', () => {
-    expect(GenerateCSS.escapeCSSSelector('bg-#fff')).toBe('bg-\\#fff')
-    expect(GenerateCSS.escapeCSSSelector('p-[1rem]')).toBe('p-\\[1rem\\]')
+    expect(escapeCSSSelector('bg-#fff')).toBe('bg-\\#fff')
+    expect(escapeCSSSelector('p-[1rem]')).toBe('p-\\[1rem\\]')
   })
 
   it('should match class components correctly', () => {
@@ -55,8 +56,6 @@ describe('GenerateCSS', () => {
     expect(generator.parseClass('bg-[rgb(75,_104,_229)]')).toBe(
       '.bg-\\[rgb\\(75\\,_104\\,_229\\)\\] { background-color: rgb(75, 104, 229); }'
     )
-
-    
   })
 
   it('should use multi words value correctly without arbitrary class', () => {
