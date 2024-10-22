@@ -98,8 +98,34 @@ export class StyleHandler {
     // Other states for applying the style
 
     // CSS variable className
-    if (type.startsWith('[--') && type.endsWith(']')) {
-      this.computeValue.setCssVar(type.slice(1, -1) as CSSVariable, resolvedValue)
+    if (type.startsWith('[') && type.endsWith(']')) {
+      // Remove square brackets and split by commas
+      const items = type
+        .slice(1, -1)
+        .split(',')
+        .map(item => item.trim())
+
+      items.forEach(item => {
+        const attrProps = this.styleAttribute[item]
+
+        // console.log(item)
+        if (item.startsWith('--')) {
+          // If the item starts with "--", treat it as a CSS variable
+          this.computeValue.setCssVar(item as CSSVariable, resolvedValue)
+        } else if (attrProps) {
+          // console.log(item, resolvedValue)
+          if (typeof attrProps === 'object' && 'property' in attrProps) {
+            this.computeValue.setCustomValue(
+              attrProps as { property: GetCSSProperty; value?: string },
+              resolvedValue
+            )
+          } else {
+            this.computeValue.setDefaultValue(attrProps as CSSProperty, resolvedValue)
+          }
+        } else {
+          this.computeValue.setDefaultValue(item as CSSProperty, resolvedValue)
+        }
+      })
     }
     // Custom value property handler
     else if (typeof properties === 'object' && 'property' in properties) {
