@@ -249,13 +249,20 @@ describe('Value handler and applying styles', () => {
 
     // create custom classes
     // get value from custom classes
-    const customValue = classname =>
+    const customValue = (classname) =>
       styler.context.classes[styler.create['parseStyles'].getParentClass(className)][className]
 
     let className = 'primary'
-    styler.create['styler'].addStyle(className, customValue(className), '', 'backgroundColor')
+    styler.create['styler'].addStyle(
+      className,
+      customValue(className),
+      '',
+      '',
+      '',
+      'backgroundColor'
+    )
     className = 'bdr-blue'
-    styler.create['styler'].addStyle(className, customValue(className), '', 'borderColor')
+    styler.create['styler'].addStyle(className, customValue(className), '', '', '', 'borderColor')
 
     expect(element.style.color).toBe('red')
     expect(element.style.padding).toBe('10rem')
@@ -342,4 +349,3 @@ describe('Value handler and applying styles', () => {
 
   // it("should",()=>{const styler = useStyles({ property: { bg: "background", text: "color", p: "padding" } });expect(element.style.background).toBe("red");})
 })
-

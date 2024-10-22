@@ -30,9 +30,16 @@ class makeTenoxUI {
 
     if (!parts) return
 
-    const [parsedPrefix, parsedType, value = '', unit = ''] = parts
+    const [parsedPrefix, parsedType, value = '', unit = '', secValue, secUnit] = parts
 
-    this.create.parseStyles.parseDefaultStyle(parsedPrefix, parsedType, value, unit)
+    this.create.parseStyles.parseDefaultStyle(
+      parsedPrefix,
+      parsedType,
+      value,
+      unit,
+      secValue,
+      secUnit
+    )
   }
 
   public applyMultiStyles(styles: string): void {

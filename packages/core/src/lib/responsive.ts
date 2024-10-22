@@ -43,6 +43,8 @@ export class Responsive {
     type: string,
     value: string,
     unit: string,
+    secondValue?: string,
+    secondUnit?: string,
     propKey?: CSSPropertyOrVariable
   ): void {
     const properties = this.styleAttribute[type]
@@ -59,9 +61,9 @@ export class Responsive {
         if (isObjectWithValue(properties)) {
           this.styler.addStyle(type)
         } else if (propKey && this.classes[propKey]) {
-          this.styler.addStyle(type, value, unit, propKey)
+          this.styler.addStyle(type, value, unit, secondValue, secondUnit, propKey)
         } else {
-          this.styler.addStyle(type, value, unit)
+          this.styler.addStyle(type, value, unit, secondValue, secondUnit)
         }
       } else {
         if (this.htmlElement) {

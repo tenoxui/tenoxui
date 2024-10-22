@@ -37,6 +37,8 @@ export class StyleHandler {
     type: string, // shorthand prefixes or class name for Classes
     value?: string,
     unit?: string,
+    secondValue?: string,
+    secondUnit?: string,
     classProp?: CSSPropertyOrVariable // for Classes css property
   ): void {
     const properties = this.styleAttribute[type]
@@ -103,9 +105,9 @@ export class StyleHandler {
       const items = type
         .slice(1, -1)
         .split(',')
-        .map(item => item.trim())
+        .map((item) => item.trim())
 
-      items.forEach(item => {
+      items.forEach((item) => {
         const attrProps = this.styleAttribute[item]
 
         // console.log(item)

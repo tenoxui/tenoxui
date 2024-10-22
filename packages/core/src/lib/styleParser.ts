@@ -46,17 +46,45 @@ export class ParseStyles {
     type: string,
     value: string,
     unit: string,
+    secondValue?: string,
+    secondUnit?: string,
     propKey?: CSSPropertyOrVariable
   ): void {
     switch (prefix) {
       case 'hover':
-        this.pseudo.pseudoHandler(type, value, unit, 'mouseover', 'mouseout', propKey)
+        this.pseudo.pseudoHandler(
+          type,
+          value,
+          unit,
+          secondValue,
+          secondUnit,
+          'mouseover',
+          'mouseout',
+          propKey
+        )
         break
       case 'focus':
-        this.pseudo.pseudoHandler(type, value, unit, 'focus', 'blur', propKey)
+        this.pseudo.pseudoHandler(
+          type,
+          value,
+          unit,
+          secondValue,
+          secondUnit,
+          'focus',
+          'blur',
+          propKey
+        )
         break
       default:
-        this.responsive.handleResponsive(prefix, type, value, unit, propKey)
+        this.responsive.handleResponsive(
+          prefix,
+          type,
+          value,
+          unit,
+          secondValue,
+          secondUnit,
+          propKey
+        )
     }
   }
 
@@ -64,12 +92,14 @@ export class ParseStyles {
     prefix: string | undefined,
     type: string,
     value: string,
-    unit: string | undefined
+    unit: string | undefined,
+    secondValue?: string,
+    secondUnit?: string
   ): void {
     if (prefix) {
-      this.applyPrefixedStyle(prefix, type, value, unit || '')
+      this.applyPrefixedStyle(prefix, type, value, unit || '', secondValue, secondUnit)
     } else {
-      this.styler.addStyle(type, value, unit || '')
+      this.styler.addStyle(type, value, unit || '', secondValue, secondUnit)
     }
   }
 
@@ -95,9 +125,17 @@ export class ParseStyles {
         if (classValue && type in classValue) {
           const value = classValue[type]
           if (prefix) {
-            this.applyPrefixedStyle(prefix, type, value, '', propKey as CSSPropertyOrVariable)
+            this.applyPrefixedStyle(
+              prefix,
+              type,
+              value,
+              '',
+              '',
+              '',
+              propKey as CSSPropertyOrVariable
+            )
           } else {
-            this.styler.addStyle(type, value, '', propKey as CSSPropertyOrVariable)
+            this.styler.addStyle(type, value, '', '', '', propKey as CSSPropertyOrVariable)
           }
         }
       })
