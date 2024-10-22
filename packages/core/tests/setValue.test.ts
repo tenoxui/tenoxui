@@ -1,7 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { setupJSDOM, createStyler } from './utils/init'
-import { merge } from '../../../utils/merge.js'
-import { transformClasses } from '../../../utils/classes-converter.js'
+import { merge, transformClasses } from '@nousantx/someutils'
 import { hover, unHover, screenSize } from './utils/event'
 
 describe('Value handler and applying styles', () => {
@@ -47,6 +46,43 @@ describe('Value handler and applying styles', () => {
     expect(element.style.getPropertyValue('--bgr')).toBe('yellow')
   })
 
+  it('should create custom css property from class', () => {
+    const styler = useStyles({
+      property: {
+        tx: 'color',
+        bga: 'background',
+        bgbc: ['backgroundColor', 'borderColor'],
+        bgi: {
+          property: ['backgroundImage', '--other-url'],
+          value: 'url({0})'
+        }
+      },
+
+      values: {
+        primary: '#ccf654',
+        size: 'calc(10rem - 20px)'
+      }
+    })
+
+    const newClass = styler.create['parser'].parseClassName('[color]-1px')
+
+    expect(newClass[1]).toBe('[color]')
+
+    styler.applyMultiStyles(
+      '[tx,bga]-black [--m-color,bgbc]-red [--url,bgi]-[/img/i.png] [-webkit-animation]-$anim'
+    )
+
+    expect(element.style.color).toBe('black')
+    expect(element.style.borderColor).toBe('red')
+    expect(element.style.background).toBe('black')
+    expect(element.style.backgroundColor).toBe('red')
+    expect(element.style.backgroundImage).toBe('url(/img/i.png)')
+    expect(element.style.getPropertyValue('--other-url')).toBe('url(/img/i.png)')
+    expect(element.style.getPropertyValue('--url')).toBe('/img/i.png')
+    expect(element.style.getPropertyValue('--m-color')).toBe('red')
+    expect(element.style['-webkit-animation']).toBe('var(--anim)')
+  })
+
   it('should handle value transformation correctly', () => {
     const styler = useStyles({
       // create custom alias for values
@@ -55,6 +91,14 @@ describe('Value handler and applying styles', () => {
         size: 'calc(10rem - 20px)'
       }
     })
+
+    expect(
+      styler.create['computeValue'].valueHandler(
+        '',
+        styler.create['parser'].parseClassName('[color]-primary')[2],
+        ''
+      )
+    ).toBe('#ccf654')
 
     expect(
       styler.create['computeValue'].valueHandler(
@@ -143,13 +187,13 @@ describe('Value handler and applying styles', () => {
   it('should apply custom value to the element', () => {
     const styler = useStyles()
 
-    styler.create.computeValue.setCustomValue({ property: 'background', value: '{value}' }, 'red') // _ only red
+    styler.create.computeValue.setCustomValue({ property: 'background', value: '{0}' }, 'red') // _ only red
     styler.create.computeValue.setCustomValue(
-      { property: 'backgroundImage', value: 'url(/{value}.svg)' },
+      { property: 'backgroundImage', value: 'url(/{0}.svg)' },
       'tenoxui'
     ) // => url(/tenoxui.svg)
     styler.create.computeValue.setCustomValue(
-      { property: 'padding', value: '10px {value} 20px {value}' },
+      { property: 'padding', value: '10px {0} 20px {0}' },
       '2rem'
     ) // => 10px 2rem 20px 2rem
 
@@ -173,7 +217,7 @@ describe('Value handler and applying styles', () => {
         td: 'textDecorationColor',
         myImg: {
           property: 'backgroundImage',
-          value: 'url(/{value}.png)'
+          value: 'url(/{0}.png)'
         }
       },
       values: {
@@ -209,9 +253,16 @@ describe('Value handler and applying styles', () => {
       styler.context.classes[styler.create['parseStyles'].getParentClass(className)][className]
 
     let className = 'primary'
-    styler.create['styler'].addStyle(className, customValue(className), '', 'backgroundColor')
+    styler.create['styler'].addStyle(
+      className,
+      customValue(className),
+      '',
+      '',
+      '',
+      'backgroundColor'
+    )
     className = 'bdr-blue'
-    styler.create['styler'].addStyle(className, customValue(className), '', 'borderColor')
+    styler.create['styler'].addStyle(className, customValue(className), '', '', '', 'borderColor')
 
     expect(element.style.color).toBe('red')
     expect(element.style.padding).toBe('10rem')

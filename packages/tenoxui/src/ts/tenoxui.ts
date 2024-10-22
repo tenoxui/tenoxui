@@ -47,10 +47,8 @@ interface StylesObject {
 export function applyStyles(styledElement: StylesObject): void {
   Object.entries(styledElement).forEach(([selector, styles]) => {
     const elements = document.querySelectorAll(selector)
-    if (elements.length === 0) {
-      console.warn(`No elements found for selector: ${selector}`)
-    }
-    elements.forEach(element => {
+
+    elements.forEach((element) => {
       new makeTenoxUI({ ...config, element: element as HTMLElement }).applyMultiStyles(styles)
     })
   })
@@ -58,7 +56,7 @@ export function applyStyles(styledElement: StylesObject): void {
 
 type EngineConstructor = new (params: MakeTenoxUIParams) => InstanceType<typeof makeTenoxUI>
 
-interface  TenoxUIOptions {
+interface TenoxUIOptions {
   property?: TenoxUIConfig['property']
   values?: TenoxUIConfig['values']
   classes?: TenoxUIConfig['classes']
@@ -102,11 +100,6 @@ export function tenoxui(options: TenoxUIOptions = {}): void {
 
   const elements: NodeListOf<HTMLElement> = document.querySelectorAll(selector)
 
-  if (elements.length === 0) {
-    console.warn(`No elements were found for selector: "${selector}".`)
-    return
-  }
-
   elements.forEach((element: HTMLElement) => {
     const styler = new customEngine({
       ...config,
@@ -131,7 +124,7 @@ export function tenoxui(options: TenoxUIOptions = {}): void {
      * This option will disabling DOM compability!
      */
     if (useClass)
-      element.classList.forEach(className => {
+      element.classList.forEach((className) => {
         styler.applyMultiStyles(className)
       })
   })

@@ -24,7 +24,7 @@ export class ComputeValue {
       // has `value` field
       'value' in properties &&
       properties.value &&
-      !properties.value.includes('{value}') // but got no `{value}` string
+      !properties.value.includes('{0}') // but got no `{0}` string
     ) {
       return properties.value // use its value without needs to add any value
     }
@@ -62,13 +62,14 @@ export class ComputeValue {
 
   public setCustomValue(
     properties: { property: GetCSSProperty; value?: string },
-    resolvedValue: string
+    resolvedValue: string,
+    resolvedSecondValue?: string
   ): void {
     const { property, value } = properties
     let finalValue = resolvedValue
 
     if (value) {
-      finalValue = value.replace(/{value}/g, resolvedValue)
+      finalValue = value.replace(/\{0}/g, resolvedValue).replace(/\{1}/g, resolvedSecondValue || '')
     }
 
     // handle single property or array of property (multiple properties)

@@ -37,6 +37,8 @@ export class StyleHandler {
     type: string, // shorthand prefixes or class name for Classes
     value?: string,
     unit?: string,
+    secondValue?: string,
+    secondUnit?: string,
     classProp?: CSSPropertyOrVariable // for Classes css property
   ): void {
     const properties = this.styleAttribute[type]
@@ -57,6 +59,11 @@ export class StyleHandler {
     if (!value) return
 
     const resolvedValue = this.computeValue.valueHandler(type, value, unit || '')
+
+    let resolvedSecondValue = ''
+    if (secondValue) {
+      resolvedSecondValue = this.computeValue.valueHandler(type, secondValue, secondUnit || '')
+    }
 
     /**
      * This section will remove `transition` or `transitionDuration` property -
@@ -98,14 +105,40 @@ export class StyleHandler {
     // Other states for applying the style
 
     // CSS variable className
-    if (type.startsWith('[--') && type.endsWith(']')) {
-      this.computeValue.setCssVar(type.slice(1, -1) as CSSVariable, resolvedValue)
+    if (type.startsWith('[') && type.endsWith(']')) {
+      // Remove square brackets and split by commas
+      const items = type
+        .slice(1, -1)
+        .split(',')
+        .map((item) => item.trim())
+
+      items.forEach((item) => {
+        const attrProps = this.styleAttribute[item]
+
+        if (item.startsWith('--')) {
+          // If the item starts with "--", treat it as a CSS variable
+          this.computeValue.setCssVar(item as CSSVariable, resolvedValue)
+        } else if (attrProps) {
+          if (typeof attrProps === 'object' && 'property' in attrProps) {
+            this.computeValue.setCustomValue(
+              attrProps as { property: GetCSSProperty; value?: string },
+              resolvedValue,
+              resolvedSecondValue
+            )
+          } else {
+            this.computeValue.setDefaultValue(attrProps as CSSProperty, resolvedValue)
+          }
+        } else {
+          this.computeValue.setDefaultValue(item as CSSProperty, resolvedValue)
+        }
+      })
     }
     // Custom value property handler
     else if (typeof properties === 'object' && 'property' in properties) {
       this.computeValue.setCustomValue(
         properties as { property: GetCSSProperty; value?: string },
-        resolvedValue
+        resolvedValue,
+        resolvedSecondValue
       )
     }
     // Default value handler

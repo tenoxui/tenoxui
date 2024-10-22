@@ -73,7 +73,7 @@ describe('types & propeties', () => {
       property: {
         p: {
           property: 'padding',
-          value: '1rem {value} 2rem {value}'
+          value: '1rem {0} 2rem {0}'
         }
       }
     })

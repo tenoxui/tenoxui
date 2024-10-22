@@ -1,6 +1,6 @@
 {
   "name": "tenoxui",
-  "version": "0.12.2",
+  "version": "0.12.3",
   "description": "A CSS Framework without CSS file :D",
   "author": "NOuSantx <nousantx@gmail.com>",
   "license": "MIT",
@@ -36,22 +36,19 @@
     "build:css": "cleancss src/css/tenoxui.css -o dist/css/tenoxui.min.css --source-map && cp src/css/tenoxui.css dist/css/"
   },
   "devDependencies": {
-    "@tenoxui/core": "1.1.3",
-    "clean-css-cli": "^5.6.3",
-    "prettier": "^3.2.5",
-    "rollup-plugin-strip-banner": "^3.1.0",
-    "typescript": "^5.4.5",
-    "uglify-js": "^3.19.3"
-  },
-  "dependencies": {
-    "@nousantx/someutils": "^0.0.0",
-    "@rollup/plugin-commonjs": "^28.0.0",
+    "@nousantx/someutils": "^0.3.0",
+    "@rollup/plugin-commonjs": "^28.0.1",
     "@rollup/plugin-node-resolve": "^15.3.0",
     "@rollup/plugin-terser": "^0.4.4",
-    "@rollup/plugin-typescript": "^12.1.0",
-    "@tenoxui/core": "^1.1.2",
-    "@types/node": "^22.7.5",
+    "@rollup/plugin-typescript": "^12.1.1",
+    "@tenoxui/core": "^1.2.0-alpha.0",
+    "@types/node": "^22.7.8",
+    "clean-css-cli": "^5.6.3",
+    "prettier": "^3.2.5",
     "rollup": "^4.24.0",
-    "tslib": "^2.7.0"
+    "rollup-plugin-strip-banner": "^3.1.0",
+    "tslib": "^2.8.0",
+    "typescript": "^5.6.3",
+    "uglify-js": "^3.19.3"
   }
 }
