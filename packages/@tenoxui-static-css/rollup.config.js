@@ -8,41 +8,24 @@ import path from 'path'
 const packageJson = JSON.parse(fs.readFileSync(path.resolve('package.json'), 'utf-8'))
 
 const name = 'TenoxUI'
-const fileName = 'tenoxui'
+const fileName = 'static-css'
 const banner = `/*!
- * tenoxui/core v${packageJson.version}
+ * ${packageJson.name} v${packageJson.version}
  * Licensed under MIT (https://github.com/tenoxui/tenoxui/blob/main/LICENSE)
  */`
 const sourcemap = true
 
 const config = {
-  input: 'src/tenoxui.ts',
+  input: 'src/ts/index.ts',
   output: [
     {
       file: `dist/${fileName}.js`,
-      format: 'iife',
-      name,
-      banner,
-      sourcemap,
-      footer: 'window.makeTenoxUI = TenoxUI.makeTenoxUI'
-    },
-    {
-      file: `dist/${fileName}.min.js`,
-      format: 'iife',
-      plugins: [terser()],
-      name,
-      banner,
-      sourcemap,
-      footer: 'window.makeTenoxUI = TenoxUI.makeTenoxUI'
-    },
-    {
-      file: `dist/${fileName}.esm.js`,
       format: 'es',
       banner,
       sourcemap
     },
     {
-      file: `dist/${fileName}.esm.min.js`,
+      file: `dist/${fileName}.min.js`,
       format: 'es',
       banner,
       sourcemap,
@@ -61,7 +44,8 @@ const config = {
       ]
     }
   ],
-  plugins: [typescript(), resolve(), commonjs()]
+  plugins: [typescript(), resolve({ preferBuiltins: true }), commonjs()],
+  external: ['glob', 'node-html-parser']
 }
 
 export default config
