@@ -118,7 +118,7 @@ describe('makeTenoxUI', () => {
         color45: ['--color4', '--color5'],
         color6: {
           property: '--color6',
-          value: 'linear-gradient(to right, {value}, blue, var(--tx))'
+          value: 'linear-gradient(to right, {0}, blue, var(--tx))'
         },
         color7: {
           property: '--color7',

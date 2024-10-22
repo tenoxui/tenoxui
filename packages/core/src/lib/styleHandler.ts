@@ -60,6 +60,11 @@ export class StyleHandler {
 
     const resolvedValue = this.computeValue.valueHandler(type, value, unit || '')
 
+    let resolvedSecondValue = ''
+    if (secondValue) {
+      resolvedSecondValue = this.computeValue.valueHandler(type, secondValue, secondUnit || '')
+    }
+
     /**
      * This section will remove `transition` or `transitionDuration` property -
      * when the page loaded. It also ensures the element doesn't create unnecessary -
@@ -110,16 +115,15 @@ export class StyleHandler {
       items.forEach((item) => {
         const attrProps = this.styleAttribute[item]
 
-        // console.log(item)
         if (item.startsWith('--')) {
           // If the item starts with "--", treat it as a CSS variable
           this.computeValue.setCssVar(item as CSSVariable, resolvedValue)
         } else if (attrProps) {
-          // console.log(item, resolvedValue)
           if (typeof attrProps === 'object' && 'property' in attrProps) {
             this.computeValue.setCustomValue(
               attrProps as { property: GetCSSProperty; value?: string },
-              resolvedValue
+              resolvedValue,
+              resolvedSecondValue
             )
           } else {
             this.computeValue.setDefaultValue(attrProps as CSSProperty, resolvedValue)
@@ -133,7 +137,8 @@ export class StyleHandler {
     else if (typeof properties === 'object' && 'property' in properties) {
       this.computeValue.setCustomValue(
         properties as { property: GetCSSProperty; value?: string },
-        resolvedValue
+        resolvedValue,
+        resolvedSecondValue
       )
     }
     // Default value handler

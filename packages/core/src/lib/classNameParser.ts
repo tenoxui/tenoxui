@@ -38,16 +38,9 @@ export class Parser {
 
     if (!match) return null
 
-    // e.g. `hover:p-20px/30%` will be divided as:
-    // prefix: hover
-    // type: p (will match with the key's name of Property)
-    // value: 20
-    // unit: px
-    // secValue: 30
-    // secUnit: %
+    // added new variables, secValue and secUnit for custom value property (e.g. p-2rem/10px)
 
     const [, prefix, type, value, unit, secValue, secUnit] = match
-    // console.log(secValue, secUnit)
     return [prefix, type, value, unit, secValue, secUnit]
   }
 }

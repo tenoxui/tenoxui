@@ -33,19 +33,62 @@ export class Pseudo {
   }
 
   private getPropName(type: string, propKey?: CSSPropertyOrVariable): GetCSSProperty | undefined {
-    if (type.startsWith('[--') && type.endsWith(']')) {
-      return type.slice(1, -1) as CSSVariable
+    if (type.startsWith('[') && type.endsWith(']')) {
+      const properties = type
+        .slice(1, -1)
+        .split(',')
+        .map((item) => item.trim())
+
+      if (properties.length === 1) {
+        const prop = properties[0]
+        if (prop.startsWith('--')) {
+          return prop as CSSVariable
+        }
+
+        const attrProp = this.styleAttribute[prop]
+        if (attrProp) {
+          if (typeof attrProp === 'object' && 'property' in attrProp) {
+            return camelToKebab(attrProp.property as string) as CSSProperty
+          }
+          return camelToKebab(attrProp as string) as CSSProperty
+        }
+        return prop as CSSProperty
+      }
+
+      return properties.map((prop) => {
+        if (prop.startsWith('--')) {
+          return prop as CSSVariable
+        }
+        const attrProp = this.styleAttribute[prop]
+        if (attrProp) {
+          if (typeof attrProp === 'object' && 'property' in attrProp) {
+            return camelToKebab(attrProp.property as string) as CSSProperty
+          }
+          return camelToKebab(attrProp as string) as CSSProperty
+        }
+        return prop as CSSProperty
+      })
     }
-    const property = (this.styleAttribute[type] as any)?.property || this.styleAttribute[type]
+
     if (propKey && propKey in this.classes) {
       return camelToKebab(propKey as string) as CSSProperty
-    } else if (Array.isArray(property)) {
-      return property.map(camelToKebab) as CSSProperty[]
-    } else if (property) {
-      return camelToKebab(property as string) as CSSProperty
-    } else {
+    }
+
+    const property = this.styleAttribute[type]
+
+    if (!property) {
       return undefined
     }
+
+    if (typeof property === 'object' && 'property' in property) {
+      return camelToKebab(property.property as string) as CSSProperty
+    }
+
+    if (Array.isArray(property)) {
+      return property.map((prop) => camelToKebab(prop as string)) as CSSProperty[]
+    }
+
+    return camelToKebab(property as string) as CSSProperty
   }
 
   private getInitialValue(propsName: GetCSSProperty): { [key: string]: string } | string {
@@ -96,7 +139,7 @@ export class Pseudo {
 
     const applyStyle = () => {
       if (isObjectWithValue(properties)) {
-        if (properties.value.includes('{value}')) {
+        if (properties.value.includes('{0}')) {
           this.styler.addStyle(type, value, unit, secondValue, secondUnit)
         } else {
           this.styler.addStyle(type)

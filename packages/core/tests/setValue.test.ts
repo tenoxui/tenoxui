@@ -54,7 +54,7 @@ describe('Value handler and applying styles', () => {
         bgbc: ['backgroundColor', 'borderColor'],
         bgi: {
           property: ['backgroundImage', '--other-url'],
-          value: 'url({value})'
+          value: 'url({0})'
         }
       },
 
@@ -187,13 +187,13 @@ describe('Value handler and applying styles', () => {
   it('should apply custom value to the element', () => {
     const styler = useStyles()
 
-    styler.create.computeValue.setCustomValue({ property: 'background', value: '{value}' }, 'red') // _ only red
+    styler.create.computeValue.setCustomValue({ property: 'background', value: '{0}' }, 'red') // _ only red
     styler.create.computeValue.setCustomValue(
-      { property: 'backgroundImage', value: 'url(/{value}.svg)' },
+      { property: 'backgroundImage', value: 'url(/{0}.svg)' },
       'tenoxui'
     ) // => url(/tenoxui.svg)
     styler.create.computeValue.setCustomValue(
-      { property: 'padding', value: '10px {value} 20px {value}' },
+      { property: 'padding', value: '10px {0} 20px {0}' },
       '2rem'
     ) // => 10px 2rem 20px 2rem
 
@@ -217,7 +217,7 @@ describe('Value handler and applying styles', () => {
         td: 'textDecorationColor',
         myImg: {
           property: 'backgroundImage',
-          value: 'url(/{value}.png)'
+          value: 'url(/{0}.png)'
         }
       },
       values: {
