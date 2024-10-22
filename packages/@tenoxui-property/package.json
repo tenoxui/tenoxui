@@ -1,6 +1,6 @@
 {
   "name": "@tenoxui/property",
-  "version": "1.4.1",
+  "version": "1.4.3",
   "description": "TenoxUI type shorthands and properties library.",
   "author": "NOuSantx <nousantx@gmail.com>",
   "license": "MIT",
@@ -11,42 +11,52 @@
     "directory": "packages/@tenoxui-property"
   },
   "bugs": {
-    "url": "https://github.com/tenoxui/css/issues"
+    "url": "https://github.com/tenoxui/tenoxui/issues"
   },
   "keywords": [
     "css",
     "css-framework",
     "css-in-js"
   ],
-  "types": "./types/default.d.ts",
-  "module": "./dist/esm/default.min.js",
-  "main": "./dist/umd/default.min.js",
+  "type": "module",
+  "types": "./dist/default.d.ts",
+  "main": "./dist/default.cjs",
+  "module": "./dist/default.esm.js",
+  "browser": "./dist/default.umd.min.js",
   "exports": {
     ".": {
-      "types": "./types/default.d.ts",
-      "import": "./dist/esm/default.min.js",
-      "require": "./dist/umd/default.min.js"
+      "types": "./dist/default.d.ts",
+      "import": "./dist/default.esm.js",
+      "require": "./dist/default.cjs",
+      "browser": "./dist/default.umd.min.js"
     },
     "./full": {
-      "types": "./types/full.d.ts",
-      "import": "./dist/esm/full.min.js",
-      "require": "./dist/umd/full.min.js"
+      "types": "./dist/full.d.ts",
+      "import": "./dist/full.esm.js",
+      "require": "./dist/full.cjs",
+      "browser": "./dist/full.umd.min.js"
     }
   },
   "files": [
-    "types/*",
-    "dist/*",
+    "dist",
     "README.md",
     "LICENSE",
     "package.json"
   ],
   "scripts": {
-    "build:umd": "terser -o dist/umd/default.min.js src/umd/default.js -m && terser -o dist/umd/full.min.js src/umd/full.js -m && cp src/umd/* dist/umd/",
-    "build:esm": "terser -o dist/esm/default.min.js src/esm/default.js -m && terser -o dist/esm/full.min.js src/esm/full.js -m && cp src/esm/* dist/esm/",
-    "build": "mkdir -p dist dist/umd dist/esm && npm run build:umd && npm run build:esm",
-    "prepublish": "cp ../../LICENSE . && npm pack --dry-run && rm LICENSE"
+    "dev": "rollup -c -w",
+    "build": "rollup -c"
   },
   "devDependencies": {
-    "terser": "^5.31.6"
+    "@nousantx/someutils": "^0.3.0",
+    "@rollup/plugin-commonjs": "^28.0.1",
+    "@rollup/plugin-node-resolve": "^15.3.0",
+    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-typescript": "^12.1.1",
+    "@types/node": "^22.7.8",
+    "rollup": "^4.24.0",
+    "terser": "^5.31.6",
+    "tslib": "^2.8.0",
+    "typescript": "^5.6.3"
   }
 }

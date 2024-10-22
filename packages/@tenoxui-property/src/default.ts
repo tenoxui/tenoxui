@@ -1,4 +1,6 @@
-export const property = {
+import { Property } from './types'
+
+export const property: Property = {
   // padding
   p: 'padding',
   pt: 'paddingTop',

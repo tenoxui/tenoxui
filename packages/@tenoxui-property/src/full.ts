@@ -1,6 +1,7 @@
-import { property as defaultProps } from './default.js'
+import { Property } from './types'
+import { property as defaultProps } from './default'
 
-export const property = {
+export const property: Property = {
   ...defaultProps,
   all: 'all',
   order: 'order',
@@ -11,7 +12,7 @@ export const property = {
   col: 'columns',
   'box-s': 'boxSizing',
   // place like
-  'pc-c': 'placeContents',
+  'pc-c': 'placeContent',
   'pc-s': 'placeSelf',
   // border extended
   'bg-at': 'backgroundAttachment',
@@ -19,8 +20,7 @@ export const property = {
   'bg-clip': 'backgroundClip',
   'bg-p-x': 'backgroundPositionX',
   'bg-p-y': 'backgroundPositionY',
-  'bg-r-x': 'backgroundRepeatX',
-  'bg-r-y': 'backgroundRepeaty',
+  'bg-r': 'backgroundRepeat',
   // align and justify
   ac: 'alignContent',
   as: 'alignSelf',
