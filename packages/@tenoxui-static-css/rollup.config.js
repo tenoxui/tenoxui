@@ -15,36 +15,69 @@ const banner = `/*!
  */`
 const sourcemap = true
 
-const config = {
-  input: 'src/ts/static-css.ts',
-  output: [
-    {
-      file: `dist/${fileName}.js`,
-      format: 'es',
-      banner,
-      sourcemap
-    },
-    {
-      file: `dist/${fileName}.min.js`,
-      format: 'es',
-      banner,
-      sourcemap,
-      plugins: [
-        terser({
-          mangle: {
-            properties: true
-          },
-          compress: {
-            defaults: true,
-            passes: 2
-          },
-          toplevel: true,
-          keep_fnames: false
-        })
-      ]
-    }
-  ],
-  plugins: [typescript(), resolve({ preferBuiltins: true }), commonjs()],
-  external: ['glob', 'node-html-parser']
-}
+const config = [
+  {
+    input: 'src/ts/dom.ts',
+    output: [
+      {
+        file: `dist/${fileName}.umd.js`,
+        format: 'umd',
+        name: 'tenoxui',
+        banner,
+        sourcemap
+      },
+      {
+        file: `dist/${fileName}.umd.min.js`,
+        format: 'umd',
+        name: 'tenoxui',
+        banner,
+        sourcemap,
+        plugins: [
+          terser({
+            compress: {
+              defaults: true,
+              passes: 2
+            },
+            toplevel: false,
+            keep_fnames: true
+          })
+        ]
+      }
+    ],
+    plugins: [typescript(), resolve({ preferBuiltins: true }), commonjs()],
+    external: ['glob', 'node-html-parser']
+  },
+  {
+    input: 'src/ts/static-css.ts',
+    output: [
+      {
+        file: `dist/${fileName}.js`,
+        format: 'es',
+        banner,
+        sourcemap
+      },
+      {
+        file: `dist/${fileName}.min.js`,
+        format: 'es',
+        banner,
+        sourcemap,
+        plugins: [
+          terser({
+            mangle: {
+              properties: true
+            },
+            compress: {
+              defaults: true,
+              passes: 2
+            },
+            toplevel: true,
+            keep_fnames: false
+          })
+        ]
+      }
+    ],
+    plugins: [typescript(), resolve({ preferBuiltins: true }), commonjs()],
+    external: ['glob', 'node-html-parser']
+  }
+]
 export default config

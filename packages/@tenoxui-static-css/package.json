@@ -1,6 +1,6 @@
 {
   "name": "@tenoxui/static-css",
-  "version": "1.1.0-alpha.0",
+  "version": "1.1.0-alpha.1",
   "description": "Generate static CSS file with tenoxui rules and class names.",
   "author": "NOuSantx <nousantx@gmail.com>",
   "license": "MIT",
