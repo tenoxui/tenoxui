@@ -29,11 +29,11 @@ export class staticCSS {
   }
 
   private isBreakpoint(prefix: string): boolean {
-    return this.config.breakpoints.some(bp => bp.name === prefix)
+    return this.config.breakpoints.some((bp) => bp.name === prefix)
   }
 
   private generateMediaQuery(breakpoint: string): string {
-    const bp = this.config.breakpoints.find(b => b.name === breakpoint)
+    const bp = this.config.breakpoints.find((b) => b.name === breakpoint)
     if (!bp) return ''
 
     const conditions: string[] = []
@@ -69,7 +69,9 @@ export class staticCSS {
     prefix?: string
   ): string | null {
     if (Array.isArray(properties)) {
-      const rules = properties.map(prop => `${toKebabCase(String(prop))}: ${finalValue}`).join('; ')
+      const rules = properties
+        .map((prop) => `${toKebabCase(String(prop))}: ${finalValue}`)
+        .join('; ')
       return this.generateCSSRule(`${type}-${value}`, rules, null, prefix)
     }
 
@@ -77,11 +79,11 @@ export class staticCSS {
       const items = type
         .slice(1, -1)
         .split(',')
-        .map(item => item.trim())
+        .map((item) => item.trim())
 
       const cssRules: string[] = []
 
-      items.forEach(item => {
+      items.forEach((item) => {
         const attrProps = this.config.property[item]
 
         if (item.startsWith('--')) {
@@ -90,7 +92,7 @@ export class staticCSS {
           if (typeof attrProps === 'object' && 'property' in attrProps) {
             const propertyVal = attrProps.property
             if (Array.isArray(propertyVal)) {
-              const propertyString = propertyVal.map(p => toKebabCase(String(p))).join('; ')
+              const propertyString = propertyVal.map((p) => toKebabCase(String(p))).join('; ')
               cssRules.push(
                 this.generateCSSRule(
                   `[${item}]-${value}`,
@@ -122,7 +124,7 @@ export class staticCSS {
         }
       })
 
-      const properties = items.map(item => `${toKebabCase(item)}: ${finalValue}`).join('; ')
+      const properties = items.map((item) => `${toKebabCase(item)}: ${finalValue}`).join('; ')
       cssRules.push(
         this.generateCSSRule(`[${type.slice(1, -1)}]-${value}`, properties, null, prefix)
       )
@@ -161,7 +163,7 @@ export class staticCSS {
 
       if (Array.isArray(propertyVal)) {
         const rules = propertyVal
-          .map(prop => `${toKebabCase(String(prop))}: ${propValue}`)
+          .map((prop) => `${toKebabCase(String(prop))}: ${propValue}`)
           .join('; ')
         return this.generateCSSRule(`${type}`, rules, null, prefix)
       }
@@ -255,9 +257,9 @@ export class staticCSS {
     const classNames = new Set<string>()
     const elements = document.querySelectorAll('*')
 
-    elements.forEach(element => {
+    elements.forEach((element) => {
       if (element.classList.length) {
-        element.classList.forEach(className => classNames.add(className))
+        element.classList.forEach((className) => classNames.add(className))
       }
     })
 
@@ -268,10 +270,10 @@ export class staticCSS {
     const classes = Array.isArray(classNames)
       ? classNames
       : typeof classNames === 'string'
-      ? classNames.split(/\s+/)
-      : Array.from(classNames)
+        ? classNames.split(/\s+/)
+        : Array.from(classNames)
 
-    classes.forEach(className => this.parseClass(className))
+    classes.forEach((className) => this.parseClass(className))
 
     let cssContent = Array.from(this.generatedCSS).join('\n')
 
@@ -292,7 +294,7 @@ export class staticCSS {
 
     const classNames = this.getAllClassNames()
     const cssContent = this.create(classNames)
-    console.log(cssContent)
+
     this.styleElement.textContent = cssContent
   }
 
