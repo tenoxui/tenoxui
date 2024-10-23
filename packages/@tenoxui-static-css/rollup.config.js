@@ -2,8 +2,8 @@ import typescript from '@rollup/plugin-typescript'
 import resolve from '@rollup/plugin-node-resolve'
 import commonjs from '@rollup/plugin-commonjs'
 import terser from '@rollup/plugin-terser'
-import fs from 'fs'
-import path from 'path'
+import fs from 'node:fs'
+import path from 'node:path'
 
 const packageJson = JSON.parse(fs.readFileSync(path.resolve('package.json'), 'utf-8'))
 
@@ -16,7 +16,7 @@ const banner = `/*!
 const sourcemap = true
 
 const config = {
-  input: 'src/ts/index.ts',
+  input: 'src/ts/static-css.ts',
   output: [
     {
       file: `dist/${fileName}.js`,
@@ -47,5 +47,4 @@ const config = {
   plugins: [typescript(), resolve({ preferBuiltins: true }), commonjs()],
   external: ['glob', 'node-html-parser']
 }
-
 export default config

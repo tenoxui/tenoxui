@@ -1,7 +1,7 @@
-import { property } from '../@tenoxui-property/src/esm/full.js'
+import { property } from '../@tenoxui-property/dist/full.esm.js'
 
 export default {
-  input: ['index.html', 'src/**/*.{html,js,jsx,ts,tsx,vue,svelte,astro}'],
+  input: ['index.html', 'src/apps/*.{html,js,jsx,ts,tsx,vue,svelte}'],
   output: 'styles.css',
   property: property,
   classes: {

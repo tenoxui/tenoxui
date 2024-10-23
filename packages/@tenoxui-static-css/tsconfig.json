@@ -7,10 +7,9 @@
     "rootDir": "./src/ts",
     "esModuleInterop": true,
     "skipLibCheck": true,
-
     "forceConsistentCasingInFileNames": true,
-
-    "removeComments": true
+    "removeComments": true,
+    "noUnusedLocals": true
   },
   "include": ["./src/ts"],
   "exclude": ["node_modules"]
