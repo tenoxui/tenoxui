@@ -1,6 +1,6 @@
 {
   "name": "@tenoxui/static-css",
-  "version": "1.0.0",
+  "version": "1.1.0-alpha.0",
   "description": "Generate static CSS file with tenoxui rules and class names.",
   "author": "NOuSantx <nousantx@gmail.com>",
   "license": "MIT",
@@ -31,6 +31,7 @@
   "type": "module",
   "scripts": {
     "build": "rollup -c",
+    "build:cli": "uglifyjs cli.js -c -m toplevel  -o cli.min.js",
     "old:build": "mkdir -p dist && uglifyjs ./src/js/static-css.js -c -o dist/static-css.min.js --source-map \"url='static-css.min.js.map'\" --comments \"/^!/\" && cp src/js/static-css.js dist && uglifyjs cli.js -c -m toplevel  -o cli.min.js",
     "test": "vitest run",
     "pack": "cp ../../LICENSE . && npm pack --dry-run && rm LICENSE"

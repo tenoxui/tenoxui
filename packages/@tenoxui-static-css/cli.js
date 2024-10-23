@@ -7,7 +7,7 @@ import { program } from 'commander'
 import chokidar from 'chokidar'
 import ora from 'ora'
 import chalk from 'chalk'
-import { GenerateCSS } from './dist/static-css.min.js'
+import { GenerateCSS } from './dist/static-css.js'
 
 program
   .version('1.0.0')

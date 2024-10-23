@@ -1,8 +1,9 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { GenerateCSS, toKebabCase, escapeCSSSelector } from '../dist/static-css'
-
-import fs from 'fs'
-import path from 'path'
+import { GenerateCSS, toKebabCase, escapeCSSSelector } from '../src/ts/static-css'
+import { HTMLParser } from '../src/ts/parser/HTMLParser'
+import { JSLikeParser } from '../src/ts/parser/JSLikeParser'
+import fs from 'node:fs'
+import path from 'node:path'
 
 describe('GenerateCSS', () => {
   let config
@@ -48,8 +49,8 @@ describe('GenerateCSS', () => {
   })
 
   it('should match class components correctly', () => {
-    expect(generator.matchClass('hover:p-2rem')).toEqual(['hover', 'p', '2', 'rem'])
-    expect(generator.matchClass('focus:bg-red')).toEqual(['focus', 'bg', 'red', ''])
+    expect(generator.classParser.matchClass('hover:p-2rem')).toEqual(['hover', 'p', '2', 'rem'])
+    expect(generator.classParser.matchClass('focus:bg-red')).toEqual(['focus', 'bg', 'red', ''])
   })
 
   it('should convert arbitrary value correctly', () => {
@@ -68,15 +69,30 @@ describe('GenerateCSS', () => {
   })
 
   it('should parse HTML and extract class names', () => {
-    const html = '<div class="bg-red text-white p-2rem"></div>'
-    const classNames = generator.parseHTML(html)
-    expect(classNames).toEqual(['bg-red', 'text-white', 'p-2rem'])
+    expect(new HTMLParser().parse('<div class="bg-red text-blue"></div>')).toEqual([
+      'bg-red',
+      'text-blue'
+    ])
   })
 
-  it('should parse JSX and extract class names', () => {
-    const jsx = '<div className="bg-blue text-black p-2"></div>'
-    const classNames = generator.parseJSX(jsx)
-    expect(classNames).toEqual(['bg-blue', 'text-black', 'p-2'])
+  it('should parse JavaScript related class names', () => {
+    
+    expect(new JSLikeParser().parse('elem.classList.add("bg-white text-blue")')).toEqual([
+      'bg-white',
+      'text-blue'
+    ])
+    expect(new JSLikeParser().parse('elem.setAttribute("class", "bg-white text-blue")')).toEqual([
+      'bg-white',
+      'text-blue'
+    ])
+    expect(
+      new JSLikeParser().parse(`
+<script>
+  // elem2.classList.add("bg-black", "text-yellow")
+  elem.setAttribute("class", "bg-white text-blue")
+</script>
+`)
+    ).toEqual(['bg-white', 'text-blue'])
   })
 
   it('should generate CSS rule for a simple class', () => {
