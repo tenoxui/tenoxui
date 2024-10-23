@@ -34,7 +34,7 @@ export class ClassNameExtractor {
   private splitClassNames(content: string): string[] {
     return content
       .split(/\s+/)
-      .filter(className => !this.options.ignoreEmpty || className.length > 0)
+      .filter((className) => !this.options.ignoreEmpty || className.length > 0)
   }
 
   private addToSet(classNames: Set<string>, content: string | null | undefined): void {
@@ -43,13 +43,13 @@ export class ClassNameExtractor {
     const cleaned = this.cleanClassName(content)
     if (!cleaned) return
 
-    this.splitClassNames(cleaned).forEach(className => classNames.add(className))
+    this.splitClassNames(cleaned).forEach((className) => classNames.add(className))
   }
 
   fromDOM(root: Element): string[] {
     const classNames = new Set<string>()
 
-    root.querySelectorAll('*').forEach(element => {
+    root.querySelectorAll('*').forEach((element) => {
       const classAttr = element.getAttribute('class')
       this.addToSet(classNames, classAttr)
     })
@@ -61,7 +61,7 @@ export class ClassNameExtractor {
     const classNames = new Set<string>()
 
     const parts = content.split(',')
-    parts.forEach(part => {
+    parts.forEach((part) => {
       const cleaned = part.trim()
       if (cleaned.startsWith("'") || cleaned.startsWith('"')) {
         this.addToSet(classNames, cleaned)
@@ -87,7 +87,7 @@ export class ClassNameExtractor {
 
     // Split by template expressions ${...}
     const parts = content.split(/\${[^}]+}/)
-    parts.forEach(part => {
+    parts.forEach((part) => {
       this.addToSet(classNames, part)
     })
 
@@ -99,7 +99,7 @@ export class ClassNameExtractor {
 
     // Split by ternary operators
     const parts = content.split(/[?:]/)
-    parts.forEach(part => {
+    parts.forEach((part) => {
       const quotedContent = this.extractQuotedContent(part)
       if (quotedContent) {
         this.addToSet(classNames, quotedContent)

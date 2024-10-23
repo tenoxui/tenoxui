@@ -22,7 +22,7 @@ export class GenerateCSS {
   // Configuration Methods
   private validateConfig(config: Config): void {
     const requiredFields = ['input', 'output', 'property']
-    requiredFields.forEach(field => {
+    requiredFields.forEach((field) => {
       if (!config[field]) {
         throw new Error(`Missing required configuration field: ${field}`)
       }
@@ -36,11 +36,11 @@ export class GenerateCSS {
 
   // Breakpoint Handling
   private isBreakpoint(prefix: string): boolean {
-    return this.config.breakpoints.some(bp => bp.name === prefix)
+    return this.config.breakpoints.some((bp) => bp.name === prefix)
   }
 
   private generateMediaQuery(breakpoint: string): string {
-    const bp = this.config.breakpoints.find(b => b.name === breakpoint)
+    const bp = this.config.breakpoints.find((b) => b.name === breakpoint)
     if (!bp) return ''
 
     const conditions: string[] = []
@@ -57,7 +57,6 @@ export class GenerateCSS {
     value: string | null,
     prefix?: string
   ): string {
-    
     const rule = value ? `${property}: ${value}` : property
     const escapedSelector = escapeCSSSelector(selector)
 
@@ -77,11 +76,11 @@ export class GenerateCSS {
     finalValue: string,
     prefix?: string
   ): string | null {
-    
-
     if (Array.isArray(properties)) {
       // Map each property to the final value
-      const rules = properties.map(prop => `${toKebabCase(String(prop))}: ${finalValue}`).join('; ')
+      const rules = properties
+        .map((prop) => `${toKebabCase(String(prop))}: ${finalValue}`)
+        .join('; ')
       return this.generateCSSRule(`${type}-${value}`, rules, null, prefix)
     }
 
@@ -89,12 +88,11 @@ export class GenerateCSS {
       const items = type
         .slice(1, -1)
         .split(',')
-        .map(item => item.trim())
+        .map((item) => item.trim())
 
       const cssRules: string[] = []
-      
 
-      items.forEach(item => {
+      items.forEach((item) => {
         const attrProps = this.config.property[item]
 
         // If it's a CSS variable, generate the rule for it
@@ -105,7 +103,7 @@ export class GenerateCSS {
           if (typeof attrProps === 'object' && 'property' in attrProps) {
             const propertyVal = attrProps.property
             if (Array.isArray(propertyVal)) {
-              const propertyString = propertyVal.map(p => toKebabCase(String(p))).join('; ')
+              const propertyString = propertyVal.map((p) => toKebabCase(String(p))).join('; ')
               cssRules.push(
                 this.generateCSSRule(
                   `[${item}]-${value}`,
@@ -139,12 +137,11 @@ export class GenerateCSS {
       })
 
       // Add the rule for both color and background
-      const properties = items.map(item => `${toKebabCase(item)}: ${finalValue}`).join('; ')
+      const properties = items.map((item) => `${toKebabCase(item)}: ${finalValue}`).join('; ')
       cssRules.push(
         this.generateCSSRule(`[${type.slice(1, -1)}]-${value}`, properties, null, prefix)
       )
 
-      
       return cssRules.join('\n')
     }
 
@@ -179,7 +176,7 @@ export class GenerateCSS {
 
       if (Array.isArray(propertyVal)) {
         const rules = propertyVal
-          .map(prop => `${toKebabCase(String(prop))}: ${propValue}`)
+          .map((prop) => `${toKebabCase(String(prop))}: ${propValue}`)
           .join('; ')
         return this.generateCSSRule(`${type}`, rules, null, prefix)
       }
@@ -212,7 +209,7 @@ export class GenerateCSS {
       const rules = Object.entries(properties)
         .map(([prop, value]) => `${prop}: ${value}`)
         .join('; ')
-      
+
       return this.generateCSSRule(className, rules, null, prefix)
     }
 
@@ -279,7 +276,7 @@ export class GenerateCSS {
   // Public API Methods
   public create(classNames: string[] | string): string {
     const classes = Array.isArray(classNames) ? classNames : classNames.split(/\s+/)
-    classes.forEach(className => this.parseClass(className))
+    classes.forEach((className) => this.parseClass(className))
 
     let cssContent = Array.from(this.generatedCSS).join('\n')
 
@@ -295,9 +292,9 @@ export class GenerateCSS {
     const classNames = new Set<string>()
 
     if (this.config.input) {
-      this.config.input.forEach(pattern => {
-        glob.sync(pattern).forEach(file => {
-          new FileParser().parse(file).forEach(className => classNames.add(className))
+      this.config.input.forEach((pattern) => {
+        glob.sync(pattern).forEach((file) => {
+          new FileParser().parse(file).forEach((className) => classNames.add(className))
         })
       })
 

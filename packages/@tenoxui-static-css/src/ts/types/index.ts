@@ -28,7 +28,6 @@ export type Classes = {
   }
 }
 
-
 export interface CSSRule {
   selector: string
   properties: string | string[]

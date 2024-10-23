@@ -10,8 +10,7 @@ export class SvelteParser extends BaseParser {
     this.jsParser = new JSLikeParser()
   }
 
-
-private extractSvelteClassDirectives(content: string): string[] {
+  private extractSvelteClassDirectives(content: string): string[] {
     const classNames = new Set<string>()
 
     // class:name={condition}
@@ -40,19 +39,17 @@ private extractSvelteClassDirectives(content: string): string[] {
     const classNames = new Set<string>()
 
     // Regular class attributes (inherited from BaseParser)
-    this.extractClassNames(content).forEach(className => classNames.add(className))
+    this.extractClassNames(content).forEach((className) => classNames.add(className))
 
     // Svelte class directives
-    this.extractSvelteClassDirectives(content).forEach(className => classNames.add(className))
+    this.extractSvelteClassDirectives(content).forEach((className) => classNames.add(className))
 
     // Script section parsing
     const scriptContent = this.extractScriptContent(content)
     if (scriptContent) {
-      this.jsParser.parse(scriptContent).forEach(className => classNames.add(className))
+      this.jsParser.parse(scriptContent).forEach((className) => classNames.add(className))
     }
 
     return Array.from(classNames)
   }
-
-  
 }

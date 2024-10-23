@@ -16,14 +16,14 @@ export class VueParser extends BaseParser {
     const templateMatch = content.match(/<template>([\s\S]*?)<\/template>/)
     if (templateMatch) {
       const templateContent = templateMatch[1]
-      this.extractClassNames(templateContent).forEach(className => classNames.add(className))
+      this.extractClassNames(templateContent).forEach((className) => classNames.add(className))
     }
 
     // Script section
     const scriptMatch = content.match(/<script>([\s\S]*?)<\/script>/)
     if (scriptMatch) {
       const scriptContent = scriptMatch[1]
-      this.jsParser.parse(scriptContent).forEach(className => classNames.add(className))
+      this.jsParser.parse(scriptContent).forEach((className) => classNames.add(className))
     }
 
     return Array.from(classNames)

@@ -76,7 +76,6 @@ describe('GenerateCSS', () => {
   })
 
   it('should parse JavaScript related class names', () => {
-    
     expect(new JSLikeParser().parse('elem.classList.add("bg-white text-blue")')).toEqual([
       'bg-white',
       'text-blue'

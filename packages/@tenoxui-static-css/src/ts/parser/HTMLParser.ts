@@ -1,4 +1,3 @@
-
 import { BaseParser } from './base'
 
 export class HTMLParser extends BaseParser {

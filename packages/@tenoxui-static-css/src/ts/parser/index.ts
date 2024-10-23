@@ -18,7 +18,7 @@ export class FileParser {
       ['.js', jsLikeParser],
       ['.ts', jsLikeParser],
       ['.vue', new VueParser()],
-      ['.svelte', new SvelteParser()],
+      ['.svelte', new SvelteParser()]
     ])
   }
 

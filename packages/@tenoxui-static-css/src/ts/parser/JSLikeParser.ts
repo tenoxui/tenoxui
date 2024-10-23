@@ -23,22 +23,22 @@ export class JSLikeParser extends BaseParser {
       {
         // Regular className pattern
         regex: /className\s*=\s*{?["'`]([^"'`]+)["'`]?}?/g,
-        extractMethod: match => this.extractor.fromAssignment(match)
+        extractMethod: (match) => this.extractor.fromAssignment(match)
       },
       {
         // Template literal pattern
         regex: /className\s*=\s*{?`([^`]+)`}?/g,
-        extractMethod: match => this.extractor.fromTemplateLiteral(match)
+        extractMethod: (match) => this.extractor.fromTemplateLiteral(match)
       },
       {
         // Conditional className pattern
         regex: /className\s*=\s*{([^}]+)}/g,
-        extractMethod: match => this.extractor.fromConditional(match)
+        extractMethod: (match) => this.extractor.fromConditional(match)
       },
       {
         // Assignment pattern
         regex: /\.className\s*=\s*([^;]+)/g,
-        extractMethod: match => this.extractor.fromAssignment(match)
+        extractMethod: (match) => this.extractor.fromAssignment(match)
       }
     ]
 
@@ -79,8 +79,8 @@ export class JSLikeParser extends BaseParser {
 
   private extractMethodCalls(content: string, classNames: Set<string>): void {
     this.methodCallPatterns.forEach(({ regex, method }) => {
-      this.extractMatches(content, regex, match => {
-        this.extractor.fromMethodCall(match).forEach(className => classNames.add(className))
+      this.extractMatches(content, regex, (match) => {
+        this.extractor.fromMethodCall(match).forEach((className) => classNames.add(className))
       })
     })
   }
@@ -92,9 +92,9 @@ export class JSLikeParser extends BaseParser {
     // .replace(/\/\/.*?$/gm, '')
     // .replace(/\/\*[\s\S]*?\*\//g, '')
 
-    this.patterns.forEach(pattern => {
-      this.extractMatches(contentWithoutComments, pattern.regex, match => {
-        pattern.extractMethod(match).forEach(className => classNames.add(className))
+    this.patterns.forEach((pattern) => {
+      this.extractMatches(contentWithoutComments, pattern.regex, (match) => {
+        pattern.extractMethod(match).forEach((className) => classNames.add(className))
       })
     })
 
