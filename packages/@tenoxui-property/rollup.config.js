@@ -1,3 +1,7 @@
+
+
+
+
 import fs from 'node:fs'
 import path from 'node:path'
 import typescript from '@rollup/plugin-typescript'
@@ -11,7 +15,7 @@ const banner = `/*!
  * ${packageJson.name} v${packageJson.version}
  * Licensed under MIT (https://github.com/tenoxui/tenoxui/blob/main/LICENSE)
  */`
-
+const name = "tenoxui"
 const sourcemap = true
 const terserConf = {
   format: {
@@ -34,94 +38,49 @@ const terserConfMin = {
   keep_fnames: false
 }
 
-const config = [
-  {
-    input: 'src/default.ts',
-    output: [
-      {
-        file: `dist/default.esm.js`,
-        format: 'es',
-        sourcemap,
-        plugins: [terser(terserConf)]
-      },
-      {
-        file: `dist/default.esm.min.js`,
-        format: 'es',
-        sourcemap,
-        plugins: [terser(terserConfMin)]
-      },
-      {
-        file: `dist/default.umd.js`,
-        format: 'umd',
-        sourcemap,
-        name: 'property',
-        plugins: [terser(terserConf)]
-      },
-      {
-        file: `dist/default.umd.min.js`,
-        format: 'umd',
-        sourcemap,
-        name: 'property',
-        plugins: [terser(terserConfMin)]
-      },
-      {
-        file: `dist/default.cjs`,
-        format: 'cjs',
-        sourcemap,
-        plugins: [terser(terserConf)]
-      },
-      {
-        file: `dist/default.cjs`,
-        format: 'cjs',
-        sourcemap,
-        plugins: [terser(terserConfMin)]
-      }
-    ],
-    plugins: [typescript(), resolve(), commonjs()]
-  },
-  {
-    input: 'src/full.ts',
-    output: [
-      {
-        file: `dist/full.esm.js`,
-        format: 'es',
-        sourcemap,
-        plugins: [terser(terserConf)]
-      },
-      {
-        file: `dist/full.esm.min.js`,
-        format: 'es',
-        sourcemap,
-        plugins: [terser(terserConfMin)]
-      },
-      {
-        file: `dist/full.umd.js`,
-        format: 'umd',
-        sourcemap,
-        name: 'property',
-        plugins: [terser(terserConf)]
-      },
-      {
-        file: `dist/full.umd.min.js`,
-        format: 'umd',
-        sourcemap,
-        name: 'property',
-        plugins: [terser(terserConfMin)]
-      },
-      {
-        file: `dist/full.cjs`,
-        format: 'cjs',
-        sourcemap,
-        plugins: [terser(terserConf)]
-      },
-      {
-        file: `dist/full.cjs`,
-        format: 'cjs',
-        sourcemap,
-        plugins: [terser(terserConfMin)]
-      }
-    ],
-    plugins: [typescript(), resolve(), commonjs()]
-  }
-]
+const config = {
+  input: 'src/default.ts',
+  output: [
+    {
+      file: `dist/default.esm.js`,
+      format: 'es',
+      sourcemap,
+      plugins: [terser(terserConf)]
+    },
+    {
+      file: `dist/default.esm.min.js`,
+      format: 'es',
+      sourcemap,
+      plugins: [terser(terserConfMin)]
+    },
+    {
+      file: `dist/default.umd.js`,
+      format: 'umd',
+      sourcemap,
+      name,
+      plugins: [terser(terserConf)]
+    },
+    {
+      file: `dist/default.umd.min.js`,
+      format: 'umd',
+      sourcemap,
+      name,
+      plugins: [terser(terserConfMin)]
+    },
+    {
+      file: `dist/default.cjs`,
+      format: 'cjs',
+      sourcemap,
+      plugins: [terser(terserConf)]
+    },
+    {
+      file: `dist/default.cjs`,
+      format: 'cjs',
+      sourcemap,
+      plugins: [terser(terserConfMin)]
+    }
+  ],
+  plugins: [typescript(), resolve(), commonjs()]
+}
+
 export default config
