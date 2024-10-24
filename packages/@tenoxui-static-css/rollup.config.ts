@@ -22,30 +22,33 @@ const config = [
       {
         file: `dist/${fileName}.umd.js`,
         format: 'umd',
-        name: 'tenoxui',
+        name: '__static_tui',
         banner,
         sourcemap
       },
       {
         file: `dist/${fileName}.umd.min.js`,
         format: 'umd',
-        name: 'tenoxui',
+        name: '__static_tui',
         banner,
         sourcemap,
         plugins: [
           terser({
+            mangle: {
+              properties: true,
+              reserved: ['create', 'observe', 'injectStyle', 'staticCSS', '__static_tui']
+            },
             compress: {
               defaults: true,
               passes: 2
             },
-            toplevel: false,
-            keep_fnames: true
+            toplevel: true,
+            keep_fnames: false
           })
         ]
       }
     ],
-    plugins: [typescript(), resolve({ preferBuiltins: true }), commonjs()],
-    external: ['glob', 'node-html-parser']
+    plugins: [typescript(), resolve(), commonjs()]
   },
   {
     input: 'src/ts/static-css.ts',

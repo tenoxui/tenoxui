@@ -36,9 +36,7 @@ export interface CSSRule {
 }
 
 export interface Config {
-  input: string[]
-  output: string
-  property: Property
+  property?: Property
   values?: DefinedValue
   classes?: Classes
   breakpoints?: Breakpoint[]

@@ -3,7 +3,13 @@ import { property } from '../@tenoxui-property/dist/full.esm.js'
 export default {
   input: ['index.html', 'src/apps/*.{html,js,jsx,ts,tsx,vue,svelte}'],
   output: 'styles.css',
-  property: property,
+  property: { ...property, size: ['width', 'height'] },
+  values: {
+    md: '100px',
+    w: {
+      md: '200px'
+    }
+  },
   classes: {
     display: {
       center: 'flex'

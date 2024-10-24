@@ -15,9 +15,7 @@
     "playgrounds/*"
   ],
   "scripts": {
-    "wst:build": "mkdir -p ./scripts/.temp && uglifyjs ./scripts/workspace-tenox.cjs -c -m toplevel  -o ./scripts/.temp/wst.temp.js && bash ./scripts/wst-build.sh && rm -rf ./scripts/.temp",
     "wst:start": "nwm interactive",
-    "module:cleanup": "find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +",
     "format": "prettier --write ."
   },
   "devDependencies": {
@@ -25,5 +23,5 @@
     "chalk": "^5.3.0",
     "prettier": "^3.3.3",
     "uglify-js": "^3.19.3"
-  }
+  },
 }
