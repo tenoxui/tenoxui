@@ -36,7 +36,7 @@ export class staticCSS {
   }
 
   private generateMediaQuery(breakpoint: string): string {
-    const bp = this.config.breakpoints.find((b) => b.name === breakpoint)
+    const bp = this.config.breakpoints.find(b => b.name === breakpoint)
     if (!bp) return ''
 
     const conditions: string[] = []
@@ -54,9 +54,7 @@ export class staticCSS {
     prefix?: string
   ): string | null {
     if (Array.isArray(properties)) {
-      const rules = properties
-        .map((prop) => `${toKebabCase(String(prop))}: ${finalValue}`)
-        .join('; ')
+      const rules = properties.map(prop => `${toKebabCase(String(prop))}: ${finalValue}`).join('; ')
       return this.generator.generateCSSRule(`${type}-${value}`, rules, null, prefix)
     }
 
@@ -64,14 +62,14 @@ export class staticCSS {
       const items = type
         .slice(1, -1)
         .split(',')
-        .map((item) => item.trim())
+        .map(item => item.trim())
 
       const properties = items
-        .map((item) => {
+        .map(item => {
           const prop = this.config.property[item]
 
           if (Array.isArray(prop)) {
-            return prop.map((p) => `${toKebabCase(String(p))}: ${finalValue}`).join('; ')
+            return prop.map(p => `${toKebabCase(String(p))}: ${finalValue}`).join('; ')
           }
 
           const property = prop || item
@@ -153,9 +151,9 @@ export class staticCSS {
     const classNames = new Set<string>()
     const elements = document.querySelectorAll('*')
 
-    elements.forEach((element) => {
+    elements.forEach(element => {
       if (element.classList.length) {
-        element.classList.forEach((className) => classNames.add(className))
+        element.classList.forEach(className => classNames.add(className))
       }
     })
 
@@ -166,10 +164,10 @@ export class staticCSS {
     const classes = Array.isArray(classNames)
       ? classNames
       : typeof classNames === 'string'
-        ? classNames.split(/\s+/)
-        : Array.from(classNames)
+      ? classNames.split(/\s+/)
+      : Array.from(classNames)
 
-    classes.forEach((className) => this.parseClass(className))
+    classes.forEach(className => this.parseClass(className))
 
     let cssContent = Array.from(this.generatedCSS).join('\n')
 
@@ -177,7 +175,7 @@ export class staticCSS {
       const mediaQuery = this.generateMediaQuery(breakpoint)
       cssContent += `\n${mediaQuery} {\n  ${Array.from(rules).join('\n  ')}\n}`
     })
-    console.log(cssContent)
+    // console.log(cssContent) // !RMPROD
     return cssContent
   }
 
