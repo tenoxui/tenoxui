@@ -30,6 +30,7 @@
   },
   "type": "module",
   "scripts": {
+    "dev": "rollup -c -w",
     "build": "rollup -c",
     "build:cli": "uglifyjs cli.js -c -m toplevel  -o cli.min.js",
     "old:build": "mkdir -p dist && uglifyjs ./src/js/static-css.js -c -o dist/static-css.min.js --source-map \"url='static-css.min.js.map'\" --comments \"/^!/\" && cp src/js/static-css.js dist && uglifyjs cli.js -c -m toplevel  -o cli.min.js",

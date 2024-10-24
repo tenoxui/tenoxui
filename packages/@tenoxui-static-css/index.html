@@ -4,18 +4,40 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <link rel="stylesheet" href="dist/styles.css" />
     <title>Document</title>
+    <script src="./dist/static-css.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tenoxui/property@1.4.5/dist/default.umd.min.js"></script>
   </head>
-  <body>
-    <div
-      class="transform filter rotate-45deg box-100px bg-red hover:bg-yellow md:bg-blue md:center"
-    >
-      hello
-    </div>
-    <div class="text-white md:text-black">Hello World</div>
+  <body class="my-color-#d98383 bg-#0f1015">
+    <h1 class="[fontSize]-1rem [fontWeight]-500">Hello World!</h1>
 
-    <div class="box-100px bg-#e652ed center">Hello</div>
-    <div class="my-element box-100px"></div>
+    <div
+      class="w-md h-md hover:w-150px bg-$my-color hover:bg-blue [transition]-300ms [border-radius]-6px"
+    ></div>
+
+    <div class="bg-blue">hkl</div>
+    <script>
+      const config = {
+        property: {
+          bg: 'backgroundColor',
+          'my-color': ['color', '--my-color'],
+          w: 'width',
+          h: 'height',
+          size: ['width', 'height']
+        },
+        values: {
+          md: '100px',
+          w: {
+            md: '200px'
+          }
+        }
+      }
+
+      const styler = new tenoxui.staticCSS(config)
+      // styler.observe()
+
+      styler.create('bg-blue')
+      styler.injectStyles()
+    </script>
   </body>
 </html>

@@ -44,8 +44,8 @@ const config = [
         ]
       }
     ],
-    plugins: [typescript(), resolve({ preferBuiltins: true }), commonjs()],
-    external: ['glob', 'node-html-parser']
+    plugins: [typescript(), resolve( ), commonjs()],
+    
   },
   {
     input: 'src/ts/static-css.ts',
