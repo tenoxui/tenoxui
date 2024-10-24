@@ -38,7 +38,7 @@ export class GenerateCSS {
   // Configuration Methods
   private validateConfig(config: Config): void {
     const requiredFields = ['input', 'output']
-    requiredFields.forEach(field => {
+    requiredFields.forEach((field) => {
       if (!config[field]) {
         throw new Error(`Missing required configuration field: ${field}`)
       }
@@ -52,7 +52,7 @@ export class GenerateCSS {
   }
 
   private generateMediaQuery(breakpoint: string): string {
-    const bp = this.config.breakpoints.find(b => b.name === breakpoint)
+    const bp = this.config.breakpoints.find((b) => b.name === breakpoint)
     if (!bp) return ''
 
     const conditions: string[] = []
@@ -70,7 +70,9 @@ export class GenerateCSS {
     prefix?: string
   ): string | null {
     if (Array.isArray(properties)) {
-      const rules = properties.map(prop => `${toKebabCase(String(prop))}: ${finalValue}`).join('; ')
+      const rules = properties
+        .map((prop) => `${toKebabCase(String(prop))}: ${finalValue}`)
+        .join('; ')
       return this.generator.generateCSSRule(`${type}-${value}`, rules, null, prefix)
     }
 
@@ -78,14 +80,14 @@ export class GenerateCSS {
       const items = type
         .slice(1, -1)
         .split(',')
-        .map(item => item.trim())
+        .map((item) => item.trim())
 
       const properties = items
-        .map(item => {
+        .map((item) => {
           const prop = this.config.property[item]
 
           if (Array.isArray(prop)) {
-            return prop.map(p => `${toKebabCase(String(p))}: ${finalValue}`).join('; ')
+            return prop.map((p) => `${toKebabCase(String(p))}: ${finalValue}`).join('; ')
           }
 
           const property = prop || item
@@ -166,7 +168,7 @@ export class GenerateCSS {
   // Public API Methods
   public create(classNames: string[] | string): string {
     const classes = Array.isArray(classNames) ? classNames : classNames.split(/\s+/)
-    classes.forEach(className => this.parseClass(className))
+    classes.forEach((className) => this.parseClass(className))
 
     let cssContent = Array.from(this.generatedCSS).join('\n')
 
@@ -182,9 +184,9 @@ export class GenerateCSS {
     const classNames = new Set<string>()
 
     if (this.config.input) {
-      this.config.input.forEach(pattern => {
-        glob.sync(pattern).forEach(file => {
-          new FileParser().parse(file).forEach(className => classNames.add(className))
+      this.config.input.forEach((pattern) => {
+        glob.sync(pattern).forEach((file) => {
+          new FileParser().parse(file).forEach((className) => classNames.add(className))
         })
       })
 

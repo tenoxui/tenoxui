@@ -44,8 +44,7 @@ const config = [
         ]
       }
     ],
-    plugins: [typescript(), resolve( ), commonjs()],
-    
+    plugins: [typescript(), resolve(), commonjs()]
   },
   {
     input: 'src/ts/static-css.ts',
