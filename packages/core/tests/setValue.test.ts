@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { setupJSDOM, createStyler } from './utils/init'
+import { parseClassName } from '../src/lib/classNameParser'
 import { merge, transformClasses } from '@nousantx/someutils'
 import { hover, unHover, screenSize } from './utils/event'
 
@@ -64,7 +65,7 @@ describe('Value handler and applying styles', () => {
       }
     })
 
-    const newClass = styler.create['parser'].parseClassName('[color]-1px')
+    const newClass = parseClassName('[color]-1px', styler.property)
 
     expect(newClass[1]).toBe('[color]')
 
@@ -95,7 +96,7 @@ describe('Value handler and applying styles', () => {
     expect(
       styler.create['computeValue'].valueHandler(
         '',
-        styler.create['parser'].parseClassName('[color]-primary')[2],
+        parseClassName('[color]-primary', styler.property)[2],
         ''
       )
     ).toBe('#ccf654')
@@ -103,7 +104,7 @@ describe('Value handler and applying styles', () => {
     expect(
       styler.create['computeValue'].valueHandler(
         '',
-        styler.create['parser'].parseClassName('bg-primary')[2],
+        parseClassName('bg-primary', styler.property)[2],
         ''
       )
     ).toBe('#ccf654')
@@ -111,7 +112,7 @@ describe('Value handler and applying styles', () => {
     expect(
       styler.create['computeValue'].valueHandler(
         '',
-        styler.create['parser'].parseClassName('bg-blue')[2],
+        parseClassName('bg-blue', styler.property)[2],
         ''
       )
     ).toBe('blue')
@@ -119,7 +120,7 @@ describe('Value handler and applying styles', () => {
     expect(
       styler.create['computeValue'].valueHandler(
         '',
-        styler.create['parser'].parseClassName('bg-$my-background')[2],
+        parseClassName('bg-$my-background', styler.property)[2],
         ''
       )
     ).toBe('var(--my-background)')
@@ -127,7 +128,7 @@ describe('Value handler and applying styles', () => {
     expect(
       styler.create['computeValue'].valueHandler(
         '',
-        styler.create['parser'].parseClassName('bg-[--c-primary]')[2],
+        parseClassName('bg-[--c-primary]', styler.property)[2],
         ''
       )
     ).toBe('var(--c-primary)')
@@ -135,7 +136,7 @@ describe('Value handler and applying styles', () => {
     expect(
       styler.create['computeValue'].valueHandler(
         '',
-        styler.create['parser'].parseClassName('bg-[var(--c-primary)]')[2],
+        parseClassName('bg-[var(--c-primary)]', styler.property)[2],
         ''
       )
     ).toBe('var(--c-primary)')
@@ -143,7 +144,7 @@ describe('Value handler and applying styles', () => {
     expect(
       styler.create['computeValue'].valueHandler(
         '',
-        styler.create['parser'].parseClassName('bg-[rgb(221_183_124_/_0.3)]')[2],
+        parseClassName('bg-[rgb(221_183_124_/_0.3)]', styler.property)[2],
         ''
       )
     ).toBe('rgb(221 183 124 / 0.3)')
@@ -173,9 +174,9 @@ describe('Value handler and applying styles', () => {
   it('should set css variable to the element', () => {
     const styler = useStyles()
 
-    styler.create.computeValue.setCssVar('--size', '1rem')
-    styler.create.computeValue.setCssVar('--color', 'blue')
-    styler.create.computeValue.setCssVar('--gradient', 'linear-gradient(to right, red, blue)')
+    styler.create.computeValue.setStyle('--size', '1rem')
+    styler.create.computeValue.setStyle('--color', 'blue')
+    styler.create.computeValue.setStyle('--gradient', 'linear-gradient(to right, red, blue)')
 
     expect(element.style.getPropertyValue('--size')).toBe('1rem')
     expect(element.style.getPropertyValue('--color')).toBe('blue')
@@ -249,8 +250,8 @@ describe('Value handler and applying styles', () => {
 
     // create custom classes
     // get value from custom classes
-    const customValue = (classname) =>
-      styler.context.classes[styler.create['parseStyles'].getParentClass(className)][className]
+    const customValue = classname =>
+      styler.classes[styler.create['parseStyles'].getParentClass(className)][className]
 
     let className = 'primary'
     styler.create['styler'].addStyle(
