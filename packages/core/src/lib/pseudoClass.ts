@@ -37,7 +37,7 @@ export class Pseudo {
       const properties = type
         .slice(1, -1)
         .split(',')
-        .map((item) => item.trim())
+        .map(item => item.trim())
 
       if (properties.length === 1) {
         const prop = properties[0]
@@ -55,7 +55,7 @@ export class Pseudo {
         return prop as CSSProperty
       }
 
-      return properties.map((prop) => {
+      return properties.map(prop => {
         if (prop.startsWith('--')) {
           return prop as CSSVariable
         }
@@ -85,7 +85,7 @@ export class Pseudo {
     }
 
     if (Array.isArray(property)) {
-      return property.map((prop) => camelToKebab(prop as string)) as CSSProperty[]
+      return property.map(prop => camelToKebab(prop as string)) as CSSProperty[]
     }
 
     return camelToKebab(property as string) as CSSProperty
@@ -110,14 +110,14 @@ export class Pseudo {
     styleInitValue: { [key: string]: string } | string
   ): void {
     if (Array.isArray(propsName)) {
-      propsName.forEach((propName) => {
-        this.computeValue.setCssVar(
+      propsName.forEach(propName => {
+        this.computeValue.setStyle(
           propName,
           (styleInitValue as { [key: string]: string })[propName]
         )
       })
     } else {
-      this.computeValue.setCssVar(propsName, styleInitValue as string)
+      this.computeValue.setStyle(propsName, styleInitValue as string)
     }
   }
 
