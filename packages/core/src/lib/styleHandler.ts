@@ -20,13 +20,13 @@ export class StyleHandler {
     private readonly values: DefinedValue,
     private readonly classes: Classes
   ) {
-    this.computeValue = new ComputeValue(element, property, values)
+    this.computeValue = new ComputeValue(element, property, this.values)
     this.isInitialLoad = new WeakMap().set(element, true)
   }
 
   private handleTransitionProperty(property: string, value: string): void {
     const isInitial = this.isInitialLoad.get(this.element)
-    
+
     if (!isInitial) {
       this.element.style[property as 'transition' | 'transitionDuration'] = value
       return
@@ -46,9 +46,12 @@ export class StyleHandler {
   }
 
   private handleCSSVariables(type: string, resolvedValue: string, secondValue: string): void {
-    const items = type.slice(1, -1).split(',').map(item => item.trim())
+    const items = type
+      .slice(1, -1)
+      .split(',')
+      .map((item) => item.trim())
 
-    items.forEach(item => {
+    items.forEach((item) => {
       const propertyDef = this.property[item]
 
       if (item.startsWith('--')) {
@@ -93,7 +96,7 @@ export class StyleHandler {
     if (!value) return
 
     const resolvedValue = this.computeValue.valueHandler(type, value, unit || '')
-    const resolvedSecondValue = secondValue 
+    const resolvedSecondValue = secondValue
       ? this.computeValue.valueHandler(type, secondValue, secondUnit || '')
       : ''
 

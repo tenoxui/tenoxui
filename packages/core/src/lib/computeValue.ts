@@ -1,4 +1,11 @@
-import { Property, DefinedValue, GetCSSProperty, CSSPropertyOrVariable, CSSVariable ,CSSProperty} from './types'
+import {
+  Property,
+  DefinedValue,
+  GetCSSProperty,
+  CSSPropertyOrVariable,
+  CSSVariable,
+  CSSProperty
+} from './types'
 
 export class ComputeValue {
   constructor(
@@ -49,7 +56,7 @@ export class ComputeValue {
   public setStyle(property: CSSPropertyOrVariable, value: string): void {
     ;(property as CSSVariable).startsWith('--')
       ? this.element.style.setProperty(property as CSSVariable, value)
-      : ((this.element.style as any)[(property as CSSProperty)] = value)
+      : ((this.element.style as any)[property as CSSProperty] = value)
   }
 
   public setCustomValue(
@@ -62,13 +69,13 @@ export class ComputeValue {
       : value
 
     Array.isArray(property)
-      ? property.forEach(prop => this.setStyle(prop, finalValue))
+      ? property.forEach((prop) => this.setStyle(prop, finalValue))
       : this.setStyle(property, finalValue)
   }
 
   public setDefaultValue(property: GetCSSProperty, value: string): void {
     Array.isArray(property)
-      ? property.forEach(prop => this.setStyle(prop, value))
+      ? property.forEach((prop) => this.setStyle(prop, value))
       : this.setStyle(property, value)
   }
 

@@ -1,7 +1,7 @@
 // makeTenoxUI constructor param
 export interface MakeTenoxUIParams {
   element: HTMLElement
-  property: Property
+  property?: Property
   values?: DefinedValue
   breakpoints?: Breakpoint[]
   classes?: Classes

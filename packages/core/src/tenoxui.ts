@@ -60,7 +60,7 @@ class MakeTenoxUI {
   }
 
   public applyMultiStyles(styles: string): void {
-    styles.split(/\s+/).forEach(style => this.applyStyles(style))
+    styles.split(/\s+/).forEach((style) => this.applyStyles(style))
   }
 }
 
