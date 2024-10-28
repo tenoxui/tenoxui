@@ -1,6 +1,6 @@
 {
   "name": "tenoxui",
-  "version": "0.12.3",
+  "version": "0.12.4",
   "description": "A CSS Framework without CSS file :D",
   "author": "NOuSantx <nousantx@gmail.com>",
   "license": "MIT",
@@ -41,7 +41,7 @@
     "@rollup/plugin-node-resolve": "^15.3.0",
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^12.1.1",
-    "@tenoxui/core": "^1.2.0-alpha.0",
+    "@tenoxui/core": "1.2.0",
     "@types/node": "^22.7.8",
     "clean-css-cli": "^5.6.3",
     "prettier": "^3.2.5",
