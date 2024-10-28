@@ -705,11 +705,6 @@
   resolved "https://registry.yarnpkg.com/@rollup/rollup-win32-x64-msvc/-/rollup-win32-x64-msvc-4.24.0.tgz#0574d7e87b44ee8511d08cc7f914bcb802b70818"
   integrity sha512-fbMkAF7fufku0N2dE5TBXcNlg0pt0cJue4xBRE2Qc5Vqikxr4VCgKj/ht6SMdFcOacVA9rqF70APJ8RN/4vMJw==
 
-"@tenoxui/core@*":
-  version "1.1.3"
-  resolved "https://registry.yarnpkg.com/@tenoxui/core/-/core-1.1.3.tgz#ca3efbf80122f111245b435724a5c2b3c031ba59"
-  integrity sha512-sbKQG7jaGDaJJh6iyQ3BT+qBBBP7qVAQx4RrykKHG5KDXdYNkhTYNa1KuoMxTg6uw/CDF+LkyRNd81GNRtHPAA==
-
 "@types/babel__core@^7.20.5":
   version "7.20.5"
   resolved "https://registry.yarnpkg.com/@types/babel__core/-/babel__core-7.20.5.tgz#3df15f27ba85319caa07ba08d0721889bb39c017"
