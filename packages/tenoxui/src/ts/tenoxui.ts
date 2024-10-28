@@ -44,12 +44,18 @@ interface StylesObject {
  *   'header > h1': 'fs-3rem fw-600'
  * }
  */
-export function applyStyles(styledElement: StylesObject): void {
+export function applyStyles(
+  styledElement: StylesObject,
+  
+): void {
   Object.entries(styledElement).forEach(([selector, styles]) => {
+    MakeTenoxUI.setDefaultStyles(selector, styles)
     const elements = document.querySelectorAll(selector)
-
     elements.forEach(element => {
-      new MakeTenoxUI({ ...config, element: element as HTMLElement }).applyMultiStyles(styles)
+      new MakeTenoxUI({
+        element: element as HTMLElement,
+        ...config
+      }).applyMultiStyles(styles)
     })
   })
 }

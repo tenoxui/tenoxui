@@ -15,7 +15,7 @@ export function setupClassObserver(
   const observer = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
       if (mutation.attributeName === 'class') {
-        htmlElement.style.cssText = ''
+        // htmlElement.style.cssText = ''
         scanAndApplyStyles(applyStylesCallback, htmlElement)
       }
     })
