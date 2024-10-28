@@ -1,37 +1,54 @@
-import { MakeTenoxUIParams } from './lib/types'
-import { TenoxUIContext, createTenoxUIComponents } from './utils/assigner'
+// index.ts
+import { Classes, Property, MakeTenoxUIParams, Breakpoint, DefinedValue } from './lib/types'
+import { createTenoxUIComponents } from './utils/assigner'
+import { parseClassName } from './lib/classNameParser'
+import { scanAndApplyStyles, setupClassObserver } from './lib/observer'
 
-// makeTenoxUI
-class makeTenoxUI {
-  private readonly context: TenoxUIContext
+class MakeTenoxUI {
+  readonly element: HTMLElement
+  readonly property: Property
+  readonly values: DefinedValue
+  readonly breakpoints: Breakpoint[]
+  readonly classes: Classes
   private readonly create: ReturnType<typeof createTenoxUIComponents>
 
-  constructor(params: MakeTenoxUIParams) {
-    this.context = new TenoxUIContext(params)
-    this.create = createTenoxUIComponents(this.context)
+  constructor({
+    element,
+    property = {},
+    values = {},
+    breakpoints = [],
+    classes = {}
+  }: MakeTenoxUIParams) {
+    this.element = element instanceof HTMLElement ? element : element[0]
+    this.property = property
+    this.values = values
+    this.breakpoints = breakpoints
+    this.classes = classes
+    // Pass the validated values to createTenoxUIComponents
+    this.create = createTenoxUIComponents({
+      element: this.element, // Now guaranteed to be HTMLElement
+      property: this.property,
+      values: this.values,
+      classes: this.classes,
+      breakpoints: this.breakpoints
+    })
   }
 
-  public useDOM() {
+  public useDOM(element?: HTMLElement) {
     const applyStyles = (className: string) => this.applyStyles(className)
-    this.create.observer.scanAndApplyStyles(applyStyles)
-    this.create.observer.setupClassObserver(applyStyles)
+    scanAndApplyStyles(applyStyles, element || this.element)
+    setupClassObserver(applyStyles, element || this.element)
   }
 
   public applyStyles(className: string): void {
     const [prefix, type] = className.split(':')
     const getType = type || prefix
     const getPrefix = type ? prefix : undefined
-
     if (this.create.parseStyles.handlePredefinedStyle(getType, getPrefix)) return
-
     if (this.create.parseStyles.handleCustomClass(getType, getPrefix)) return
-
-    const parts = this.create.parser.parseClassName(className)
-
+    const parts = parseClassName(className, this.property)
     if (!parts) return
-
     const [parsedPrefix, parsedType, value = '', unit = '', secValue, secUnit] = parts
-
     this.create.parseStyles.parseDefaultStyle(
       parsedPrefix,
       parsedType,
@@ -47,5 +64,5 @@ class makeTenoxUI {
   }
 }
 
-export { makeTenoxUI }
+export { MakeTenoxUI }
 export * from './lib/types'

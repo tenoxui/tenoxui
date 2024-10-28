@@ -1,16 +1,16 @@
-import { makeTenoxUI, MakeTenoxUIParams } from '@tenoxui/core'
+import { MakeTenoxUI, MakeTenoxUIParams } from '@tenoxui/core'
 import { merge } from '@nousantx/someutils'
 
-type TenoxUIConfig = Omit<MakeTenoxUIParams, 'element'>
+type CoreConfig = Omit<MakeTenoxUIParams, 'element'>
 
-let config: TenoxUIConfig = {
+let config: CoreConfig = {
   property: {},
   values: {},
   classes: {},
   breakpoints: []
 }
 
-export function use(customConfig: Partial<TenoxUIConfig>): TenoxUIConfig {
+export function use(customConfig: Partial<CoreConfig>): CoreConfig {
   config = {
     ...config,
     ...customConfig,
@@ -18,15 +18,15 @@ export function use(customConfig: Partial<TenoxUIConfig>): TenoxUIConfig {
     values: merge(
       config.values as object,
       (customConfig.values || {}) as object
-    ) as TenoxUIConfig['values'],
+    ) as CoreConfig['values'],
     classes: merge(
       config.classes as object,
       (customConfig.classes || {}) as object
-    ) as TenoxUIConfig['classes'],
+    ) as CoreConfig['classes'],
     breakpoints: [
       ...(config.breakpoints || []),
       ...(customConfig.breakpoints || [])
-    ] as TenoxUIConfig['breakpoints']
+    ] as CoreConfig['breakpoints']
   }
 
   return config
@@ -48,26 +48,26 @@ export function applyStyles(styledElement: StylesObject): void {
   Object.entries(styledElement).forEach(([selector, styles]) => {
     const elements = document.querySelectorAll(selector)
 
-    elements.forEach((element) => {
-      new makeTenoxUI({ ...config, element: element as HTMLElement }).applyMultiStyles(styles)
+    elements.forEach(element => {
+      new MakeTenoxUI({ ...config, element: element as HTMLElement }).applyMultiStyles(styles)
     })
   })
 }
 
-type EngineConstructor = new (params: MakeTenoxUIParams) => InstanceType<typeof makeTenoxUI>
+type EngineConstructor = new (params: MakeTenoxUIParams) => InstanceType<typeof MakeTenoxUI>
 
-interface TenoxUIOptions {
-  property?: TenoxUIConfig['property']
-  values?: TenoxUIConfig['values']
-  classes?: TenoxUIConfig['classes']
-  breakpoints?: TenoxUIConfig['breakpoints']
+export interface TenoxUIConfig {
+  property?: CoreConfig['property']
+  values?: CoreConfig['values']
+  classes?: CoreConfig['classes']
+  breakpoints?: CoreConfig['breakpoints']
   selector?: string
   useDom?: boolean
   useClass?: boolean
   customEngine?: EngineConstructor
 }
 
-export function tenoxui(options: TenoxUIOptions = {}): void {
+export function tenoxui(options: TenoxUIConfig = {}): void {
   const {
     property = {},
     values = {},
@@ -76,17 +76,17 @@ export function tenoxui(options: TenoxUIOptions = {}): void {
     selector = '*[class]',
     useDom = true,
     useClass = false,
-    customEngine = makeTenoxUI
+    customEngine = MakeTenoxUI
   } = options
 
   if (property) {
     config.property = { ...config.property, ...property }
   }
   if (values) {
-    config.values = merge(config.values as object, values) as TenoxUIConfig['values']
+    config.values = merge(config.values as object, values) as CoreConfig['values']
   }
   if (classes) {
-    config.classes = merge(config.classes as object, classes as object) as TenoxUIConfig['classes']
+    config.classes = merge(config.classes as object, classes as object) as CoreConfig['classes']
   }
   if (breakpoints) {
     config.breakpoints = [...(config.breakpoints || []), ...breakpoints]
@@ -124,11 +124,11 @@ export function tenoxui(options: TenoxUIOptions = {}): void {
      * This option will disabling DOM compability!
      */
     if (useClass)
-      element.classList.forEach((className) => {
+      element.classList.forEach(className => {
         styler.applyMultiStyles(className)
       })
   })
 }
 
 export * from '@tenoxui/core'
-export default { makeTenoxUI, use, applyStyles, tenoxui }
+export default { MakeTenoxUI, use, applyStyles, tenoxui }

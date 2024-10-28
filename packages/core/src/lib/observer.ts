@@ -1,27 +1,25 @@
-export class Observer {
-  private htmlElement: HTMLElement
+export function scanAndApplyStyles(
+  applyStylesCallback: (className: string) => void,
+  htmlElement: HTMLElement
+): void {
+  const classes = htmlElement.className.split(/\s+/)
+  classes.forEach((className) => {
+    applyStylesCallback(className)
+  })
+}
 
-  constructor(htmlElement: HTMLElement) {
-    this.htmlElement = htmlElement
-  }
-
-  public scanAndApplyStyles(applyStylesCallback: (className: string) => void): void {
-    const classes = this.htmlElement.className.split(/\s+/)
-    classes.forEach((className) => {
-      applyStylesCallback(className)
+export function setupClassObserver(
+  applyStylesCallback: (className: string) => void,
+  htmlElement: HTMLElement
+): void {
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      if (mutation.attributeName === 'class') {
+        htmlElement.style.cssText = ''
+        scanAndApplyStyles(applyStylesCallback, htmlElement)
+      }
     })
-  }
+  })
 
-  public setupClassObserver(applyStylesCallback: (className: string) => void): void {
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if (mutation.attributeName === 'class') {
-          this.htmlElement.style.cssText = ''
-          this.scanAndApplyStyles(applyStylesCallback)
-        }
-      })
-    })
-
-    observer.observe(this.htmlElement, { attributes: true })
-  }
+  observer.observe(htmlElement, { attributes: true })
 }

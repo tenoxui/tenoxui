@@ -3,38 +3,21 @@ import { StyleHandler } from './styleHandler'
 import { isObjectWithValue } from '../utils/valueObject'
 
 export class Responsive {
-  private readonly htmlElement: HTMLElement
-  private readonly styleAttribute: Property
-  private readonly classes: Classes
-  private readonly breakpoints: Breakpoint[]
-  private readonly styler: StyleHandler
-
   constructor(
-    element: HTMLElement,
-    breakpoints: Breakpoint[],
-    property: Property,
-    classes: Classes,
-    styler: StyleHandler
-  ) {
-    this.htmlElement = element
-    this.styleAttribute = property
-    this.classes = classes
-    this.breakpoints = breakpoints
+    private element: HTMLElement,
+    private breakpoints: Breakpoint[],
+    private property: Property,
+    private classes: Classes,
+    private styler: StyleHandler
+  ) {}
 
-    this.styler = styler
-  }
+  private matchBreakpoint({ name, min, max }: Breakpoint, prefix: string, width: number): boolean {
+    if (name !== prefix) return false
 
-  private matchBreakpoint(
-    bp: Breakpoint, // breakpoint object
-    prefix: string, // className prefix
-    width: number // current screen size
-  ): boolean {
-    if (bp.name !== prefix) return false
-    if (bp.min !== undefined && bp.max !== undefined) {
-      return width >= bp.min && width <= bp.max
-    }
-    if (bp.min !== undefined) return width >= bp.min
-    if (bp.max !== undefined) return width <= bp.max
+    if (min !== undefined && max !== undefined) return width >= min && width <= max
+    if (min !== undefined) return width >= min
+    if (max !== undefined) return width <= max
+
     return false
   }
 
@@ -43,36 +26,32 @@ export class Responsive {
     type: string,
     value: string,
     unit: string,
-    secondValue?: string,
-    secondUnit?: string,
+    secondValue = '',
+    secondUnit = '',
     propKey?: CSSPropertyOrVariable
   ): void {
-    const properties = this.styleAttribute[type]
+    const properties = this.property[type]
 
-    // Handle screen resizing
+    const applyStyle = () => {
+      if (isObjectWithValue(properties)) {
+        this.styler.addStyle(type)
+      } else if (propKey && this.classes[propKey]) {
+        this.styler.addStyle(type, value, unit, secondValue, secondUnit, propKey)
+      } else {
+        this.styler.addStyle(type, value, unit, secondValue, secondUnit)
+      }
+    }
+
     const handleResize = () => {
       const windowWidth = window.innerWidth
       const matchPoint = this.breakpoints.find((bp) =>
         this.matchBreakpoint(bp, breakpointPrefix, windowWidth)
       )
 
-      // If className's prefix match current screen size
-      if (matchPoint) {
-        if (isObjectWithValue(properties)) {
-          this.styler.addStyle(type)
-        } else if (propKey && this.classes[propKey]) {
-          this.styler.addStyle(type, value, unit, secondValue, secondUnit, propKey)
-        } else {
-          this.styler.addStyle(type, value, unit, secondValue, secondUnit)
-        }
-      } else {
-        if (this.htmlElement) {
-          this.htmlElement.style[type as any] = ''
-        }
-      }
+      matchPoint ? applyStyle() : this.element?.style.setProperty(type, '')
     }
 
-    // Initialize style from current screen size
+    // Initialize and set up resize listener
     handleResize()
     window.addEventListener('resize', handleResize)
   }

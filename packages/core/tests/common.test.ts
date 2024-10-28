@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { setupJSDOM, createStyler } from './utils/init'
+import { parseClassName } from '../src/lib/classNameParser'
 import { camelToKebab } from '../src/utils/converter'
 describe('makeTenoxUI', () => {
   let element: HTMLElement
@@ -24,15 +25,15 @@ describe('makeTenoxUI', () => {
     })
 
     // parsed types
-    expect(styler.create['parser'].parseClassName('text-red')[1]).toBe('text')
-    expect(styler.create['parser'].parseClassName('[--my-color]-red')[1]).toBe('[--my-color]')
+    expect(parseClassName('text-red', styler.property)[1]).toBe('text')
+    expect(parseClassName('[--my-color]-red', styler.property)[1]).toBe('[--my-color]')
     // parsed values
-    expect(styler.create['parser'].parseClassName('bg-red')[2]).toBe('red')
-    expect(styler.create['parser'].parseClassName('bg-#ccf655')[2]).toBe('#ccf655')
-    expect(styler.create['parser'].parseClassName('bg-$my-color')[2]).toBe('$my-color')
-    expect(styler.create['parser'].parseClassName('bg-[--my-var]')[2]).toBe('[--my-var]')
-    expect(styler.create['parser'].parseClassName('bg-[var(--my-var)]')[2]).toBe('[var(--my-var)]')
-    expect(styler.create['parser'].parseClassName('bg-[rgb(221_183_124_/_0.3)]')[2]).toBe(
+    expect(parseClassName('bg-red', styler.property)[2]).toBe('red')
+    expect(parseClassName('bg-#ccf655', styler.property)[2]).toBe('#ccf655')
+    expect(parseClassName('bg-$my-color', styler.property)[2]).toBe('$my-color')
+    expect(parseClassName('bg-[--my-var]', styler.property)[2]).toBe('[--my-var]')
+    expect(parseClassName('bg-[var(--my-var)]', styler.property)[2]).toBe('[var(--my-var)]')
+    expect(parseClassName('bg-[rgb(221_183_124_/_0.3)]', styler.property)[2]).toBe(
       '[rgb(221_183_124_/_0.3)]'
     )
   })
@@ -47,7 +48,7 @@ describe('makeTenoxUI', () => {
     expect(
       styler.create['computeValue'].valueHandler(
         '',
-        styler.create['parser'].parseClassName('bg-primary')[2],
+        parseClassName('bg-primary', styler.property)[2],
         ''
       )
     ).toBe('#ccf654')
@@ -55,7 +56,7 @@ describe('makeTenoxUI', () => {
     expect(
       styler.create['computeValue'].valueHandler(
         '',
-        styler.create['parser'].parseClassName('bg-blue')[2],
+        parseClassName('bg-blue', styler.property)[2],
         ''
       )
     ).toBe('blue')
@@ -63,7 +64,7 @@ describe('makeTenoxUI', () => {
     expect(
       styler.create['computeValue'].valueHandler(
         '',
-        styler.create['parser'].parseClassName('bg-$my-background')[2],
+        parseClassName('bg-$my-background', styler.property)[2],
         ''
       )
     ).toBe('var(--my-background)')
@@ -71,7 +72,7 @@ describe('makeTenoxUI', () => {
     expect(
       styler.create['computeValue'].valueHandler(
         '',
-        styler.create['parser'].parseClassName('bg-[--c-primary]')[2],
+        parseClassName('bg-[--c-primary]', styler.property)[2],
         ''
       )
     ).toBe('var(--c-primary)')
@@ -79,7 +80,7 @@ describe('makeTenoxUI', () => {
     expect(
       styler.create['computeValue'].valueHandler(
         '',
-        styler.create['parser'].parseClassName('bg-[var(--c-primary)]')[2],
+        parseClassName('bg-[var(--c-primary)]', styler.property)[2],
         ''
       )
     ).toBe('var(--c-primary)')
@@ -87,7 +88,7 @@ describe('makeTenoxUI', () => {
     expect(
       styler.create['computeValue'].valueHandler(
         '',
-        styler.create['parser'].parseClassName('bg-[rgb(221_183_124_/_0.3)]')[2],
+        parseClassName('bg-[rgb(221_183_124_/_0.3)]', styler.property)[2],
         ''
       )
     ).toBe('rgb(221 183 124 / 0.3)')

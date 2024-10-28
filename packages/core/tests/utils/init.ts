@@ -1,6 +1,6 @@
 import { JSDOM } from 'jsdom'
 // dev
-import { makeTenoxUI } from '../../src/tenoxui'
+import { MakeTenoxUI } from '../../src/tenoxui'
 
 // use build ready
 // import { makeTenoxUI } from '../../dist/tenoxui.esm.js'
@@ -20,5 +20,5 @@ export function createStyler(
   element,
   { property = {}, values = {}, classes = {}, breakpoints = [] } = {}
 ) {
-  return new makeTenoxUI({ element, property, values, breakpoints, classes })
+  return new MakeTenoxUI({ element, property, values, breakpoints, classes })
 }

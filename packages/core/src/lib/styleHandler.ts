@@ -11,139 +11,120 @@ import { isObjectWithValue } from '../utils/valueObject'
 import { ComputeValue } from './computeValue'
 
 export class StyleHandler {
-  private readonly htmlElement: HTMLElement
-  private readonly styleAttribute: Property
-  private readonly valueRegistry: DefinedValue
-  private readonly classes: Classes
   private readonly computeValue: ComputeValue
   private readonly isInitialLoad: WeakMap<HTMLElement, boolean>
 
-  constructor(element: HTMLElement, property: Property, values: DefinedValue, classes: Classes) {
-    this.htmlElement = element
-    this.styleAttribute = property
-    this.valueRegistry = values
-    this.classes = classes
-    this.computeValue = new ComputeValue(this.htmlElement, this.styleAttribute, this.valueRegistry)
-    this.isInitialLoad = new WeakMap<HTMLElement, boolean>()
-
-    if (!this.isInitialLoad.has(element)) {
-      this.isInitialLoad.set(element, true)
-    }
+  constructor(
+    private readonly element: HTMLElement,
+    private readonly property: Property,
+    private readonly values: DefinedValue,
+    private readonly classes: Classes
+  ) {
+    this.computeValue = new ComputeValue(element, property, this.values)
+    this.isInitialLoad = new WeakMap().set(element, true)
   }
 
-  // private isInitialLoad: boolean = true
+  private handleTransitionProperty(property: string, value: string): void {
+    const isInitial = this.isInitialLoad.get(this.element)
+
+    if (!isInitial) {
+      this.element.style[property as 'transition' | 'transitionDuration'] = value
+      return
+    }
+
+    this.element.style.transition = 'none'
+    this.element.style.transitionDuration = '0s'
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        this.element.style.transition = ''
+        this.element.style.transitionDuration = ''
+        this.element.style[property as 'transition' | 'transitionDuration'] = value
+        this.isInitialLoad.set(this.element, false)
+      })
+    })
+  }
+
+  private handleCSSVariables(type: string, resolvedValue: string, secondValue: string): void {
+    const items = type
+      .slice(1, -1)
+      .split(',')
+      .map((item) => item.trim())
+
+    items.forEach((item) => {
+      const propertyDef = this.property[item]
+
+      if (item.startsWith('--')) {
+        this.computeValue.setCustomClass(item as CSSVariable, resolvedValue)
+      } else if (propertyDef) {
+        if (typeof propertyDef === 'object' && 'property' in propertyDef) {
+          this.computeValue.setCustomValue(
+            propertyDef as { property: GetCSSProperty; value?: string },
+            resolvedValue,
+            secondValue
+          )
+        } else {
+          this.computeValue.setDefaultValue(propertyDef as CSSProperty, resolvedValue)
+        }
+      } else {
+        this.computeValue.setDefaultValue(item as CSSProperty, resolvedValue)
+      }
+    })
+  }
 
   public addStyle(
-    type: string, // shorthand prefixes or class name for Classes
+    type: string,
     value?: string,
     unit?: string,
     secondValue?: string,
     secondUnit?: string,
-    classProp?: CSSPropertyOrVariable // for Classes css property
+    classProp?: CSSPropertyOrVariable
   ): void {
-    const properties = this.styleAttribute[type]
-    const definedClass = this.classes
+    const propertyDef = this.property[type]
 
-    // Use className from definedClass or Classes instead
-    if (classProp && value && definedClass[classProp]) {
+    // Handle class-based styles
+    if (classProp && value && this.classes[classProp]) {
       this.computeValue.setCustomClass(classProp, value)
+      return
     }
 
-    // No value included and is custom value property
-    // e.g. { myBg: { property: 'background' value: 'blue'} }
-    // use as _ <div class="myBg"></div> _ for `background: blue;``
-    if (!value && isObjectWithValue(properties)) {
-      value = properties.value
+    // Handle custom value property without explicit value
+    if (!value && isObjectWithValue(propertyDef)) {
+      value = propertyDef.value
     }
 
     if (!value) return
 
     const resolvedValue = this.computeValue.valueHandler(type, value, unit || '')
+    const resolvedSecondValue = secondValue
+      ? this.computeValue.valueHandler(type, secondValue, secondUnit || '')
+      : ''
 
-    let resolvedSecondValue = ''
-    if (secondValue) {
-      resolvedSecondValue = this.computeValue.valueHandler(type, secondValue, secondUnit || '')
-    }
-
-    /**
-     * This section will remove `transition` or `transitionDuration` property -
-     * when the page loaded. It also ensures the element doesn't create unnecessary -
-     * layout shift because tenoxui compute every styles at the same time when -
-     * the page loaded.
-     *
-     * Ima struggle with this. Really :(
-     */
-    if (properties === 'transition' || properties === 'transitionDuration') {
-      const isInitialLoad = this.isInitialLoad.get(this.htmlElement)
-
-      if (isInitialLoad) {
-        this.htmlElement.style.transition = 'none'
-        this.htmlElement.style.transitionDuration = '0s'
-
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-            this.htmlElement.style.transition = ''
-            this.htmlElement.style.transitionDuration = ''
-            if (properties === 'transition') {
-              this.htmlElement.style.transition = resolvedValue
-            } else {
-              this.htmlElement.style.transitionDuration = resolvedValue
-            }
-            this.isInitialLoad.set(this.htmlElement, false)
-          })
-        })
-      } else {
-        if (properties === 'transition') {
-          this.htmlElement.style.transition = resolvedValue
-        } else {
-          this.htmlElement.style.transitionDuration = resolvedValue
-        }
-      }
+    // Handle transition properties
+    if (propertyDef === 'transition' || propertyDef === 'transitionDuration') {
+      this.handleTransitionProperty(propertyDef, resolvedValue)
       return
     }
 
-    // Other states for applying the style
-
-    // CSS variable className
+    // Handle CSS variables
     if (type.startsWith('[') && type.endsWith(']')) {
-      // Remove square brackets and split by commas
-      const items = type
-        .slice(1, -1)
-        .split(',')
-        .map((item) => item.trim())
-
-      items.forEach((item) => {
-        const attrProps = this.styleAttribute[item]
-
-        if (item.startsWith('--')) {
-          // If the item starts with "--", treat it as a CSS variable
-          this.computeValue.setCssVar(item as CSSVariable, resolvedValue)
-        } else if (attrProps) {
-          if (typeof attrProps === 'object' && 'property' in attrProps) {
-            this.computeValue.setCustomValue(
-              attrProps as { property: GetCSSProperty; value?: string },
-              resolvedValue,
-              resolvedSecondValue
-            )
-          } else {
-            this.computeValue.setDefaultValue(attrProps as CSSProperty, resolvedValue)
-          }
-        } else {
-          this.computeValue.setDefaultValue(item as CSSProperty, resolvedValue)
-        }
-      })
+      this.handleCSSVariables(type, resolvedValue, resolvedSecondValue)
+      return
     }
-    // Custom value property handler
-    else if (typeof properties === 'object' && 'property' in properties) {
+
+    // Handle custom value properties
+    if (typeof propertyDef === 'object' && 'property' in propertyDef) {
       this.computeValue.setCustomValue(
-        properties as { property: GetCSSProperty; value?: string },
+        propertyDef as { property: GetCSSProperty; value?: string },
         resolvedValue,
         resolvedSecondValue
       )
+      return
     }
-    // Default value handler
-    else if (properties) {
-      this.computeValue.setDefaultValue(properties as CSSProperty, resolvedValue)
+
+    // Handle default properties
+    if (propertyDef) {
+      this.computeValue.setDefaultValue(propertyDef as CSSProperty, resolvedValue)
     }
   }
 }
