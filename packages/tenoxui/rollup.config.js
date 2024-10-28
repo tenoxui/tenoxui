@@ -22,7 +22,20 @@ const config = {
       name,
       banner,
       sourcemap,
-      exports: 'named'
+      exports: 'named',
+      plugins: [
+        terser({
+          format: {
+            comments: false,
+            beautify: true,
+            preamble: banner
+          }
+        })
+      ]
+      
+      
+      
+      
     },
     {
       file: `dist/${fileName}.min.js`,
@@ -77,7 +90,7 @@ const config = {
             unsafe_methods: true
           },
           format: {
-            comments: false,
+            // comments: false,
             preserve_annotations: true
           },
           keep_classnames: true,
@@ -91,7 +104,16 @@ const config = {
       format: 'es',
       banner,
       sourcemap,
-      exports: 'named'
+      exports: 'named',
+      plugins: [
+        terser({
+          format: {
+            comments: false,
+            beautify: true,
+            preamble: banner
+          }
+        })
+      ]
     },
     {
       file: `dist/${fileName}.esm.min.js`,
