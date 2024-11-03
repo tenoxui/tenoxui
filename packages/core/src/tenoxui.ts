@@ -16,7 +16,6 @@ class MakeTenoxUI {
     return this.instances.get(element)!
   }
 
-  
   // Changed from private to public
   public static setDefaultStyles(selector: string, styles: string): void {
     this.defaultStyles.set(selector, styles)
@@ -74,7 +73,7 @@ class MakeTenoxUI {
 
   public useDOM(element?: HTMLElement): void {
     const targetElement = element || this.element
-    // const applyStyles = (className: string) => this.applyStyles(className)
+    if (!targetElement) return
 
     const reapplyDefaultStyles = () => {
       const defaultStyles = MakeTenoxUI.getDefaultStyles(targetElement)
@@ -83,21 +82,21 @@ class MakeTenoxUI {
       }
     }
 
-    const observer = new MutationObserver(mutations => {
-      mutations.forEach(mutation => {
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
         if (mutation.attributeName === 'class') {
           targetElement.style.cssText = ''
 
           reapplyDefaultStyles()
 
-          targetElement.className.split(/\s+/).forEach(className => {
+          targetElement.className.split(/\s+/).forEach((className) => {
             if (className) this.applyStyles(className)
           })
         }
       })
     })
     reapplyDefaultStyles()
-    targetElement.className.split(/\s+/).forEach(className => {
+    targetElement.className.split(/\s+/).forEach((className) => {
       if (className) this.applyStyles(className)
     })
 
@@ -124,7 +123,7 @@ class MakeTenoxUI {
   }
 
   public applyMultiStyles(styles: string): void {
-    styles.split(/\s+/).forEach(style => {
+    styles.split(/\s+/).forEach((style) => {
       if (style) this.applyStyles(style)
     })
   }
@@ -132,7 +131,7 @@ class MakeTenoxUI {
   public static applyDefaultStyles(styles: Record<string, string>): void {
     Object.entries(styles).forEach(([selector, styleString]) => {
       this.setDefaultStyles(selector, styleString)
-      document.querySelectorAll(selector).forEach(element => {
+      document.querySelectorAll(selector).forEach((element) => {
         const instance = this.getInstance(element as HTMLElement, {})
         instance.applyMultiStyles(styleString)
       })
