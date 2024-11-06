@@ -30,3 +30,10 @@ export type Classes = {
     [className: string]: string
   }
 }
+
+export interface CoreConfig {
+  property?: Property
+  values?: DefinedValue
+  breakpoints?: Breakpoint[]
+  classes?: Classes
+}

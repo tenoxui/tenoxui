@@ -101,7 +101,7 @@ export class ComputeValue {
       : value
 
     if (Array.isArray(property)) {
-      property.forEach(prop => this.setStyle(prop, finalValue))
+      property.forEach((prop) => this.setStyle(prop, finalValue))
     } else {
       this.setStyle(property, finalValue)
     }
@@ -111,7 +111,7 @@ export class ComputeValue {
     if (!property || !value) return
 
     if (Array.isArray(property)) {
-      property.forEach(prop => this.setStyle(prop, value))
+      property.forEach((prop) => this.setStyle(prop, value))
     } else {
       this.setStyle(property, value)
     }
@@ -155,10 +155,10 @@ export class StyleHandler extends ComputeValue {
     const items = type
       .slice(1, -1)
       .split(',')
-      .map(item => item.trim())
+      .map((item) => item.trim())
       .filter(Boolean)
 
-    items.forEach(item => {
+    items.forEach((item) => {
       const propertyDef = this.config.property[item]
 
       if (item.startsWith('--')) {
@@ -238,7 +238,7 @@ export class PseudoHandler extends StyleHandler {
       const properties = type
         .slice(1, -1)
         .split(',')
-        .map(p => p.trim())
+        .map((p) => p.trim())
         .filter(Boolean)
 
       const processProp = (prop: string): CSSProperty | CSSVariable => {
@@ -268,7 +268,7 @@ export class PseudoHandler extends StyleHandler {
     }
 
     return Array.isArray(property)
-      ? (property.map(prop => camelToKebab(prop as string)) as CSSProperty[])
+      ? (property.map((prop) => camelToKebab(prop as string)) as CSSProperty[])
       : (camelToKebab(property as string) as CSSProperty)
   }
 
@@ -293,7 +293,7 @@ export class PseudoHandler extends StyleHandler {
     if (!propsName) return
 
     if (Array.isArray(propsName)) {
-      propsName.forEach(prop =>
+      propsName.forEach((prop) =>
         this.setStyle(prop, (styleInitValue as Record<string, string>)[prop])
       )
     } else {
@@ -382,7 +382,7 @@ export class Responsive extends StyleHandler {
 
     const handleResize = () => {
       const windowWidth = window.innerWidth
-      const matchPoint = this.config.breakpoints.find(bp =>
+      const matchPoint = this.config.breakpoints.find((bp) =>
         this.matchBreakpoint(bp, breakpointPrefix, windowWidth)
       )
 
@@ -405,8 +405,6 @@ export class ParseStyles {
   private readonly styler: StyleHandler
 
   constructor(config: MakeTenoxUIParams) {
-    
-
     this.config = {
       element: config.element,
       property: config.property ?? {},
@@ -441,7 +439,7 @@ export class ParseStyles {
   public getParentClass(className: string): CSSPropertyOrVariable[] {
     if (!className) return []
 
-    return Object.keys(this.config.classes).filter(cssProperty => {
+    return Object.keys(this.config.classes).filter((cssProperty) => {
       const classConfig = this.config.classes[cssProperty as CSSPropertyOrVariable]
       return classConfig && Object.prototype.hasOwnProperty.call(classConfig, className)
     }) as CSSPropertyOrVariable[]
@@ -510,7 +508,7 @@ export class ParseStyles {
     const propKeys = this.getParentClass(type)
     if (!propKeys.length) return false
 
-    propKeys.forEach(propKey => {
+    propKeys.forEach((propKey) => {
       const classValue = this.config.classes[propKey]
       if (classValue && type in classValue) {
         const value = classValue[type]

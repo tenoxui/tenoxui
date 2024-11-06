@@ -1,15 +1,10 @@
 {
   "name": "@tenoxui/core",
-  "version": "1.2.1",
-  "description": "Core component of tenoxui.",
+  "version": "1.2.3",
+  "description": "Core component of tenoxui",
   "author": "NOuSantx <nousantx@gmail.com>",
   "license": "MIT",
-  "keywords": [
-    "framework",
-    "css",
-    "css-in-js",
-    "utility-first"
-  ],
+  "keywords": ["framework", "css", "css-in-js", "utility-first"],
   "homepage": "https://tenoxui.web.app",
   "repository": {
     "type": "git",
@@ -19,12 +14,7 @@
   "bugs": {
     "url": "https://github.com/tenoxui/tenoxui/issues"
   },
-  "files": [
-    "dist/*",
-    "package.json",
-    "README.md",
-    "LICENSE"
-  ],
+  "files": ["dist/*", "package.json", "README.md", "LICENSE"],
   "type": "module",
   "main": "./dist/tenoxui.js",
   "module": "./dist/tenoxui.esm.js",

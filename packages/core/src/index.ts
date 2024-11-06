@@ -40,6 +40,7 @@ class MakeTenoxUI {
   }
 
   public useDOM() {
+    if (!this.element || !this.element.className) return
     const classes = this.element.className.split(/\s+/)
     const scanner = () =>
       classes.forEach(className => {
