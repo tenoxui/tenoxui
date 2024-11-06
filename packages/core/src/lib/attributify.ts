@@ -75,7 +75,7 @@ export class AttributifyHandler {
   }
 
   private parseChildSelector(selectorStr: string): SelectorInfo[] {
-    const selectorPattern = /\((.*?)\)\s*([^(]+)/g
+    const selectorPattern = /\((.*?)\):\s*([^;]+);/g
     const selectors: SelectorInfo[] = []
     let match: RegExpExecArray | null
 
