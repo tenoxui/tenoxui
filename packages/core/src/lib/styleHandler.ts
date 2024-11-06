@@ -21,7 +21,11 @@ export class StyleHandler {
     private readonly classes: Classes
   ) {
     this.computeValue = new ComputeValue(element, property, this.values)
-    this.isInitialLoad = new WeakMap().set(element, true)
+    this.isInitialLoad = new WeakMap()
+
+    if (element) {
+      this.isInitialLoad.set(element, true)
+    }
   }
 
   private handleTransitionProperty(property: string, value: string): void {

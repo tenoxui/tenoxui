@@ -10,7 +10,7 @@ const packageJson = JSON.parse(fs.readFileSync(path.resolve('package.json'), 'ut
 const name = '__tenoxui_core'
 const fileName = 'tenoxui'
 const banner = `/*!
- * tenoxui/core v${packageJson.version}
+ * ${packageJson.name} v${packageJson.version}
  * Licensed under MIT (https://github.com/tenoxui/tenoxui/blob/main/LICENSE)
  */`
 const sourcemap = true
@@ -41,25 +41,17 @@ const config = {
               reserved: [
                 '__tenoxui_core',
                 'MakeTenoxUI',
-                // Public methods
-                'setDefaultStyles',
+                // Public meth
                 'useDOM',
                 'applyStyles',
                 'applyMultiStyles',
-                'applyDefaultStyles',
                 // Params & Instance
                 'element',
                 'property',
                 'values',
                 'breakpoints',
                 'classes',
-                'instances',
-                'defaultStyles',
-                // Others
                 'create',
-                'getInstance',
-                'setDefaultStyles',
-                'getDefaultStyles'
               ]
             }
           },
@@ -74,8 +66,7 @@ const config = {
             preserve_annotations: true
           },
           keep_classnames: true,
-          keep_fnames:
-            /MakeTenoxUI|useDOM|setDefaultStyles|applyStyles|applyMultiStyles|applyDefaultStyles/
+          keep_fnames: /MakeTenoxUI|useDOM|applyStyles|applyMultiStyles/
         })
       ]
     },
