@@ -34,40 +34,7 @@ const config = {
       sourcemap,
       exports: 'named',
       plugins: [
-        terser({
-          mangle: {
-            properties: {
-              regex: /^[^_]/,
-              reserved: [
-                '__tenoxui_core',
-                'MakeTenoxUI',
-                // Public meth
-                'useDOM',
-                'applyStyles',
-                'applyMultiStyles',
-                // Params & Instance
-                'element',
-                'property',
-                'values',
-                'breakpoints',
-                'classes',
-                'create',
-              ]
-            }
-          },
-          compress: {
-            defaults: true,
-            passes: 2,
-            pure_getters: true,
-            unsafe_methods: true
-          },
-          format: {
-            // comments: false,
-            preserve_annotations: true
-          },
-          keep_classnames: true,
-          keep_fnames: /MakeTenoxUI|useDOM|applyStyles|applyMultiStyles/
-        })
+        terser()
       ]
     },
     {

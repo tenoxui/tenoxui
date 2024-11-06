@@ -43,12 +43,12 @@ class MakeTenoxUI {
     if (!this.element || !this.element.className) return
     const classes = this.element.className.split(/\s+/)
     const scanner = () =>
-      classes.forEach(className => {
+      classes.forEach((className) => {
         this.applyStyles(className)
       })
 
-    const observer = new MutationObserver(mutations => {
-      mutations.forEach(mutation => {
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
         if (mutation.attributeName === 'class') {
           this.element.style.cssText = ''
           scanner()
@@ -73,7 +73,7 @@ class MakeTenoxUI {
   }
 
   public applyMultiStyles(styles: string): void {
-    styles.split(/\s+/).forEach(style => this.applyStyles(style))
+    styles.split(/\s+/).forEach((style) => this.applyStyles(style))
   }
 }
 
