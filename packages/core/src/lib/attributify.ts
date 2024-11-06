@@ -58,6 +58,7 @@ export class AttributifyHandler {
       this.parseValue(part).forEach((valueObj) => {
         const className = this.attributeToClassName(name, valueObj)
         if (className) {
+          console.log(className)
           this.instance.applyStyles(className, element)
         }
       })
@@ -135,7 +136,6 @@ export class AttributifyHandler {
     })
   }
 
-  // Utility methods
   private handleAddedNodes(nodes: NodeList, selectors: SelectorInfo[]): void {
     nodes.forEach((node) => {
       if (node instanceof HTMLElement) {
