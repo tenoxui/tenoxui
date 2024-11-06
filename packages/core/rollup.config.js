@@ -51,7 +51,7 @@ const config = {
                 'values',
                 'breakpoints',
                 'classes',
-                'create',
+                'create'
               ]
             }
           },

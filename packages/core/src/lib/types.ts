@@ -5,6 +5,9 @@ export interface MakeTenoxUIParams {
   values?: DefinedValue
   breakpoints?: Breakpoint[]
   classes?: Classes
+  attributify?: boolean
+  attributifyPrefix?: string
+  attributifyIgnore?: string[]
 }
 
 // CSS properties mapping
@@ -36,4 +39,7 @@ export interface CoreConfig {
   values?: DefinedValue
   breakpoints?: Breakpoint[]
   classes?: Classes
+  attributify?: boolean
+  attributifyPrefix?: string
+  attributifyIgnore?: string[]
 }
