@@ -250,7 +250,7 @@ describe('Value handler and applying styles', () => {
 
     // create custom classes
     // get value from custom classes
-    const customValue = classname =>
+    const customValue = (classname) =>
       styler.classes[styler.create['parseStyles'].getParentClass(className)][className]
 
     let className = 'primary'

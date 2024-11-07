@@ -18,7 +18,24 @@ export function setupJSDOM() {
 
 export function createStyler(
   element,
-  { property = {}, values = {}, classes = {}, breakpoints = [] } = {}
+  {
+    property = {},
+    values = {},
+    classes = {},
+    breakpoints = [],
+    attributify = false,
+    attributifyPrefix = 'tx-',
+    attributifyIgnore = []
+  } = {}
 ) {
-  return new MakeTenoxUI({ element, property, values, breakpoints, classes })
+  return new MakeTenoxUI({
+    element,
+    property,
+    values,
+    breakpoints,
+    classes,
+    attributify,
+    attributifyPrefix,
+    attributifyIgnore
+  })
 }
