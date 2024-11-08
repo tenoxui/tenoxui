@@ -1,3 +1,6 @@
+// import { MakeTenoxUIParams } from './types'
+import { HoverTargetHandler } from './hoverTarget'
+
 interface SelectorInfo {
   selector: string
   styles: string
@@ -13,6 +16,7 @@ export class AttributifyHandler {
   private readonly attributePrefix: string
   private readonly observedElements = new WeakSet<Element>()
   private readonly ignoredAttributes = new Set<string>()
+  private readonly hoverTargetHandler: HoverTargetHandler
 
   constructor(
     tenoxuiInstance: any,
@@ -21,7 +25,7 @@ export class AttributifyHandler {
   ) {
     this.instance = tenoxuiInstance
     this.attributePrefix = attributifyPrefix
-    // Add each ignored attribute to the Set
+    this.hoverTargetHandler = new HoverTargetHandler(tenoxuiInstance)
     attributifyIgnore.forEach((attr) => this.ignoredAttributes.add(attr))
   }
 
@@ -38,9 +42,15 @@ export class AttributifyHandler {
   public processElement(element: HTMLElement): void {
     if (this.observedElements.has(element)) return
 
-    Array.from(element.attributes).forEach((attr) =>
+    // Process hover-target attribute if present
+    if (element.hasAttribute('hover-target')) {
+      this.hoverTargetHandler.initializeElement(element)
+    }
+
+    // Existing attribute processing
+    Array.from(element.attributes).forEach((attr) => {
       this.processAttribute(element, attr.name, attr.value)
-    )
+    })
 
     this.observedElements.add(element)
     this.observeAttributes(element)
@@ -48,17 +58,14 @@ export class AttributifyHandler {
 
   private processAttribute(element: HTMLElement, name: string, value: string | null): void {
     if (!value || this.ignoredAttributes.has(name)) return
-
     if (name === 'child') {
       this.processChildAttribute(element, value)
       return
     }
-
     value.split(/\s+/).forEach((part) => {
       this.parseValue(part).forEach((valueObj) => {
         const className = this.attributeToClassName(name, valueObj)
         if (className) {
-          console.log(className)
           this.instance.applyStyles(className, element)
         }
       })
@@ -113,26 +120,6 @@ export class AttributifyHandler {
       subtree: true,
       attributes: true,
       attributeFilter: ['class']
-    })
-  }
-
-  public observeAttributes(element: HTMLElement): void {
-    const attributesToObserve = Array.from(element.attributes)
-      .map((attr) => attr.name)
-      .filter((name) => !this.ignoredAttributes.has(name))
-
-    new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if (mutation.type === 'attributes' && mutation.attributeName) {
-          const attrName = mutation.attributeName
-          if (!this.ignoredAttributes.has(attrName)) {
-            this.processAttribute(element, attrName, element.getAttribute(attrName))
-          }
-        }
-      })
-    }).observe(element, {
-      attributes: true,
-      attributeFilter: ['child', ...Object.keys(this.instance.property), ...attributesToObserve]
     })
   }
 
@@ -195,5 +182,32 @@ export class AttributifyHandler {
     }
 
     return baseClass ? (prefix ? `${prefix}:${baseClass}` : baseClass) : null
+  }
+
+  public observeAttributes(element: HTMLElement): void {
+    const attributesToObserve = Array.from(element.attributes)
+      .map((attr) => attr.name)
+      .filter((name) => !this.ignoredAttributes.has(name))
+
+    new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.type === 'attributes' && mutation.attributeName) {
+          const attrName = mutation.attributeName
+          if (attrName === 'hover-target') {
+            this.hoverTargetHandler.initializeElement(element)
+          } else if (!this.ignoredAttributes.has(attrName)) {
+            this.processAttribute(element, attrName, element.getAttribute(attrName))
+          }
+        }
+      })
+    }).observe(element, {
+      attributes: true,
+      attributeFilter: [
+        'hover-target',
+        'child',
+        ...Object.keys(this.instance.property),
+        ...attributesToObserve
+      ]
+    })
   }
 }

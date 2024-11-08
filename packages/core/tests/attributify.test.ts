@@ -35,7 +35,7 @@ describe('Attributify mode tenoxui', () => {
     expect(element.style.color).toBe('blue')
     expect(element.style.getPropertyValue('--color')).toBe('red')
   })
-  it('should apply styles from config.property shorthand', () => {
+  it('should apply styles from config.property', () => {
     const styler = useStyles({
       property: {
         bg: 'background',
@@ -53,7 +53,7 @@ describe('Attributify mode tenoxui', () => {
     expect(element.style.color).toBe('blue')
     expect(element.style.getPropertyValue('--my-color')).toBe('red')
   })
-  it('should apply styles from config.property shorthand with multiple properties', () => {
+  it('should apply styles from config.property with multiple properties', () => {
     const styler = useStyles({
       property: {
         box: ['width', 'height'],
@@ -74,10 +74,11 @@ describe('Attributify mode tenoxui', () => {
   it('should ignore some attributes', () => {
     const styler = useStyles({
       attributify: true,
+      attributifyPrefix: 'tx-test-',
       attributifyIgnore: ['background']
     })
     /**
-     * apply styles through data- attribute
+     * apply styles through data- attribute instead
      */
     element.setAttribute('data-background', 'blue')
     /**

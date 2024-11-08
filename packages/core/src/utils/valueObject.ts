@@ -1,4 +1,4 @@
-import { GetCSSProperty } from '../lib/types'
+import { GetCSSProperty } from '../types'
 
 export const isObjectWithValue = (
   typeAttribute: any

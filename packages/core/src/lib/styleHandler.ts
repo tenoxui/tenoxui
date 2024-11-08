@@ -6,7 +6,7 @@ import {
   CSSPropertyOrVariable,
   CSSProperty,
   CSSVariable
-} from './types'
+} from '../types'
 import { isObjectWithValue } from '../utils/valueObject'
 import { ComputeValue } from './computeValue'
 

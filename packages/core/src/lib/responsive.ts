@@ -1,4 +1,4 @@
-import { Property, Classes, Breakpoint, CSSPropertyOrVariable } from './types'
+import { Property, Classes, Breakpoint, CSSPropertyOrVariable } from '../types'
 import { StyleHandler } from './styleHandler'
 import { isObjectWithValue } from '../utils/valueObject'
 

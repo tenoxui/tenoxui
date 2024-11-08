@@ -5,7 +5,7 @@ import {
   CSSPropertyOrVariable,
   CSSVariable,
   CSSProperty
-} from './types'
+} from '../types'
 
 export class ComputeValue {
   constructor(

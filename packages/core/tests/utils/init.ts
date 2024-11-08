@@ -1,6 +1,6 @@
 import { JSDOM } from 'jsdom'
 // dev
-import { MakeTenoxUI } from '../../src/tenoxui'
+import { MakeTenoxUI } from '../../src/tenoxui-full'
 
 // use build ready
 // import { makeTenoxUI } from '../../dist/tenoxui.esm.js'
