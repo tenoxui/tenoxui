@@ -1,4 +1,4 @@
-import { Property, Classes, CSSPropertyOrVariable } from './types'
+import { Property, Classes, CSSPropertyOrVariable } from '../types'
 import { StyleHandler } from './styleHandler'
 import { Responsive } from './responsive'
 import { Pseudo } from './pseudoClass'

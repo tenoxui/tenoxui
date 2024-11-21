@@ -86,10 +86,15 @@ describe('Value handler and applying styles', () => {
 
   it('should handle value transformation correctly', () => {
     const styler = useStyles({
+      property: {
+        bg: 'background'
+      },
       // create custom alias for values
       values: {
         primary: '#ccf654',
-        size: 'calc(10rem - 20px)'
+        size: 'calc(10rem - 20px)',
+        vred: '255 0 0',
+        'my-size': '20px + 20rem'
       }
     })
 
@@ -148,6 +153,24 @@ describe('Value handler and applying styles', () => {
         ''
       )
     ).toBe('rgb(221 183 124 / 0.3)')
+
+    /**
+     * Should replace value inside `{}` eith value from `values`
+     */
+    expect(
+      styler.create['computeValue'].valueHandler(
+        '',
+        parseClassName('[color]-[rgb({vred})]]', styler.property)[2],
+        ''
+      )
+    ).toBe('rgb(255 0 0)')
+    expect(
+      styler.create['computeValue'].valueHandler(
+        '',
+        parseClassName('[padding]-[calc({my-size})]]', styler.property)[2],
+        ''
+      )
+    ).toBe('calc(20px + 20rem)')
   })
 
   /**
@@ -250,7 +273,7 @@ describe('Value handler and applying styles', () => {
 
     // create custom classes
     // get value from custom classes
-    const customValue = classname =>
+    const customValue = (classname) =>
       styler.classes[styler.create['parseStyles'].getParentClass(className)][className]
 
     let className = 'primary'

@@ -1,4 +1,4 @@
-import { Property } from './types'
+import { Property } from '../types'
 
 function getTypePrefixes(styleAttribute: Property): string {
   return Object.keys(styleAttribute)

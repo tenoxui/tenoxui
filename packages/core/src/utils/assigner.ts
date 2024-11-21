@@ -1,5 +1,5 @@
 // assigner.ts
-import { Classes, Property, Breakpoint, DefinedValue } from '../lib/types'
+import { Classes, Property, Breakpoint, DefinedValue } from '../types'
 import { ComputeValue } from '../lib/computeValue'
 import { StyleHandler } from '../lib/styleHandler'
 import { Responsive } from '../lib/responsive'

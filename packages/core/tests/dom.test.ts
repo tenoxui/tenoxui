@@ -27,7 +27,7 @@ describe('all methods', () => {
         text: 'color'
       }
     })
-    const scanner = () => scanAndApplyStyles(className => styler.applyStyles(className), element)
+    const scanner = () => scanAndApplyStyles((className) => styler.applyStyles(className), element)
     const updateStyles = () => {
       styler.element.style = ''
       scanner()
@@ -61,13 +61,13 @@ describe('all methods', () => {
      * Setting up new class name observer.
      * Can use useDOM() method or only setupClassObserver() method
      */
-    setupClassObserver(className => styler.applyStyles(className), element)
+    setupClassObserver((className) => styler.applyStyles(className), element)
 
     setTimeout(() => {
       element.classList.add('bg-red', 'text-white')
     }, 0)
 
-    await new Promise(resolve => setTimeout(resolve, 0))
+    await new Promise((resolve) => setTimeout(resolve, 0))
 
     expect(element.style.background).toBe('red')
     expect(element.style.color).toBe('white')
@@ -77,7 +77,7 @@ describe('all methods', () => {
       element.classList.add('p-1rem')
     }, 0)
 
-    await new Promise(resolve => setTimeout(resolve, 0))
+    await new Promise((resolve) => setTimeout(resolve, 0))
 
     expect(element.style.background).toBe('')
     expect(element.style.padding).toBe('1rem')

@@ -5,7 +5,7 @@ import {
   CSSPropertyOrVariable,
   CSSVariable,
   CSSProperty
-} from './types'
+} from '../types'
 import { StyleHandler } from './styleHandler'
 import { ComputeValue } from './computeValue'
 import { camelToKebab } from '../utils/converter'

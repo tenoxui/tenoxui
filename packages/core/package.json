@@ -1,6 +1,6 @@
 {
   "name": "@tenoxui/core",
-  "version": "1.3.0-alpha.1",
+  "version": "1.3.0-alpha.4",
   "description": "Core component of tenoxui",
   "author": "NOuSantx <nousantx@gmail.com>",
   "license": "MIT",
@@ -29,6 +29,19 @@
   "main": "./dist/tenoxui.js",
   "module": "./dist/tenoxui.esm.js",
   "types": "./dist/tenoxui.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/tenoxui.d.ts",
+      "import": "./dist/tenoxui.esm.js",
+      "default": "./dist/tenoxui.js"
+    },
+    "./full": {
+      "types": "./dist/tenoxui-full.d.ts",
+      "import": "./dist/tenoxui-full.esm.js",
+      "default": "./dist/tenoxui-full.js"
+    },
+    "./package.json": "./package.json"
+  },
   "scripts": {
     "dev": "rollup -c -w",
     "build": "rollup -c",
