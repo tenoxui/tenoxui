@@ -90,10 +90,9 @@ export class MakeTenoxUI {
 
   public applyStyles(className: string, targetElement: HTMLElement = this.element): void {
     const create = this.createComponentInstance(targetElement)
+    const { prefix, type } = this.parseStylePrefix(className)
 
     const processStyle = (style: string) => {
-      const { prefix, type } = this.parseStylePrefix(style)
-
       if (create.parseStyles.handlePredefinedStyle(type, prefix)) return
       if (create.parseStyles.handleCustomClass(type, prefix)) return
 
@@ -104,8 +103,14 @@ export class MakeTenoxUI {
       create.parseStyles.parseDefaultStyle(parsedPrefix, parsedType, value, unit, secValue, secUnit)
     }
 
-    if (this.aliases && this.aliases[className]) {
-      const aliasStyles = this.aliases[className].split(/\s+/)
+    if (this.aliases && this.aliases[type]) {
+      const aliasStyles = this.aliases[type].split(/\s+/).map((alias) => {
+        if (prefix && alias.startsWith(`${prefix}:`)) {
+          alias = alias.slice(prefix.length + 1)
+        }
+        return prefix ? `${prefix}:${alias}` : alias
+      })
+
       aliasStyles.forEach(processStyle)
       return
     }

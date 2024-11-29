@@ -38,6 +38,23 @@ const config = [
         plugins: [terser()]
       },
       {
+        file: `dist/${fileNameFull}.cjs`,
+        format: 'cjs',
+        name,
+        banner,
+        sourcemap,
+        exports: 'named'
+      },
+      {
+        file: `dist/${fileNameFull}.min.cjs`,
+        format: 'cjs',
+        name,
+        banner,
+        sourcemap,
+        exports: 'named',
+        plugins: [terser()]
+      },
+      {
         file: `dist/${fileNameFull}.esm.js`,
         format: 'es',
         banner,
@@ -70,6 +87,23 @@ const config = [
   {
     input: 'src/tenoxui.ts',
     output: [
+      {
+        file: `dist/${fileName}.cjs`,
+        format: 'cjs',
+        name,
+        banner,
+        sourcemap,
+        exports: 'named'
+      },
+      {
+        file: `dist/${fileName}.min.cjs`,
+        format: 'cjs',
+        name,
+        banner,
+        sourcemap,
+        exports: 'named',
+        plugins: [terser()]
+      },
       {
         file: `dist/${fileName}.js`,
         format: 'umd',

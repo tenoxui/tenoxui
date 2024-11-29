@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Hello</title>
-    <script src="./dist/tenoxui.min.js"></script>
+    <script src="./dist/tenoxui.js"></script>
     <script src="./new.js"></script>
   </head>
   <body class="[background]-[rgb({my-bg})]">
@@ -22,8 +22,9 @@
     </button>
 
     <div class="btn">hello</div>
+    <div class="first hover:second">hello</div>
     <script>
-      document.querySelectorAll('*[class]').forEach((element) => {
+      document.querySelectorAll('*[class]').forEach(element => {
         new __tenoxui_core.MakeTenoxUI({
           element,
           property: {
@@ -33,6 +34,8 @@
             'my-bg': '40 140 0'
           },
           aliases: {
+            first: '[width,height]-200px bg-yellow [transition]-300ms',
+            second: 'bg-red',
             btn: 'bg-blue [width,height]-100px hover:bg-red [transition]-0.3s [align-items,justifyContent]-center [display]-flex'
           }
         }).useDOM()
