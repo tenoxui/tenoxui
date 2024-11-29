@@ -1,4 +1,4 @@
-import { Classes, Property, Breakpoint, DefinedValue } from './types'
+import { Classes, Property, Breakpoint, Values, Aliases } from './types'
 import { createTenoxUIComponents } from './utils/assigner'
 import { parseClassName } from './lib/classNameParser'
 import { scanAndApplyStyles, setupClassObserver } from './lib/observer'
@@ -6,9 +6,10 @@ import { scanAndApplyStyles, setupClassObserver } from './lib/observer'
 export interface MakeTenoxUIParams {
   element: HTMLElement
   property?: Property
-  values?: DefinedValue
+  values?: Values
   breakpoints?: Breakpoint[]
   classes?: Classes
+  aliases?: Aliases
 }
 
 export type CoreConfig = Omit<MakeTenoxUIParams, 'element'>
@@ -16,9 +17,10 @@ export type CoreConfig = Omit<MakeTenoxUIParams, 'element'>
 export class MakeTenoxUI {
   public readonly element: HTMLElement
   public readonly property: Property
-  public readonly values: DefinedValue
+  public readonly values: Values
   public readonly breakpoints: Breakpoint[]
   public readonly classes: Classes
+  public readonly aliases: Aliases
   public readonly create: ReturnType<typeof createTenoxUIComponents>
 
   constructor({
@@ -26,13 +28,15 @@ export class MakeTenoxUI {
     property = {},
     values = {},
     breakpoints = [],
-    classes = {}
+    classes = {},
+    aliases = {}
   }: MakeTenoxUIParams) {
     this.element = element instanceof HTMLElement ? element : element[0]
     this.property = property
     this.values = values
     this.breakpoints = breakpoints
     this.classes = classes
+    this.aliases = aliases
 
     this.create = createTenoxUIComponents({
       element: this.element,
@@ -56,23 +60,33 @@ export class MakeTenoxUI {
   }
 
   public applyStyles(className: string): void {
-    const { prefix, type } = this.parseStylePrefix(className)
+    const processStyle = (style: string) => {
+      const { prefix, type } = this.parseStylePrefix(style)
 
-    if (this.create.parseStyles.handlePredefinedStyle(type, prefix)) return
-    if (this.create.parseStyles.handleCustomClass(type, prefix)) return
+      if (this.create.parseStyles.handlePredefinedStyle(type, prefix)) return
+      if (this.create.parseStyles.handleCustomClass(type, prefix)) return
 
-    const parts = parseClassName(className, this.property)
-    if (!parts) return
+      const parts = parseClassName(style, this.property)
+      if (!parts) return
 
-    const [parsedPrefix, parsedType, value = '', unit = '', secValue, secUnit] = parts
-    this.create.parseStyles.parseDefaultStyle(
-      parsedPrefix,
-      parsedType,
-      value,
-      unit,
-      secValue,
-      secUnit
-    )
+      const [parsedPrefix, parsedType, value = '', unit = '', secValue, secUnit] = parts
+      this.create.parseStyles.parseDefaultStyle(
+        parsedPrefix,
+        parsedType,
+        value,
+        unit,
+        secValue,
+        secUnit
+      )
+    }
+
+    if (this.aliases && this.aliases[className]) {
+      const aliasStyles = this.aliases[className].split(/\s+/)
+      aliasStyles.forEach(processStyle)
+      return
+    }
+
+    processStyle(className)
   }
 
   private parseStylePrefix(className: string): { prefix?: string; type: string } {
@@ -84,9 +98,8 @@ export class MakeTenoxUI {
   }
 
   public applyMultiStyles(styles: string): void {
-    styles.split(/\s+/).forEach(style => this.applyStyles(style))
+    styles.split(/\s+/).forEach((style) => this.applyStyles(style))
   }
 }
 
 export * from './types'
-

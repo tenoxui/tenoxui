@@ -1,9 +1,5 @@
 import { JSDOM } from 'jsdom'
-// dev
 import { MakeTenoxUI } from '../../src/tenoxui-full'
-
-// use build ready
-// import { makeTenoxUI } from '../../dist/tenoxui.esm.js'
 
 export function setupJSDOM() {
   const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', {
@@ -22,6 +18,7 @@ export function createStyler(
     property = {},
     values = {},
     classes = {},
+    aliases = {},
     breakpoints = [],
     attributify = false,
     attributifyPrefix = 'tx-',
@@ -34,6 +31,7 @@ export function createStyler(
     values,
     breakpoints,
     classes,
+    aliases,
     attributify,
     attributifyPrefix,
     attributifyIgnore

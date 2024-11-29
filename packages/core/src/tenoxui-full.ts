@@ -1,4 +1,4 @@
-import { Classes, Property, Breakpoint, DefinedValue } from './types'
+import { Classes, Property, Breakpoint, Values, Aliases } from './types'
 import { createTenoxUIComponents } from './utils/assigner'
 import { parseClassName } from './lib/classNameParser'
 import { scanAndApplyStyles, setupClassObserver } from './lib/observer'
@@ -7,9 +7,10 @@ import { AttributifyHandler } from './lib/attributify'
 export interface MakeTenoxUIParams {
   element: HTMLElement
   property?: Property
-  values?: DefinedValue
+  values?: Values
   breakpoints?: Breakpoint[]
   classes?: Classes
+  aliases?: Aliases
   attributify?: boolean
   attributifyPrefix?: string
   attributifyIgnore?: string[]
@@ -20,9 +21,10 @@ export type CoreConfig = Omit<MakeTenoxUIParams, 'element'>
 export class MakeTenoxUI {
   public readonly element: HTMLElement
   public readonly property: Property
-  public readonly values: DefinedValue
+  public readonly values: Values
   public readonly breakpoints: Breakpoint[]
   public readonly classes: Classes
+  public readonly aliases: Aliases
   private attributify: boolean
   private attributifyPrefix: string
   private attributifyIgnore: string[]
@@ -35,6 +37,7 @@ export class MakeTenoxUI {
     values = {},
     breakpoints = [],
     classes = {},
+    aliases = {},
     attributify = false,
     attributifyPrefix = 'tx-',
     attributifyIgnore = ['style', 'class', 'id', 'src']
@@ -44,6 +47,7 @@ export class MakeTenoxUI {
     this.values = values
     this.breakpoints = breakpoints
     this.classes = classes
+    this.aliases = aliases
     this.attributify = attributify
     this.attributifyPrefix = attributifyPrefix
     this.attributifyIgnore = attributifyIgnore
@@ -86,16 +90,27 @@ export class MakeTenoxUI {
 
   public applyStyles(className: string, targetElement: HTMLElement = this.element): void {
     const create = this.createComponentInstance(targetElement)
-    const { prefix, type } = this.parseStylePrefix(className)
 
-    if (create.parseStyles.handlePredefinedStyle(type, prefix)) return
-    if (create.parseStyles.handleCustomClass(type, prefix)) return
+    const processStyle = (style: string) => {
+      const { prefix, type } = this.parseStylePrefix(style)
 
-    const parts = parseClassName(className, this.property)
-    if (!parts) return
+      if (create.parseStyles.handlePredefinedStyle(type, prefix)) return
+      if (create.parseStyles.handleCustomClass(type, prefix)) return
 
-    const [parsedPrefix, parsedType, value = '', unit = '', secValue, secUnit] = parts
-    create.parseStyles.parseDefaultStyle(parsedPrefix, parsedType, value, unit, secValue, secUnit)
+      const parts = parseClassName(style, this.property)
+      if (!parts) return
+
+      const [parsedPrefix, parsedType, value = '', unit = '', secValue, secUnit] = parts
+      create.parseStyles.parseDefaultStyle(parsedPrefix, parsedType, value, unit, secValue, secUnit)
+    }
+
+    if (this.aliases && this.aliases[className]) {
+      const aliasStyles = this.aliases[className].split(/\s+/)
+      aliasStyles.forEach(processStyle)
+      return
+    }
+
+    processStyle(className)
   }
 
   private createComponentInstance(targetElement: HTMLElement) {

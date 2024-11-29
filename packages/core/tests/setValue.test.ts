@@ -369,6 +369,27 @@ describe('Value handler and applying styles', () => {
     expect(element.style.color).toBe('red')
     expect(element.style.background).toBe('blue')
   })
+  it('should apply aliasses', () => {
+    const styler = useStyles({
+      property: {
+        bg: 'background',
+        text: 'color',
+        p: 'padding',
+        d: 'display'
+      },
+      aliases: {
+        btn: 'bg-red p-1rem d-flex [align-items,justify-content]-center [width,height]-200px'
+      }
+    })
+    styler.applyStyles('btn')
+    expect(element.style.background).toBe('red')
+    expect(element.style.padding).toBe('1rem')
+    expect(element.style.display).toBe('flex')
+    expect(element.style.alignItems).toBe('center')
+    expect(element.style.justifyContent).toBe('center')
+    expect(element.style.width).toBe('200px')
+    expect(element.style.height).toBe('200px')
+  })
   // it("should", () => {const styler = useStyles();styler.create.applyStyles("bg-red");expect(element.style.background).toBe("red");});
 
   // it("should",()=>{const styler = useStyles({ property: { bg: "background", text: "color", p: "padding" } });expect(element.style.background).toBe("red");})

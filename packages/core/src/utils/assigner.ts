@@ -1,5 +1,5 @@
 // assigner.ts
-import { Classes, Property, Breakpoint, DefinedValue } from '../types'
+import { Classes, Property, Breakpoint, Values } from '../types'
 import { ComputeValue } from '../lib/computeValue'
 import { StyleHandler } from '../lib/styleHandler'
 import { Responsive } from '../lib/responsive'
@@ -10,7 +10,7 @@ import { ParseStyles } from '../lib/styleParser'
 type RequiredTenoxUIParams = {
   element: HTMLElement
   property: Property
-  values: DefinedValue
+  values: Values
   breakpoints: Breakpoint[]
   classes: Classes
 }
