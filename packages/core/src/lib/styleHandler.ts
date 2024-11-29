@@ -1,7 +1,7 @@
 import {
   Property,
   Classes,
-  DefinedValue,
+  Values,
   GetCSSProperty,
   CSSPropertyOrVariable,
   CSSProperty,
@@ -17,7 +17,7 @@ export class StyleHandler {
   constructor(
     private readonly element: HTMLElement,
     private readonly property: Property,
-    private readonly values: DefinedValue,
+    private readonly values: Values,
     private readonly classes: Classes
   ) {
     this.computeValue = new ComputeValue(element, property, this.values)

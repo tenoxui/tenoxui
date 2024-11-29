@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Hello</title>
+    <script src="./dist/tenoxui.min.js"></script>
+    <script src="./new.js"></script>
+  </head>
+  <body class="[background]-[rgb({my-bg})]">
+    <h1>Hello World</h1>
+    <div class="bg-red hover:bg-blue [width,height]-200px hover:bg-blue">hh</div>
+
+    <div id="el" class="[width,height]-100px bg-red"></div>
+
+    <button
+      onclick="document.getElementById('el').classList.toggle('bg-blue'),console.log(document.getElementById('el').style.cssText)"
+      class="bg-blue"
+    >
+      Bg-red
+    </button>
+
+    <div class="btn">hello</div>
+    <script>
+      document.querySelectorAll('*[class]').forEach((element) => {
+        new __tenoxui_core.MakeTenoxUI({
+          element,
+          property: {
+            bg: 'background'
+          },
+          values: {
+            'my-bg': '40 140 0'
+          },
+          aliases: {
+            btn: 'bg-blue [width,height]-100px hover:bg-red [transition]-0.3s [align-items,justifyContent]-center [display]-flex'
+          }
+        }).useDOM()
+      })
+    </script>
+  </body>
+</html>

@@ -1,6 +1,6 @@
 import {
   Property,
-  DefinedValue,
+  Values,
   GetCSSProperty,
   CSSPropertyOrVariable,
   CSSVariable,
@@ -11,7 +11,7 @@ export class ComputeValue {
   constructor(
     private readonly element: HTMLElement,
     private readonly properties: Property,
-    private readonly values: DefinedValue
+    private readonly values: Values
   ) {}
 
   // Helper function to parse value inside curly bracket
@@ -77,13 +77,13 @@ export class ComputeValue {
       ? template.replace(/\{0}/g, value).replace(/\{1}/g, secondValue)
       : value
     Array.isArray(property)
-      ? property.forEach(prop => this.setStyle(prop, finalValue))
+      ? property.forEach((prop) => this.setStyle(prop, finalValue))
       : this.setStyle(property, finalValue)
   }
 
   public setDefaultValue(property: GetCSSProperty, value: string): void {
     Array.isArray(property)
-      ? property.forEach(prop => this.setStyle(prop, value))
+      ? property.forEach((prop) => this.setStyle(prop, value))
       : this.setStyle(property, value)
   }
 
