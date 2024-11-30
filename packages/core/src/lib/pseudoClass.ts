@@ -62,7 +62,7 @@ export class Pseudo {
     return Array.isArray(propsName)
       ? propsName.reduce(
           (acc, prop) => {
-            acc[prop] = this.element.style.getPropertyValue(prop as string)
+            acc[prop as string] = this.element.style.getPropertyValue(prop as string)
             return acc
           },
           {} as { [key: string]: string }
@@ -76,7 +76,10 @@ export class Pseudo {
   ): void {
     if (Array.isArray(propsName)) {
       propsName.forEach((prop) =>
-        this.computeValue.setStyle(prop, (styleInitValue as { [key: string]: string })[prop])
+        this.computeValue.setStyle(
+          prop,
+          (styleInitValue as { [key: string]: string })[prop as string]
+        )
       )
     } else {
       this.computeValue.setStyle(propsName, styleInitValue as string)
