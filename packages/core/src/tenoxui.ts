@@ -86,9 +86,32 @@ export class MakeTenoxUI {
         secUnit
       )
     }
+    const resolveAlias = (alias: string, outerPrefix: string = ''): string => {
+      const seen = new Set() // Prevent looping
+      const resolve = (currentAlias: string, currentPrefix: string): string => {
+        if (!this.aliases[currentAlias]) {
+          // If the alias doesn't exist, keep the prefixed class name
+          return currentPrefix ? `${currentPrefix}:${currentAlias}` : currentAlias
+        }
+        if (seen.has(currentAlias)) return currentAlias
+        seen.add(currentAlias)
+
+        const expanded = this.aliases[currentAlias]
+          .split(/\s+/)
+          .map((part: string): string => {
+            const { prefix: innerPrefix, type: innerType } = this.parseStylePrefix(part)
+            const combinedPrefix = currentPrefix || innerPrefix || ''
+            return resolve(innerType, combinedPrefix)
+          })
+          .join(' ')
+        return expanded
+      }
+      return resolve(alias, outerPrefix)
+    }
 
     if (this.aliases && this.aliases[type]) {
-      const aliasStyles = this.aliases[type].split(/\s+/).map((alias) => {
+      const resolvedAlias = resolveAlias(type, prefix)
+      const aliasStyles = resolvedAlias.split(/\s+/).map((alias: string) => {
         if (prefix && alias.startsWith(`${prefix}:`)) {
           alias = alias.slice(prefix.length + 1)
         }
