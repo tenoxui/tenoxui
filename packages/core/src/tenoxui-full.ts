@@ -88,12 +88,19 @@ export class MakeTenoxUI {
     this.attributifyHandler.observeAttributes(element)
   }
 
+  private parseStylePrefix(className: string): { prefix?: string; type: string } {
+    const [prefix, type] = className.split(':')
+    return {
+      prefix: type ? prefix : undefined,
+      type: type || prefix
+    }
+  }
+
   public applyStyles(className: string, targetElement: HTMLElement = this.element): void {
     const create = this.createComponentInstance(targetElement)
+    const { prefix, type } = this.parseStylePrefix(className)
 
     const processStyle = (style: string) => {
-      const { prefix, type } = this.parseStylePrefix(style)
-
       if (create.parseStyles.handlePredefinedStyle(type, prefix)) return
       if (create.parseStyles.handleCustomClass(type, prefix)) return
 
@@ -104,8 +111,38 @@ export class MakeTenoxUI {
       create.parseStyles.parseDefaultStyle(parsedPrefix, parsedType, value, unit, secValue, secUnit)
     }
 
-    if (this.aliases && this.aliases[className]) {
-      const aliasStyles = this.aliases[className].split(/\s+/)
+    const resolveAlias = (alias: string, outerPrefix: string = ''): string => {
+      const seen = new Set() // Prevent looping
+      const resolve = (currentAlias: string, currentPrefix: string): string => {
+        if (!this.aliases[currentAlias]) {
+          // If the alias doesn't exist, keep the prefixed class name
+          return currentPrefix ? `${currentPrefix}:${currentAlias}` : currentAlias
+        }
+        if (seen.has(currentAlias)) return currentAlias
+        seen.add(currentAlias)
+
+        const expanded = this.aliases[currentAlias]
+          .split(/\s+/)
+          .map((part: string): string => {
+            const { prefix: innerPrefix, type: innerType } = this.parseStylePrefix(part)
+            const combinedPrefix = currentPrefix || innerPrefix || ''
+            return resolve(innerType, combinedPrefix)
+          })
+          .join(' ')
+        return expanded
+      }
+      return resolve(alias, outerPrefix)
+    }
+
+    if (this.aliases && this.aliases[type]) {
+      const resolvedAlias = resolveAlias(type, prefix)
+      const aliasStyles = resolvedAlias.split(/\s+/).map((alias: string) => {
+        if (prefix && alias.startsWith(`${prefix}:`)) {
+          alias = alias.slice(prefix.length + 1)
+        }
+        return prefix ? `${prefix}:${alias}` : alias
+      })
+
       aliasStyles.forEach(processStyle)
       return
     }
@@ -121,14 +158,6 @@ export class MakeTenoxUI {
       classes: this.classes,
       breakpoints: this.breakpoints
     })
-  }
-
-  private parseStylePrefix(className: string): { prefix?: string; type: string } {
-    const [prefix, type] = className.split(':')
-    return {
-      prefix: type ? prefix : undefined,
-      type: type || prefix
-    }
   }
 
   public applyMultiStyles(styles: string, targetElement: HTMLElement = this.element): void {
@@ -164,5 +193,4 @@ export class MakeTenoxUI {
     })
   }
 }
-
 export * from './types'
