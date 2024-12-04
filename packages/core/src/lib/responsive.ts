@@ -33,9 +33,7 @@ export class Responsive {
     const properties = this.property[type]
 
     const applyStyle = () => {
-      if (isObjectWithValue(properties)) {
-        this.styler.addStyle(type)
-      } else if (propKey && this.classes[propKey]) {
+      if (propKey && this.classes[propKey]) {
         this.styler.addStyle(type, value, unit, secondValue, secondUnit, propKey)
       } else {
         this.styler.addStyle(type, value, unit, secondValue, secondUnit)
