@@ -60,12 +60,57 @@ describe('Responsive feature/apply styles on different screen', () => {
       ]
     })
 
-    styler.applyMultiStyles('p-0.5rem sm:p-1rem md:p-2rem lg:p-3rem')
+    styler.applyMultiStyles('p-0.5rem sm:p-1rem md:p-2rem')
 
     expect(element.style.padding).toBe('0.5rem')
     screenSize(400, 800)
     expect(element.style.padding).toBe('1rem')
     screenSize(640, 800)
     expect(element.style.padding).toBe('2rem')
+  })
+  it('should apply styles from custom value properties', () => {
+    const styler = useStyles({
+      property: {
+        bgc: 'background',
+        bg: {
+          property: 'background',
+          value: '{0}'
+        }
+      },
+      breakpoints: [
+        { name: 'sm', min: 0, max: 639 },
+        { name: 'md', min: 640, max: 767 }
+      ]
+    })
+
+    styler.applyMultiStyles('bg-red md:bg-blue')
+
+    expect(element.style.background).toBe('red')
+    screenSize(400, 800)
+    expect(element.style.background).toBe('red')
+    screenSize(640, 800)
+    expect(element.style.background).toBe('blue')
+  })
+  it('should apply styles from classes', () => {
+    const styler = useStyles({
+      classes: {
+        background: {
+          tx: 'red',
+          tx2: 'blue'
+        }
+      },
+      breakpoints: [
+        { name: 'sm', min: 0, max: 639 },
+        { name: 'md', min: 640, max: 767 }
+      ]
+    })
+
+    styler.applyMultiStyles('tx md:tx2')
+
+    expect(element.style.background).toBe('red')
+    screenSize(400, 800)
+    expect(element.style.background).toBe('red')
+    screenSize(640, 800)
+    expect(element.style.background).toBe('blue')
   })
 })
