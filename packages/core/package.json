@@ -1,6 +1,6 @@
 {
   "name": "@tenoxui/core",
-  "version": "1.3.0-alpha.7",
+  "version": "1.3.1",
   "description": "Core component of tenoxui",
   "author": "NOuSantx <nousantx@gmail.com>",
   "license": "MIT",
@@ -26,18 +26,18 @@
     "LICENSE"
   ],
   "type": "module",
-  "main": "./dist/tenoxui.min.js",
-  "module": "./dist/tenoxui.esm.min.js",
+  "main": "./dist/tenoxui.js",
+  "module": "./dist/tenoxui.esm.js",
   "types": "./dist/tenoxui.d.ts",
   "exports": {
     ".": {
       "types": "./dist/tenoxui.d.ts",
-      "import": "./dist/tenoxui.esm.min.js",
+      "import": "./dist/tenoxui.esm.js",
       "default": "./dist/tenoxui.min.js"
     },
     "./full": {
       "types": "./dist/tenoxui-full.d.ts",
-      "import": "./dist/tenoxui-full.esm.min.js",
+      "import": "./dist/tenoxui-full.esm.js",
       "default": "./dist/tenoxui-full.min.js"
     },
     "./package.json": "./package.json"
