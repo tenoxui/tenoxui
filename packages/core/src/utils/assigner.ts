@@ -33,7 +33,6 @@ export function createTenoxUIComponents(context: RequiredTenoxUIParams) {
   const responsive = new Responsive(
     context.element,
     context.breakpoints,
-    context.property,
     context.classes,
     styler
   )

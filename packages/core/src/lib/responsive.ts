@@ -1,12 +1,10 @@
-import { Property, Classes, Breakpoint, CSSPropertyOrVariable } from '../types'
+import { Classes, Breakpoint, CSSPropertyOrVariable } from '../types'
 import { StyleHandler } from './styleHandler'
-import { isObjectWithValue } from '../utils/valueObject'
 
 export class Responsive {
   constructor(
     private element: HTMLElement,
     private breakpoints: Breakpoint[],
-    private property: Property,
     private classes: Classes,
     private styler: StyleHandler
   ) {}
@@ -30,8 +28,6 @@ export class Responsive {
     secondUnit = '',
     propKey?: CSSPropertyOrVariable
   ): void {
-    const properties = this.property[type]
-
     const applyStyle = () => {
       if (propKey && this.classes[propKey]) {
         this.styler.addStyle(type, value, unit, secondValue, secondUnit, propKey)
