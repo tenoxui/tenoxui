@@ -20,7 +20,7 @@ export class AttributifyHandler {
 
   constructor(
     tenoxuiInstance: any,
-    attributifyPrefix = 'tx-',
+    attributifyPrefix = 'tui-',
     attributifyIgnore: string[] = ['style', 'class', 'id', 'src']
   ) {
     this.instance = tenoxuiInstance
@@ -43,7 +43,7 @@ export class AttributifyHandler {
     if (this.observedElements.has(element)) return
 
     // Process hover-target attribute if present
-    if (element.hasAttribute('hover-target')) {
+    if (element.hasAttribute('hover-target') || element.hasAttribute('data-hover-target')) {
       this.hoverTargetHandler.initializeElement(element)
     }
 
@@ -58,7 +58,7 @@ export class AttributifyHandler {
 
   private processAttribute(element: HTMLElement, name: string, value: string | null): void {
     if (!value || this.ignoredAttributes.has(name)) return
-    if (name === 'child') {
+    if (name === 'child' || name === 'data-child') {
       this.processChildAttribute(element, value)
       return
     }
@@ -157,7 +157,7 @@ export class AttributifyHandler {
 
   private attributeToClassName(name: string, valueObj: ParsedValue): string | null {
     const { prefix, value } = valueObj
-    if (name === 'child') return null
+    if (name === 'child' || name === 'data-child') return null
 
     let baseClass: string | null = null
 
@@ -193,7 +193,7 @@ export class AttributifyHandler {
       mutations.forEach((mutation) => {
         if (mutation.type === 'attributes' && mutation.attributeName) {
           const attrName = mutation.attributeName
-          if (attrName === 'hover-target') {
+          if (attrName === 'hover-target' || attrName === 'data-hover-target') {
             this.hoverTargetHandler.initializeElement(element)
           } else if (!this.ignoredAttributes.has(attrName)) {
             this.processAttribute(element, attrName, element.getAttribute(attrName))
@@ -204,7 +204,9 @@ export class AttributifyHandler {
       attributes: true,
       attributeFilter: [
         'hover-target',
+        'data-hover-target',
         'child',
+        'data-child',
         ...Object.keys(this.instance.property),
         ...attributesToObserve
       ]
