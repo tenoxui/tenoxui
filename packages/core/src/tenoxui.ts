@@ -31,7 +31,7 @@ export class MakeTenoxUI {
     classes = {},
     aliases = {}
   }: MakeTenoxUIParams) {
-    this.element = element instanceof HTMLElement ? element : element[0]
+    this.element = element
     this.property = property
     this.values = values
     this.breakpoints = breakpoints
