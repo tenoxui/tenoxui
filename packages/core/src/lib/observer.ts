@@ -2,7 +2,8 @@ export function scanAndApplyStyles(
   applyStylesCallback: (className: string) => void,
   htmlElement: HTMLElement
 ): void {
-  const classes = htmlElement.className.split(/\s+/)
+  const classes =
+    typeof htmlElement.className === 'string' ? htmlElement.className.split(/\s+/) : []
   classes.forEach((className) => {
     applyStylesCallback(className)
   })
