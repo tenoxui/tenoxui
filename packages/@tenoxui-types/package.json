@@ -1,0 +1,27 @@
+{
+  "name": "@tenoxui/types",
+  "version": "0.1.2",
+  "description": "Typescript definition of tenoxui",
+  "author": "NOuSantx",
+  "license": "MIT",
+  "homepage": "https://github.com/tenoxui/tenoxui#readme",
+  "keywords": [
+    "types",
+    "typescript"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tenoxui/tenoxui.git",
+    "directory": "packages/@tenoxui-types"
+  },
+  "bugs": {
+    "url": "https://github.com/tenoxui/tenoxui/issues"
+  },
+  "files": [
+    "index.d.ts",
+    "package.json",
+    "LICENSE"
+  ],
+  "type": "module",
+  "types": "index.d.ts"
+}
