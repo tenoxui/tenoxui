@@ -1,7 +1,3 @@
-
-
-
-
 import fs from 'node:fs'
 import path from 'node:path'
 import typescript from '@rollup/plugin-typescript'
@@ -15,7 +11,7 @@ const banner = `/*!
  * ${packageJson.name} v${packageJson.version}
  * Licensed under MIT (https://github.com/tenoxui/tenoxui/blob/main/LICENSE)
  */`
-const name = "tenoxui"
+const name = 'tenoxui'
 const sourcemap = true
 const terserConf = {
   format: {
