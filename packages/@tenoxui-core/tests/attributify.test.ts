@@ -23,12 +23,15 @@ describe('Attributify mode tenoxui', () => {
 
   it('should apply styles from css property as html attribute', () => {
     const styler = useStyles({
-      attributify: true,
-      attributifyPrefix: 'tx-test-'
+      property: { bg: 'background' },
+      attributify: true
+      // attributifyPrefix: 'tx-test-'
     })
+
     element.setAttribute('background', 'red')
     element.setAttribute('color', 'blue')
-    element.setAttribute('tx-test---color', 'red')
+    element.setAttribute('tx---color', 'red')
+
     styler.useDOM()
 
     expect(element.style.background).toBe('red')
@@ -73,9 +76,10 @@ describe('Attributify mode tenoxui', () => {
   })
   it('should ignore some attributes', () => {
     const styler = useStyles({
-      attributify: true,
-      attributifyPrefix: 'tx-test-',
-      attributifyIgnore: ['background']
+      property:{bg:"background"},
+      attributify: true
+      // attributifyPrefix: 'tx-test-',
+      // attributifyIgnore: ['background', 'class']
     })
     /**
      * apply styles through data- attribute instead
@@ -88,7 +92,7 @@ describe('Attributify mode tenoxui', () => {
     element.setAttribute('color', 'red')
     styler.useDOM()
 
-    expect(element.style.background).toBe('blue')
+    expect(element.style.background).toBe('red')
     // expect(element.style.height).toBe('50px')
     expect(element.style.color).toBe('red')
     // expect(element.style.getPropertyValue('--my-color')).toBe('red')

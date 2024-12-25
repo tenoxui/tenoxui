@@ -1,6 +1,6 @@
 {
   "name": "@tenoxui/core",
-  "version": "1.3.4",
+  "version": "1.3.5",
   "description": "Core component of tenoxui",
   "author": "NOuSantx <nousantx@gmail.com>",
   "license": "MIT",
@@ -14,7 +14,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tenoxui/tenoxui.git",
-    "directory": "packages/core"
+    "directory": "packages/@tenoxui-core"
   },
   "bugs": {
     "url": "https://github.com/tenoxui/tenoxui/issues"

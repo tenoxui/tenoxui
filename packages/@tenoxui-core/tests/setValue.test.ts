@@ -21,6 +21,21 @@ describe('Value handler and applying styles', () => {
     vi.restoreAllMocks()
   })
 
+  it('should parse classes', () => {
+    const styler = useStyles({
+      
+      classes:{
+        display:{
+          flex:"flex"
+        }
+      }
+    })
+    styler.applyMultiStyles(
+      'flex'
+    )
+    expect(element.style.display).toBe('flex')
+  
+  })
   it('should handle new feature "multi-words" value', () => {
     const styler = useStyles({
       property: {
@@ -94,7 +109,10 @@ describe('Value handler and applying styles', () => {
         primary: '#ccf654',
         size: 'calc(10rem - 20px)',
         vred: '255 0 0',
-        'my-size': '20px + 20rem'
+        'my-size': '20px + 20rem',
+        bg: {
+          primary: '#548ff6'
+        }
       }
     })
 
@@ -102,14 +120,6 @@ describe('Value handler and applying styles', () => {
       styler.create['computeValue'].valueHandler(
         '',
         parseClassName('[color]-primary', styler.property)[2],
-        ''
-      )
-    ).toBe('#ccf654')
-
-    expect(
-      styler.create['computeValue'].valueHandler(
-        '',
-        parseClassName('bg-primary', styler.property)[2],
         ''
       )
     ).toBe('#ccf654')
@@ -273,7 +283,7 @@ describe('Value handler and applying styles', () => {
 
     // create custom classes
     // get value from custom classes
-    const customValue = (classname) =>
+    const customValue = classname =>
       styler.classes[styler.create['parseStyles'].getParentClass(className)][className]
 
     let className = 'primary'

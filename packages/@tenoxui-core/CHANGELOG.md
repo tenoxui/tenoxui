@@ -1,10 +1,11 @@
 # Changelog
 
-## [unreleased]
+## [1.3.0]
 
 ### Added
 
-- Better DOM handling
+- Attributify
+- `aliases` feature
 
 ### Fixed
 

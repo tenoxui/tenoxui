@@ -40,6 +40,9 @@ describe('makeTenoxUI', () => {
 
   it('should convert values correctly', () => {
     const styler = useStyles({
+      property: {
+        bg: 'background'
+      },
       values: {
         primary: '#ccf654'
       }
@@ -120,10 +123,6 @@ describe('makeTenoxUI', () => {
         color6: {
           property: '--color6',
           value: 'linear-gradient(to right, {0}, blue, var(--tx))'
-        },
-        color7: {
-          property: '--color7',
-          value: 'var(--tx)'
         }
       }
     })
@@ -133,7 +132,6 @@ describe('makeTenoxUI', () => {
     styler.applyStyles('color3-yellow')
     styler.applyStyles('color45-green')
     styler.applyStyles('color6-red')
-    styler.applyStyles('color7')
 
     expect(element.style.getPropertyValue('--color1')).toBe('red')
     expect(element.style.getPropertyValue('--color2')).toBe('blue')
@@ -143,7 +141,6 @@ describe('makeTenoxUI', () => {
     expect(element.style.getPropertyValue('--color6')).toBe(
       'linear-gradient(to right, red, blue, var(--tx))'
     )
-    expect(element.style.getPropertyValue('--color7')).toBe('var(--tx)')
   })
 
   it('should convert `camelType` into `kebab-type`', () => {

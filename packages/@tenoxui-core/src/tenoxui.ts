@@ -2,7 +2,6 @@ import { Classes, Property, Breakpoint, Values, Aliases } from './types'
 import { createTenoxUIComponents } from './utils/assigner'
 import { parseClassName } from './lib/classNameParser'
 import { scanAndApplyStyles, setupClassObserver } from './lib/observer'
-import { AttributifyHandler } from './lib/attributify'
 
 export interface MakeTenoxUIParams {
   element: HTMLElement
@@ -11,9 +10,6 @@ export interface MakeTenoxUIParams {
   breakpoints?: Breakpoint[]
   classes?: Classes
   aliases?: Aliases
-  attributify?: boolean
-  attributifyPrefix?: string
-  attributifyIgnore?: string[]
 }
 
 export type CoreConfig = Omit<MakeTenoxUIParams, 'element'>
@@ -25,10 +21,6 @@ export class MakeTenoxUI {
   public readonly breakpoints: Breakpoint[]
   public readonly classes: Classes
   public readonly aliases: Aliases
-  private attributify: boolean
-  private attributifyPrefix: string
-  private attributifyIgnore: string[]
-  private attributifyHandler: AttributifyHandler | null = null
   public readonly create: ReturnType<typeof createTenoxUIComponents>
 
   constructor({
@@ -37,10 +29,7 @@ export class MakeTenoxUI {
     values = {},
     breakpoints = [],
     classes = {},
-    aliases = {},
-    attributify = false,
-    attributifyPrefix = 'tx-',
-    attributifyIgnore = ['style', 'class', 'id', 'src']
+    aliases = {}
   }: MakeTenoxUIParams) {
     this.element = element
     this.property = property
@@ -48,30 +37,19 @@ export class MakeTenoxUI {
     this.breakpoints = breakpoints
     this.classes = classes
     this.aliases = aliases
-    this.attributify = attributify
-    this.attributifyPrefix = attributifyPrefix
-    this.attributifyIgnore = attributifyIgnore
-    this.create = this.createComponentInstance(this.element)
 
-    if (this.attributify) {
-      this.initAttributifyHandler()
-    }
-  }
-
-  private initAttributifyHandler(): void {
-    this.attributifyHandler = new AttributifyHandler(
-      this,
-      this.attributifyPrefix,
-      this.attributifyIgnore
-    )
+    this.create = createTenoxUIComponents({
+      element: this.element,
+      property: this.property,
+      values: this.values,
+      classes: this.classes,
+      breakpoints: this.breakpoints
+    })
   }
 
   public useDOM(element?: HTMLElement): void {
     const targetElement = element || this.element
     if (!targetElement) return
-    if (this.attributify && this.attributifyHandler) {
-      this.handleAttributify(targetElement)
-    }
 
     const applyStyles = (className: string) => this.applyStyles(className)
 
@@ -79,13 +57,6 @@ export class MakeTenoxUI {
       scanAndApplyStyles(applyStyles, targetElement)
       setupClassObserver(applyStyles, targetElement)
     }
-  }
-
-  private handleAttributify(element: Element): void {
-    if (!(element instanceof HTMLElement) || !this.attributifyHandler) return
-
-    this.attributifyHandler.processElement(element)
-    this.attributifyHandler.observeAttributes(element)
   }
 
   private parseStylePrefix(className: string): { prefix?: string; type: string } {
@@ -96,19 +67,26 @@ export class MakeTenoxUI {
     }
   }
 
-  public applyStyles(className: string, targetElement: HTMLElement = this.element): void {
-    const create = this.createComponentInstance(targetElement)
+  public applyStyles(className: string): void {
     const { prefix, type } = this.parseStylePrefix(className)
 
     const processStyle = (style: string) => {
-      if (create.parseStyles.handlePredefinedStyle(type, prefix)) return
-      if (create.parseStyles.handleCustomClass(type, prefix)) return
-
-      const parts = parseClassName(style, this.property)
+      const parts = parseClassName(style, this.property, this.classes)
+      // console.log(parts)
       if (!parts) return
-
       const [parsedPrefix, parsedType, value = '', unit = '', secValue, secUnit] = parts
-      create.parseStyles.parseDefaultStyle(parsedPrefix, parsedType, value, unit, secValue, secUnit)
+
+      if (this.create.parseStyles.handlePredefinedStyle(type, prefix)) return
+      if (this.create.parseStyles.handleCustomClass(parsedPrefix, parsedType, value, unit)) return
+
+      this.create.parseStyles.parseDefaultStyle(
+        parsedPrefix,
+        parsedType,
+        value,
+        unit,
+        secValue,
+        secUnit
+      )
     }
 
     const resolveAlias = (alias: string, outerPrefix: string = ''): string => {
@@ -150,47 +128,9 @@ export class MakeTenoxUI {
     processStyle(className)
   }
 
-  private createComponentInstance(targetElement: HTMLElement) {
-    return createTenoxUIComponents({
-      element: targetElement,
-      property: this.property,
-      values: this.values,
-      classes: this.classes,
-      breakpoints: this.breakpoints
-    })
-  }
-
-  public applyMultiStyles(styles: string, targetElement: HTMLElement = this.element): void {
-    styles.split(/\s+/).forEach((style) => this.applyStyles(style, targetElement))
-  }
-
-  public enableAttributify(selector = '*'): void {
-    if (!this.attributify) {
-      this.attributify = true
-      this.initAttributifyHandler()
-    }
-
-    const elements = document.querySelectorAll(selector)
-    elements.forEach((element) => this.handleAttributify(element))
-
-    this.observeNewElements(selector)
-  }
-
-  private observeNewElements(selector: string): void {
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        mutation.addedNodes.forEach((node) => {
-          if (node instanceof HTMLElement && node.matches(selector)) {
-            this.handleAttributify(node)
-          }
-        })
-      })
-    })
-
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true
-    })
+  public applyMultiStyles(styles: string): void {
+    styles.split(/\s+/).forEach((style) => this.applyStyles(style))
   }
 }
+
 export * from './types'
