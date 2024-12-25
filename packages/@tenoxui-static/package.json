@@ -1,0 +1,53 @@
+{
+  "name": "@tenoxui/static",
+  "version": "0.1.0",
+  "description": "TenoxUI static-css engine for generating stylesheet",
+  "author": "NOuSantx <nousantx@gmail.com>",
+  "license": "MIT",
+  "homepage": "https://github.com/nousantx/tenoxcss-static-new#readme",
+  "keywords": [
+    "tenoxui",
+    "css-framework"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nousantx/tenoxcss-static-new.git",
+    "directory": "packages/@tenoxui-static"
+  },
+  "bugs": {
+    "url": "https://github.com/nousantx/tenoxcss-static-new/issues"
+  },
+  "files": [
+    "dist",
+    "package.json",
+    "README.md",
+    "LICENSE"
+  ],
+  "type": "module",
+  "types": "dist/index.d.ts",
+  "main": "dist/index.esm.js",
+  "module": "dist/index.esm.js",
+  "browser": "dist/index.umd.js",
+  "scripts": {
+    "dev": "rollup -c -w",
+    "build": "rollup -c",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^28.0.2",
+    "@rollup/plugin-node-resolve": "^16.0.0",
+    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-typescript": "^12.1.2",
+    "@tenoxui/property": "^1.4.5",
+    "@tenoxui/types": "^0.1.2",
+    "@types/node": "^22.10.2",
+    "cheerio": "^1.0.0",
+    "chokidar": "^4.0.3",
+    "glob": "^11.0.0",
+    "rollup": "^4.29.1",
+    "tslib": "^2.8.1",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}

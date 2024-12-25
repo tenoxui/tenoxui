@@ -1,0 +1,16 @@
+.\[background\,--new-cls\]-\[rgb\(color\({primary}\)\)\] {
+  background: rgb(color(#ccf654)); --new-cls: rgb(color(#ccf654));
+}
+.text-red {
+  color: red;
+}
+.\[background\]-blue {
+  background: blue;
+}
+.bg-red {
+  background: red;
+}
+@media (min-width: 768px) and (max-width: 992px) {
+  .md\:\[background\]-red { background: red: null }
+  .md\:bg-blue { background: blue }
+}
