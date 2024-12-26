@@ -5,9 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Hello</title>
-    <script src="./dist/tenoxui-full.js"></script>
+    <script src="./dist/tenoxui.js"></script>
   </head>
   <body class="[background]-[rgb({my-bg})]">
+    <div class="[margin-bottom,padding]-3rem test-only-ri">Hello World</div>
+
     <div class="box-200px cl-1-200 hover:cl-2-200">hello</div>
 
     <div class="center-blue hover:center-yellow">hello world</div>
@@ -15,7 +17,7 @@
     <div class="box-200px bg-[{😏}] max-sm:bg-[{😏}] sm:bg-yellow md:bg-green lg:bg-blue">
       Yes, it works
     </div>
-    <div background="red">Yes, it works</div>
+    <div class="bg-red hover:bg-blue">Yes, it works</div>
     <div
       class="box-200px bgc-[255_0_0] max-sm:bgc-[255_0_0] sm:bgc-[0_0_255] md:bgc-[0_255_0] lg:bgc-[255_0_255]"
     >
@@ -48,7 +50,7 @@
     <div class="final">hello</div>
     <div class="btn">hello</div>
     <script>
-      document.querySelectorAll('*[class]').forEach(element => {
+      document.querySelectorAll('*[class]').forEach((element) => {
         new __tenoxui_core.MakeTenoxUI({
           element,
           attributify: true,
@@ -61,11 +63,13 @@
             '🇮🇩': 'background'
           },
           values: {
+            ri: 'blue',
             'my-bg': '40 140 0',
             '😏': 'red'
           },
           classes: {
             background: {
+              'test-only': '{0} || red',
               tx: 'red',
               '🦅': 'yellow',
               center: '{0} || red',
