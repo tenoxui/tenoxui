@@ -4,9 +4,9 @@ function getAllClassNames(classRegistry: Classes | undefined): string[] {
   if (!classRegistry) return []
 
   const classNames = new Set<string>()
-  Object.values(classRegistry).forEach(classObj => {
+  Object.values(classRegistry).forEach((classObj) => {
     if (classObj && typeof classObj === 'object') {
-      Object.keys(classObj).forEach(className => {
+      Object.keys(classObj).forEach((className) => {
         classNames.add(className)
       })
     }
@@ -46,7 +46,6 @@ export function parseClassName(
       string | undefined
     ]
   | null {
-
   if (classRegistry) {
     const prefixMatch = className.match(/^([a-zA-Z0-9-]+):(.+)$/)
     if (prefixMatch) {

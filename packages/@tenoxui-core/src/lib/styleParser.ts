@@ -14,7 +14,7 @@ export class ParseStyles {
   ) {}
 
   public getParentClass(className: string): string[] {
-    return Object.keys(this.classes).filter(cssProperty =>
+    return Object.keys(this.classes).filter((cssProperty) =>
       Object.prototype.hasOwnProperty.call(
         this.classes[cssProperty as CSSPropertyOrVariable],
         className
@@ -70,7 +70,7 @@ export class ParseStyles {
   private parseValuePattern(pattern: string, inputValue?: string, inputUnit?: string): string {
     if (!pattern.includes('{0}')) return pattern
 
-    const [value, defaultValue] = pattern.split('||').map(s => s.trim())
+    const [value, defaultValue] = pattern.split('||').map((s) => s.trim())
     return inputValue ? value.replace('{0}', inputValue + inputUnit) : defaultValue || value
   }
 
@@ -83,13 +83,13 @@ export class ParseStyles {
     const propKeys = this.getParentClass(type)
     if (!propKeys.length) return false
 
-    propKeys.forEach(propKey => {
+    propKeys.forEach((propKey) => {
       const classValue = this.classes[propKey as CSSPropertyOrVariable]
       if (classValue?.[type]) {
         const value = classValue[type]
 
         const computeValue = this.parseValuePattern(value, inputValue, inputUnit)
-        
+
         // if (value.includes('||')) console.log(value)
         prefix
           ? this.applyPrefixedStyle(
