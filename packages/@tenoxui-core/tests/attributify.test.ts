@@ -76,7 +76,7 @@ describe('Attributify mode tenoxui', () => {
   })
   it('should ignore some attributes', () => {
     const styler = useStyles({
-      property:{bg:"background"},
+      property: { bg: 'background' },
       attributify: true
       // attributifyPrefix: 'tx-test-',
       // attributifyIgnore: ['background', 'class']
