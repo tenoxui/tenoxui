@@ -1,3 +1,4 @@
 .dev
 *.tgz
 node_modules
+LICENSE
