@@ -104,8 +104,8 @@ export class MakeTenoxUI {
       if (create.parseStyles.handlePredefinedStyle(type, prefix)) return
 
       const parts = parseClassName(style, this.property, this.classes)
-      
       if (!parts) return
+
       const [parsedPrefix, parsedType, value = '', unit = '', secValue, secUnit] = parts
 
       if (create.parseStyles.handleCustomClass(parsedPrefix, parsedType, value, unit)) return
@@ -163,7 +163,7 @@ export class MakeTenoxUI {
   }
 
   public applyMultiStyles(styles: string, targetElement: HTMLElement = this.element): void {
-    styles.split(/\s+/).forEach(style => this.applyStyles(style, targetElement))
+    styles.split(/\s+/).forEach((style) => this.applyStyles(style, targetElement))
   }
 
   public enableAttributify(selector = '*'): void {
@@ -173,15 +173,15 @@ export class MakeTenoxUI {
     }
 
     const elements = document.querySelectorAll(selector)
-    elements.forEach(element => this.handleAttributify(element))
+    elements.forEach((element) => this.handleAttributify(element))
 
     this.observeNewElements(selector)
   }
 
   private observeNewElements(selector: string): void {
-    const observer = new MutationObserver(mutations => {
-      mutations.forEach(mutation => {
-        mutation.addedNodes.forEach(node => {
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        mutation.addedNodes.forEach((node) => {
           if (node instanceof HTMLElement && node.matches(selector)) {
             this.handleAttributify(node)
           }

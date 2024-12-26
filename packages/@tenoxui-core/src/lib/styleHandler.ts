@@ -86,12 +86,6 @@ export class StyleHandler {
   ): void {
     const propertyDef = this.property[type]
 
-    // Handle class-based styles
-    if (classProp && value && this.classes[classProp]) {
-      this.computeValue.setCustomClass(classProp, value)
-      return
-    }
-
     // Handle custom value property without explicit value
     if (!value && isObjectWithValue(propertyDef)) {
       value = propertyDef.value
@@ -103,6 +97,12 @@ export class StyleHandler {
     const resolvedSecondValue = secondValue
       ? this.computeValue.valueHandler(type, secondValue, secondUnit || '')
       : ''
+
+    // Handle class-based styles
+    if (classProp && value && this.classes[classProp]) {
+      this.computeValue.setCustomClass(classProp, resolvedValue)
+      return
+    }
 
     // Handle transition properties
     if (propertyDef === 'transition' || propertyDef === 'transitionDuration') {

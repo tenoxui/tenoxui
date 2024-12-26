@@ -23,18 +23,14 @@ describe('Value handler and applying styles', () => {
 
   it('should parse classes', () => {
     const styler = useStyles({
-      
-      classes:{
-        display:{
-          flex:"flex"
+      classes: {
+        display: {
+          flex: 'flex'
         }
       }
     })
-    styler.applyMultiStyles(
-      'flex'
-    )
+    styler.applyMultiStyles('flex')
     expect(element.style.display).toBe('flex')
-  
   })
   it('should handle new feature "multi-words" value', () => {
     const styler = useStyles({
@@ -283,7 +279,7 @@ describe('Value handler and applying styles', () => {
 
     // create custom classes
     // get value from custom classes
-    const customValue = classname =>
+    const customValue = (classname) =>
       styler.classes[styler.create['parseStyles'].getParentClass(className)][className]
 
     let className = 'primary'
