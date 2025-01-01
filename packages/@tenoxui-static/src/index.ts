@@ -60,13 +60,13 @@ export class TenoxUI {
   }
 
   processReservedClasses() {
-    this.reserveClass.forEach(className => {
+    this.reserveClass.forEach((className) => {
       this.processClassNames(className)
     })
   }
 
   toCamelCase(str: string): string {
-    return str.replace(/-([a-z])/g, g => g[1].toUpperCase())
+    return str.replace(/-([a-z])/g, (g) => g[1].toUpperCase())
   }
 
   toKebabCase(str: string): string {
@@ -75,12 +75,12 @@ export class TenoxUI {
       if (str.toLowerCase().startsWith(prefix)) {
         return (
           `-${prefix}` +
-          str.slice(prefix.length).replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`)
+          str.slice(prefix.length).replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)
         )
       }
     }
 
-    return str.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`)
+    return str.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)
   }
 
   escapeCSSSelector(str: string): string {
@@ -160,10 +160,10 @@ export class TenoxUI {
       const items = type
         .slice(1, -1)
         .split(',')
-        .map(item => item.trim())
+        .map((item) => item.trim())
 
       const cssRules = items
-        .map(item => {
+        .map((item) => {
           const prop = this.property[item] || item
           const finalProperty =
             typeof prop === 'string' && prop.startsWith('--')
@@ -214,7 +214,7 @@ export class TenoxUI {
   }
 
   private getParentClass(className: string): CSSPropertyOrVariable[] {
-    return Object.keys(this.classes).filter(cssProperty =>
+    return Object.keys(this.classes).filter((cssProperty) =>
       Object.prototype.hasOwnProperty.call(
         this.classes[cssProperty as CSSPropertyOrVariable],
         className
@@ -226,7 +226,7 @@ export class TenoxUI {
     const properties = this.getParentClass(className)
     if (properties.length > 0) {
       const rules = properties
-        .map(prop => {
+        .map((prop) => {
           const classObj = this.classes[prop]
           return classObj ? `${this.toKebabCase(String(prop))}: ${classObj[className]}` : ''
         })
@@ -276,7 +276,7 @@ export class TenoxUI {
     const aliasClasses = alias.split(' ')
     const combinedRules: string[] = []
 
-    aliasClasses.forEach(aliasClass => {
+    aliasClasses.forEach((aliasClass) => {
       const parsed = this.parseClassName(aliasClass)
       if (!parsed) return
 
@@ -285,7 +285,7 @@ export class TenoxUI {
 
       if (result) {
         if (Array.isArray(result.cssRules)) {
-          result.cssRules.forEach(rule => {
+          result.cssRules.forEach((rule) => {
             combinedRules.push(`${this.toKebabCase(rule)}: ${result.value}`)
           })
         } else {
@@ -315,7 +315,7 @@ export class TenoxUI {
   }
 
   public processClassNames(classNames: string): void {
-    classNames.split(/\s+/).forEach(className => {
+    classNames.split(/\s+/).forEach((className) => {
       if (!className) return
 
       const aliasResult = this.processAlias(className)
@@ -329,7 +329,7 @@ export class TenoxUI {
       const getType = rtype || rprefix
       const getPrefix = rtype ? rprefix : undefined
 
-      const breakpoint = this.breakpoints.find(bp => bp.name === getPrefix)
+      const breakpoint = this.breakpoints.find((bp) => bp.name === getPrefix)
 
       const shouldClasses = this.processCustomClass(getPrefix, getType)
 
@@ -360,7 +360,7 @@ export class TenoxUI {
 
         if (breakpoint) {
           const rules = Array.isArray(cssRules)
-            ? cssRules.map(rule => `${this.toKebabCase(rule)}: ${ruleValue}`).join('; ')
+            ? cssRules.map((rule) => `${this.toKebabCase(rule)}: ${ruleValue}`).join('; ')
             : `${cssRules}: ${ruleValue}`
 
           const { mediaKey, ruleSet } = this.generateMediaQuery(breakpoint, className, rules)
@@ -380,7 +380,7 @@ export class TenoxUI {
     this.styleMap.forEach((rules, className) => {
       if (className.startsWith('@media-')) {
         const breakpointName = className.split('-')[1]
-        const breakpoint = this.breakpoints.find(bp => bp.name === breakpointName)
+        const breakpoint = this.breakpoints.find((bp) => bp.name === breakpointName)
 
         if (breakpoint) {
           let mediaQuery = ''
@@ -395,7 +395,7 @@ export class TenoxUI {
           if (!mediaQueries.has(mediaQuery)) {
             mediaQueries.set(mediaQuery, new Set())
           }
-          rules.forEach(rule => {
+          rules.forEach((rule) => {
             mediaQueries.get(mediaQuery).add(rule)
           })
         }

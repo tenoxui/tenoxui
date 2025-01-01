@@ -5,7 +5,7 @@ const cli = new TenoxUICLI(config)
 cli.generate({
   input: ['index.html', 'src/**/*.{jsx,tsx}'],
   output: 'css/index.css',
-  watch: true,
- // minify: true,
+  watch: true
+  // minify: true,
   // sourceMap: true
 })
