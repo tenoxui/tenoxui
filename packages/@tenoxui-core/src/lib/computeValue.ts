@@ -31,6 +31,7 @@ export class ComputeValue {
     // Add null check before accessing value registry
     const valueRegistry = value ? (this.values as Record<string, string>)[value] : undefined
 
+    
     // Ensure value exists before string operations
     if (value && (value + unit).length !== value.toString().length && unit !== '') {
       return value + unit
@@ -89,13 +90,13 @@ export class ComputeValue {
       ? template.replace(/\{0}/g, value).replace(/\{1}/g, secondValue)
       : value
     Array.isArray(property)
-      ? property.forEach((prop) => this.setStyle(prop, finalValue))
+      ? property.forEach(prop => this.setStyle(prop, finalValue))
       : this.setStyle(property, finalValue)
   }
 
   public setDefaultValue(property: GetCSSProperty, value: string): void {
     Array.isArray(property)
-      ? property.forEach((prop) => this.setStyle(prop, value))
+      ? property.forEach(prop => this.setStyle(prop, value))
       : this.setStyle(property, value)
   }
 
