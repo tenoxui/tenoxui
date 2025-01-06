@@ -16,7 +16,7 @@ export class ParseStyles {
   ) {}
 
   public getParentClass(className: string): string[] {
-    return Object.keys(this.classes).filter(cssProperty =>
+    return Object.keys(this.classes).filter((cssProperty) =>
       Object.prototype.hasOwnProperty.call(
         this.classes[cssProperty as CSSPropertyOrVariable],
         className
@@ -78,7 +78,7 @@ export class ParseStyles {
   ): string {
     if (!pattern.includes('{0}') && !pattern.includes('||')) return pattern
 
-    const [value, defaultValue] = pattern.split('||').map(s => s.trim())
+    const [value, defaultValue] = pattern.split('||').map((s) => s.trim())
     const finalValue = this.computeValue.valueHandler('', inputValue, inputUnit)
     const finalSecValue = this.computeValue.valueHandler('', inputSecValue, inputSecUnit)
 
@@ -118,13 +118,13 @@ export class ParseStyles {
     type: string,
     inputValue: string,
     inputUnit: string = '',
-    inputSecValue: string ='',
+    inputSecValue: string = '',
     inputSecUnit: string = ''
   ): boolean {
     const propKeys = this.getParentClass(type)
     if (!propKeys.length) return false
 
-    propKeys.forEach(propKey => {
+    propKeys.forEach((propKey) => {
       const classValue = this.classes[propKey as CSSPropertyOrVariable]
       if (classValue?.[type]) {
         const value = classValue[type]
