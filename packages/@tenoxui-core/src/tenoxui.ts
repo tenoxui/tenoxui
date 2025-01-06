@@ -77,7 +77,17 @@ export class MakeTenoxUI {
       const [parsedPrefix, parsedType, value = '', unit = '', secValue, secUnit] = parts
 
       if (this.create.parseStyles.handlePredefinedStyle(type, prefix)) return
-      if (this.create.parseStyles.handleCustomClass(parsedPrefix, parsedType, value, unit)) return
+      if (
+        this.create.parseStyles.handleCustomClass(
+          parsedPrefix,
+          parsedType,
+          value,
+          unit,
+          secValue,
+          secUnit
+        )
+      )
+        return
 
       this.create.parseStyles.parseDefaultStyle(
         parsedPrefix,

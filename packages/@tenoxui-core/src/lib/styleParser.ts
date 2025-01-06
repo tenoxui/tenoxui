@@ -1,5 +1,6 @@
 import { Property, Classes, CSSPropertyOrVariable } from '../types'
 import { StyleHandler } from './styleHandler'
+import { ComputeValue } from './computeValue'
 import { Responsive } from './responsive'
 import { Pseudo } from './pseudoClass'
 import { isObjectWithValue } from '../utils/valueObject'
@@ -9,6 +10,7 @@ export class ParseStyles {
     private property: Property,
     private classes: Classes,
     private styler: StyleHandler,
+    private computeValue: ComputeValue,
     private pseudo: Pseudo,
     private responsive: Responsive
   ) {}
@@ -67,18 +69,57 @@ export class ParseStyles {
     return false
   }
 
-  private parseValuePattern(pattern: string, inputValue?: string, inputUnit?: string): string {
-    if (!pattern.includes('{0}')) return pattern
+  private parseValuePattern(
+    pattern: string,
+    inputValue?: string,
+    inputUnit?: string,
+    inputSecValue?: string,
+    inputSecUnit?: string
+  ): string {
+    if (!pattern.includes('{0}') && !pattern.includes('||')) return pattern
 
     const [value, defaultValue] = pattern.split('||').map((s) => s.trim())
-    return inputValue ? value.replace('{0}', inputValue + inputUnit) : defaultValue || value
+    const finalValue = this.computeValue.valueHandler('', inputValue, inputUnit)
+    const finalSecValue = this.computeValue.valueHandler('', inputSecValue, inputSecUnit)
+
+    // handle both {0} and {1}
+    if (pattern.includes('{0}') && pattern.includes('{1')) {
+      let computedValue = value
+      if (inputValue) {
+        computedValue = computedValue.replace('{0}', finalValue)
+      }
+      if (inputSecValue || pattern.includes('{1')) {
+        // find {1 ... } pattern and extract default value if present
+        const match = computedValue.match(/{1([^}]*)}/)
+        if (match) {
+          const fullMatch = match[0]
+          const innerContent = match[1].trim()
+
+          let replacementValue = finalSecValue
+          if (!replacementValue && innerContent.includes('|')) {
+            // use default value after | if second value isn provided
+            replacementValue = innerContent.split('|')[1].trim()
+          } else if (!replacementValue) {
+            replacementValue = ''
+          }
+          computedValue = computedValue.replace(fullMatch, replacementValue)
+        }
+      }
+      return inputValue ? computedValue : defaultValue || value
+    }
+    // Handle only {0} replacement
+    else {
+      return inputValue ? value.replace('{0}', finalValue) : defaultValue || value
+    }
   }
 
   public handleCustomClass(
     prefix: string | undefined,
     type: string,
     inputValue?: string,
-    inputUnit?: string
+    inputUnit?: string,
+    inputSecValue?: string,
+    inputSecUnit?: string
   ): boolean {
     const propKeys = this.getParentClass(type)
     if (!propKeys.length) return false
@@ -88,20 +129,24 @@ export class ParseStyles {
       if (classValue?.[type]) {
         const value = classValue[type]
 
-        const computeValue = this.parseValuePattern(value, inputValue, inputUnit)
-
-        // if (value.includes('||')) console.log(value)
+        const finalValue = this.parseValuePattern(
+          value,
+          inputValue,
+          inputUnit,
+          inputSecValue,
+          inputSecUnit
+        )
         prefix
           ? this.applyPrefixedStyle(
               prefix,
               type,
-              computeValue,
+              finalValue,
               '',
               '',
               '',
               propKey as CSSPropertyOrVariable
             )
-          : this.styler.addStyle(type, computeValue, '', '', '', propKey as CSSPropertyOrVariable)
+          : this.styler.addStyle(type, finalValue, '', '', '', propKey as CSSPropertyOrVariable)
       }
     })
     return true
