@@ -31,6 +31,13 @@ export function createTenoxUIComponents(context: RequiredTenoxUIParams) {
     styler
   )
   const responsive = new Responsive(context.element, context.breakpoints, context.classes, styler)
-  const parseStyles = new ParseStyles(context.property, context.classes, styler, pseudo, responsive)
+  const parseStyles = new ParseStyles(
+    context.property,
+    context.classes,
+    styler,
+    computeValue,
+    pseudo,
+    responsive
+  )
   return { computeValue, styler, responsive, pseudo, parseStyles }
 }

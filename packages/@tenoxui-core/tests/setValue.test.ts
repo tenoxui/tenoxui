@@ -419,6 +419,34 @@ describe('Value handler and applying styles', () => {
     expect(element.style.width).toBe('200px')
     expect(element.style.height).toBe('200px')
   })
+  it('should apply classes that has optional value', () => {
+    const styler = useStyles({
+      classes: {
+        '--bg-opacity': {
+          bg: '{0} || 1'
+        },
+        background: {
+          bg: 'rgb({0}) || red'
+        },
+        color: {
+          text: 'rgb({0}, {1 | 0}) || yellow'
+        },
+        borderColor: {
+          bdr: 'rgb({0}, {1 | 0}) || blue'
+        }
+      },
+      values: {},
+      aliases: {
+        'my-bg': 'bg-red',
+        class1: 'my-bg p-1rem d-flex',
+        btn: 'class1 [align-items,justify-content]-center [width,height]-200px'
+      }
+    })
+    styler.applyMultiStyles('bg-[0,_0,_255] text-[255,_0]/1 bdr-[0,_255]')
+    expect(element.style.background).toBe('rgb(0, 0, 255)')
+    expect(element.style.color).toBe('rgb(255, 0, 1)')
+    expect(element.style.borderColor).toBe('rgb(0, 255, 0)')
+  })
   // it("should", () => {const styler = useStyles();styler.create.applyStyles("bg-red");expect(element.style.background).toBe("red");});
 
   // it("should",()=>{const styler = useStyles({ property: { bg: "background", text: "color", p: "padding" } });expect(element.style.background).toBe("red");})
