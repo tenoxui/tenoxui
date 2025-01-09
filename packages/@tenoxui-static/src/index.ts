@@ -288,7 +288,7 @@ export class TenoxUI {
       const result = this.processShorthand(type, value!, unit, prefix, secValue, secUnit)
 
       if (result) {
-        const value = result.value !== null ? `: ${result.value}` : '{'
+        const value = result.value !== null ? `: ${result.value}` : ''
         if (Array.isArray(result.cssRules)) {
           result.cssRules.forEach((rule) => {
             combinedRules.push(`${this.toKebabCase(rule)}${value}`)
