@@ -2,6 +2,14 @@ import { property as TxProps } from '@tenoxui/property'
 import { createConfig } from '@nousantx/tenoxui-styler'
 
 export default createConfig({
+  alias: {
+    'gradient-text': `
+      [--gt-direction]--45deg 
+      [--gt-color]-[rgb({orange-500}),_rgb({red-500})] 
+      [background]-[-webkit-linear-gradient(var(--gt-direction),var(--gt-color))] 
+      [-webkit-background-clip]-text 
+      [-webkit-text-fill-color]-transparent`
+  },
   color: {
     DEFAULT: {
       // main color

@@ -182,4 +182,26 @@ describe('TenoxUI', () => {
       )
     })
   })
+  describe('All possible class names', () => {
+    it('should process reserved classes on initialization', () => {
+      const params: TenoxUIParams = {
+        property: {
+          bg: 'backgroundColor',
+          ls: 'letterSpacing'
+        },
+        values: {
+          primary: '#ccf654'
+        },
+        reserveClass: ['bg-primary', '[background,--red]-[rgb(var(--color,_255_0_0))] ls--0.015em']
+      }
+      tenoxui = new TenoxUI(params)
+      const stylesheet = tenoxui.generateStylesheet()
+      console.log(stylesheet)
+      expect(stylesheet).toContain('.bg-primary { background-color: #ccf654; }')
+      expect(stylesheet).toContain('.ls--0\\.015em { letter-spacing: -0.015em; }')
+      expect(stylesheet).toContain(
+        '.\\[background\\,--red\\]-\\[rgb\\(var\\(--color\\,_255_0_0\\)\\)\\] { background: rgb(var(--color, 255 0 0)); --red: rgb(var(--color, 255 0 0)); }'
+      )
+    })
+  })
 })
