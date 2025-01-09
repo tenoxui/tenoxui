@@ -241,6 +241,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@nousantx/tenoxui-styler@npm:^0.1.22":
+  version: 0.1.22
+  resolution: "@nousantx/tenoxui-styler@npm:0.1.22"
+  dependencies:
+    "@tenoxui/types": "npm:^0.1.2"
+  checksum: 10c0/a352fb48b36fb7470b0d785b2b9b0c4cebf9d587122eba0be82810140be9eec793c810161cbb3fde92316ea26835d4540f10ec20a6831d5e6f56b72ddcb66907
+  languageName: node
+  linkType: hard
+
 "@npmcli/agent@npm:^3.0.0":
   version: 3.0.0
   resolution: "@npmcli/agent@npm:3.0.0"
@@ -503,6 +512,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@tenoxui/static@workspace:."
   dependencies:
+    "@nousantx/tenoxui-styler": "npm:^0.1.22"
     "@rollup/plugin-commonjs": "npm:^28.0.2"
     "@rollup/plugin-node-resolve": "npm:^16.0.0"
     "@rollup/plugin-terser": "npm:^0.4.4"
