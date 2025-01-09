@@ -70,16 +70,20 @@ export class TenoxUI {
   }
 
   toKebabCase(str: string): string {
-    const prefixes = ['webkit', 'moz', 'ms', 'o']
-    for (const prefix of prefixes) {
-      if (str.toLowerCase().startsWith(prefix)) {
-        return (
-          `-${prefix}` +
-          str.slice(prefix.length).replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)
-        )
+    // Check if string exactly matches a vendor prefix pattern
+    if (/^(webkit|moz|ms|o)[A-Z]/.test(str)) {
+      const match = str.match(/^(webkit|moz|ms|o)/)
+      // This check is not strictly necessary due to the previous test,
+      // but TypeScript needs it for type safety
+      if (match) {
+        const prefix = match[0]
+        return `-${prefix}-${str
+          .slice(prefix.length)
+          .replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)}`
       }
     }
 
+    // Regular camelCase to kebab-case conversion
     return str.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)
   }
 
@@ -174,7 +178,7 @@ export class TenoxUI {
         .join('; ')
 
       return {
-        className: `${this.escapeCSSSelector(`[${type.slice(1, -1)}]-${value}${unit}`)}`,
+        className: `${`[${type.slice(1, -1)}]-${value}${unit}`}`,
         cssRules,
         value: null,
         prefix
@@ -284,12 +288,13 @@ export class TenoxUI {
       const result = this.processShorthand(type, value!, unit, prefix, secValue, secUnit)
 
       if (result) {
+        const value = result.value !== null ? `: ${result.value}` : '{'
         if (Array.isArray(result.cssRules)) {
           result.cssRules.forEach((rule) => {
-            combinedRules.push(`${this.toKebabCase(rule)}: ${result.value}`)
+            combinedRules.push(`${this.toKebabCase(rule)}${value}`)
           })
         } else {
-          combinedRules.push(`${result.cssRules}: ${result.value}`)
+          combinedRules.push(`${result.cssRules}${value}`)
         }
       }
     })
@@ -357,16 +362,16 @@ export class TenoxUI {
 
       if (result) {
         const { className, cssRules, value: ruleValue, prefix: rulePrefix } = result
-
+        const processedClass = this.escapeCSSSelector(className)
         if (breakpoint) {
           const rules = Array.isArray(cssRules)
             ? cssRules.map((rule) => `${this.toKebabCase(rule)}: ${ruleValue}`).join('; ')
             : `${cssRules}: ${ruleValue}`
 
-          const { mediaKey, ruleSet } = this.generateMediaQuery(breakpoint, className, rules)
+          const { mediaKey, ruleSet } = this.generateMediaQuery(breakpoint, processedClass, rules)
           this.addStyle(mediaKey, ruleSet, null, null)
         } else {
-          this.addStyle(className, cssRules, ruleValue, rulePrefix)
+          this.addStyle(processedClass, cssRules, ruleValue, rulePrefix)
         }
       }
     })
@@ -401,6 +406,7 @@ export class TenoxUI {
         }
       } else {
         const styles = Array.from(rules).join('; ')
+
         stylesheet += `.${className} { ${styles}; }\n`
       }
     })
