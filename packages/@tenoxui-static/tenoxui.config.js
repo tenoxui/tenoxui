@@ -1,48 +1,42 @@
 import { property as TxProps } from '@tenoxui/property'
+import { createConfig } from '@nousantx/tenoxui-styler'
 
-export default {
-  property: {
-    ...TxProps,
-    'my-bg': {
-      property: ['background', 'color'],
-      value: 'rgb({0})'
+export default createConfig({
+  color: {
+    DEFAULT: {
+      // main color
+      primary: '#ccf654',
+      red: '#f03838',
+      green: '#15e05f',
+      blue: '#3d82f2',
+      yellow: '#f1c230',
+      slate: '#636c7c',
+      // neutral: '#737373', //# DEFAULT
+      neutral: '#4a4a4a',
+      // extended color
+      ruby: '#e0115f',
+      tomato: '#ff6347',
+      salmon: '#fa8072',
+      orange: '#f37f2e',
+      amber: '#f49c09',
+      gold: '#ffd700',
+      chartreuse: '#7fff00',
+      lime: '#91e411',
+      emerald: '#13cb8e',
+      teal: '#12c39f',
+      aquamarine: '#7fffd4',
+      turquoise: '#40e0d0',
+      cyan: '#21d2f1',
+      sky: '#0ea5e9',
+      indigo: '#6f72f7',
+      violet: '#7844f0',
+      purple: '#a855f7',
+      magenta: '#ff00ff',
+      fuchsia: '#d642ec',
+      pink: '#f32d8f',
+      rose: '#eb3756',
+      zinc: '#71757a',
+      gray: '#696a6a'
     }
-  },
-  values: {
-    primary: '#ccf654'
-  },
-  reserveClass: ['[background,--new-cls]-[rgb(color({primary}))]', 'text-red'],
-  classes: {
-    '--my-ctr': {
-      center: '1s'
-    },
-    webkitAnimation: {
-      center: 'var(--my-ctr)'
-    },
-    display: {
-      center: 'flex',
-      block: 'block'
-    },
-    justifyContent: {
-      center: 'center'
-    },
-    alignItems: {
-      center: 'center'
-    }
-  },
-  aliases: {
-    btn: 'bg-red text-blue' // .btn { background: red; color: blue; }
-  },
-  breakpoints: [
-    { name: 'max-sm', max: 640 },
-    { name: 'sm', min: 640 },
-    { name: 'max-md', max: 767.9 },
-    { name: 'md', min: 768, max: 992 },
-    { name: 'max-lg', max: 1023.9 },
-    { name: 'lg', min: 1024 },
-    { name: 'max-xl', max: 1279.9 },
-    { name: 'xl', min: 1280 },
-    { name: 'max-2xl', max: 1535.9 },
-    { name: '2xl', min: 1536 }
-  ]
-}
+  }
+})

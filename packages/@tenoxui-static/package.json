@@ -1,6 +1,6 @@
 {
   "name": "@tenoxui/static",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "TenoxUI static-css engine for generating stylesheet",
   "author": "NOuSantx <nousantx@gmail.com>",
   "license": "MIT",
@@ -35,6 +35,7 @@
     "test:watch": "vitest"
   },
   "devDependencies": {
+    "@nousantx/tenoxui-styler": "^0.1.22",
     "@rollup/plugin-commonjs": "^28.0.2",
     "@rollup/plugin-node-resolve": "^16.0.0",
     "@rollup/plugin-terser": "^0.4.4",
