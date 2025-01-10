@@ -35,7 +35,6 @@
     "test:watch": "vitest"
   },
   "devDependencies": {
-    "@nousantx/tenoxui-styler": "^0.1.22",
     "@rollup/plugin-commonjs": "^28.0.2",
     "@rollup/plugin-node-resolve": "^16.0.0",
     "@rollup/plugin-terser": "^0.4.4",
@@ -43,9 +42,6 @@
     "@tenoxui/property": "^1.4.5",
     "@tenoxui/types": "^0.1.2",
     "@types/node": "^22.10.2",
-    "cheerio": "^1.0.0",
-    "chokidar": "^4.0.3",
-    "glob": "^11.0.0",
     "rollup": "^4.29.1",
     "tslib": "^2.8.1",
     "typescript": "^5.7.2",
