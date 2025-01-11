@@ -1,6 +1,6 @@
-import { useLayoutEffect } from 'react'
+import { useLayoutEffect } from 'preact/hooks'
 import { MakeTenoxUI } from 'tenoxui'
-import type { CoreConfig } from 'tenoxui'
+import type { CoreConfig, Values, Property, Classes } from 'tenoxui'
 import { property } from '@tenoxui/property'
 import { merge, createProperty } from '@nousantx/someutils'
 import { standardAttributes, reactAttributes } from '@nousantx/list-attribute'
@@ -9,14 +9,14 @@ import { colors } from '../styles/color'
 export const tenoxuiConfig: CoreConfig = {
   property: {
     ...property,
-    ...createProperty(
+    ...(createProperty(
       {
         bg: 'backgroundColor',
         text: 'color',
         'bdr-c': 'borderColor'
       },
       'rgb({0} / var(--{1}-opacity, 1))'
-    ),
+    ) as Property),
     bgc: 'backgroundColor',
     bgi: 'backgroundImage',
     'bg-opacity': '--bg-opacity',
@@ -28,7 +28,7 @@ export const tenoxuiConfig: CoreConfig = {
       code: 'JetBrains Mono, monospace',
       sans: 'Inter, sans-serif'
     }
-  }),
+  }) as Values,
   classes: {
     display: {
       block: 'block',

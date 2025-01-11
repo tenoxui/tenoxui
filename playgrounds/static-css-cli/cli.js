@@ -4,7 +4,7 @@ import chokidar from 'chokidar'
 import { fileURLToPath } from 'url'
 import { load } from 'cheerio'
 import { glob } from 'glob'
-import { TenoxUI } from './dist/index.esm.js'
+import { TenoxUI } from '@tenoxui/static'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
