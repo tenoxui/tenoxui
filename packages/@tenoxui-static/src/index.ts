@@ -1,424 +1,509 @@
 import type {
-  Property,
-  Values,
-  Aliases,
-  Classes,
-  Breakpoint,
-  // GetCSSProperty,
-  CSSPropertyOrVariable
+	Property,
+	Values,
+	Aliases,
+	Classes,
+	Breakpoint,
+	CSSPropertyOrVariable
 } from '@tenoxui/types'
 
+type StyleValue = string | NestedStyles
+type NestedStyles = {
+	[selector: string]: StyleValue
+}
+
 export interface TenoxUIParams {
-  property: Property
-  values: Values
-  classes: Classes
-  aliases: Aliases
-  breakpoints: Breakpoint[]
-  reserveClass: string[]
+	property: Property
+	values: Values
+	classes: Classes
+	aliases: Aliases
+	breakpoints: Breakpoint[]
+	reserveClass: string[]
+	apply?: Record<string, StyleValue>
 }
 
 type ProcessedStyle = {
-  className: string
-  cssRules: string | string[]
-  value: string | null
-  prefix?: string
+	className: string
+	cssRules: string | string[]
+	value: string | null
+	prefix?: string
 }
 
 type MediaQueryRule = {
-  mediaKey: string
-  ruleSet: string
+	mediaKey: string
+	ruleSet: string
 }
 
 export class TenoxUI {
-  private property: Property
-  private values: Values
-  private classes: Classes
-  private aliases: Aliases
-  private breakpoints: Breakpoint[]
-  private reserveClass: string[]
-  private styleMap: Map<string, Set<string>>
+	private property: Property
+	private values: Values
+	private classes: Classes
+	private aliases: Aliases
+	private breakpoints: Breakpoint[]
+	private reserveClass: string[]
+	private styleMap: Map<string, Set<string>>
+	private apply: Record<string, StyleValue>
 
-  constructor({
-    property = {},
-    values = {},
-    classes = {},
-    aliases = {},
-    breakpoints = [],
-    reserveClass = []
-  }: Partial<TenoxUIParams> = {}) {
-    this.property = property
-    this.values = values
-    this.classes = classes
-    this.aliases = aliases
-    this.breakpoints = breakpoints
-    this.reserveClass = reserveClass
-    this.styleMap = new Map()
+	constructor({
+		property = {},
+		values = {},
+		classes = {},
+		aliases = {},
+		breakpoints = [],
+		reserveClass = [],
+		apply = {}
+	}: Partial<TenoxUIParams> = {}) {
+		this.property = property
+		this.values = values
+		this.classes = classes
+		this.aliases = aliases
+		this.breakpoints = breakpoints
+		this.reserveClass = reserveClass
+		this.styleMap = new Map()
+		this.apply = apply
 
-    if (this.reserveClass.length > 0) {
-      this.processReservedClasses()
-    }
-  }
+		if (this.reserveClass.length > 0) {
+			this.processReservedClasses()
+		}
 
-  processReservedClasses() {
-    this.reserveClass.forEach((className) => {
-      this.processClassNames(className)
-    })
-  }
+		this.initializeApplyStyles()
+	}
 
-  toCamelCase(str: string): string {
-    return str.replace(/-([a-z])/g, (g) => g[1].toUpperCase())
-  }
+	processReservedClasses() {
+		this.reserveClass.forEach(className => {
+			this.processClassNames(className)
+		})
+	}
 
-  toKebabCase(str: string): string {
-    // Check if string exactly matches a vendor prefix pattern
-    if (/^(webkit|moz|ms|o)[A-Z]/.test(str)) {
-      const match = str.match(/^(webkit|moz|ms|o)/)
-      // This check is not strictly necessary due to the previous test,
-      // but TypeScript needs it for type safety
-      if (match) {
-        const prefix = match[0]
-        return `-${prefix}-${str
-          .slice(prefix.length)
-          .replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)}`
-      }
-    }
+	toCamelCase(str: string): string {
+		return str.replace(/-([a-z])/g, g => g[1].toUpperCase())
+	}
 
-    // Regular camelCase to kebab-case conversion
-    return str.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)
-  }
+	toKebabCase(str: string): string {
+		if (/^(webkit|moz|ms|o)[A-Z]/.test(str)) {
+			const match = str.match(/^(webkit|moz|ms|o)/)
+			if (match) {
+				const prefix = match[0]
+				return `-${prefix}${str
+					.slice(prefix.length)
+					.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`)}`
+			}
+		}
 
-  escapeCSSSelector(str: string): string {
-    return str.replace(/([ #.;?%&,@+*~'"!^$[\]()=>|])/g, '\\$1')
-  }
+		return str.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`)
+	}
 
-  private generateClassNameRegEx(): RegExp {
-    const typePrefixes = Object.keys(this.property)
-      .sort((a, b) => b.length - a.length)
-      .join('|')
+	escapeCSSSelector(str: string): string {
+		return str.replace(/([ #.;?%&,@+*~'"!^$[\]()=>|])/g, '\\$1')
+	}
 
-    return new RegExp(
-      `(?:([a-zA-Z0-9-]+):)?(${typePrefixes}|\\[[^\\]]+\\])-(-?(?:\\d+(?:\\.\\d+)?)|(?:[a-zA-Z0-9_]+(?:-[a-zA-Z0-9_]+)*(?:-[a-zA-Z0-9_]+)*)|(?:#[0-9a-fA-F]+)|(?:\\[[^\\]]+\\])|(?:\\$[^\\s]+))([a-zA-Z%]*)(?:\\/(-?(?:\\d+(?:\\.\\d+)?)|(?:[a-zA-Z0-9_]+(?:-[a-zA-Z0-9_]+)*(?:-[a-zA-Z0-9_]+)*)|(?:#[0-9a-fA-F]+)|(?:\\[[^\\]]+\\])|(?:\\$[^\\s]+))([a-zA-Z%]*))?`
-    )
-  }
+	private generateClassNameRegEx(): RegExp {
+		const typePrefixes = Object.keys(this.property)
+			.sort((a, b) => b.length - a.length)
+			.join('|')
 
-  private parseClassName(
-    className: string
-  ):
-    | [
-        prefix: string | undefined,
-        type: string,
-        value: string | undefined,
-        unit: string | undefined,
-        secValue: string | undefined,
-        secUnit: string | undefined
-      ]
-    | null {
-    const classNameRegEx = this.generateClassNameRegEx()
-    const match = className.match(classNameRegEx)
-    if (!match) return null
+		return new RegExp(
+			`(?:([a-zA-Z0-9-]+):)?(${typePrefixes}|\\[[^\\]]+\\])-(-?(?:\\d+(?:\\.\\d+)?)|(?:[a-zA-Z0-9_]+(?:-[a-zA-Z0-9_]+)*(?:-[a-zA-Z0-9_]+)*)|(?:#[0-9a-fA-F]+)|(?:\\[[^\\]]+\\])|(?:\\$[^\\s]+))([a-zA-Z%]*)(?:\\/(-?(?:\\d+(?:\\.\\d+)?)|(?:[a-zA-Z0-9_]+(?:-[a-zA-Z0-9_]+)*(?:-[a-zA-Z0-9_]+)*)|(?:#[0-9a-fA-F]+)|(?:\\[[^\\]]+\\])|(?:\\$[^\\s]+))([a-zA-Z%]*))?`
+		)
+	}
 
-    const [, prefix, type, value, unit, secValue, secUnit] = match
-    return [prefix, type, value, unit, secValue, secUnit]
-  }
+	private parseClassName(
+		className: string
+	):
+		| [
+				prefix: string | undefined,
+				type: string,
+				value: string | undefined,
+				unit: string | undefined,
+				secValue: string | undefined,
+				secUnit: string | undefined
+		  ]
+		| null {
+		const classNameRegEx = this.generateClassNameRegEx()
+		const match = className.match(classNameRegEx)
+		if (!match) return null
 
-  private processValue(type: string, value?: string, unit?: string): string {
-    if (!value) return ''
+		const [, prefix, type, value, unit, secValue, secUnit] = match
+		return [prefix, type, value, unit, secValue, secUnit]
+	}
 
-    const valueRegistry = this.values[value]
+	private processValue(type: string, value?: string, unit?: string): string {
+		if (!value) return ''
 
-    const replaceWithValueRegistry = (text: string): string => {
-      return text.replace(/\{([^}]+)\}/g, (match, key) => {
-        const val = this.values[key]
-        return typeof val === 'string' ? val : match
-      })
-    }
+		const valueRegistry = this.values[value]
 
-    if (valueRegistry) {
-      return typeof valueRegistry === 'string' ? valueRegistry : valueRegistry[type] || ''
-    } else if (value.startsWith('$')) {
-      return `var(--${value.slice(1)})`
-    } else if (value.startsWith('[') && value.endsWith(']')) {
-      const cleanValue = value.slice(1, -1).replace(/_/g, ' ')
+		const replaceWithValueRegistry = (text: string): string => {
+			return text.replace(/\{([^}]+)\}/g, (match, key) => {
+				const val = this.values[key]
+				return typeof val === 'string' ? val : match
+			})
+		}
 
-      if (cleanValue.includes('{')) {
-        return replaceWithValueRegistry(cleanValue)
-      }
-      return cleanValue.startsWith('--') ? `var(${cleanValue})` : cleanValue
-    }
+		if (valueRegistry) {
+			return typeof valueRegistry === 'string' ? valueRegistry : valueRegistry[type] || ''
+		} else if (value.startsWith('$')) {
+			return `var(--${value.slice(1)})`
+		} else if (value.startsWith('[') && value.endsWith(']')) {
+			const cleanValue = value.slice(1, -1).replace(/_/g, ' ')
 
-    return value + (unit || '')
-  }
+			if (cleanValue.includes('{')) {
+				return replaceWithValueRegistry(cleanValue)
+			}
+			return cleanValue.startsWith('--') ? `var(${cleanValue})` : cleanValue
+		}
 
-  private processShorthand(
-    type: string,
-    value: string,
-    unit: string = '',
-    prefix?: string,
-    secondValue?: string,
-    secondUnit?: string
-  ): ProcessedStyle | null {
-    const properties = this.property[type]
-    const finalValue = this.processValue(type, value, unit)
+		return value + (unit || '')
+	}
 
-    if (type.startsWith('[') && type.endsWith(']')) {
-      const items = type
-        .slice(1, -1)
-        .split(',')
-        .map((item) => item.trim())
+	private processShorthand(
+		type: string,
+		value: string,
+		unit: string = '',
+		prefix?: string,
+		secondValue?: string,
+		secondUnit?: string
+	): ProcessedStyle | null {
+		const properties = this.property[type]
+		const finalValue = this.processValue(type, value, unit)
 
-      const cssRules = items
-        .map((item) => {
-          const prop = this.property[item] || item
-          const finalProperty =
-            typeof prop === 'string' && prop.startsWith('--')
-              ? String(prop)
-              : this.toKebabCase(String(prop))
-          return `${finalProperty}: ${finalValue}`
-        })
-        .join('; ')
+		if (type.startsWith('[') && type.endsWith(']')) {
+			const items = type
+				.slice(1, -1)
+				.split(',')
+				.map(item => item.trim())
 
-      return {
-        className: `${`[${type.slice(1, -1)}]-${value}${unit}`}`,
-        cssRules,
-        value: null,
-        prefix
-      }
-    }
+			const cssRules = items
+				.map(item => {
+					const prop = this.property[item] || item
+					const finalProperty =
+						typeof prop === 'string' && prop.startsWith('--')
+							? String(prop)
+							: this.toKebabCase(String(prop))
+					return `${finalProperty}: ${finalValue}`
+				})
+				.join('; ')
 
-    if (properties) {
-      if (typeof properties === 'object' && 'property' in properties && 'value' in properties) {
-        const property = properties.property
-        const template = properties.value
-        const processedValue = template
-          ? template.replace(/\{0}/g, finalValue).replace(/\{1}/g, secondValue || '')
-          : finalValue
+			return {
+				className: `${`[${type.slice(1, -1)}]-${value}${unit}`}`,
+				cssRules,
+				value: null,
+				prefix
+			}
+		}
 
-        return {
-          className: `${type}-${value}${unit}`,
-          cssRules: Array.isArray(property)
-            ? (property as string[])
-            : (this.toKebabCase(String(property)) as string),
-          value: processedValue,
-          prefix
-        }
-      }
-      // if (Array.isArray(properties)) console.log(properties)
+		if (properties) {
+			if (typeof properties === 'object' && 'property' in properties && 'value' in properties) {
+				const property = properties.property
+				const template = properties.value
+				const processedValue = template
+					? template.replace(/\{0}/g, finalValue).replace(/\{1}/g, secondValue || '')
+					: finalValue
 
-      return {
-        className: `${type}-${value}${unit}`,
-        cssRules: Array.isArray(properties)
-          ? (properties as string[])
-          : (this.toKebabCase(String(properties)) as string),
-        value: finalValue,
-        prefix
-      }
-    }
+				return {
+					className: `${type}-${value}${unit}`,
+					cssRules: Array.isArray(property)
+						? (property as string[])
+						: (this.toKebabCase(String(property)) as string),
+					value: processedValue,
+					prefix
+				}
+			}
+			// if (Array.isArray(properties)) console.log(properties)
 
-    return null
-  }
+			return {
+				className: `${type}-${value}${unit}`,
+				cssRules: Array.isArray(properties)
+					? (properties as string[])
+					: (this.toKebabCase(String(properties)) as string),
+				value: finalValue,
+				prefix
+			}
+		}
 
-  private getParentClass(className: string): CSSPropertyOrVariable[] {
-    return Object.keys(this.classes).filter((cssProperty) =>
-      Object.prototype.hasOwnProperty.call(
-        this.classes[cssProperty as CSSPropertyOrVariable],
-        className
-      )
-    ) as CSSPropertyOrVariable[]
-  }
+		return null
+	}
 
-  private processCustomClass(prefix: string | undefined, className: string): ProcessedStyle | null {
-    const properties = this.getParentClass(className)
-    if (properties.length > 0) {
-      const rules = properties
-        .map((prop) => {
-          const classObj = this.classes[prop]
-          return classObj ? `${this.toKebabCase(String(prop))}: ${classObj[className]}` : ''
-        })
-        .filter(Boolean)
-        .join('; ')
+	private getParentClass(className: string): CSSPropertyOrVariable[] {
+		return Object.keys(this.classes).filter(cssProperty =>
+			Object.prototype.hasOwnProperty.call(
+				this.classes[cssProperty as CSSPropertyOrVariable],
+				className
+			)
+		) as CSSPropertyOrVariable[]
+	}
 
-      return {
-        className: this.escapeCSSSelector(className),
-        cssRules: rules,
-        value: null,
-        prefix
-      }
-    }
+	private processCustomClass(prefix: string | undefined, className: string): ProcessedStyle | null {
+		const properties = this.getParentClass(className)
+		if (properties.length > 0) {
+			const rules = properties
+				.map(prop => {
+					const classObj = this.classes[prop]
+					return classObj ? `${this.toKebabCase(String(prop))}: ${classObj[className]}` : ''
+				})
+				.filter(Boolean)
+				.join('; ')
 
-    return null
-  }
+			return {
+				className: this.escapeCSSSelector(className),
+				cssRules: rules,
+				value: null,
+				prefix
+			}
+		}
 
-  private addStyle(
-    className: string,
-    cssRules: string | string[],
-    value?: string | null,
-    prefix?: string | null
-  ): void {
-    const key = prefix ? `${prefix}\\:${className}:${prefix}` : className
-    if (!this.styleMap.has(key)) {
-      this.styleMap.set(key, new Set())
-    }
+		return null
+	}
 
-    const styleSet = this.styleMap.get(key)!
+	private addStyle(
+		className: string,
+		cssRules: string | string[],
+		value?: string | null,
+		prefix?: string | null
+	): void {
+		const key = prefix ? `${prefix}\\:${className}:${prefix}` : className
 
-    if (Array.isArray(cssRules)) {
-      const combinedRule = cssRules
-        .map((prop: string) =>
-          value ? `${this.toKebabCase(prop)}: ${value}` : this.toKebabCase(prop)
-        )
-        .join('; ')
-      styleSet.add(combinedRule)
-    } else {
-      styleSet.add(value ? `${cssRules}: ${value}` : cssRules)
-    }
-  }
+		if (!this.styleMap.has(key)) {
+			this.styleMap.set(key, new Set())
+		}
 
-  private processAlias(className: string): ProcessedStyle | null {
-    const alias = this.aliases[className]
-    if (!alias) return null
+		const styleSet = this.styleMap.get(key)!
 
-    const aliasClasses = alias.split(' ')
-    const combinedRules: string[] = []
+		if (Array.isArray(cssRules)) {
+			const combinedRule = cssRules
+				.map((prop: string) =>
+					value ? `${this.toKebabCase(prop)}: ${value}` : this.toKebabCase(prop)
+				)
+				.join('; ')
+			styleSet.add(combinedRule)
+		} else {
+			styleSet.add(value ? `${cssRules}: ${value}` : cssRules)
+		}
+	}
 
-    aliasClasses.forEach((aliasClass) => {
-      const parsed = this.parseClassName(aliasClass)
-      if (!parsed) return
+	private processAlias(className: string): ProcessedStyle | null {
+		const alias = this.aliases[className]
+		if (!alias) return null
 
-      const [prefix, type, value, unit, secValue, secUnit] = parsed
-      const result = this.processShorthand(type, value!, unit, prefix, secValue, secUnit)
+		const aliasClasses = alias.split(' ')
+		const combinedRules: string[] = []
 
-      if (result) {
-        const value = result.value !== null ? `: ${result.value}` : ''
-        if (Array.isArray(result.cssRules)) {
-          result.cssRules.forEach((rule) => {
-            combinedRules.push(`${this.toKebabCase(rule)}${value}`)
-          })
-        } else {
-          combinedRules.push(`${result.cssRules}${value}`)
-        }
-      }
-    })
+		aliasClasses.forEach(aliasClass => {
+			const parsed = this.parseClassName(aliasClass)
+			if (!parsed) return
 
-    return {
-      className,
-      cssRules: combinedRules.join('; '),
-      value: null,
-      prefix: undefined
-    }
-  }
+			const [prefix, type, value, unit, secValue, secUnit] = parsed
+			const result = this.processShorthand(type, value!, unit, prefix, secValue, secUnit)
 
-  private generateMediaQuery(
-    breakpoint: Breakpoint,
-    className: string,
-    rules: string
-  ): MediaQueryRule {
-    const { name } = breakpoint
-    return {
-      mediaKey: `@media-${name}`,
-      ruleSet: `.${name}\\:${className} { ${rules} }`
-    }
-  }
+			if (result) {
+				const value = result.value !== null ? `: ${result.value}` : ''
+				if (Array.isArray(result.cssRules)) {
+					result.cssRules.forEach(rule => {
+						combinedRules.push(`${this.toKebabCase(rule)}${value}`)
+					})
+				} else {
+					combinedRules.push(`${result.cssRules}${value}`)
+				}
+			}
+		})
 
-  public processClassNames(classNames: string): void {
-    classNames.split(/\s+/).forEach((className) => {
-      if (!className) return
+		return {
+			className,
+			cssRules: combinedRules.join('; '),
+			value: null,
+			prefix: undefined
+		}
+	}
 
-      const aliasResult = this.processAlias(className)
-      if (aliasResult) {
-        const { className: aliasClassName, cssRules } = aliasResult
-        this.addStyle(aliasClassName, cssRules, null, undefined)
-        return
-      }
+	public processClassNames(classNames: string): void {
+		classNames.split(/\s+/).forEach(className => {
+			if (!className) return
 
-      const [rprefix, rtype] = className.split(':')
-      const getType = rtype || rprefix
-      const getPrefix = rtype ? rprefix : undefined
+			const aliasResult = this.processAlias(className)
+			if (aliasResult) {
+				const { className: aliasClassName, cssRules } = aliasResult
+				this.addStyle(aliasClassName, cssRules, null, undefined)
+				return
+			}
 
-      const breakpoint = this.breakpoints.find((bp) => bp.name === getPrefix)
+			const [rprefix, rtype] = className.split(':')
+			const getType = rtype || rprefix
+			const getPrefix = rtype ? rprefix : undefined
 
-      const shouldClasses = this.processCustomClass(getPrefix, getType)
+			const breakpoint = this.breakpoints.find(bp => bp.name === getPrefix)
 
-      if (shouldClasses) {
-        const { className, cssRules, prefix } = shouldClasses
+			const shouldClasses = this.processCustomClass(getPrefix, getType)
 
-        if (breakpoint) {
-          const { mediaKey, ruleSet } = this.generateMediaQuery(
-            breakpoint,
-            className,
-            cssRules as string
-          )
-          this.addStyle(mediaKey, ruleSet, null, null)
-        } else {
-          this.addStyle(className, cssRules, null, prefix)
-        }
-        return
-      }
+			if (shouldClasses) {
+				const { className, cssRules, prefix } = shouldClasses
 
-      const parsed = this.parseClassName(className)
-      if (!parsed) return
+				if (breakpoint) {
+					const { mediaKey, ruleSet } = this.generateMediaQuery(
+						breakpoint,
+						className,
+						cssRules as string
+					)
+					this.addStyle(mediaKey, ruleSet, null, null)
+				} else {
+					this.addStyle(className, cssRules, null, prefix)
+				}
+				return
+			}
 
-      const [prefix, type, value, unit, secValue, secUnit] = parsed
-      const result = this.processShorthand(type, value!, unit, prefix, secValue, secUnit)
+			const parsed = this.parseClassName(className)
+			if (!parsed) return
 
-      if (result) {
-        const { className, cssRules, value: ruleValue, prefix: rulePrefix } = result
-        const processedClass = this.escapeCSSSelector(className)
-        if (breakpoint) {
-          const rules = Array.isArray(cssRules)
-            ? cssRules.map((rule) => `${this.toKebabCase(rule)}: ${ruleValue}`).join('; ')
-            : `${cssRules}: ${ruleValue}`
+			const [prefix, type, value, unit, secValue, secUnit] = parsed
+			const result = this.processShorthand(type, value!, unit, prefix, secValue, secUnit)
 
-          const { mediaKey, ruleSet } = this.generateMediaQuery(breakpoint, processedClass, rules)
-          this.addStyle(mediaKey, ruleSet, null, null)
-        } else {
-          this.addStyle(processedClass, cssRules, ruleValue, rulePrefix)
-        }
-      }
-    })
-  }
+			if (result) {
+				const { className, cssRules, value: ruleValue, prefix: rulePrefix } = result
+				const processedClass = this.escapeCSSSelector(className)
+				if (breakpoint) {
+					const rules = Array.isArray(cssRules)
+						? cssRules.map(rule => `${this.toKebabCase(rule)}: ${ruleValue}`).join('; ')
+						: `${cssRules}: ${ruleValue}`
 
-  generateStylesheet() {
-    this.processReservedClasses()
-    let stylesheet = ''
-    const mediaQueries = new Map()
+					const { mediaKey, ruleSet } = this.generateMediaQuery(breakpoint, processedClass, rules)
+					this.addStyle(mediaKey, ruleSet, null, null)
+				} else {
+					this.addStyle(processedClass, cssRules, ruleValue, rulePrefix)
+				}
+			}
+		})
+	}
 
-    this.styleMap.forEach((rules, className) => {
-      if (className.startsWith('@media-')) {
-        const breakpointName = className.split('-')[1]
-        const breakpoint = this.breakpoints.find((bp) => bp.name === breakpointName)
+	private initializeApplyStyles() {
+		this.processApplyObject(this.apply)
+	}
 
-        if (breakpoint) {
-          let mediaQuery = ''
-          if (breakpoint.min !== undefined && breakpoint.max !== undefined) {
-            mediaQuery = `(min-width: ${breakpoint.min}px) and (max-width: ${breakpoint.max}px)`
-          } else if (breakpoint.min !== undefined) {
-            mediaQuery = `(min-width: ${breakpoint.min}px)`
-          } else if (breakpoint.max !== undefined) {
-            mediaQuery = `(max-width: ${breakpoint.max}px)`
-          }
+	private processApplyObject(styles: Record<string, StyleValue>, parentSelector: string = '') {
+		Object.entries(styles).forEach(([selector, value]) => {
+			if (typeof value === 'string') {
+				this.processApplyStyles(selector, value, parentSelector)
+			} else if (typeof value === 'object') {
+				const fullSelector = this.combineSelectors(parentSelector, selector)
+				Object.entries(value).forEach(([nestedSelector, nestedValue]) => {
+					if (typeof nestedValue === 'string') {
+						const finalSelector =
+							nestedSelector === ''
+								? fullSelector
+								: this.combineSelectors(fullSelector, nestedSelector)
 
-          if (!mediaQueries.has(mediaQuery)) {
-            mediaQueries.set(mediaQuery, new Set())
-          }
-          rules.forEach((rule) => {
-            mediaQueries.get(mediaQuery).add(rule)
-          })
-        }
-      } else {
-        const styles = Array.from(rules).join('; ')
+						this.processApplyStyles(finalSelector, nestedValue, '')
+					}
+				})
+			}
+		})
+	}
 
-        stylesheet += `.${className} { ${styles}; }\n`
-      }
-    })
+	private combineSelectors(parent: string, child: string): string {
+		if (!parent) return child
+		if (child.includes('&')) {
+			return child.replace(/&/g, parent)
+		}
+		if (parent.startsWith('@')) {
+			return parent
+		}
+		return `${parent} ${child}`
+	}
 
-    mediaQueries.forEach((rules, query) => {
-      stylesheet += `@media ${query} {\n`
-      rules.forEach((rule: string) => {
-        stylesheet += `  ${rule}\n`
-      })
-      stylesheet += '}\n'
-    })
+	private processApplyStyles(selector: string, classNames: string, parentSelector: string = '') {
+		const fullSelector = parentSelector ? this.combineSelectors(parentSelector, selector) : selector
+		const processedStyles = new Set<string>()
 
-    return stylesheet
-  }
+		classNames.split(/\s+/).forEach(className => {
+			if (!className) return
+
+			const parsed = this.parseClassName(className)
+			if (!parsed) return
+
+			const [, type, value, unit, secValue, secUnit] = parsed
+			const result = this.processShorthand(type, value!, unit, undefined, secValue, secUnit)
+
+			if (result) {
+				const { cssRules, value: ruleValue } = result
+				// console.log(ruleValue)
+				const finalValue = ruleValue !== null ? `: ${ruleValue}` : ''
+				if (Array.isArray(cssRules)) {
+					cssRules.forEach(rule => {
+						processedStyles.add(`${this.toKebabCase(rule)}${finalValue}`)
+					})
+				} else {
+					processedStyles.add(`${cssRules}${finalValue}`)
+				}
+			}
+		})
+
+		if (processedStyles.size > 0) {
+			const styleRule = Array.from(processedStyles).join('; ')
+			if (selector.startsWith('@media')) {
+				if (!this.styleMap.has(selector)) {
+					this.styleMap.set(selector, new Set())
+				}
+				this.styleMap.get(selector)!.add(`${parentSelector} { ${styleRule} }`)
+			} else {
+				this.addStyle(fullSelector, styleRule, null, null)
+			}
+		}
+	}
+
+	private generateMediaQuery(
+		breakpoint: Breakpoint,
+		className: string,
+		rules: string
+	): MediaQueryRule {
+		const { name, min, max } = breakpoint
+		let mediaQuery = ''
+
+		if (min !== undefined && max !== undefined) {
+			mediaQuery = `(min-width: ${min}px) and (max-width: ${max}px)`
+		} else if (min !== undefined) {
+			mediaQuery = `(min-width: ${min}px)`
+		} else if (max !== undefined) {
+			mediaQuery = `(max-width: ${max}px)`
+		}
+
+		return {
+			mediaKey: `@media ${mediaQuery}`,
+			ruleSet: `.${name}\\:${className} { ${rules} }`
+		}
+	}
+
+	generateStylesheet() {
+		this.processReservedClasses()
+		let stylesheet = ''
+		const mediaQueries = new Map()
+
+		this.styleMap.forEach((rules, selector) => {
+			if (selector.startsWith('@media')) {
+				const mediaQuery = selector.startsWith('@media ')
+					? selector
+					: selector.replace('@media-', '@media ')
+				if (!mediaQueries.has(mediaQuery)) {
+					mediaQueries.set(mediaQuery, new Set())
+				}
+				rules.forEach(rule => {
+					mediaQueries.get(mediaQuery).add(rule)
+				})
+			} else {
+				const styles = Array.from(rules).join('; ')
+				const [type, prefix] = selector.split(':')
+				if (this.apply[selector] || this.apply[type]) {
+					stylesheet += `${selector} { ${styles}; }\n`
+				} else {
+					stylesheet += `.${selector} { ${styles}; }\n`
+				}
+			}
+		})
+
+		mediaQueries.forEach((rules, query) => {
+			stylesheet += `${query} {\n`
+			rules.forEach((rule: string) => {
+				stylesheet += `  ${rule}\n`
+			})
+			stylesheet += '}\n'
+		})
+
+		return stylesheet
+	}
 }
