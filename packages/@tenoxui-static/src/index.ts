@@ -524,3 +524,5 @@ export class TenoxUI {
     return stylesheet
   }
 }
+
+export default { TenoxUI }
