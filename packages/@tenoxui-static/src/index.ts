@@ -69,12 +69,6 @@ export class TenoxUI {
     this.initializeApplyStyles()
   }
 
-  processReservedClasses() {
-    this.reserveClass.forEach((className) => {
-      this.processClassNames(className)
-    })
-  }
-
   toCamelCase(str: string): string {
     return str.replace(/-([a-z])/g, (g) => g[1].toUpperCase())
   }
@@ -336,10 +330,9 @@ export class TenoxUI {
     }
   }
 
-  public processClassNames(classNames: string): void {
-    classNames.split(/\s+/).forEach((className) => {
+  public processClassNames(classNames: string[]): void {
+    classNames.forEach((className) => {
       if (!className) return
-
       const aliasResult = this.processAlias(className)
       if (aliasResult) {
         const { className: aliasClassName, cssRules } = aliasResult
@@ -350,14 +343,11 @@ export class TenoxUI {
       const [rprefix, rtype] = className.split(':')
       const getType = rtype || rprefix
       const getPrefix = rtype ? rprefix : undefined
-
       const breakpoint = this.breakpoints.find((bp) => bp.name === getPrefix)
-
       const shouldClasses = this.processCustomClass(getPrefix, getType)
 
       if (shouldClasses) {
         const { className, cssRules, prefix } = shouldClasses
-
         if (breakpoint) {
           const { mediaKey, ruleSet } = this.generateMediaQuery(
             breakpoint,
@@ -373,7 +363,6 @@ export class TenoxUI {
 
       const parsed = this.parseClassName(className)
       if (!parsed) return
-
       const [prefix, type, value, unit, secValue, secUnit] = parsed
       const result = this.processShorthand(type, value!, unit, prefix, secValue, secUnit)
 
@@ -384,13 +373,21 @@ export class TenoxUI {
           const rules = Array.isArray(cssRules)
             ? cssRules.map((rule) => `${this.toKebabCase(rule)}: ${ruleValue}`).join('; ')
             : `${cssRules}: ${ruleValue}`
-
           const { mediaKey, ruleSet } = this.generateMediaQuery(breakpoint, processedClass, rules)
           this.addStyle(mediaKey, ruleSet, null, null)
         } else {
           this.addStyle(processedClass, cssRules, ruleValue, rulePrefix)
         }
       }
+    })
+  }
+
+  processReservedClasses() {
+    this.reserveClass.forEach((className) => {
+      const classArray = Array.isArray(className)
+        ? className
+        : className.split(/\s+/).filter(Boolean)
+      this.processClassNames(classArray)
     })
   }
 
