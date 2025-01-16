@@ -162,6 +162,45 @@ describe('TenoxUI', () => {
     })
   })
 
+  describe('Apply direct selector', () => {
+    it('should process reserved classes on initialization', () => {
+      const params: TenoxUIParams = {
+        property: {
+          bg: 'backgroundColor'
+        },
+        values: {
+          primary: '#ccf654'
+        },
+        apply: {
+          ':root': '[color-scheme]-[light_dark] [--dark_btn]-blue',
+          body: 'bg-red',
+          'div.tx:hover': 'bg-blue',
+          '.my-class': {
+            '': 'bg-red',
+            '&:hover': 'bg-blue'
+          },
+          '@media (prefers-color-scheme: dark)': {
+            ':root': '[--red]-#f00 [color-scheme]-dark [--dark_btn]-blue',
+            '.my-second-cls': 'bg-yellow',
+            '.my-third-cls': 'bg-primary'
+          }
+        }
+      }
+
+      tenoxui = new TenoxUI(params)
+      const stylesheet = tenoxui.generateStylesheet()
+      // console.log(stylesheet)
+      expect(stylesheet).toContain(':root { color-scheme: light dark; --dark_btn: blue; }')
+      expect(stylesheet).toContain('body { background-color: red; }')
+      expect(stylesheet).toContain('.my-class { background-color: red; }')
+      expect(stylesheet).toContain('.my-class:hover { background-color: blue; }')
+      expect(stylesheet).toContain(`@media (prefers-color-scheme: dark) {
+ :root { --red: #f00; color-scheme: dark; --dark_btn: blue }
+ .my-second-cls { background-color: yellow }
+ .my-third-cls { background-color: #ccf654 }
+}`)
+    })
+  })
   describe('Reserved Classes', () => {
     it('should process reserved classes on initialization', () => {
       const params: TenoxUIParams = {
@@ -196,7 +235,7 @@ describe('TenoxUI', () => {
       }
       tenoxui = new TenoxUI(params)
       const stylesheet = tenoxui.generateStylesheet()
-      console.log(stylesheet)
+      // console.log(stylesheet)
       expect(stylesheet).toContain('.bg-primary { background-color: #ccf654; }')
       expect(stylesheet).toContain('.ls--0\\.015em { letter-spacing: -0.015em; }')
       expect(stylesheet).toContain(

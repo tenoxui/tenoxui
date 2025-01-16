@@ -4,9 +4,13 @@ import type {
   Aliases,
   Classes,
   Breakpoint,
-  // GetCSSProperty,
   CSSPropertyOrVariable
 } from '@tenoxui/types'
+
+type StyleValue = string | NestedStyles
+type NestedStyles = {
+  [selector: string]: StyleValue
+}
 
 export interface TenoxUIParams {
   property: Property
@@ -15,6 +19,7 @@ export interface TenoxUIParams {
   aliases: Aliases
   breakpoints: Breakpoint[]
   reserveClass: string[]
+  apply?: Record<string, StyleValue>
 }
 
 type ProcessedStyle = {
@@ -37,6 +42,7 @@ export class TenoxUI {
   private breakpoints: Breakpoint[]
   private reserveClass: string[]
   private styleMap: Map<string, Set<string>>
+  private apply: Record<string, StyleValue>
 
   constructor({
     property = {},
@@ -44,7 +50,8 @@ export class TenoxUI {
     classes = {},
     aliases = {},
     breakpoints = [],
-    reserveClass = []
+    reserveClass = [],
+    apply = {}
   }: Partial<TenoxUIParams> = {}) {
     this.property = property
     this.values = values
@@ -53,10 +60,13 @@ export class TenoxUI {
     this.breakpoints = breakpoints
     this.reserveClass = reserveClass
     this.styleMap = new Map()
+    this.apply = apply
 
     if (this.reserveClass.length > 0) {
       this.processReservedClasses()
     }
+
+    this.initializeApplyStyles()
   }
 
   processReservedClasses() {
@@ -70,20 +80,16 @@ export class TenoxUI {
   }
 
   toKebabCase(str: string): string {
-    // Check if string exactly matches a vendor prefix pattern
     if (/^(webkit|moz|ms|o)[A-Z]/.test(str)) {
       const match = str.match(/^(webkit|moz|ms|o)/)
-      // This check is not strictly necessary due to the previous test,
-      // but TypeScript needs it for type safety
       if (match) {
         const prefix = match[0]
-        return `-${prefix}-${str
+        return `-${prefix}${str
           .slice(prefix.length)
           .replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)}`
       }
     }
 
-    // Regular camelCase to kebab-case conversion
     return str.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)
   }
 
@@ -119,6 +125,28 @@ export class TenoxUI {
 
     const [, prefix, type, value, unit, secValue, secUnit] = match
     return [prefix, type, value, unit, secValue, secUnit]
+  }
+
+  private generateMediaQuery(
+    breakpoint: Breakpoint,
+    className: string,
+    rules: string
+  ): MediaQueryRule {
+    const { name, min, max } = breakpoint
+    let mediaQuery = ''
+
+    if (min !== undefined && max !== undefined) {
+      mediaQuery = `(min-width: ${min}px) and (max-width: ${max}px)`
+    } else if (min !== undefined) {
+      mediaQuery = `(min-width: ${min}px)`
+    } else if (max !== undefined) {
+      mediaQuery = `(max-width: ${max}px)`
+    }
+
+    return {
+      mediaKey: `@media ${mediaQuery}`,
+      ruleSet: `.${name}\\:${className} { ${rules} }`
+    }
   }
 
   private processValue(type: string, value?: string, unit?: string): string {
@@ -255,6 +283,7 @@ export class TenoxUI {
     prefix?: string | null
   ): void {
     const key = prefix ? `${prefix}\\:${className}:${prefix}` : className
+
     if (!this.styleMap.has(key)) {
       this.styleMap.set(key, new Set())
     }
@@ -304,18 +333,6 @@ export class TenoxUI {
       cssRules: combinedRules.join('; '),
       value: null,
       prefix: undefined
-    }
-  }
-
-  private generateMediaQuery(
-    breakpoint: Breakpoint,
-    className: string,
-    rules: string
-  ): MediaQueryRule {
-    const { name } = breakpoint
-    return {
-      mediaKey: `@media-${name}`,
-      ruleSet: `.${name}\\:${className} { ${rules} }`
     }
   }
 
@@ -377,44 +394,129 @@ export class TenoxUI {
     })
   }
 
+  private initializeApplyStyles() {
+    this.processApplyObject(this.apply)
+  }
+
+  private processApplyObject(styles: Record<string, StyleValue>, parentSelector: string = '') {
+    Object.entries(styles).forEach(([selector, value]) => {
+      if (typeof value === 'string') {
+        this.processApplyStyles(selector, value, parentSelector)
+      } else if (typeof value === 'object') {
+        const fullSelector = this.combineSelectors(parentSelector, selector)
+        if (selector.startsWith('@media')) {
+          // For media queries, pass the selector as parent
+          Object.entries(value).forEach(([nestedSelector, nestedValue]) => {
+            if (typeof nestedValue === 'string') {
+              this.processApplyStyles(nestedSelector, nestedValue, selector)
+            }
+          })
+        } else {
+          Object.entries(value).forEach(([nestedSelector, nestedValue]) => {
+            if (typeof nestedValue === 'string') {
+              const finalSelector =
+                nestedSelector === ''
+                  ? fullSelector
+                  : this.combineSelectors(fullSelector, nestedSelector)
+              this.processApplyStyles(finalSelector, nestedValue, '')
+            }
+          })
+        }
+      }
+    })
+  }
+
+  private combineSelectors(parent: string, child: string): string {
+    if (!parent) return child
+    if (child.includes('&')) {
+      return child.replace(/&/g, parent)
+    }
+    if (parent.startsWith('@')) {
+      return parent
+    }
+    return `${parent} ${child}`
+  }
+
+  private processApplyStyles(selector: string, classNames: string, parentSelector: string = '') {
+    const isMediaQuery = selector.startsWith('@media') || parentSelector.startsWith('@media')
+    const mediaSelector = isMediaQuery
+      ? selector.startsWith('@media')
+        ? selector
+        : parentSelector
+      : ''
+    const actualSelector = isMediaQuery
+      ? selector.startsWith('@media')
+        ? parentSelector
+        : selector
+      : selector
+    const fullSelector =
+      !isMediaQuery && parentSelector
+        ? this.combineSelectors(parentSelector, selector)
+        : actualSelector
+
+    const processedStyles = new Set<string>()
+    classNames.split(/\s+/).forEach((className) => {
+      if (!className) return
+      const parsed = this.parseClassName(className)
+      if (!parsed) return
+
+      const [, type, value, unit, secValue, secUnit] = parsed
+      const result = this.processShorthand(type, value!, unit, undefined, secValue, secUnit)
+      if (result) {
+        const { cssRules, value: ruleValue } = result
+        const finalValue = ruleValue !== null ? `: ${ruleValue}` : ''
+        if (Array.isArray(cssRules)) {
+          cssRules.forEach((rule) => {
+            processedStyles.add(`${this.toKebabCase(rule)}${finalValue}`)
+          })
+        } else {
+          processedStyles.add(`${cssRules}${finalValue}`)
+        }
+      }
+    })
+
+    if (processedStyles.size > 0) {
+      const styleRule = Array.from(processedStyles).join('; ')
+      if (mediaSelector) {
+        if (!this.styleMap.has(mediaSelector)) {
+          this.styleMap.set(mediaSelector, new Set())
+        }
+        this.styleMap.get(mediaSelector)!.add(`${fullSelector} { ${styleRule} }`)
+      } else {
+        this.addStyle(fullSelector, styleRule, null, null)
+      }
+    }
+  }
+
   generateStylesheet() {
     this.processReservedClasses()
     let stylesheet = ''
     const mediaQueries = new Map()
 
-    this.styleMap.forEach((rules, className) => {
-      if (className.startsWith('@media-')) {
-        const breakpointName = className.split('-')[1]
-        const breakpoint = this.breakpoints.find((bp) => bp.name === breakpointName)
-
-        if (breakpoint) {
-          let mediaQuery = ''
-          if (breakpoint.min !== undefined && breakpoint.max !== undefined) {
-            mediaQuery = `(min-width: ${breakpoint.min}px) and (max-width: ${breakpoint.max}px)`
-          } else if (breakpoint.min !== undefined) {
-            mediaQuery = `(min-width: ${breakpoint.min}px)`
-          } else if (breakpoint.max !== undefined) {
-            mediaQuery = `(max-width: ${breakpoint.max}px)`
-          }
-
-          if (!mediaQueries.has(mediaQuery)) {
-            mediaQueries.set(mediaQuery, new Set())
-          }
-          rules.forEach((rule) => {
-            mediaQueries.get(mediaQuery).add(rule)
-          })
+    this.styleMap.forEach((rules, selector) => {
+      if (selector.startsWith('@media')) {
+        const mediaQuery = selector
+        if (!mediaQueries.has(mediaQuery)) {
+          mediaQueries.set(mediaQuery, new Set())
         }
+        rules.forEach((rule) => {
+          mediaQueries.get(mediaQuery).add(rule)
+        })
       } else {
         const styles = Array.from(rules).join('; ')
-
-        stylesheet += `.${className} { ${styles}; }\n`
+        const [type] = selector.split(':')
+        if (this.apply[selector] || this.apply[type]) {
+          stylesheet += `${selector} { ${styles}; }\n`
+        } else {
+          stylesheet += `.${selector} { ${styles}; }\n`
+        }
       }
     })
 
     mediaQueries.forEach((rules, query) => {
-      stylesheet += `@media ${query} {\n`
+      stylesheet += `${query} {\n`
       rules.forEach((rule: string) => {
-        stylesheet += `  ${rule}\n`
+        stylesheet += ` ${rule}\n`
       })
       stylesheet += '}\n'
     })
@@ -422,3 +524,5 @@ export class TenoxUI {
     return stylesheet
   }
 }
+
+export default { TenoxUI }
