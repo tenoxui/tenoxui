@@ -13,12 +13,12 @@ type NestedStyles = {
 }
 
 export interface TenoxUIParams {
-  property: Property
-  values: Values
-  classes: Classes
-  aliases: Aliases
-  breakpoints: Breakpoint[]
-  reserveClass: string[]
+  property?: Property
+  values?: Values
+  classes?: Classes
+  aliases?: Aliases
+  breakpoints?: Breakpoint[]
+  reserveClass?: string[]
   apply?: Record<string, StyleValue>
 }
 
@@ -52,7 +52,7 @@ export class TenoxUI {
     breakpoints = [],
     reserveClass = [],
     apply = {}
-  }: Partial<TenoxUIParams> = {}) {
+  }: TenoxUIParams = {}) {
     this.property = property
     this.values = values
     this.classes = classes
@@ -66,14 +66,12 @@ export class TenoxUI {
       this.processReservedClasses()
     }
 
-    this.initializeApplyStyles()
+    if (Object.keys(this.apply).length > 0) {
+      this.initializeApplyStyles()
+    }
   }
-
-  toCamelCase(str: string): string {
-    return str.replace(/-([a-z])/g, (g) => g[1].toUpperCase())
-  }
-
-  toKebabCase(str: string): string {
+  // Replace camelCase css properties into kebab-case css properties
+  private toKebabCase(str: string): string {
     if (/^(webkit|moz|ms|o)[A-Z]/.test(str)) {
       const match = str.match(/^(webkit|moz|ms|o)/)
       if (match) {
@@ -87,21 +85,25 @@ export class TenoxUI {
     return str.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)
   }
 
-  escapeCSSSelector(str: string): string {
+  // adding `\` for some expression in the css selector
+  private escapeCSSSelector(str: string): string {
     return str.replace(/([ #.;?%&,@+*~'"!^$[\]()=>|])/g, '\\$1')
   }
 
+  // generate regex pattern for class name parsing
   private generateClassNameRegEx(): RegExp {
     const typePrefixes = Object.keys(this.property)
       .sort((a, b) => b.length - a.length)
       .join('|')
 
     return new RegExp(
-      `(?:([a-zA-Z0-9-]+):)?(${typePrefixes}|\\[[^\\]]+\\])-(-?(?:\\d+(?:\\.\\d+)?)|(?:[a-zA-Z0-9_]+(?:-[a-zA-Z0-9_]+)*(?:-[a-zA-Z0-9_]+)*)|(?:#[0-9a-fA-F]+)|(?:\\[[^\\]]+\\])|(?:\\$[^\\s]+))([a-zA-Z%]*)(?:\\/(-?(?:\\d+(?:\\.\\d+)?)|(?:[a-zA-Z0-9_]+(?:-[a-zA-Z0-9_]+)*(?:-[a-zA-Z0-9_]+)*)|(?:#[0-9a-fA-F]+)|(?:\\[[^\\]]+\\])|(?:\\$[^\\s]+))([a-zA-Z%]*))?`
+      // you dont have to understand this, me neither
+      `(?:([a-zA-Z0-9-]+|\\[[^\\]]+\\]|\\([^)]+\\)|\\{[^}]+\\}):)?(${typePrefixes}|\\[[^\\]]+\\])-(-?(?:\\d+(?:\\.\\d+)?)|(?:[a-zA-Z0-9_]+(?:-[a-zA-Z0-9_]+)*(?:-[a-zA-Z0-9_]+)*)|(?:#[0-9a-fA-F]+)|(?:\\[[^\\]]+\\])|(?:\\$[^\\s]+))([a-zA-Z%]*)(?:\\/(-?(?:\\d+(?:\\.\\d+)?)|(?:[a-zA-Z0-9_]+(?:-[a-zA-Z0-9_]+)*(?:-[a-zA-Z0-9_]+)*)|(?:#[0-9a-fA-F]+)|(?:\\[[^\\]]+\\])|(?:\\$[^\\s]+))([a-zA-Z%]*))?`
     )
   }
 
-  private parseClassName(
+  // parse any class names and divide them into parts
+  public parseClassName(
     className: string
   ):
     | [
@@ -118,7 +120,19 @@ export class TenoxUI {
     if (!match) return null
 
     const [, prefix, type, value, unit, secValue, secUnit] = match
-    return [prefix, type, value, unit, secValue, secUnit]
+
+    // overall, it will parse :
+    // {prefix}:{type}-{value}{unit?}
+
+    return [
+      prefix, //? as its name. e.g. hover, md, focus
+      type, //? compute css properties or variables that will styled. e.g. [color]-, [--red,background]-, bg-,
+      value, //? parsed css value from the class name. e.g. red, space-between, 64, 100
+      unit, //? is optional if the value is numbers. e.g. px, rem, %
+      // both secValue & secUnit isn't implemented yet
+      secValue,
+      secUnit
+    ]
   }
 
   private generateMediaQuery(
@@ -143,32 +157,52 @@ export class TenoxUI {
     }
   }
 
+  // unique value parser
   private processValue(type: string, value?: string, unit?: string): string {
     if (!value) return ''
 
     const valueRegistry = this.values[value]
 
+    // replace
     const replaceWithValueRegistry = (text: string): string => {
       return text.replace(/\{([^}]+)\}/g, (match, key) => {
         const val = this.values[key]
         return typeof val === 'string' ? val : match
       })
+
+      // example:
+      // config = {
+      //   values: {
+      //     red: "255 0 0"
+      //   }
+      // }
+      //
+      // case:
+      // [background]-[rgb({red})]
+      //
+      // will parsed into:
+      // background: rgb(255 0 0)
     }
 
     if (valueRegistry) {
       return typeof valueRegistry === 'string' ? valueRegistry : valueRegistry[type] || ''
     } else if (value.startsWith('$')) {
-      return `var(--${value.slice(1)})`
+      return `var(--${value.slice(1)})` //? [color]-$my-color => color: var(--my-color)
     } else if (value.startsWith('[') && value.endsWith(']')) {
-      const cleanValue = value.slice(1, -1).replace(/_/g, ' ')
+      const cleanValue = value.slice(1, -1).replace(/_/g, ' ') //? replace '_' (underscore with ' ' (space)
 
+      // access value from value registry
       if (cleanValue.includes('{')) {
-        return replaceWithValueRegistry(cleanValue)
+        //? see example above
+        return replaceWithValueRegistry(cleanValue) //? [color]-[rgb({red})] => color: rgb(255 0 0)
       }
-      return cleanValue.startsWith('--') ? `var(${cleanValue})` : cleanValue
+      return cleanValue.startsWith('--')
+        ? `var(${cleanValue})` //? [color]-[--my-color] => color: var(--my-color)
+        : cleanValue //? [color]-[rgb(255_0_0)] => color: rgb(255 0 0)
     }
 
-    return value + (unit || '')
+    // or default value
+    return value + (unit || '') //? [padding]-4px => padding: 4px
   }
 
   private processShorthand(
@@ -270,32 +304,6 @@ export class TenoxUI {
     return null
   }
 
-  private addStyle(
-    className: string,
-    cssRules: string | string[],
-    value?: string | null,
-    prefix?: string | null
-  ): void {
-    const key = prefix ? `${prefix}\\:${className}:${prefix}` : className
-
-    if (!this.styleMap.has(key)) {
-      this.styleMap.set(key, new Set())
-    }
-
-    const styleSet = this.styleMap.get(key)!
-
-    if (Array.isArray(cssRules)) {
-      const combinedRule = cssRules
-        .map((prop: string) =>
-          value ? `${this.toKebabCase(prop)}: ${value}` : this.toKebabCase(prop)
-        )
-        .join('; ')
-      styleSet.add(combinedRule)
-    } else {
-      styleSet.add(value ? `${cssRules}: ${value}` : cssRules)
-    }
-  }
-
   private processAlias(className: string): ProcessedStyle | null {
     const alias = this.aliases[className]
     if (!alias) return null
@@ -382,7 +390,7 @@ export class TenoxUI {
     })
   }
 
-  processReservedClasses() {
+  private processReservedClasses() {
     this.reserveClass.forEach((className) => {
       const classArray = Array.isArray(className)
         ? className
@@ -401,8 +409,11 @@ export class TenoxUI {
         this.processApplyStyles(selector, value, parentSelector)
       } else if (typeof value === 'object') {
         const fullSelector = this.combineSelectors(parentSelector, selector)
-        if (selector.startsWith('@media')) {
-          // For media queries, pass the selector as parent
+        const ignoreQueries = ['@property', '@counter-style', '@page', '@font-face']
+        if (
+          selector.startsWith('@') &&
+          !ignoreQueries.some((query) => selector.startsWith(query))
+        ) {
           Object.entries(value).forEach(([nestedSelector, nestedValue]) => {
             if (typeof nestedValue === 'string') {
               this.processApplyStyles(nestedSelector, nestedValue, selector)
@@ -435,19 +446,23 @@ export class TenoxUI {
   }
 
   private processApplyStyles(selector: string, classNames: string, parentSelector: string = '') {
-    const isMediaQuery = selector.startsWith('@media') || parentSelector.startsWith('@media')
-    const mediaSelector = isMediaQuery
+    const uniqueQueries = ['@media', '@keyframes', '@layer', '@container']
+    const isUniqueQuery = uniqueQueries.some(
+      (query) => selector.startsWith(query) || parentSelector.startsWith(query)
+    )
+
+    const mediaSelector = isUniqueQuery
       ? selector.startsWith('@media')
         ? selector
         : parentSelector
       : ''
-    const actualSelector = isMediaQuery
+    const actualSelector = isUniqueQuery
       ? selector.startsWith('@media')
         ? parentSelector
         : selector
       : selector
     const fullSelector =
-      !isMediaQuery && parentSelector
+      !isUniqueQuery && parentSelector
         ? this.combineSelectors(parentSelector, selector)
         : actualSelector
 
@@ -485,10 +500,41 @@ export class TenoxUI {
     }
   }
 
-  generateStylesheet() {
+  public addStyle(
+    className: string,
+    cssRules: string | string[],
+    value?: string | null,
+    prefix?: string | null,
+    isClass?: boolean | null
+  ): void {
+    const key = `${isClass ? '.' : ''}${prefix ? `${prefix}\\:${className}:${prefix}` : className}`
+
+    if (!this.styleMap.has(key)) {
+      this.styleMap.set(key, new Set())
+    }
+
+    const styleSet = this.styleMap.get(key)!
+
+    if (Array.isArray(cssRules)) {
+      const combinedRule = cssRules
+        .map((prop: string) =>
+          value ? `${this.toKebabCase(prop)}: ${value}` : this.toKebabCase(prop)
+        )
+        .join('; ')
+      styleSet.add(combinedRule)
+    } else {
+      styleSet.add(value ? `${cssRules}: ${value}` : cssRules)
+    }
+  }
+
+  public getStyle() {
+    return this.styleMap
+  }
+
+  public generateStylesheet() {
     this.processReservedClasses()
-    let stylesheet = ''
     const mediaQueries = new Map()
+    let stylesheet = ''
 
     this.styleMap.forEach((rules, selector) => {
       if (selector.startsWith('@media')) {
@@ -500,12 +546,12 @@ export class TenoxUI {
           mediaQueries.get(mediaQuery).add(rule)
         })
       } else {
-        const styles = Array.from(rules).join('; ')
+        const styles = Array.from(rules).join(' ')
         const [type] = selector.split(':')
         if (this.apply[selector] || this.apply[type]) {
-          stylesheet += `${selector} { ${styles}; }\n`
+          stylesheet += `${selector} { ${styles} }\n`
         } else {
-          stylesheet += `.${selector} { ${styles}; }\n`
+          stylesheet += `.${selector} { ${styles} }\n`
         }
       }
     })
