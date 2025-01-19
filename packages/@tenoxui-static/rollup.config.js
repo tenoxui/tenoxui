@@ -6,11 +6,11 @@ import commonjs from '@rollup/plugin-commonjs'
 import terser from '@rollup/plugin-terser'
 
 const packageJson = JSON.parse(fs.readFileSync(path.resolve('package.json'), 'utf-8'))
-const name = '__tenoxui_static'
 const banner = `/*!
  * ${packageJson.name} v${packageJson.version} | ${packageJson.license} License
  * Copyright (c) 2024-present NOuSantx
  */`
+const name = '__tenoxui_static__'
 const sourcemap = true //# PROD_TRUE
 
 const config = {
