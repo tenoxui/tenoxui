@@ -466,7 +466,7 @@ export class TenoxUI {
         ? this.combineSelectors(parentSelector, selector)
         : actualSelector
 
-    const processedStyles = new Set<string>()
+    const processedStyles = new Set<string | string[]>()
     classNames.split(/\s+/).forEach((className) => {
       if (className === '') {
         processedStyles.add('null')
