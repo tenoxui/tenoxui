@@ -166,6 +166,7 @@ describe('TenoxUI Static CSS Test', () => {
       const config: TenoxUIParams = {
         property: { bg: 'backgroundColor', p: 'padding' },
         values: { primary: '#ccf654' },
+
         apply: {
           ':root': '[color-scheme]-[light_dark] [--dark_btn]-blue',
           body: 'bg-red',
@@ -234,6 +235,50 @@ describe('TenoxUI Static CSS Test', () => {
 
       expect(stylesheet).toContain("@import '...';")
       expect(stylesheet).toContain('@layer base, components, utilities;')
+    })
+    it('should apply classes from config.aliases', () => {
+      const config: TenoxUIParams = {
+        aliases: {
+          app__light: '[--neutral-50]-#fff',
+          app__dark: '[--neutral-50]-#000'
+        },
+        apply: {
+          ':root': '[color-scheme]-[light_dark] app__light',
+          '@media (prefers-color-scheme: dark)': {
+            ':root': 'app__dark'
+          }
+        }
+      }
+      tenoxui = new TenoxUI(config)
+      stylesheet = tenoxui.generateStylesheet()
+
+      expect(stylesheet).toContain(':root { color-scheme: light dark; --neutral-50: #fff }')
+      expect(stylesheet).toContain(`@media (prefers-color-scheme: dark) {
+ :root { --neutral-50: #000 }
+}`)
+    })
+    it('should apply classes from config.classes', () => {
+      const config: TenoxUIParams = {
+        classes: {
+          '--neutral-50': {
+            app__light: '#fff',
+            app__dark: '#000'
+          }
+        },
+        apply: {
+          ':root': '[color-scheme]-[light_dark] app__light',
+          '@media (prefers-color-scheme: dark)': {
+            ':root': 'app__dark'
+          }
+        }
+      }
+      tenoxui = new TenoxUI(config)
+      stylesheet = tenoxui.generateStylesheet()
+
+      expect(stylesheet).toContain(':root { color-scheme: light dark; --neutral-50: #fff }')
+      expect(stylesheet).toContain(`@media (prefers-color-scheme: dark) {
+ :root { --neutral-50: #000 }
+}`)
     })
   })
   describe('Reserved Classes', () => {

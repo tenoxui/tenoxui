@@ -258,7 +258,6 @@ export class TenoxUI {
           prefix
         }
       }
-      // if (Array.isArray(properties)) console.log(properties)
 
       return {
         className: `${type}-${value}${unit}`,
@@ -474,6 +473,18 @@ export class TenoxUI {
         return
       }
       if (!className) return
+      const aliasResult = this.processAlias(className)
+      if (aliasResult) {
+        const { cssRules } = aliasResult
+        processedStyles.add(cssRules)
+        return
+      }
+      const shouldClasses = this.processCustomClass('', className)
+      if (shouldClasses) {
+        const { cssRules } = shouldClasses
+        processedStyles.add(cssRules)
+        return
+      }
       const parsed = this.parseClassName(className)
       if (!parsed) return
 
