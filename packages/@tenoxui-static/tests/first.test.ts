@@ -96,24 +96,56 @@ describe('TenoxUI Static CSS Test', () => {
     })
   })
 
-  describe('Alias Processing', () => {
+  describe('Alias and Utility-Classes Processing', () => {
     it('should process aliases correctly', () => {
       const config: TenoxUIParams = {
         property: {
           bg: 'backgroundColor',
           p: 'padding'
         },
+        values: { primary: '#ccf654' },
         aliases: {
-          btn: 'bg-blue p-24px'
-        }
+          btn: 'bg-blue p-24px',
+          'btn-primary': 'bg-primary'
+        },
+        breakpoints: [{ name: 'max-md', max: 768 }]
       }
 
-      tenoxui = new TenoxUI(config)
-      tenoxui.processClassNames(['btn'])
+      const tenoxui = new TenoxUI(config)
+      tenoxui.processClassNames(['btn', 'hover:btn-primary', 'max-md:btn'])
 
-      stylesheet = tenoxui.generateStylesheet()
-      expect(stylesheet).toContain('background-color: blue')
-      expect(stylesheet).toContain('padding: 24px')
+      const stylesheet = tenoxui.generateStylesheet()
+
+      expect(stylesheet).toContain('.btn { background-color: blue; padding: 24px }')
+      expect(stylesheet).toContain('.hover\\:btn-primary:hover { background-color: #ccf654 }')
+      expect(stylesheet).toContain(`@media screen and (max-width: 768px) {
+ .max-md\\:btn { background-color: blue; padding: 24px }
+}`)
+    })
+    it('should process class names from classes correctly', () => {
+      const config: TenoxUIParams = {
+        classes: {
+          'background-color': {
+            btn: 'blue',
+            'btn-primary': '#ccf654'
+          },
+          padding: {
+            btn: '24px'
+          }
+        },
+        breakpoints: [{ name: 'max-md', max: 768 }]
+      }
+
+      const tenoxui = new TenoxUI(config)
+      tenoxui.processClassNames(['btn', 'hover:btn-primary', 'max-md:btn'])
+
+      const stylesheet = tenoxui.generateStylesheet()
+
+      expect(stylesheet).toContain('.btn { background-color: blue; padding: 24px }')
+      expect(stylesheet).toContain('.hover\\:btn-primary:hover { background-color: #ccf654 }')
+      expect(stylesheet).toContain(`@media screen and (max-width: 768px) {
+ .max-md\\:btn { background-color: blue; padding: 24px }
+}`)
     })
   })
 
@@ -122,20 +154,23 @@ describe('TenoxUI Static CSS Test', () => {
     it('should handle CSS variables', () => {
       const config: TenoxUIParams = {
         property: {
-          text: 'color'
+          text: 'color',
+          p: 'padding'
         },
-        values: {},
-        classes: {},
-        aliases: {},
-        breakpoints: [],
-        reserveClass: []
+        values: { primary: '#ccf654', 'my-size': '30px' }
       }
 
       tenoxui = new TenoxUI(config)
       tenoxui.processClassNames(['text-$primary'])
 
       stylesheet = tenoxui.generateStylesheet()
-      expect(stylesheet).toContain('color: var(--primary)')
+      expect(stylesheet).toContain('.text-\\$primary { color: var(--primary) }')
+      expect(tenoxui.processValue('', 'red')).toBe('red')
+      expect(tenoxui.processValue('', '[blue]')).toBe('blue')
+      expect(tenoxui.processValue('', '[rgb(255_0_0)]')).toBe('rgb(255 0 0)')
+      expect(tenoxui.processValue('', '[--color]')).toBe('var(--color)')
+      expect(tenoxui.processValue('', '[calc({my-size}_*_2)]')).toBe('calc(30px * 2)')
+      expect(tenoxui.processValue('', '24', 'px')).toBe('24px')
     })
 
     it('should handle custom values in brackets', () => {
