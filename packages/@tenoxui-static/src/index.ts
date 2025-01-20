@@ -281,7 +281,7 @@ export class TenoxUI {
     ) as CSSPropertyOrVariable[]
   }
 
-  private processCustomClass(prefix: string | undefined, className: string): ProcessedStyle | null {
+  private processCustomClass(className: string, prefix?: string): ProcessedStyle | null {
     const properties = this.getParentClass(className)
     if (properties.length > 0) {
       const rules = properties
@@ -303,7 +303,7 @@ export class TenoxUI {
     return null
   }
 
-  private processAlias(className: string): ProcessedStyle | null {
+  private processAlias(className: string, prefix: string = ''): ProcessedStyle | null {
     const alias = this.aliases[className]
     if (!alias) return null
 
@@ -333,35 +333,49 @@ export class TenoxUI {
       className,
       cssRules: combinedRules.join('; '),
       value: null,
-      prefix: undefined
+      prefix
     }
   }
 
   public processClassNames(classNames: string[]): void {
     classNames.forEach((className) => {
       if (!className) return
-      const aliasResult = this.processAlias(className)
-      if (aliasResult) {
-        const { className: aliasClassName, cssRules } = aliasResult
-        this.addStyle(aliasClassName, cssRules, null, undefined)
-        return
-      }
-
+      // process prefix and actual class name
       const [rprefix, rtype] = className.split(':')
       const getType = rtype || rprefix
       const getPrefix = rtype ? rprefix : undefined
       const breakpoint = this.breakpoints.find((bp) => bp.name === getPrefix)
-      const shouldClasses = this.processCustomClass(getPrefix, getType)
+
+      // process class name aliases
+      const aliasResult = this.processAlias(getType, getPrefix)
+      if (aliasResult) {
+        const { className: aliasClassName, cssRules } = aliasResult
+        if (breakpoint) {
+          const { mediaKey, ruleSet } = this.generateMediaQuery(
+            breakpoint,
+            aliasClassName,
+            cssRules as string
+          )
+
+          this.addStyle(mediaKey, ruleSet, null, null)
+        } else {
+          this.addStyle(aliasClassName, cssRules, null, getPrefix)
+        }
+
+        return
+      }
+
+      const shouldClasses = this.processCustomClass(getType, getPrefix)
 
       if (shouldClasses) {
         const { className, cssRules, prefix } = shouldClasses
+
         if (breakpoint) {
           const { mediaKey, ruleSet } = this.generateMediaQuery(
             breakpoint,
             className,
             cssRules as string
           )
-
           this.addStyle(mediaKey, ruleSet, null, null)
         } else {
           this.addStyle(className, cssRules, null, prefix)
@@ -479,7 +493,7 @@ export class TenoxUI {
         processedStyles.add(cssRules)
         return
       }
-      const shouldClasses = this.processCustomClass('', className)
+      const shouldClasses = this.processCustomClass(className)
       if (shouldClasses) {
         const { cssRules } = shouldClasses
         processedStyles.add(cssRules)
