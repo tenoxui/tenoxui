@@ -119,7 +119,7 @@ describe('TenoxUI Static CSS Test', () => {
       expect(stylesheet).toContain('.btn { background-color: blue; padding: 24px }')
       expect(stylesheet).toContain('.hover\\:btn-primary:hover { background-color: #ccf654 }')
       expect(stylesheet).toContain(`@media screen and (max-width: 768px) {
- .max-md\\:btn { background-color: blue; padding: 24px }
+  .max-md\\:btn { background-color: blue; padding: 24px }
 }`)
     })
     it('should process class names from classes correctly', () => {
@@ -144,7 +144,7 @@ describe('TenoxUI Static CSS Test', () => {
       expect(stylesheet).toContain('.btn { background-color: blue; padding: 24px }')
       expect(stylesheet).toContain('.hover\\:btn-primary:hover { background-color: #ccf654 }')
       expect(stylesheet).toContain(`@media screen and (max-width: 768px) {
- .max-md\\:btn { background-color: blue; padding: 24px }
+  .max-md\\:btn { background-color: blue; padding: 24px }
 }`)
     })
   })
@@ -157,7 +157,12 @@ describe('TenoxUI Static CSS Test', () => {
           text: 'color',
           p: 'padding'
         },
-        values: { primary: '#ccf654', 'my-size': '30px' }
+        values: {
+          primary: '#ccf654',
+          'my-size': '30px',
+          size: '10px',
+          p: { size: '20px' }
+        }
       }
 
       tenoxui = new TenoxUI(config)
@@ -171,6 +176,8 @@ describe('TenoxUI Static CSS Test', () => {
       expect(tenoxui.processValue('', '[--color]')).toBe('var(--color)')
       expect(tenoxui.processValue('', '[calc({my-size}_*_2)]')).toBe('calc(30px * 2)')
       expect(tenoxui.processValue('', '24', 'px')).toBe('24px')
+      expect(tenoxui.processValue('', 'size')).toBe('10px')
+      expect(tenoxui.processValue('p', 'size')).toBe('20px')
     })
 
     it('should handle custom values in brackets', () => {
@@ -226,9 +233,9 @@ describe('TenoxUI Static CSS Test', () => {
       expect(stylesheet).toContain('.my-class { background-color: red; color: blue }')
       expect(stylesheet).toContain('.my-class:hover { background-color: blue }')
       expect(stylesheet).toContain(`@media (prefers-color-scheme: dark) {
- :root { --red: #f00; color-scheme: dark; --dark_btn: blue }
- .my-second-cls { background-color: yellow }
- .my-third-cls { background-color: #ccf654 }
+  :root { --red: #f00; color-scheme: dark; --dark_btn: blue }
+  .my-second-cls { background-color: yellow }
+  .my-third-cls { background-color: #ccf654 }
 }`)
     })
     it('should process queries other than media query', () => {
@@ -289,7 +296,7 @@ describe('TenoxUI Static CSS Test', () => {
 
       expect(stylesheet).toContain(':root { color-scheme: light dark; --neutral-50: #fff }')
       expect(stylesheet).toContain(`@media (prefers-color-scheme: dark) {
- :root { --neutral-50: #000 }
+  :root { --neutral-50: #000 }
 }`)
     })
     it('should apply classes from config.classes', () => {
@@ -312,7 +319,7 @@ describe('TenoxUI Static CSS Test', () => {
 
       expect(stylesheet).toContain(':root { color-scheme: light dark; --neutral-50: #fff }')
       expect(stylesheet).toContain(`@media (prefers-color-scheme: dark) {
- :root { --neutral-50: #000 }
+  :root { --neutral-50: #000 }
 }`)
     })
   })
