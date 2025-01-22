@@ -1,6 +1,6 @@
 {
   "name": "@tenoxui/static",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "TenoxUI static-css engine for generating stylesheet",
   "author": "NOuSantx <nousantx@gmail.com>",
   "license": "MIT",
@@ -25,7 +25,7 @@
   ],
   "type": "module",
   "types": "dist/index.d.ts",
-  "main": "dist/index.esm.js",
+  "main": "dist/index.cjs",
   "module": "dist/index.esm.js",
   "browser": "dist/index.umd.js",
   "scripts": {
