@@ -34,6 +34,7 @@ type MediaQueryRule = {
   ruleSet: string
 }
 
+// constructor
 export class TenoxUI {
   private property: Property
   private values: Values
@@ -161,9 +162,7 @@ export class TenoxUI {
   private processValue(type: string, value?: string, unit?: string): string {
     if (!value) return ''
 
-    const valueRegistry = this.values[value]
-
-    // replace
+    // replace values wrapped in {} with values from this.values
     const replaceWithValueRegistry = (text: string): string => {
       return text.replace(/\{([^}]+)\}/g, (match, key) => {
         const val = this.values[key]
@@ -184,8 +183,11 @@ export class TenoxUI {
       // background: rgb(255 0 0)
     }
 
-    if (valueRegistry) {
-      return typeof valueRegistry === 'string' ? valueRegistry : valueRegistry[type] || ''
+    if (this.values[type] || this.values[value]) {
+      if (typeof this.values[type] === 'object' && this.values[type] !== null) {
+        return this.values[type][value] as string
+      }
+      return this.values[value] as string
     } else if (value.startsWith('$')) {
       return `var(--${value.slice(1)})` //? [color]-$my-color => color: var(--my-color)
     } else if (value.startsWith('[') && value.endsWith(']')) {
@@ -617,7 +619,7 @@ export class TenoxUI {
     mediaQueries.forEach((rules, query) => {
       stylesheet += `${query} {\n`
       rules.forEach((rule: string) => {
-        stylesheet += ` ${rule}\n`
+        stylesheet += `  ${rule}\n`
       })
       stylesheet += '}\n'
     })
