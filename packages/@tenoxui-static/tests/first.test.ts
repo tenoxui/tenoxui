@@ -104,19 +104,31 @@ describe('TenoxUI Static CSS Test', () => {
           p: 'padding'
         },
         values: { primary: '#ccf654' },
+        classes: {
+          'background-color': {
+            'new-secondary': '#ccf654'
+          },
+          margin: {
+            'new-secondary': '10px'
+          }
+        },
         aliases: {
           btn: 'bg-blue p-24px',
-          'btn-primary': 'bg-primary'
+          'btn-primary': 'bg-primary',
+          'btn-secondary': 'p-10px new-secondary'
         },
         breakpoints: [{ name: 'max-md', max: 768 }]
       }
 
       const tenoxui = new TenoxUI(config)
-      tenoxui.processClassNames(['btn', 'hover:btn-primary', 'max-md:btn'])
+      tenoxui.processClassNames(['btn', 'hover:btn-primary', 'max-md:btn', 'btn-secondary'])
 
       const stylesheet = tenoxui.generateStylesheet()
 
       expect(stylesheet).toContain('.btn { background-color: blue; padding: 24px }')
+      expect(stylesheet).toContain(
+        '.btn-secondary { padding: 10px; background-color: #ccf654; margin: 10px }'
+      )
       expect(stylesheet).toContain('.hover\\:btn-primary:hover { background-color: #ccf654 }')
       expect(stylesheet).toContain(`@media screen and (max-width: 768px) {
   .max-md\\:btn { background-color: blue; padding: 24px }

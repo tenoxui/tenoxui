@@ -1,207 +1,301 @@
-# TenoxUI Framework
+# TenoxUI CSS
 
-It's a CSS framework, trust me. 😉
+TenoxUI is lightweight, utility-first based CSS framework.
+
+## Features
+
+- Support **all** CSS properties - You can use all css properties directly in the element's class name. (e.g. `[background]-red`, `[-webkit-animation,animation]-1s`)
+
+- Shorthand - Adding shorthand for exact css property to simplify the usage. (e.g. `bg-red`)
+
+- Value aliases - Use value like `my-size` to store css value `calc(10rem - var(--my-size, 8rem))`. (e.g. `p-my-size`)
+
+- Define custom class - Create mass utilities with `property-based` class names
+
+- Responsive & Pseudo class - Creating responsive and `pseudo-class` like effect with `inline-style`
+
+- Extended to `inline-style`, `inline-css`, `static-css` or whatever you like!
 
 ## Overview
 
-TenoxUI makes styling as easy as pie; and who doesn't like pie? It's super easy to add styles with very minimal configuration. Let's dive in!
+### CSS by Class Names
 
-### ReactJS
+Adding CSS property or variable directly from the element's className :
 
-Here’s how you can use TenoxUI in React in just a few lines of code:
+```html
+<div class="[background]-red"></div>
+<div class="[color,--my-color]-blue"></div>
+<div class="[-webkit-animation,animation]-1s"></div>
+<div class="[--my-color]-green [color]-$my-color"></div>
+```
 
-```jsx
-import { useLayoutEffect } from 'react'
-import tenoxui from 'tenoxui'
+### Shorthand/Type Property
 
-const App = () => {
-  useLayoutEffect(() => {
-    tenoxui({
-      // shorthand: cssProperty
-      bg: 'background',
-      text: 'text'
-    })
-  }, [])
+Use shorthand for the CSS proeprties or variables :
 
-  return <h1 className="bg-green text-white">Hello World!</h1>
+```javascript
+export default {
+  property: {
+    bg: 'background',
+    text: 'color',
+    anim: ['animation', 'webkitAnimation'],
+    'my-color': '--my-color'
+  }
 }
-
-export default App
 ```
 
-That’s all it takes to use TenoxUI in your ReactJS app.
-
-### HTML
-
-Plain HTML? No problem! 🤨🙌
+And, it will looks like this :
 
 ```html
-<html>
-  <head>
-    <title>TenoxUI</title>
-    <script src="/path/to/tenoxui"></script>
-  </head>
-  <body class="bg-yellow">
-    <div class="bg-red hover:bg-blue">Hello World!</div>
-    <script>
-      tenoxui({
-        // shorthand: cssProperty
-        bg: 'background',
-        text: 'color'
-      })
-    </script>
-  </body>
-</html>
+<div class="bg-red"></div>
+<div class="text-blue"></div>
+<div class="anim-1s"></div>
+<div class="my-color-green text-$my-color"></div>
 ```
 
-Just a few classes and you’re set to go!
+## Global Configuration
 
-## Installation
+This configuration is supported by both `tenoxui` and `@tenoxui/static` packages. **For more configuration, please check out each packages documentation**.
 
-### Using NPM
+Overall, both pacakges configuration has this similar configuration :
 
-```bash
-npm i tenoxui
-```
-
-Or, use its core instead:
-
-```bash
-npm i @tenoxui/core
-```
-
-Done! ✨
-
-### CDN
-
-Prefer a CDN for quick setup? Easy peasy:
-
-```html
-<script src="https://cdn.jsdelivr.net/npm/tenoxui"></script>
-```
-
-Or, if you just want the core:
-
-```html
-<script src="https://cdn.jsdelivr.net/npm/@tenoxui/core"></script>
-```
-
-Boom! You’re ready to build your awesome apps! 💥
-
-## Explore Further
-
-### `@tenoxui/core` Overview
-
-Want to explore the core features? Here’s how to use the `@tenoxui/core` package in React:
-
-```jsx
-import { useLayoutEffect } from 'react'
-import { makeTenoxUI } from '@tenoxui/core'
-
-const App = () => {
-  useLayoutEffect(() => {
-    document.querySelectorAll('*[class]').forEach((element) => {
-      new makeTenoxUI({
-        element,
-        property: {
-          bg: 'background',
-          text: 'color'
-        }
-      }).useDOM()
-    })
-  }, [])
-
-  return <h1 className="bg-red text-white">Hello World!</h1>
+```javascript
+export default {
+  property: {},
+  values: {},
+  classes: {},
+  aliases: {},
+  breakpoints: []
 }
-
-export default App
 ```
 
-A bit _uhh_ but it works!
+Here's the breakdown :
 
-### `@tenoxui/property` Overview
+- `property`: This field will store your `shorthand` for exact CSS property or variable.
+- `values`: This field will store your value aliases for the `shorthand` to use.
+- `classes`: You can create utility-first class names inside this field easily.
+- `aliases`: Store class names aliases to make it easier to write big class names.
+- `breakpoints`: Defining responsive point and its name prefix.
 
-Don’t have time to create your own properties library? Try `@tenoxui/property`; Our `pre-built` properties library.
+### Using the Config
 
-#### Installation
+You can use the configuration as shown below :
 
-Install with NPM:
+```javascript
+// tenoxui
+import { tenoxui, MakeTenoxUI } from 'tenoxui'
+tenoxui(config)
+// tenoxui pacakge has @tenoxui/core dependencies by default
+new MakeTenoxUI(config)
 
-```bash
-npm i @tenoxui/property
+// @tenoxui/core
+import { MakeTenoxUI } from '@tenoxui/core'
+new MakeTenoxUI(config)
+
+// @tenoxui/static
+import { TenoxUI } from '@tenoxui/static'
+new TenoxUI(config)
 ```
 
-Or, grab it via CDN:
+## Documentation
 
-```html
-<script src="https://cdn.jsdelivr.net/npm/@tenoxui/property"></script>
-```
+Few example for configuring your TenoxUI.
 
-#### Usage
+### Creating Shorthand
 
-There are two variants you can get, if you prefer smaller and on-demand/commonly used, use `default` variant. You want to use more rich properties, like `filter`, `transform`, and so on; try `full` variant instead.
+Inside `config.property`, you can store your shorthands to make it easier to write class names. Example :
 
-`esmodule` usage:
-
-```js
-import { property } from '@tenoxui/property'
-
-// full properties
-import { property } from '@tenoxui/property/full'
-```
-
-For `commonjs`, try:
-
-```js
-const { property } = require('@tenoxui/property')
-
-// full properties
-const { property } = require('@tenoxui/property/full')
-```
-
-#### React Example
-
-Still React? Here's a quick setup:
-
-```jsx
-import { useLayoutEffect } from 'react'
-import { makeTenoxUI } from '@tenoxui/core'
-import { property } from '@tenoxui/property'
-
-const App = () => {
-  useLayoutEffect(() => {
-    document.querySelectorAll('*[class]').forEach((element) => {
-      const tenoxui = new makeTenoxUI({ element, property })
-      tenoxui.useDOM()
-    })
-  }, [])
-
-  return <h1 className="bg-red text-white">Hello World!</h1>
+```javascript
+export default {
+  proeprty: {
+    bg: 'backgroundColor',
+    p: 'padding',
+    img: 'backgroundImage'
+  }
 }
-
-export default App
 ```
 
-#### Plain HTML
-
-You can use the property library in plain HTML too:
+Usage :
 
 ```html
-<html>
-  <head>
-    <title>TenoxUI</title>
-    <script src="/path/to/tenoxui"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tenoxui/property/dist/umd/full.min.js"></script>
-  </head>
-  <body class="bg-yellow">
-    <div class="bg-red hover:bg-blue">Hello World!</div>
-    <script>
-      use({ property })
-      // or
-      tenoxui(property)
-    </script>
-  </body>
-</html>
+<div class="bg-red"></div>
+<div class="p-10px"></div>
+<div class="img-[url(/my-image.png)]"></div>
 ```
 
-That's it! With TenoxUI and its extended libraries, you're now equipped to build stylish and responsive UIs effortlessly. Ready to level up your web game? Let’s go! 🎉
+Without shorthands :
+
+```html
+<div class="[background]-red"></div>
+<div class="[padding]-10px"></div>
+<div class="[backgroundImage]-[url(/my-image.png)]"></div>
+```
+
+### Customazing Rules for Shorthand
+
+Still inside `config.property`, you can add custom rules for the output style :
+
+```javascript
+export default {
+  proeprty: {
+    bg: {
+      property: 'background',
+      value: 'rgb({0} / var(--opacity))'
+    },
+    p: {
+      property: 'padding',
+      value: 'calc({0} + 2rem)'
+    },
+    img: {
+      property: 'backgroundImage',
+      value: 'url({0})'
+    }
+  }
+}
+```
+
+```html
+<div class="bg-[255_0_0]"></div>
+<div class="p-1rem"></div>
+<div class="img-[/my-image.png]"></div>
+```
+
+### Adding Value Aliases
+
+Using `config.values`, you can store value aliases to make writing class easier. Example :
+
+```javascript
+export default {
+  property: {
+    bg: 'background',
+    w: 'width',
+    h: 'height'
+  },
+  values: {
+    // accessible for all properties and shorthands
+    full: '100%',
+    primary: '#ccf654',
+    'my-size': 'calc(20px + 1rem)',
+    // specific shorthand
+    h: {
+      full: '50%',
+      'my-size': '10px'
+    }
+  }
+}
+```
+
+Usage example:
+
+```html
+<div class="w-full h-full bg-primary"></div>
+```
+
+Same as :
+
+```css
+div {
+  width: 100%;
+  height: 50%;
+  background: #ccf654;
+}
+```
+
+### Creating Mass Utilities
+
+Inside `config.classes`, you can create mass utility-first class names depends on exact CSS properties or even variables. Example :
+
+```javascript
+export default {
+  classes: {
+    // CSS variable
+    '--shadow': {
+      'shadow-md': '...' // Output _ .shadow-md { --shadow: ... }
+    },
+    // Regular css property
+    margin: {
+      'm-1': '2px',
+      'm-2': '4px',
+      'm-3': '6px'
+      // more utilities
+    },
+    display: {
+      flex: 'flex',
+      iflex: 'inline-flex',
+      'flex-center': 'flex' // stacking style for class name
+    },
+    alignItems: {
+      // the flex-center class name will have both display -
+      // and align-items properties for the output.
+      // Output _ .flex-center { display: flex; align-items: center }
+      'flex-center': 'center'
+    }
+  }
+}
+```
+
+Usage :
+
+```html
+<div class="m-2 flex"></div>
+<div class="shadow-md flex-center"></div>
+```
+
+### Creating Class Names Aliases
+
+Under `config.aliases`, we can write alias for big class names. Example :
+
+```javascript
+export default {
+  property: {
+    bg: 'background',
+    text: 'color',
+    p: 'padding',
+    br: 'borderRadius',
+    d: 'display',
+    jc: 'justifyContent',
+    ai: 'alignItems'
+  },
+  aliases: {
+    btn: 'bg-red text-blue p-1rem br-6px d-flex [jc,ai]-center'
+  }
+}
+```
+
+Usage :
+
+```html
+<div class="btn">with alias</div>
+<div class="bg-red text-blue p-1rem br-6px d-flex [jc,ai]-center">without alias</div>
+```
+
+### Adding Responsiveness
+
+Under `config.breakpoints`, you can define prefixes that store the exact screen size you want to handle. Example :
+
+```javascript
+export default {
+  property: {
+    bg: 'background'
+  },
+  breakpoints: [
+    { name: 'max-md', max: 540 },
+    { name: 'md', min: 540 },
+    { name: 'md-only', min: 540, max: 678 }
+    { name: 'lg', min: 679 },
+  ]
+}
+```
+
+Usage :
+
+```html
+<div class="bg-red"></div>
+<div class="md:bg-blue lg:bg-green"></div>
+<div class="max-md:bg-yellow"></div>
+<div class="md-only:bg-orange"></div>
+```
+
+## License
+
+MIT © 2024-Present
