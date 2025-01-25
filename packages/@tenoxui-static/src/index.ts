@@ -12,7 +12,15 @@ type NestedStyles = {
   [selector: string]: StyleValue
 }
 
-export interface TenoxUIParams {
+interface TenoxUIConfig {
+  property: Property
+  values: Values
+  classes: Classes
+  breakpoints: Breakpoint[]
+  aliases: Aliases
+}
+
+export interface Config {
   property?: Property
   values?: Values
   classes?: Classes
@@ -44,6 +52,7 @@ export class TenoxUI {
   private reserveClass: string[]
   private styleMap: Map<string, Set<string>>
   private apply: Record<string, StyleValue>
+  private config: TenoxUIConfig
 
   constructor({
     property = {},
@@ -53,7 +62,7 @@ export class TenoxUI {
     breakpoints = [],
     reserveClass = [],
     apply = {}
-  }: TenoxUIParams = {}) {
+  }: Config = {}) {
     this.property = property
     this.values = values
     this.classes = classes
@@ -62,6 +71,7 @@ export class TenoxUI {
     this.reserveClass = reserveClass
     this.styleMap = new Map()
     this.apply = apply
+    this.config = { property, values, classes, breakpoints, aliases }
 
     if (this.reserveClass.length > 0) {
       this.processReservedClasses()
@@ -207,7 +217,7 @@ export class TenoxUI {
     return value + (unit || '') //? [padding]-4px => padding: 4px
   }
 
-  private processShorthand(
+  public processShorthand(
     type: string,
     value: string,
     unit: string = '',
@@ -283,7 +293,7 @@ export class TenoxUI {
     ) as CSSPropertyOrVariable[]
   }
 
-  private processCustomClass(className: string, prefix?: string): ProcessedStyle | null {
+  public processCustomClass(className: string, prefix?: string): ProcessedStyle | null {
     const properties = this.getParentClass(className)
     if (properties.length > 0) {
       const rules = properties
@@ -305,7 +315,7 @@ export class TenoxUI {
     return null
   }
 
-  private processAlias(className: string, prefix: string = ''): ProcessedStyle | null {
+  public processAlias(className: string, prefix: string = ''): ProcessedStyle | null {
     const alias = this.aliases[className]
     if (!alias) return null
 
@@ -313,6 +323,14 @@ export class TenoxUI {
     const combinedRules: string[] = []
 
     aliasClasses.forEach((aliasClass) => {
+      const shouldClasses = this.processCustomClass(aliasClass)
+      if (shouldClasses) {
+        const { cssRules } = shouldClasses
+        combinedRules.push(cssRules as string)
+
+        return
+      }
+
       const parsed = this.parseClassName(aliasClass)
       if (!parsed) return
 
@@ -582,11 +600,16 @@ export class TenoxUI {
     }
   }
 
+  public getConfig() {
+    return this.config
+  }
+
   public getStyle() {
     return this.styleMap
   }
 
-  public getCssRules(): string {
+  public getCSSRules(): string {
+    this.processReservedClasses()
     let stylesheet = ''
     this.styleMap.forEach((rules, selector) => {
       stylesheet += `${selector} { ${Array.from(rules)} }\n`
