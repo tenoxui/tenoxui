@@ -17,9 +17,9 @@ import { TenoxUI } from '@tenoxui/static'
 
 // example
 const tenoxui = new TenoxUI({
-	property: {
-		bg: 'background'
-	}
+  property: {
+    bg: 'background'
+  }
 })
 
 // process the class names and include them to be processed later
@@ -39,13 +39,13 @@ console.log(stylesheet)
 
 ```javascript
 new TenoxUI({
-	property: {},
-	values: {},
-	classes: {},
-	aliases: {},
-	breakpoints: [],
-	reserveClass: [],
-	apply: {}
+  property: {},
+  values: {},
+  classes: {},
+  aliases: {},
+  breakpoints: [],
+  reserveClass: [],
+  apply: {}
 })
 ```
 
@@ -57,10 +57,10 @@ Reserve any class names to include on the output :
 
 ```javascript
 export default {
-	property: {
-		bg: 'background'
-	},
-	reserveClass: ['bg-red', 'bg-yellow']
+  property: {
+    bg: 'background'
+  },
+  reserveClass: ['bg-red', 'bg-yellow']
 }
 ```
 
@@ -68,10 +68,10 @@ Output :
 
 ```css
 .bg-red {
-	background: red;
+  background: red;
 }
 .bg-yellow {
-	background: yellow;
+  background: yellow;
 }
 ```
 
@@ -81,17 +81,17 @@ Output :
 
 ```javascript
 export default {
-	property: {
-		bg: 'background',
-		text: 'color'
-	},
-	apply: {
-		':root': '[--black]-#000 [--white]-#fff',
-		body: 'bg-$white text-$black',
-		'@media (prefers-color-scheme: dark)': {
-			':root': '[--white]-#000 [--black]-#fff'
-		}
-	}
+  property: {
+    bg: 'background',
+    text: 'color'
+  },
+  apply: {
+    ':root': '[--black]-#000 [--white]-#fff',
+    body: 'bg-$white text-$black',
+    '@media (prefers-color-scheme: dark)': {
+      ':root': '[--white]-#000 [--black]-#fff'
+    }
+  }
 }
 ```
 
@@ -99,18 +99,18 @@ Output :
 
 ```css
 :root {
-	--black: #000;
-	--white: #fff;
+  --black: #000;
+  --white: #fff;
 }
 body {
-	background: var(--white);
-	color: var(--black);
+  background: var(--white);
+  color: var(--black);
 }
 @media (prefers-color-scheme: dark) {
-	:root {
-		--white: #000;
-		--black: #fff;
-	}
+  :root {
+    --white: #000;
+    --black: #fff;
+  }
 }
 ```
 
@@ -118,35 +118,35 @@ body {
 
 ```typescript
 class TenoxUI {
-	private property: Property
-	private values: Values
-	private classes: Classes
-	private aliases: Aliases
-	private breakpoints: Breakpoint[]
-	private reserveClass: string[]
-	private styleMap: Map<string, Set<string>>
-	private apply: Record<string, StyleValue>
+  private property: Property
+  private values: Values
+  private classes: Classes
+  private aliases: Aliases
+  private breakpoints: Breakpoint[]
+  private reserveClass: string[]
+  private styleMap: Map<string, Set<string>>
+  private apply: Record<string, StyleValue>
 
-	constructor({
-		property = {},
-		values = {},
-		classes = {},
-		aliases = {},
-		breakpoints = [],
-		reserveClass = [],
-		apply = {}
-	}: TenoxUIParams = {}) {
-		this.property = property
-		this.values = values
-		this.classes = classes
-		this.aliases = aliases
-		this.breakpoints = breakpoints
-		this.reserveClass = reserveClass
-		this.styleMap = new Map()
-		this.apply = apply
+  constructor({
+    property = {},
+    values = {},
+    classes = {},
+    aliases = {},
+    breakpoints = [],
+    reserveClass = [],
+    apply = {}
+  }: TenoxUIParams = {}) {
+    this.property = property
+    this.values = values
+    this.classes = classes
+    this.aliases = aliases
+    this.breakpoints = breakpoints
+    this.reserveClass = reserveClass
+    this.styleMap = new Map()
+    this.apply = apply
 
-		// ...
-	}
+    // ...
+  }
 }
 ```
 
@@ -157,10 +157,10 @@ First, let's initialize `tenoxui` first :
 ```javascript
 import { TenoxUI } from '@tenoxui/static'
 const tenoxui = new TenoxUI({
-	property: {
-		bg: 'background'
-	}
-	/* other config here */
+  property: {
+    bg: 'background'
+  }
+  /* other config here */
 })
 ```
 
@@ -278,15 +278,15 @@ Let's initialize some classes :
 
 ```javascript
 const tenoxui = new TenoxUI({
-	classes: {
-		display: {
-			flex: 'flex',
-			'flex-center': 'flex'
-		},
-		justifyContent: {
-			'flex-center': 'center'
-		}
-	}
+  classes: {
+    display: {
+      flex: 'flex',
+      'flex-center': 'flex'
+    },
+    justifyContent: {
+      'flex-center': 'center'
+    }
+  }
 })
 ```
 
@@ -347,19 +347,19 @@ Let's initialize some classes :
 
 ```javascript
 const tenoxui = new TenoxUI({
-	property: {
-		bg: 'background',
-		text: 'color',
-		p: 'padding'
-	},
-	classes: {
-		borderRadius: {
-			'rounded-md': '6px'
-		}
-	},
-	aliases: {
-		btn: 'bg-red text-blue p-10px rounded-md'
-	}
+  property: {
+    bg: 'background',
+    text: 'color',
+    p: 'padding'
+  },
+  classes: {
+    borderRadius: {
+      'rounded-md': '6px'
+    }
+  },
+  aliases: {
+    btn: 'bg-red text-blue p-10px rounded-md'
+  }
 })
 ```
 
