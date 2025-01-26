@@ -7,7 +7,7 @@ import terser from '@rollup/plugin-terser'
 
 const packageJson = JSON.parse(fs.readFileSync(path.resolve('package.json'), 'utf-8'))
 
-const name = '__tenoxui_core'
+const name = '__tenoxui_core__'
 const fileName = 'tenoxui'
 const fileNameFull = 'tenoxui-full'
 const banner = `/*!
@@ -21,7 +21,7 @@ const config = [
     input: 'src/tenoxui-full.ts',
     output: [
       {
-        file: `dist/${fileNameFull}.js`,
+        file: `dist/${fileNameFull}.umd.js`,
         format: 'umd',
         name,
         banner,
@@ -29,7 +29,7 @@ const config = [
         exports: 'named'
       },
       {
-        file: `dist/${fileNameFull}.min.js`,
+        file: `dist/${fileNameFull}.umd.min.js`,
         format: 'umd',
         name,
         banner,
@@ -71,7 +71,7 @@ const config = [
     input: 'src/tenoxui.ts',
     output: [
       {
-        file: `dist/${fileName}.js`,
+        file: `dist/${fileName}.umd.js`,
         format: 'umd',
         name,
         banner,
@@ -79,7 +79,7 @@ const config = [
         exports: 'named'
       },
       {
-        file: `dist/${fileName}.min.js`,
+        file: `dist/${fileName}.umd.min.js`,
         format: 'umd',
         name,
         banner,
