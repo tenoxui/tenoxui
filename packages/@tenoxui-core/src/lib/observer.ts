@@ -1,22 +1,28 @@
 export function scanAndApplyStyles(
   applyStylesCallback: (className: string) => void,
-  htmlElement: HTMLElement
+  htmlElement: Element
 ): void {
-  const classes =
-    typeof htmlElement.className === 'string' ? htmlElement.className.split(/\s+/) : []
-  classes.forEach((className) => {
-    applyStylesCallback(className)
+  const classAttribute = htmlElement.getAttribute('class') || ''
+  const classNames = classAttribute.split(/\s+/)
+
+  classNames.forEach((className) => {
+    if (className.trim()) {
+      applyStylesCallback(className)
+    }
   })
 }
 
 export function setupClassObserver(
   applyStylesCallback: (className: string) => void,
-  htmlElement: HTMLElement
+  htmlElement: Element
 ): void {
   const observer = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
       if (mutation.attributeName === 'class') {
-        htmlElement.style.cssText = ''
+        if (htmlElement instanceof HTMLElement) {
+          htmlElement.style.cssText = ''
+        }
+
         scanAndApplyStyles(applyStylesCallback, htmlElement)
       }
     })
