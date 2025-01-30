@@ -300,6 +300,7 @@ export class TenoxUI {
 
     return null
   }
+
   private parseValuePattern(
     pattern: string,
     inputValue: string,
@@ -307,22 +308,29 @@ export class TenoxUI {
     inputSecValue: string,
     inputSecUnit: string
   ): string {
-    if (!pattern.includes('{0}') && !pattern.includes('||')) return pattern
+    if (!pattern.includes('{0}') && !pattern.includes('{1') && !pattern.includes('||'))
+      return pattern
 
     const [value, defaultValue] = pattern.split('||').map((s) => s.trim())
     const finalValue = this.processValue('', inputValue, inputUnit)
     const finalSecValue = this.processValue('', inputSecValue, inputSecUnit)
 
     // handle both {0} and {1}
-    if (pattern.includes('{0}') && pattern.includes('{1')) {
+    if ((pattern.includes('{0}') && pattern.includes('{1')) || pattern.includes('{1')) {
       let computedValue = value
       if (inputValue) {
         computedValue = computedValue.replace('{0}', finalValue)
       }
-      if (inputSecValue || pattern.includes('{1')) {
+      if (pattern.includes('{1')) {
         // find {1 ... } pattern and extract default value if present
         const match = computedValue.match(/{1([^}]*)}/)
-        if (match) {
+        if (pattern.includes('{1}')) {
+          if (inputSecValue) {
+            computedValue = computedValue.replace('{1}', finalSecValue)
+          } else {
+            computedValue = defaultValue
+          }
+        } else if (match) {
           const fullMatch = match[0]
           const innerContent = match[1].trim()
 
