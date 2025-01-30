@@ -42,7 +42,6 @@ type MediaQueryRule = {
   ruleSet: string
 }
 
-// constructor
 export class TenoxUI {
   private property: Property
   private values: Values
@@ -81,7 +80,7 @@ export class TenoxUI {
       this.initializeApplyStyles()
     }
   }
-  // Replace camelCase css properties into kebab-case css properties
+
   private toKebabCase(str: string): string {
     if (/^(webkit|moz|ms|o)[A-Z]/.test(str)) {
       const match = str.match(/^(webkit|moz|ms|o)/)
@@ -101,11 +100,38 @@ export class TenoxUI {
     return str.replace(/([ #.;?%&,@+*~'"!^$[\]()=>|])/g, '\\$1')
   }
 
-  // generate regex pattern for class name parsing
+  private getAllClassNames(classRegistry: Classes | undefined): string[] {
+    if (!classRegistry) return []
+    const classNames = new Set<string>()
+
+    Object.entries(classRegistry).forEach(([property, classObj]) => {
+      if (classObj && typeof classObj === 'object') {
+        Object.keys(classObj).forEach((className) => {
+          classNames.add(className)
+        })
+      }
+    })
+
+    return Array.from(classNames)
+  }
+
+  private getTypePrefixes(): string {
+    const styleAttribute = this.property
+    const classRegistry = this.classes
+    const propertyTypes = Object.keys(styleAttribute)
+
+    if (!classRegistry) {
+      return propertyTypes.sort((a, b) => b.length - a.length).join('|')
+    }
+
+    const classConfigs = this.getAllClassNames(classRegistry)
+    const classPatterns = [...classConfigs]
+
+    return [...propertyTypes, ...classPatterns].sort((a, b) => b.length - a.length).join('|')
+  }
+
   private generateClassNameRegEx(): RegExp {
-    const typePrefixes = Object.keys(this.property)
-      .sort((a, b) => b.length - a.length)
-      .join('|')
+    const typePrefixes = this.getTypePrefixes()
 
     return new RegExp(
       // you dont have to understand this, me neither
@@ -113,33 +139,24 @@ export class TenoxUI {
     )
   }
 
-  // parse any class names and divide them into parts
-  public parseClassName(
-    className: string
-  ):
-    | [
-        prefix: string | undefined,
-        type: string,
-        value: string | undefined,
-        unit: string | undefined,
-        secValue: string | undefined,
-        secUnit: string | undefined
-      ]
-    | null {
+  public parseClassName(className: string) {
+    for (const [_property, classObj] of Object.entries(this.classes)) {
+      if (classObj && typeof classObj === 'object' && className in classObj) {
+        return [undefined, className, '', '', undefined, undefined]
+      }
+    }
+
     const classNameRegEx = this.generateClassNameRegEx()
     const match = className.match(classNameRegEx)
     if (!match) return null
 
     const [, prefix, type, value, unit, secValue, secUnit] = match
 
-    // overall, it will parse :
-    // {prefix}:{type}-{value}{unit?}
-
     return [
       prefix, //? as its name. e.g. hover, md, focus
       type, //? compute css properties or variables that will styled. e.g. [color]-, [--red,background]-, bg-,
-      value, //? parsed css value from the class name. e.g. red, space-between, 64, 100
-      unit, //? is optional if the value is numbers. e.g. px, rem, %
+      value || '', //? parsed css value from the class name. e.g. red, space-between, 64, 100
+      unit || '', //? is optional if the value is numbers. e.g. px, rem, %
       // both secValue & secUnit isn't implemented yet
       secValue,
       secUnit
@@ -218,12 +235,12 @@ export class TenoxUI {
   }
 
   public processShorthand(
-    type: string,
-    value: string,
-    unit: string = '',
-    prefix?: string,
-    secondValue?: string,
-    secondUnit?: string
+    type: string = '',
+    value: string | undefined = '',
+    unit: string | undefined = '',
+    prefix: string | undefined,
+    secondValue: string | undefined,
+    secondUnit: string | undefined
   ): ProcessedStyle | null {
     const properties = this.property[type]
     const finalValue = this.processValue(type, value, unit)
@@ -283,6 +300,49 @@ export class TenoxUI {
 
     return null
   }
+  private parseValuePattern(
+    pattern: string,
+    inputValue: string,
+    inputUnit: string,
+    inputSecValue: string,
+    inputSecUnit: string
+  ): string {
+    if (!pattern.includes('{0}') && !pattern.includes('||')) return pattern
+
+    const [value, defaultValue] = pattern.split('||').map((s) => s.trim())
+    const finalValue = this.processValue('', inputValue, inputUnit)
+    const finalSecValue = this.processValue('', inputSecValue, inputSecUnit)
+
+    // handle both {0} and {1}
+    if (pattern.includes('{0}') && pattern.includes('{1')) {
+      let computedValue = value
+      if (inputValue) {
+        computedValue = computedValue.replace('{0}', finalValue)
+      }
+      if (inputSecValue || pattern.includes('{1')) {
+        // find {1 ... } pattern and extract default value if present
+        const match = computedValue.match(/{1([^}]*)}/)
+        if (match) {
+          const fullMatch = match[0]
+          const innerContent = match[1].trim()
+
+          let replacementValue = finalSecValue
+          if (!replacementValue && innerContent.includes('|')) {
+            // use default value after | if second value isn provided
+            replacementValue = innerContent.split('|')[1].trim()
+          } else if (!replacementValue) {
+            replacementValue = ''
+          }
+          computedValue = computedValue.replace(fullMatch, replacementValue)
+        }
+      }
+      return inputValue ? computedValue : defaultValue || value
+    }
+    // Handle only {0} replacement
+    else {
+      return inputValue ? value.replace('{0}', finalValue) : defaultValue || value
+    }
+  }
 
   private getParentClass(className: string): CSSPropertyOrVariable[] {
     return Object.keys(this.classes).filter((cssProperty) =>
@@ -293,19 +353,45 @@ export class TenoxUI {
     ) as CSSPropertyOrVariable[]
   }
 
-  public processCustomClass(className: string, prefix?: string): ProcessedStyle | null {
+  public processCustomClass(
+    className: string | undefined,
+    value: string | undefined = '',
+    unit: string | undefined = '',
+    prefix: string | undefined = '',
+    secValue: string | undefined = '',
+    secUnit: string | undefined = ''
+  ): ProcessedStyle | null {
+    if (!className) return null
+
     const properties = this.getParentClass(className)
+
     if (properties.length > 0) {
       const rules = properties
         .map((prop) => {
           const classObj = this.classes[prop]
-          return classObj ? `${this.toKebabCase(String(prop))}: ${classObj[className]}` : ''
+          if (!classObj) return ''
+
+          const processedValue = this.parseValuePattern(
+            classObj[className] || '',
+            value,
+            unit,
+            secValue,
+            secUnit
+          )
+
+          return `${this.toKebabCase(String(prop))}: ${processedValue}`
         })
         .filter(Boolean)
         .join('; ')
 
+      const isValueType = className.slice(-(value + unit).length)
+
+      const finalClassName = `${className}${value ? `-${value}${unit}` : ''}${
+        secValue ? `/${secValue}${secUnit}` : ''
+      }`
+
       return {
-        className: this.escapeCSSSelector(className),
+        className: this.escapeCSSSelector(value === isValueType ? className : finalClassName),
         cssRules: rules,
         value: null,
         prefix
@@ -317,25 +403,30 @@ export class TenoxUI {
 
   public processAlias(className: string, prefix: string = ''): ProcessedStyle | null {
     const alias = this.aliases[className]
+
     if (!alias) return null
 
     const aliasClasses = alias.split(' ')
     const combinedRules: string[] = []
 
     aliasClasses.forEach((aliasClass) => {
-      const shouldClasses = this.processCustomClass(aliasClass)
+      const [rprefix, rtype] = aliasClass.split(':')
+      const getType = rtype || rprefix
+      const getPrefix = rtype ? rprefix : undefined
+      const parts = this.parseClassName(aliasClass)
+      const parsed = parts ? parts : [getPrefix, getType, '', '']
+      if (!parsed) return
+
+      const [prefix, type, value, unit, secValue, secUnit] = parsed
+      const result = this.processShorthand(type, value!, unit, prefix, secValue, secUnit)
+
+      const shouldClasses = this.processCustomClass(type, value, unit, prefix, secValue, secUnit)
       if (shouldClasses) {
         const { cssRules } = shouldClasses
         combinedRules.push(cssRules as string)
 
         return
       }
-
-      const parsed = this.parseClassName(aliasClass)
-      if (!parsed) return
-
-      const [prefix, type, value, unit, secValue, secUnit] = parsed
-      const result = this.processShorthand(type, value!, unit, prefix, secValue, secUnit)
 
       if (result) {
         const value = result.value !== null ? `: ${result.value}` : ''
@@ -385,11 +476,26 @@ export class TenoxUI {
         return
       }
 
-      const shouldClasses = this.processCustomClass(getType, getPrefix)
+      const parts = this.parseClassName(className)
+      const parsed = parts ? parts : [getPrefix, getType, '', '']
+      if (!parsed) return
+
+      const [prefix, type, value, unit, secValue, secUnit] = parsed
+
+      const classFromClasses =
+        this.getParentClass(`${type}-${value}`).length > 0 ? `${type}-${value}` : type
+
+      const shouldClasses = this.processCustomClass(
+        classFromClasses,
+        value,
+        unit,
+        prefix,
+        secValue,
+        secUnit
+      )
 
       if (shouldClasses) {
         const { className, cssRules, prefix } = shouldClasses
-
         if (breakpoint) {
           const { mediaKey, ruleSet } = this.generateMediaQuery(
             breakpoint,
@@ -403,9 +509,6 @@ export class TenoxUI {
         return
       }
 
-      const parsed = this.parseClassName(className)
-      if (!parsed) return
-      const [prefix, type, value, unit, secValue, secUnit] = parsed
       const result = this.processShorthand(type, value!, unit, prefix, secValue, secUnit)
 
       if (result) {

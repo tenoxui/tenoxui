@@ -150,7 +150,6 @@ describe('TenoxUI Static CSS Test', () => {
 
       const tenoxui = new TenoxUI(config)
       tenoxui.processClassNames(['btn', 'hover:btn-primary', 'max-md:btn'])
-
       const stylesheet = tenoxui.generateStylesheet()
 
       expect(stylesheet).toContain('.btn { background-color: blue; padding: 24px }')
@@ -348,15 +347,22 @@ describe('TenoxUI Static CSS Test', () => {
           'my-size': '3rem'
         },
         classes: {
+          backgroundColor: {
+            'cst-bg': 'rgb({0} / {1 | 100}%) || red'
+          },
           display: {
             flex: 'flex',
             iflex: 'inline-flex',
             hidden: 'none',
             'it-should-block': 'block',
-            'my-class': 'flex'
+            'my-class': 'flex',
+            'tx-ix': 'flex'
           },
           justifyContent: {
             'my-class': 'flex-start'
+          },
+          padding: {
+            'tx-ix': '{0} || 10px'
           }
         },
         reserveClass: [
@@ -374,7 +380,9 @@ describe('TenoxUI Static CSS Test', () => {
           'flex',
           'iflex',
           'my-class',
-          'it-should-block'
+          'it-should-block',
+          'tx-ix-2rem',
+          'cst-bg-[255_0_0]/20'
         ]
       }
 
@@ -402,6 +410,7 @@ describe('TenoxUI Static CSS Test', () => {
       expect(stylesheet).toContain('.my-class { display: flex; justify-content: flex-start }')
       expect(stylesheet).toContain('.iflex { display: inline-flex }')
       expect(stylesheet).toContain('.it-should-block { display: block }')
+      expect(stylesheet).toContain('.tx-ix-2rem { display: flex; padding: 2rem }')
     })
   })
   describe('All Possible Class Names', () => {
@@ -409,6 +418,10 @@ describe('TenoxUI Static CSS Test', () => {
       const config: TenoxUIParams = {
         property: {
           bg: 'backgroundColor',
+          bgc: {
+            property: 'backgroundColor',
+            value: 'rgb({0})'
+          },
           ls: 'letterSpacing',
           p: 'padding',
           box: ['width', 'height'],
@@ -418,7 +431,8 @@ describe('TenoxUI Static CSS Test', () => {
           }
         },
         values: {
-          primary: '#ccf654'
+          primary: '#ccf654',
+          'gcx-vx': '255 0 0'
         },
 
         apply: {
@@ -455,12 +469,13 @@ describe('TenoxUI Static CSS Test', () => {
         'before:[content]-[""]',
         'after:bg-blue',
         'md:bg-blue',
+        'md:bgc-gcx-vx',
         'md:[--clr,color,bg]-blue',
         // complex class names
         '[background,--red]-[rgb(var(--color,_255_0_0))]',
         'bg-[{primary}]'
       ])
-      // console.log(tenoxui.generateStylesheet())
+      tenoxui.generateStylesheet()
 
       stylesheet = tenoxui.generateStylesheet()
     })
