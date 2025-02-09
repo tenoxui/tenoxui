@@ -171,18 +171,18 @@ Main TenoxUI class name parser.
 #### Types
 
 ```typescript
-parseClassName(
-	className: string
+function parseClassName(
+  className: string
 ):
-	| [
-			prefix: string | undefined,
-			type: string,
-			value: string | undefined,
-			unit: string | undefined,
-			secValue: string | undefined,
-			secUnit: string | undefined
-	  ]
-	| null;
+  | [
+      prefix: string | undefined,
+      type: string,
+      value: string | undefined,
+      unit: string | undefined,
+      secValue: string | undefined,
+      secUnit: string | undefined
+    ]
+  | null {}
 ```
 
 #### Usage
@@ -203,19 +203,19 @@ Process regular shorthands and direct CSS properties or variables.
 
 ```typescript
 type ProcessedStyle = {
-	className: string
-	cssRules: string | string[]
-	value: string | null
-	prefix?: string
+  className: string
+  cssRules: string | string[]
+  value: string | null
+  prefix?: string
 }
 
 processShorthand(
-	type: string,
-	value: string,
-	unit: string = '',
-	prefix?: string,
-	secondValue?: string,
-	secondUnit?: string
+  type: string,
+  value: string,
+  unit: string = '',
+  prefix?: string,
+  secondValue?: string,
+  secondUnit?: string
 ): ProcessedStyle | null;
 ```
 
@@ -263,10 +263,10 @@ Process class names defined under `config.classes`.
 
 ```typescript
 type ProcessedStyle = {
-	className: string
-	cssRules: string | string[]
-	value: string | null
-	prefix?: string
+  className: string
+  cssRules: string | string[]
+  value: string | null
+  prefix?: string
 }
 
 processCustomClass(className: string, prefix?: string): ProcessedStyle | null;
@@ -332,10 +332,10 @@ Process class names defined under `config.aliases`.
 
 ```typescript
 type ProcessedStyle = {
-	className: string
-	cssRules: string | string[]
-	value: string | null
-	prefix?: string
+  className: string
+  cssRules: string | string[]
+  value: string | null
+  prefix?: string
 }
 
 processAlias(className: string, prefix?: string): ProcessedStyle | null;

@@ -300,6 +300,7 @@ export class TenoxUI {
 
     return null
   }
+
   private parseValuePattern(
     pattern: string,
     inputValue: string,
@@ -307,22 +308,29 @@ export class TenoxUI {
     inputSecValue: string,
     inputSecUnit: string
   ): string {
-    if (!pattern.includes('{0}') && !pattern.includes('||')) return pattern
+    if (!pattern.includes('{0}') && !pattern.includes('{1') && !pattern.includes('||'))
+      return pattern
 
     const [value, defaultValue] = pattern.split('||').map((s) => s.trim())
     const finalValue = this.processValue('', inputValue, inputUnit)
     const finalSecValue = this.processValue('', inputSecValue, inputSecUnit)
 
     // handle both {0} and {1}
-    if (pattern.includes('{0}') && pattern.includes('{1')) {
+    if ((pattern.includes('{0}') && pattern.includes('{1')) || pattern.includes('{1')) {
       let computedValue = value
       if (inputValue) {
         computedValue = computedValue.replace('{0}', finalValue)
       }
-      if (inputSecValue || pattern.includes('{1')) {
+      if (pattern.includes('{1')) {
         // find {1 ... } pattern and extract default value if present
         const match = computedValue.match(/{1([^}]*)}/)
-        if (match) {
+        if (pattern.includes('{1}')) {
+          if (inputSecValue) {
+            computedValue = computedValue.replace('{1}', finalSecValue)
+          } else {
+            computedValue = defaultValue
+          }
+        } else if (match) {
           const fullMatch = match[0]
           const innerContent = match[1].trim()
 
@@ -448,9 +456,9 @@ export class TenoxUI {
     }
   }
 
-  public processClassNames(classNames: string[]): void {
+  public processClassNames(classNames: string[]) {
     classNames.forEach((className) => {
-      if (!className) return
+      if (!className) return this
       // process prefix and actual class name
       const [rprefix, rtype] = className.split(':')
       const getType = rtype || rprefix
@@ -473,12 +481,12 @@ export class TenoxUI {
           this.addStyle(aliasClassName, cssRules, null, getPrefix)
         }
 
-        return
+        return this
       }
 
       const parts = this.parseClassName(className)
       const parsed = parts ? parts : [getPrefix, getType, '', '']
-      if (!parsed) return
+      if (!parsed) return this
 
       const [prefix, type, value, unit, secValue, secUnit] = parsed
 
@@ -506,7 +514,7 @@ export class TenoxUI {
         } else {
           this.addStyle(className, cssRules, null, prefix)
         }
-        return
+        return this
       }
 
       const result = this.processShorthand(type, value!, unit, prefix, secValue, secUnit)
@@ -526,6 +534,8 @@ export class TenoxUI {
         }
       }
     })
+
+    return this
   }
 
   private processReservedClasses() {
@@ -662,7 +672,7 @@ export class TenoxUI {
     value?: string | null,
     prefix?: string | null,
     isCustomSelector: boolean | null = true
-  ): void {
+  ) {
     const pseudoClasses = [
       'hover',
       'focus',
@@ -701,6 +711,8 @@ export class TenoxUI {
     } else {
       styleSet.add(value ? `${cssRules}: ${value}` : cssRules)
     }
+
+    return this
   }
 
   public getConfig() {

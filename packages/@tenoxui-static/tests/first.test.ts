@@ -347,8 +347,12 @@ describe('TenoxUI Static CSS Test', () => {
           'my-size': '3rem'
         },
         classes: {
+          '--bg-color': {
+            'shl-bg': '{1}% || 100%'
+          },
           backgroundColor: {
-            'cst-bg': 'rgb({0} / {1 | 100}%) || red'
+            'cst-bg': 'rgb({0} / {1 | 100}%) || red',
+            'shl-bg': '{0} || red'
           },
           display: {
             flex: 'flex',
@@ -382,7 +386,10 @@ describe('TenoxUI Static CSS Test', () => {
           'my-class',
           'it-should-block',
           'tx-ix-2rem',
-          'cst-bg-[255_0_0]/20'
+          'cst-bg-[255_0_0]/20',
+          'shl-bg',
+          'shl-bg-yellow',
+          'shl-bg-blue/20'
         ]
       }
 
@@ -411,6 +418,9 @@ describe('TenoxUI Static CSS Test', () => {
       expect(stylesheet).toContain('.iflex { display: inline-flex }')
       expect(stylesheet).toContain('.it-should-block { display: block }')
       expect(stylesheet).toContain('.tx-ix-2rem { display: flex; padding: 2rem }')
+      expect(stylesheet).toContain('.shl-bg { --bg-color: 100%; background-color: red }')
+      expect(stylesheet).toContain('.shl-bg-yellow { --bg-color: 100%; background-color: yellow }')
+      expect(stylesheet).toContain('.shl-bg-blue/20 { --bg-color: 20%; background-color: blue }')
     })
   })
   describe('All Possible Class Names', () => {
