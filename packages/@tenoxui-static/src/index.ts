@@ -456,9 +456,9 @@ export class TenoxUI {
     }
   }
 
-  public processClassNames(classNames: string[]): void {
+  public processClassNames(classNames: string[]) {
     classNames.forEach((className) => {
-      if (!className) return
+      if (!className) return this
       // process prefix and actual class name
       const [rprefix, rtype] = className.split(':')
       const getType = rtype || rprefix
@@ -481,12 +481,12 @@ export class TenoxUI {
           this.addStyle(aliasClassName, cssRules, null, getPrefix)
         }
 
-        return
+        return this
       }
 
       const parts = this.parseClassName(className)
       const parsed = parts ? parts : [getPrefix, getType, '', '']
-      if (!parsed) return
+      if (!parsed) return this
 
       const [prefix, type, value, unit, secValue, secUnit] = parsed
 
@@ -514,7 +514,7 @@ export class TenoxUI {
         } else {
           this.addStyle(className, cssRules, null, prefix)
         }
-        return
+        return this
       }
 
       const result = this.processShorthand(type, value!, unit, prefix, secValue, secUnit)
@@ -534,6 +534,8 @@ export class TenoxUI {
         }
       }
     })
+
+    return this
   }
 
   private processReservedClasses() {
@@ -670,7 +672,7 @@ export class TenoxUI {
     value?: string | null,
     prefix?: string | null,
     isCustomSelector: boolean | null = true
-  ): void {
+  ) {
     const pseudoClasses = [
       'hover',
       'focus',
@@ -709,6 +711,8 @@ export class TenoxUI {
     } else {
       styleSet.add(value ? `${cssRules}: ${value}` : cssRules)
     }
+
+    return this
   }
 
   public getConfig() {
