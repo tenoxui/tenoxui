@@ -95,9 +95,8 @@ export class TenoxUI {
     return str.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)
   }
 
-  // adding `\` for some expression in the css selector
   private escapeCSSSelector(str: string): string {
-    return str.replace(/([ #.;?%&,@+*~'"!^$[\]()=>|])/g, '\\$1')
+    return str.replace(/([ #.;?%&,@+*~'"!^$[\]()=>|/])/g, '\\$1')
   }
 
   private getAllClassNames(classRegistry: Classes | undefined): string[] {
