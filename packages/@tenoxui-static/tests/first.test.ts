@@ -42,7 +42,7 @@ describe('TenoxUI Static CSS Test', () => {
       expect(tenoxui.escapeCSSSelector('bg#red')).toBe('bg\\#red')
       expect(tenoxui.escapeCSSSelector('margin.2')).toBe('margin\\.2')
       expect(tenoxui.escapeCSSSelector('[rgb(255_255_10_/_0.5)]')).toBe(
-        '\\[rgb\\(255_255_10_/_0\\.5\\)\\]'
+        '\\[rgb\\(255_255_10_\\/_0\\.5\\)\\]'
       )
     })
   })
@@ -346,6 +346,11 @@ describe('TenoxUI Static CSS Test', () => {
           primary: '#ccf654',
           'my-size': '3rem'
         },
+        apply: {
+          '@layer theme': {
+            ':root': 'bg-red'
+          }
+        },
         classes: {
           '--bg-color': {
             'shl-bg': '{1}% || 100%'
@@ -369,9 +374,17 @@ describe('TenoxUI Static CSS Test', () => {
             'tx-ix': '{0} || 10px'
           }
         },
+        breakpoints: [
+          {
+            name: 'md',
+            min: 556,
+            max: 768
+          }
+        ],
         reserveClass: [
           // basic shorthand
           'bg-red',
+          'md:bg-red',
           'p-10px',
           'box-170px',
           '[background,--red]-[rgb(var(--color,_255_0_0))]',
@@ -397,6 +410,9 @@ describe('TenoxUI Static CSS Test', () => {
       stylesheet = tenoxui.generateStylesheet()
     })
     it('should process basic shorthand', () => {
+      console.log('__start__\n')
+      console.log(stylesheet)
+      console.log('__end__')
       expect(stylesheet).toContain('.bg-red { background-color: red }')
       expect(stylesheet).toContain('.p-10px { padding: 10px }')
       expect(stylesheet).toContain('.box-170px { width: 170px; height: 170px }')
@@ -420,7 +436,7 @@ describe('TenoxUI Static CSS Test', () => {
       expect(stylesheet).toContain('.tx-ix-2rem { display: flex; padding: 2rem }')
       expect(stylesheet).toContain('.shl-bg { --bg-color: 100%; background-color: red }')
       expect(stylesheet).toContain('.shl-bg-yellow { --bg-color: 100%; background-color: yellow }')
-      expect(stylesheet).toContain('.shl-bg-blue/20 { --bg-color: 20%; background-color: blue }')
+      expect(stylesheet).toContain('.shl-bg-blue\\/20 { --bg-color: 20%; background-color: blue }')
     })
   })
   describe('All Possible Class Names', () => {
@@ -510,7 +526,9 @@ describe('TenoxUI Static CSS Test', () => {
     })
     it('should add \\ on some unique letters', () => {
       expect(stylesheet).toContain('.bg-\\[{primary}\\] { background-color: #ccf654 }')
-      expect(stylesheet).toContain('.bgi-\\[/v1/image\\] { background-image: url("/v1/image") }')
+      expect(stylesheet).toContain(
+        '.bgi-\\[\\/v1\\/image\\] { background-image: url("/v1/image") }'
+      )
       expect(stylesheet).toContain('.ls--0\\.015em { letter-spacing: -0.015em }')
       expect(stylesheet).toContain(
         '.\\[background\\,--red\\]-\\[rgb\\(var\\(--color\\,_255_0_0\\)\\)\\] { background: rgb(var(--color, 255 0 0)); --red: rgb(var(--color, 255 0 0)) }'
