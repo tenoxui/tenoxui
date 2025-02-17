@@ -589,6 +589,7 @@ export class TenoxUI {
     if (parent.startsWith('@')) {
       return parent
     }
+
     return `${parent} ${child}`
   }
 
@@ -663,6 +664,47 @@ export class TenoxUI {
         this.addStyle(fullSelector, styleRule, null, null)
       }
     }
+  }
+
+  public generateRulesFromClass(classNames: string) {
+    const processedStyles = new Set<string | string[]>()
+    classNames.split(/\s+/).forEach((className) => {
+      if (className === '') {
+        processedStyles.add('null')
+        return
+      }
+      if (!className) return
+      const aliasResult = this.processAlias(className)
+      if (aliasResult) {
+        const { cssRules } = aliasResult
+        processedStyles.add(cssRules)
+        return
+      }
+      const shouldClasses = this.processCustomClass(className)
+      if (shouldClasses) {
+        const { cssRules } = shouldClasses
+        processedStyles.add(cssRules)
+        return
+      }
+      const parsed = this.parseClassName(className)
+      if (!parsed) return
+
+      const [, type, value, unit, secValue, secUnit] = parsed
+      const result = this.processShorthand(type, value!, unit, undefined, secValue, secUnit)
+      if (result) {
+        const { cssRules, value: ruleValue } = result
+        const finalValue = ruleValue !== null ? `: ${ruleValue}` : ''
+        if (Array.isArray(cssRules)) {
+          cssRules.forEach((rule) => {
+            processedStyles.add(`${this.toKebabCase(rule)}${finalValue}`)
+          })
+        } else {
+          processedStyles.add(`${cssRules}${finalValue}`)
+        }
+      }
+    })
+
+    return processedStyles
   }
 
   public addStyle(
