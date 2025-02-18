@@ -6,41 +6,13 @@ import type {
   Breakpoint,
   CSSPropertyOrVariable
 } from '@tenoxui/types'
-
-type StyleValue = string | NestedStyles
-type NestedStyles = {
-  [selector: string]: StyleValue
-}
-
-interface TenoxUIConfig {
-  property: Property
-  values: Values
-  classes: Classes
-  breakpoints: Breakpoint[]
-  aliases: Aliases
-}
-
-export interface Config {
-  property?: Property
-  values?: Values
-  classes?: Classes
-  aliases?: Aliases
-  breakpoints?: Breakpoint[]
-  reserveClass?: string[]
-  apply?: Record<string, StyleValue>
-}
-
-type ProcessedStyle = {
-  className: string
-  cssRules: string | string[]
-  value: string | null
-  prefix?: string
-}
-
-type MediaQueryRule = {
-  mediaKey: string
-  ruleSet: string
-}
+import type {
+  Config,
+  TenoxUIConfig,
+  ProcessedStyle,
+  MediaQueryRule,
+  ApplyStyleObject
+} from './types'
 
 export class TenoxUI {
   private property: Property
@@ -50,7 +22,7 @@ export class TenoxUI {
   private breakpoints: Breakpoint[]
   private reserveClass: string[]
   private styleMap: Map<string, Set<string>>
-  private apply: Record<string, StyleValue>
+  private apply: ApplyStyleObject
   private config: TenoxUIConfig
 
   constructor({
@@ -74,10 +46,6 @@ export class TenoxUI {
 
     if (this.reserveClass.length > 0) {
       this.processReservedClasses()
-    }
-
-    if (Object.keys(this.apply).length > 0) {
-      this.initializeApplyStyles()
     }
   }
 
@@ -156,7 +124,7 @@ export class TenoxUI {
       type, //? compute css properties or variables that will styled. e.g. [color]-, [--red,background]-, bg-,
       value || '', //? parsed css value from the class name. e.g. red, space-between, 64, 100
       unit || '', //? is optional if the value is numbers. e.g. px, rem, %
-      // both secValue & secUnit isn't implemented yet
+      // same as value and unit, parsed after the '/' character
       secValue,
       secUnit
     ]
@@ -194,19 +162,6 @@ export class TenoxUI {
         const val = this.values[key]
         return typeof val === 'string' ? val : match
       })
-
-      // example:
-      // config = {
-      //   values: {
-      //     red: "255 0 0"
-      //   }
-      // }
-      //
-      // case:
-      // [background]-[rgb({red})]
-      //
-      // will parsed into:
-      // background: rgb(255 0 0)
     }
 
     if (this.values[type] || this.values[value]) {
@@ -546,72 +501,7 @@ export class TenoxUI {
     })
   }
 
-  private initializeApplyStyles() {
-    this.processApplyObject(this.apply)
-  }
-
-  private processApplyObject(styles: Record<string, StyleValue>, parentSelector: string = '') {
-    Object.entries(styles).forEach(([selector, value]) => {
-      if (typeof value === 'string') {
-        this.processApplyStyles(selector, value, parentSelector)
-      } else if (typeof value === 'object') {
-        const fullSelector = this.combineSelectors(parentSelector, selector)
-        const ignoreQueries = ['@property', '@counter-style', '@page', '@font-face']
-        if (
-          selector.startsWith('@') &&
-          !ignoreQueries.some((query) => selector.startsWith(query))
-        ) {
-          Object.entries(value).forEach(([nestedSelector, nestedValue]) => {
-            if (typeof nestedValue === 'string') {
-              this.processApplyStyles(nestedSelector, nestedValue, selector)
-            }
-          })
-        } else {
-          Object.entries(value).forEach(([nestedSelector, nestedValue]) => {
-            if (typeof nestedValue === 'string') {
-              const finalSelector =
-                nestedSelector === ''
-                  ? fullSelector
-                  : this.combineSelectors(fullSelector, nestedSelector)
-              this.processApplyStyles(finalSelector, nestedValue, '')
-            }
-          })
-        }
-      }
-    })
-  }
-
-  private combineSelectors(parent: string, child: string): string {
-    if (!parent) return child
-    if (child.includes('&')) {
-      return child.replace(/&/g, parent)
-    }
-    if (parent.startsWith('@')) {
-      return parent
-    }
-    return `${parent} ${child}`
-  }
-
-  private processApplyStyles(selector: string, classNames: string, parentSelector: string = '') {
-    const uniqueQueries = ['@media', '@keyframes', '@layer', '@container']
-    const isUniqueQuery = uniqueQueries.some(
-      (query) => selector.startsWith(query) || parentSelector.startsWith(query)
-    )
-    const mediaSelector = isUniqueQuery
-      ? selector.startsWith('@media')
-        ? selector
-        : parentSelector
-      : ''
-    const actualSelector = isUniqueQuery
-      ? selector.startsWith('@media')
-        ? parentSelector
-        : selector
-      : selector
-    const fullSelector =
-      !isUniqueQuery && parentSelector
-        ? this.combineSelectors(parentSelector, selector)
-        : actualSelector
-
+  public generateRulesFromClass(classNames: string) {
     const processedStyles = new Set<string | string[]>()
     classNames.split(/\s+/).forEach((className) => {
       if (className === '') {
@@ -649,20 +539,36 @@ export class TenoxUI {
       }
     })
 
-    if (processedStyles.size > 0) {
-      const styleRule = Array.from(processedStyles).join('; ')
-      if (mediaSelector) {
-        if (!this.styleMap.has(mediaSelector)) {
-          this.styleMap.set(mediaSelector, new Set())
-        }
-        const mediaSet = this.styleMap.get(mediaSelector)
-        if (mediaSet) {
-          mediaSet.add(`${fullSelector} ${styleRule !== 'null' ? `{ ${styleRule} }` : ''}`)
-        }
-      } else {
-        this.addStyle(fullSelector, styleRule, null, null)
-      }
+    return processedStyles
+  }
+
+  private processApplyObject(obj: ApplyStyleObject, indentLevel: number = 0): string {
+    let css = ''
+    const indent = ' '.repeat(indentLevel)
+    const ruleIndent = ' '.repeat(indentLevel + 2)
+
+    if (obj.SINGLE_RULE) {
+      css += obj.SINGLE_RULE.join('\n') + '\n'
+      delete obj.SINGLE_RULE
     }
+
+    for (const key in obj) {
+      const value = obj[key]
+      css += key ? `${indent}${key} {\n` : ''
+
+      if (typeof value === 'string') {
+        const rules = [...this.generateRulesFromClass(value)]
+        // css += `${ruleIndent}${rules.join(`;\n${ruleIndent}`)};`
+        css += `${key ? ruleIndent : indent}${rules.join(`; `)}`
+        if (rules.length) css += '\n'
+      } else if (typeof value === 'object') {
+        css += this.processApplyObject(value, indentLevel + 2)
+      }
+
+      css += key ? `${indent}}\n` : ''
+    }
+
+    return css
   }
 
   public addStyle(
@@ -733,6 +639,8 @@ export class TenoxUI {
 
   public generateStylesheet() {
     this.processReservedClasses()
+    const fixedCss =
+      Object.keys(this.apply).length > 0 ? this.processApplyObject(this.apply) + '\n' : ''
     const mediaQueries = new Map()
     let stylesheet = ''
 
@@ -761,8 +669,9 @@ export class TenoxUI {
       stylesheet += '}\n'
     })
 
-    return stylesheet
+    return fixedCss + stylesheet
   }
 }
 
+export { Config, TenoxUIConfig }
 export default { TenoxUI }

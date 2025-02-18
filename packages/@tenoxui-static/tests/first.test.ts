@@ -221,6 +221,7 @@ describe('TenoxUI Static CSS Test', () => {
         values: { primary: '#ccf654' },
 
         apply: {
+          SINGLE_RULE: ["@import '...';"],
           ':root': '[color-scheme]-[light_dark] [--dark_btn]-blue',
           body: 'bg-red',
           'div.tx:hover': 'bg-blue',
@@ -239,14 +240,25 @@ describe('TenoxUI Static CSS Test', () => {
       tenoxui = new TenoxUI(config)
       const stylesheet = tenoxui.generateStylesheet()
 
-      expect(stylesheet).toContain(':root { color-scheme: light dark; --dark_btn: blue }')
-      expect(stylesheet).toContain('body { background-color: red }')
-      expect(stylesheet).toContain('.my-class { background-color: red; color: blue }')
-      expect(stylesheet).toContain('.my-class:hover { background-color: blue }')
+      expect(stylesheet).toContain(':root {\n  color-scheme: light dark; --dark_btn: blue\n}')
+      expect(stylesheet).toContain("@import '...';")
+      expect(stylesheet).toContain('body {\n  background-color: red\n}')
+      expect(stylesheet).toContain(`.my-class {
+  background-color: red; color: blue
+  &:hover {
+    background-color: blue
+  }
+}`)
       expect(stylesheet).toContain(`@media (prefers-color-scheme: dark) {
-  :root { --red: #f00; color-scheme: dark; --dark_btn: blue }
-  .my-second-cls { background-color: yellow }
-  .my-third-cls { background-color: #ccf654 }
+  :root {
+    --red: #f00; color-scheme: dark; --dark_btn: blue
+  }
+  .my-second-cls {
+    background-color: yellow
+  }
+  .my-third-cls {
+    background-color: #ccf654
+  }
 }`)
     })
     it('should process queries other than media query', () => {
@@ -272,15 +284,23 @@ describe('TenoxUI Static CSS Test', () => {
       const stylesheet = tenoxui.generateStylesheet()
 
       expect(stylesheet).toContain(
-        '@keyframes anim { from { background-color: red; padding: 1rem } to { background-color: blue; padding: 20px } }'
+        `@keyframes anim {
+  from {
+    background-color: red; padding: 1rem
+  }
+  to {
+    background-color: blue; padding: 20px
+  }
+}`
       )
-      expect(stylesheet).toContain("@property --my-color { syntax: '<color>'; inherits: false }")
+      expect(stylesheet).toContain(
+        "@property --my-color {\n  syntax: '<color>'; inherits: false\n}"
+      )
     })
     it('should process one line query', () => {
       const config: TenoxUIParams = {
         apply: {
-          "@import '...';": '',
-          '@layer base, components, utilities;': ''
+          SINGLE_RULE: ["@import '...';", '@layer base, components, utilities;']
         }
       }
       tenoxui = new TenoxUI(config)
@@ -305,9 +325,13 @@ describe('TenoxUI Static CSS Test', () => {
       tenoxui = new TenoxUI(config)
       stylesheet = tenoxui.generateStylesheet()
 
-      expect(stylesheet).toContain(':root { color-scheme: light dark; --neutral-50: #fff }')
+      expect(stylesheet).toContain(`:root {
+  color-scheme: light dark; --neutral-50: #fff
+}`)
       expect(stylesheet).toContain(`@media (prefers-color-scheme: dark) {
-  :root { --neutral-50: #000 }
+  :root {
+    --neutral-50: #000
+  }
 }`)
     })
     it('should apply classes from config.classes', () => {
@@ -328,9 +352,13 @@ describe('TenoxUI Static CSS Test', () => {
       tenoxui = new TenoxUI(config)
       stylesheet = tenoxui.generateStylesheet()
 
-      expect(stylesheet).toContain(':root { color-scheme: light dark; --neutral-50: #fff }')
+      expect(stylesheet).toContain(`:root {
+  color-scheme: light dark; --neutral-50: #fff
+}`)
       expect(stylesheet).toContain(`@media (prefers-color-scheme: dark) {
-  :root { --neutral-50: #000 }
+  :root {
+    --neutral-50: #000
+  }
 }`)
     })
   })
@@ -410,9 +438,6 @@ describe('TenoxUI Static CSS Test', () => {
       stylesheet = tenoxui.generateStylesheet()
     })
     it('should process basic shorthand', () => {
-      console.log('__start__\n')
-      console.log(stylesheet)
-      console.log('__end__')
       expect(stylesheet).toContain('.bg-red { background-color: red }')
       expect(stylesheet).toContain('.p-10px { padding: 10px }')
       expect(stylesheet).toContain('.box-170px { width: 170px; height: 170px }')
