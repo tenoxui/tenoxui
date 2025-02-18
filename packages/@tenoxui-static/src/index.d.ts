@@ -1,0 +1,40 @@
+import type { Config, TenoxUIConfig, ProcessedStyle } from './types';
+export declare class TenoxUI {
+    private property;
+    private values;
+    private classes;
+    private aliases;
+    private breakpoints;
+    private reserveClass;
+    private styleMap;
+    private apply;
+    private config;
+    constructor({ property, values, classes, aliases, breakpoints, reserveClass, apply }?: Config);
+    private toKebabCase;
+    private escapeCSSSelector;
+    private getAllClassNames;
+    private getTypePrefixes;
+    private generateClassNameRegEx;
+    parseClassName(className: string): (string | undefined)[] | null;
+    private generateMediaQuery;
+    private processValue;
+    processShorthand(type: string | undefined, value: string | undefined, unit: string | undefined, prefix: string | undefined, secondValue: string | undefined, secondUnit: string | undefined): ProcessedStyle | null;
+    private parseValuePattern;
+    private getParentClass;
+    processCustomClass(className: string | undefined, value?: string | undefined, unit?: string | undefined, prefix?: string | undefined, secValue?: string | undefined, secUnit?: string | undefined): ProcessedStyle | null;
+    processAlias(className: string, prefix?: string): ProcessedStyle | null;
+    processClassNames(classNames: string[]): this;
+    private processReservedClasses;
+    generateRulesFromClass(classNames: string): Set<string | string[]>;
+    private processApplyObject;
+    addStyle(className: string, cssRules: string | string[], value?: string | null, prefix?: string | null, isCustomSelector?: boolean | null): this;
+    getConfig(): TenoxUIConfig;
+    getStyle(): Map<string, Set<string>>;
+    getCSSRules(): string;
+    generateStylesheet(): string;
+}
+export { Config, TenoxUIConfig };
+declare const _default: {
+    TenoxUI: typeof TenoxUI;
+};
+export default _default;
