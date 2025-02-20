@@ -450,7 +450,7 @@ describe('TenoxUI Static CSS Test', () => {
       expect(stylesheet).toContain('.p-my-size { padding: 3rem }')
       expect(stylesheet).toContain('.box-my-size { width: 3rem; height: 3rem }')
       expect(stylesheet).toContain(
-        '.\\[margin\\]-\\[calc\\({my-size}_-_2rem\\)\\] { margin: calc(3rem - 2rem) }'
+        '.\\[margin\\]-\\[calc\\(\\{my-size\\}_-_2rem\\)\\] { margin: calc(3rem - 2rem) }'
       )
     })
     it('should process class names from classes', () => {
@@ -550,7 +550,7 @@ describe('TenoxUI Static CSS Test', () => {
       expect(stylesheet).toContain('.after\\:bg-blue::after { background-color: blue }')
     })
     it('should add \\ on some unique letters', () => {
-      expect(stylesheet).toContain('.bg-\\[{primary}\\] { background-color: #ccf654 }')
+      expect(stylesheet).toContain('.bg-\\[\\{primary\\}\\] { background-color: #ccf654 }')
       expect(stylesheet).toContain(
         '.bgi-\\[\\/v1\\/image\\] { background-image: url("/v1/image") }'
       )

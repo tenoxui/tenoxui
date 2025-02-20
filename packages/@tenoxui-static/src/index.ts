@@ -64,7 +64,7 @@ export class TenoxUI {
   }
 
   private escapeCSSSelector(str: string): string {
-    return str.replace(/([ #.;?%&,@+*~'"!^$[\]()=>|/])/g, '\\$1')
+    return str.replace(/([ #{}.;?%&,@+*~'"!^$[\]()=>|/])/g, '\\$1')
   }
 
   private getAllClassNames(classRegistry: Classes | undefined): string[] {
