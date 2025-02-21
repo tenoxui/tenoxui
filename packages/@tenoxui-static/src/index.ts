@@ -504,11 +504,8 @@ export class TenoxUI {
   public generateRulesFromClass(classNames: string) {
     const processedStyles = new Set<string | string[]>()
     classNames.split(/\s+/).forEach((className) => {
-      if (className === '') {
-        processedStyles.add('null')
-        return
-      }
       if (!className) return
+
       const aliasResult = this.processAlias(className)
       if (aliasResult) {
         const { cssRules } = aliasResult
