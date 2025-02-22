@@ -380,7 +380,7 @@ export class TenoxUI {
       if (!parsed) return
 
       const [prefix, type, value, unit, secValue, secUnit] = parsed
-      const result = this.processShorthand(type, value!, unit, prefix, secValue, secUnit)
+      const result = this.processShorthand(type, value!, unit, undefined, secValue, secUnit)
 
       const shouldClasses = this.processCustomClass(type, value, unit, prefix, secValue, secUnit)
       if (shouldClasses) {
@@ -516,7 +516,7 @@ export class TenoxUI {
       if (!parsed) return
 
       const [, type, value, unit, secValue, secUnit] = parsed
-      const shouldClasses = this.processCustomClass(type, value, unit, secValue, secUnit)
+      const shouldClasses = this.processCustomClass(type, value, unit, undefined, secValue, secUnit)
       if (shouldClasses) {
         const { cssRules } = shouldClasses
         processedStyles.add(cssRules)

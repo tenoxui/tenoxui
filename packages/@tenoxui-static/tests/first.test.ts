@@ -336,13 +336,24 @@ describe('TenoxUI Static CSS Test', () => {
     })
     it('should apply classes from config.classes', () => {
       const config: TenoxUIParams = {
+        property: {
+          bg: 'backgroundColor'
+        },
         classes: {
+          '--bg-opacity': {
+            bg: '{1}% || 1'
+          },
+          backgroundColor: {
+            bg: '{0} || red'
+          },
           '--neutral-50': {
             app__light: '#fff',
             app__dark: '#000'
           }
         },
         apply: {
+          html: 'bg',
+          body: 'bg-blue/20',
           ':root': '[color-scheme]-[light_dark] app__light',
           '@media (prefers-color-scheme: dark)': {
             ':root': 'app__dark'
@@ -352,6 +363,7 @@ describe('TenoxUI Static CSS Test', () => {
       tenoxui = new TenoxUI(config)
       stylesheet = tenoxui.generateStylesheet()
 
+      expect(stylesheet).toContain('html {\n  --bg-opacity: 1; background-color: red\n}')
       expect(stylesheet).toContain(`:root {
   color-scheme: light dark; --neutral-50: #fff
 }`)
