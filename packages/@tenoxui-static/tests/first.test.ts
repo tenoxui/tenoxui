@@ -24,6 +24,55 @@ describe('TenoxUI Static CSS Test', () => {
     })
   })
 
+  describe('Only Test', () => {
+    const ui = new TenoxUI({
+      property: {
+        bg: 'background',
+        cbg: {
+          property: 'backgroundColor',
+          value: 'rgb({0})'
+        },
+        bgx: {
+          property: 'borderColor',
+          value: 'rgb({0} / {1})'
+        }
+      },
+
+      values: {
+        blue: '#ff00ff'
+      },
+
+      classes: {
+        display: {
+          flex: '{0}hello || flex'
+        },
+        '--text-opacity': {
+          text: '{1}% || 1'
+        },
+        color: {
+          text: 'rgb({0} / var(--text-opacity)) || red'
+        }
+      }
+    })
+
+    console.log(ui.generateRulesFromClass('bgx-{red}/{34}'))
+    console.log(ui.generateRulesFromClass('bg-{red}'))
+    console.log(ui.generateRulesFromClass('cbg-[0_0_0]'))
+    console.log(Array.from(ui.generateRulesFromClass('cbg-{0_0_0} [color]-red')).join('; '))
+
+    console.log(ui.generateRulesFromClass('flex'))
+    console.log(ui.generateRulesFromClass('flex-block'))
+    console.log(ui.generateRulesFromClass('flex-[block]'))
+    console.log(ui.generateRulesFromClass('text'))
+    console.log(ui.generateRulesFromClass('text-{255_0_0}/[19-7-]'))
+    console.log(ui.generateRulesFromClass('text-[#65f672]'))
+    console.log(ui.generateRulesFromClass('text-[#65f672]'))
+
+    it('hsh', () => {
+      expect(1).toBe(1)
+    })
+  })
+
   describe('Case Conversion', () => {
     beforeEach(() => {
       tenoxui = new TenoxUI()
@@ -439,7 +488,8 @@ describe('TenoxUI Static CSS Test', () => {
           'my-class',
           'it-should-block',
           'tx-ix-2rem',
-          'cst-bg-[255_0_0]/20',
+          'cst-bg-(255_0_0)/20',
+          'cst-bg-[rgb(255_0_0_/_1)]',
           'shl-bg',
           'shl-bg-yellow',
           'shl-bg-blue/20'
@@ -474,6 +524,12 @@ describe('TenoxUI Static CSS Test', () => {
       expect(stylesheet).toContain('.shl-bg { --bg-color: 100%; background-color: red }')
       expect(stylesheet).toContain('.shl-bg-yellow { --bg-color: 100%; background-color: yellow }')
       expect(stylesheet).toContain('.shl-bg-blue\\/20 { --bg-color: 20%; background-color: blue }')
+      expect(stylesheet).toContain(
+        '.cst-bg-\\(255_0_0\\)\\/20 { background-color: rgb(255 0 0 / 20%) }'
+      )
+      expect(stylesheet).toContain(
+        '.cst-bg-\\[rgb\\(255_0_0_\\/_1\\)\\] { background-color: rgb(255 0 0 / 1) }'
+      )
     })
   })
   describe('All Possible Class Names', () => {
@@ -522,7 +578,7 @@ describe('TenoxUI Static CSS Test', () => {
         'box-200px',
         'p-200px',
         'ls--0.015em',
-        'bgi-[/v1/image]',
+        'bgi-(/v1/image)',
         '[color]-red',
         // prefixed class names
         'hover:bg-red',
@@ -564,7 +620,7 @@ describe('TenoxUI Static CSS Test', () => {
     it('should add \\ on some unique letters', () => {
       expect(stylesheet).toContain('.bg-\\[\\{primary\\}\\] { background-color: #ccf654 }')
       expect(stylesheet).toContain(
-        '.bgi-\\[\\/v1\\/image\\] { background-image: url("/v1/image") }'
+        '.bgi-\\(\\/v1\\/image\\) { background-image: url("/v1/image") }'
       )
       expect(stylesheet).toContain('.ls--0\\.015em { letter-spacing: -0.015em }')
       expect(stylesheet).toContain(
