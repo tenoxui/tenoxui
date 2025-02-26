@@ -64,7 +64,7 @@ export class TenoxUI {
   }
 
   private escapeCSSSelector(str: string): string {
-    return str.replace(/([ #.;?%&,@+*~'"!^$[\]()=>|/])/g, '\\$1')
+    return str.replace(/([ #{}.;?%&,@+*~'"!^$[\]()=>|/])/g, '\\$1')
   }
 
   private getAllClassNames(classRegistry: Classes | undefined): string[] {
@@ -99,26 +99,21 @@ export class TenoxUI {
 
   private generateClassNameRegEx(): RegExp {
     const typePrefixes = this.getTypePrefixes()
-
     return new RegExp(
       // you dont have to understand this, me neither
-      `(?:([a-zA-Z0-9-]+|\\[[^\\]]+\\]|\\([^)]+\\)|\\{[^}]+\\}):)?(${typePrefixes}|\\[[^\\]]+\\])-(-?(?:\\d+(?:\\.\\d+)?)|(?:[a-zA-Z0-9_]+(?:-[a-zA-Z0-9_]+)*(?:-[a-zA-Z0-9_]+)*)|(?:#[0-9a-fA-F]+)|(?:\\[[^\\]]+\\])|(?:\\$[^\\s]+))([a-zA-Z%]*)(?:\\/(-?(?:\\d+(?:\\.\\d+)?)|(?:[a-zA-Z0-9_]+(?:-[a-zA-Z0-9_]+)*(?:-[a-zA-Z0-9_]+)*)|(?:#[0-9a-fA-F]+)|(?:\\[[^\\]]+\\])|(?:\\$[^\\s]+))([a-zA-Z%]*))?`
+      `(?:([a-zA-Z0-9-]+|\\[[^\\]]+\\]|\\([^()]*(?:\\([^()]*\\)[^()]*)*\\)|\\{[^{}]*(?:\\{[^{}]*\\}[^{}]*)*\\}):)?(${typePrefixes}|\\[[^\\]]+\\])-(-?(?:\\d+(?:\\.\\d+)?)|(?:[a-zA-Z0-9_]+(?:-[a-zA-Z0-9_]+)*(?:-[a-zA-Z0-9_]+)*)|(?:#[0-9a-fA-F]+)|(?:\\[[^\\]]+\\])|(?:\\{[^{}]*(?:\\{[^{}]*\\}[^{}]*)*\\})|(?:\\([^()]*(?:\\([^()]*\\)[^()]*)*\\))|(?:\\$[^\\s]+))([a-zA-Z%]*)(?:\\/(-?(?:\\d+(?:\\.\\d+)?)|(?:[a-zA-Z0-9_]+(?:-[a-zA-Z0-9_]+)*(?:-[a-zA-Z0-9_]+)*)|(?:#[0-9a-fA-F]+)|(?:\\[[^\\]]+\\])|(?:\\{[^{}]*(?:\\{[^{}]*\\}[^{}]*)*\\})|(?:\\([^()]*(?:\\([^()]*\\)[^()]*)*\\))|(?:\\$[^\\s]+))([a-zA-Z%]*))?`
     )
   }
-
   public parseClassName(className: string) {
     for (const [_property, classObj] of Object.entries(this.classes)) {
       if (classObj && typeof classObj === 'object' && className in classObj) {
         return [undefined, className, '', '', undefined, undefined]
       }
     }
-
     const classNameRegEx = this.generateClassNameRegEx()
     const match = className.match(classNameRegEx)
     if (!match) return null
-
     const [, prefix, type, value, unit, secValue, secUnit] = match
-
     return [
       prefix, //? as its name. e.g. hover, md, focus
       type, //? compute css properties or variables that will styled. e.g. [color]-, [--red,background]-, bg-,
@@ -171,7 +166,11 @@ export class TenoxUI {
       return this.values[value] as string
     } else if (value.startsWith('$')) {
       return `var(--${value.slice(1)})` //? [color]-$my-color => color: var(--my-color)
-    } else if (value.startsWith('[') && value.endsWith(']')) {
+    } else if (
+      (value.startsWith('[') && value.endsWith(']')) ||
+      (value.startsWith('(') && value.endsWith(')'))
+    ) {
+      // if (value.startsWith('(')) console.log(value)
       const cleanValue = value.slice(1, -1).replace(/_/g, ' ') //? replace '_' (underscore with ' ' (space)
 
       // access value from value registry
@@ -198,6 +197,7 @@ export class TenoxUI {
   ): ProcessedStyle | null {
     const properties = this.property[type]
     const finalValue = this.processValue(type, value, unit)
+    const finalSecValue = this.processValue(type, secondValue, secondUnit)
 
     if (type.startsWith('[') && type.endsWith(']')) {
       const items = type
@@ -228,9 +228,13 @@ export class TenoxUI {
       if (typeof properties === 'object' && 'property' in properties && 'value' in properties) {
         const property = properties.property
         const template = properties.value
-        const processedValue = template
-          ? template.replace(/\{0}/g, finalValue).replace(/\{1}/g, secondValue || '')
-          : finalValue
+
+        const processedValue =
+          value.startsWith('[') && value.endsWith(']')
+            ? finalValue
+            : template
+              ? template.replace(/\{0}/g, finalValue).replace(/\{1}/g, finalSecValue || '')
+              : finalValue
 
         return {
           className: `${type}-${value}${unit}`,
@@ -269,7 +273,6 @@ export class TenoxUI {
     const finalValue = this.processValue('', inputValue, inputUnit)
     const finalSecValue = this.processValue('', inputSecValue, inputSecUnit)
 
-    // handle both {0} and {1}
     if ((pattern.includes('{0}') && pattern.includes('{1')) || pattern.includes('{1')) {
       let computedValue = value
       if (inputValue) {
@@ -280,7 +283,9 @@ export class TenoxUI {
         const match = computedValue.match(/{1([^}]*)}/)
         if (pattern.includes('{1}')) {
           if (inputSecValue) {
-            computedValue = computedValue.replace('{1}', finalSecValue)
+            computedValue = inputSecValue.startsWith('[')
+              ? finalSecValue
+              : computedValue.replace('{1}', finalSecValue)
           } else {
             computedValue = defaultValue
           }
@@ -295,14 +300,20 @@ export class TenoxUI {
           } else if (!replacementValue) {
             replacementValue = ''
           }
-          computedValue = computedValue.replace(fullMatch, replacementValue)
+          computedValue = inputValue.startsWith('[')
+            ? finalValue
+            : computedValue.replace(fullMatch, replacementValue)
         }
       }
       return inputValue ? computedValue : defaultValue || value
     }
     // Handle only {0} replacement
     else {
-      return inputValue ? value.replace('{0}', finalValue) : defaultValue || value
+      return inputValue
+        ? inputValue.startsWith('[')
+          ? finalValue
+          : value.replace('{0}', finalValue)
+        : defaultValue || value
     }
   }
 
@@ -380,7 +391,7 @@ export class TenoxUI {
       if (!parsed) return
 
       const [prefix, type, value, unit, secValue, secUnit] = parsed
-      const result = this.processShorthand(type, value!, unit, prefix, secValue, secUnit)
+      const result = this.processShorthand(type, value!, unit, undefined, secValue, secUnit)
 
       const shouldClasses = this.processCustomClass(type, value, unit, prefix, secValue, secUnit)
       if (shouldClasses) {
@@ -504,20 +515,11 @@ export class TenoxUI {
   public generateRulesFromClass(classNames: string) {
     const processedStyles = new Set<string | string[]>()
     classNames.split(/\s+/).forEach((className) => {
-      if (className === '') {
-        processedStyles.add('null')
-        return
-      }
       if (!className) return
+
       const aliasResult = this.processAlias(className)
       if (aliasResult) {
         const { cssRules } = aliasResult
-        processedStyles.add(cssRules)
-        return
-      }
-      const shouldClasses = this.processCustomClass(className)
-      if (shouldClasses) {
-        const { cssRules } = shouldClasses
         processedStyles.add(cssRules)
         return
       }
@@ -525,6 +527,12 @@ export class TenoxUI {
       if (!parsed) return
 
       const [, type, value, unit, secValue, secUnit] = parsed
+      const shouldClasses = this.processCustomClass(type, value, unit, undefined, secValue, secUnit)
+      if (shouldClasses) {
+        const { cssRules } = shouldClasses
+        processedStyles.add(cssRules)
+        return
+      }
       const result = this.processShorthand(type, value!, unit, undefined, secValue, secUnit)
       if (result) {
         const { cssRules, value: ruleValue } = result
