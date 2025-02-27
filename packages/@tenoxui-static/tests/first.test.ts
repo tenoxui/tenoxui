@@ -28,6 +28,10 @@ describe('TenoxUI Static CSS Test', () => {
     const ui = new TenoxUI({
       property: {
         bg: 'background',
+        p: 'padding',
+        m: 'margin',
+        p1: 'padding',
+        pm: ['padding', 'margin'],
         cbg: {
           property: 'backgroundColor',
           value: 'rgb({0})'
@@ -39,7 +43,15 @@ describe('TenoxUI Static CSS Test', () => {
       },
 
       values: {
-        blue: '#ff00ff'
+        blue: '#ff00ff',
+        4: '10px',
+        padding: {
+          4: '1rem'
+        },
+        hg: '100rem',
+        text: {
+          hg: '255 0 0'
+        }
       },
 
       classes: {
@@ -55,18 +67,10 @@ describe('TenoxUI Static CSS Test', () => {
       }
     })
 
-    console.log(ui.generateRulesFromClass('bgx-{red}/{34}'))
-    console.log(ui.generateRulesFromClass('bg-{red}'))
-    console.log(ui.generateRulesFromClass('cbg-[0_0_0]'))
-    console.log(Array.from(ui.generateRulesFromClass('cbg-{0_0_0} [color]-red')).join('; '))
-
-    console.log(ui.generateRulesFromClass('flex'))
-    console.log(ui.generateRulesFromClass('flex-block'))
-    console.log(ui.generateRulesFromClass('flex-[block]'))
-    console.log(ui.generateRulesFromClass('text'))
-    console.log(ui.generateRulesFromClass('text-{255_0_0}/[19-7-]'))
-    console.log(ui.generateRulesFromClass('text-[#65f672]'))
-    console.log(ui.generateRulesFromClass('text-[#65f672]'))
+    console.log(ui.generateRulesFromClass('text-hg'))
+    console.log(ui.generateRulesFromClass('p-hg'))
+    console.log(ui.generateRulesFromClass('m-4'))
+    console.log(ui.generateRulesFromClass('pm-4'))
 
     it('hsh', () => {
       expect(1).toBe(1)
@@ -433,7 +437,8 @@ describe('TenoxUI Static CSS Test', () => {
         },
         values: {
           primary: '#ccf654',
-          'my-size': '3rem'
+          'my-size': '3rem',
+          'cst-bg': { hg: '255 0 54' }
         },
         apply: {
           '@layer theme': {
@@ -490,6 +495,7 @@ describe('TenoxUI Static CSS Test', () => {
           'tx-ix-2rem',
           'cst-bg-(255_0_0)/20',
           'cst-bg-[rgb(255_0_0_/_1)]',
+          'cst-bg-hg',
           'shl-bg',
           'shl-bg-yellow',
           'shl-bg-blue/20'
@@ -530,6 +536,7 @@ describe('TenoxUI Static CSS Test', () => {
       expect(stylesheet).toContain(
         '.cst-bg-\\[rgb\\(255_0_0_\\/_1\\)\\] { background-color: rgb(255 0 0 / 1) }'
       )
+      expect(stylesheet).toContain('.cst-bg-hg { background-color: rgb(255 0 54 / 100%) }')
     })
   })
   describe('All Possible Class Names', () => {
