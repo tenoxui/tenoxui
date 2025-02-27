@@ -151,18 +151,25 @@ export class TenoxUI {
   private processValue(type: string, value?: string, unit?: string): string {
     if (!value) return ''
 
-    // replace values wrapped in {} with values from this.values
+    // Replace values wrapped in {} with values from this.values
     const replaceWithValueRegistry = (text: string): string => {
       return text.replace(/\{([^}]+)\}/g, (match, key) => {
-        const val = this.values[key]
+        const val =
+          typeof this.values === 'object' && this.values !== null ? this.values[key] : undefined
         return typeof val === 'string' ? val : match
       })
     }
 
-    if (this.values[type] || this.values[value]) {
+    if (
+      typeof this.values === 'object' &&
+      this.values !== null &&
+      ((this.values[type] && typeof this.values[type] === 'object' && this.values[type][value]) ||
+        this.values[value])
+    ) {
       if (typeof this.values[type] === 'object' && this.values[type] !== null) {
         return this.values[type][value] as string
       }
+
       return this.values[value] as string
     } else if (value.startsWith('$')) {
       return `var(--${value.slice(1)})` //? [color]-$my-color => color: var(--my-color)
@@ -170,20 +177,14 @@ export class TenoxUI {
       (value.startsWith('[') && value.endsWith(']')) ||
       (value.startsWith('(') && value.endsWith(')'))
     ) {
-      // if (value.startsWith('(')) console.log(value)
-      const cleanValue = value.slice(1, -1).replace(/_/g, ' ') //? replace '_' (underscore with ' ' (space)
+      const cleanValue = value.slice(1, -1).replace(/_/g, ' ') //? replace '_' with ' '
 
-      // access value from value registry
       if (cleanValue.includes('{')) {
-        //? see example above
-        return replaceWithValueRegistry(cleanValue) //? [color]-[rgb({red})] => color: rgb(255 0 0)
+        return replaceWithValueRegistry(cleanValue)
       }
-      return cleanValue.startsWith('--')
-        ? `var(${cleanValue})` //? [color]-[--my-color] => color: var(--my-color)
-        : cleanValue //? [color]-[rgb(255_0_0)] => color: rgb(255 0 0)
+      return cleanValue.startsWith('--') ? `var(${cleanValue})` : cleanValue
     }
 
-    // or default value
     return value + (unit || '') //? [padding]-4px => padding: 4px
   }
 
@@ -260,6 +261,7 @@ export class TenoxUI {
   }
 
   private parseValuePattern(
+    className: string,
     pattern: string,
     inputValue: string,
     inputUnit: string,
@@ -270,8 +272,8 @@ export class TenoxUI {
       return pattern
 
     const [value, defaultValue] = pattern.split('||').map((s) => s.trim())
-    const finalValue = this.processValue('', inputValue, inputUnit)
-    const finalSecValue = this.processValue('', inputSecValue, inputSecUnit)
+    const finalValue = this.processValue(className, inputValue, inputUnit)
+    const finalSecValue = this.processValue(className, inputSecValue, inputSecUnit)
 
     if ((pattern.includes('{0}') && pattern.includes('{1')) || pattern.includes('{1')) {
       let computedValue = value
@@ -345,6 +347,7 @@ export class TenoxUI {
           if (!classObj) return ''
 
           const processedValue = this.parseValuePattern(
+            className,
             classObj[className] || '',
             value,
             unit,
@@ -512,17 +515,25 @@ export class TenoxUI {
     })
   }
 
-  public generateRulesFromClass(classNames: string) {
-    const processedStyles = new Set<string | string[]>()
-    classNames.split(/\s+/).forEach((className) => {
+  public generateRulesFromClass(classNames: string | string[]) {
+    const processedStyles = new Map<string, string>()
+
+    const classList = Array.isArray(classNames) ? classNames : classNames.split(/\s+/)
+
+    classList.forEach((className) => {
       if (!className) return
 
       const aliasResult = this.processAlias(className)
       if (aliasResult) {
         const { cssRules } = aliasResult
-        processedStyles.add(cssRules)
+        if (typeof cssRules === 'string') {
+          processedStyles.set(cssRules, '')
+        } else if (Array.isArray(cssRules)) {
+          cssRules.forEach((rule) => processedStyles.set(rule, ''))
+        }
         return
       }
+
       const parsed = this.parseClassName(className)
       if (!parsed) return
 
@@ -530,24 +541,28 @@ export class TenoxUI {
       const shouldClasses = this.processCustomClass(type, value, unit, undefined, secValue, secUnit)
       if (shouldClasses) {
         const { cssRules } = shouldClasses
-        processedStyles.add(cssRules)
+        if (typeof cssRules === 'string') {
+          processedStyles.set(cssRules, '')
+        } else if (Array.isArray(cssRules)) {
+          cssRules.forEach((rule) => processedStyles.set(rule, ''))
+        }
         return
       }
+
       const result = this.processShorthand(type, value!, unit, undefined, secValue, secUnit)
       if (result) {
         const { cssRules, value: ruleValue } = result
         const finalValue = ruleValue !== null ? `: ${ruleValue}` : ''
-        if (Array.isArray(cssRules)) {
-          cssRules.forEach((rule) => {
-            processedStyles.add(`${this.toKebabCase(rule)}${finalValue}`)
-          })
-        } else {
-          processedStyles.add(`${cssRules}${finalValue}`)
+
+        if (typeof cssRules === 'string') {
+          processedStyles.set(cssRules, finalValue)
+        } else if (Array.isArray(cssRules)) {
+          cssRules.forEach((rule) => processedStyles.set(this.toKebabCase(rule), finalValue))
         }
       }
     })
 
-    return processedStyles
+    return new Set([...processedStyles.entries()].map(([prop, val]) => `${prop}${val}`))
   }
 
   private processApplyObject(obj: ApplyStyleObject, indentLevel: number = 0): string {
