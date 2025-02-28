@@ -1,9 +1,38 @@
-import type { Property, Values, Aliases, Classes, Breakpoint } from '@tenoxui/types'
+import type { GetCSSProperty, Values, Aliases, Classes, Breakpoint } from '@tenoxui/types'
 
 export type ApplyStyleObject = {
   SINGLE_RULE?: string[]
 } & {
   [key in Exclude<string, 'SINGLE_RULE'>]?: string | ApplyStyleObject
+}
+
+export type PropertyFor = {
+  for: string
+  syntax: '<size>' | '<number>' | '<value>' | RegExp
+  property: GetCSSProperty
+  value?: string
+}
+
+export type Property = {
+  [type: string]: GetCSSProperty | { property?: GetCSSProperty; value?: string } | PropertyFor[]
+}
+
+export type CoreConfig = {
+  property?: Property
+  values?: Values
+  breakpoints?: Breakpoint[]
+  classes?: Classes
+  aliases?: Aliases
+}
+export type CoreConfigFull = {
+  property?: Property
+  values?: Values
+  breakpoints?: Breakpoint[]
+  classes?: Classes
+  aliases?: Aliases
+  attributify?: boolean
+  attributifyPrefix?: string
+  attributifyIgnore?: string[]
 }
 
 export interface TenoxUIConfig {

@@ -1,12 +1,6 @@
+import type { Values, Aliases, Classes, Breakpoint, CSSPropertyOrVariable } from '@tenoxui/types'
 import type {
   Property,
-  Values,
-  Aliases,
-  Classes,
-  Breakpoint,
-  CSSPropertyOrVariable
-} from '@tenoxui/types'
-import type {
   Config,
   TenoxUIConfig,
   ProcessedStyle,
@@ -151,18 +145,25 @@ export class TenoxUI {
   private processValue(type: string, value?: string, unit?: string): string {
     if (!value) return ''
 
-    // replace values wrapped in {} with values from this.values
+    // Replace values wrapped in {} with values from this.values
     const replaceWithValueRegistry = (text: string): string => {
       return text.replace(/\{([^}]+)\}/g, (match, key) => {
-        const val = this.values[key]
+        const val =
+          typeof this.values === 'object' && this.values !== null ? this.values[key] : undefined
         return typeof val === 'string' ? val : match
       })
     }
 
-    if (this.values[type] || this.values[value]) {
+    if (
+      typeof this.values === 'object' &&
+      this.values !== null &&
+      ((this.values[type] && typeof this.values[type] === 'object' && this.values[type][value]) ||
+        this.values[value])
+    ) {
       if (typeof this.values[type] === 'object' && this.values[type] !== null) {
         return this.values[type][value] as string
       }
+
       return this.values[value] as string
     } else if (value.startsWith('$')) {
       return `var(--${value.slice(1)})` //? [color]-$my-color => color: var(--my-color)
@@ -170,20 +171,14 @@ export class TenoxUI {
       (value.startsWith('[') && value.endsWith(']')) ||
       (value.startsWith('(') && value.endsWith(')'))
     ) {
-      // if (value.startsWith('(')) console.log(value)
-      const cleanValue = value.slice(1, -1).replace(/_/g, ' ') //? replace '_' (underscore with ' ' (space)
+      const cleanValue = value.slice(1, -1).replace(/_/g, ' ') //? replace '_' with ' '
 
-      // access value from value registry
       if (cleanValue.includes('{')) {
-        //? see example above
-        return replaceWithValueRegistry(cleanValue) //? [color]-[rgb({red})] => color: rgb(255 0 0)
+        return replaceWithValueRegistry(cleanValue)
       }
-      return cleanValue.startsWith('--')
-        ? `var(${cleanValue})` //? [color]-[--my-color] => color: var(--my-color)
-        : cleanValue //? [color]-[rgb(255_0_0)] => color: rgb(255 0 0)
+      return cleanValue.startsWith('--') ? `var(${cleanValue})` : cleanValue
     }
 
-    // or default value
     return value + (unit || '') //? [padding]-4px => padding: 4px
   }
 
@@ -192,12 +187,39 @@ export class TenoxUI {
     value: string | undefined = '',
     unit: string | undefined = '',
     prefix: string | undefined,
-    secondValue: string | undefined,
-    secondUnit: string | undefined
+    secondValue: string | undefined = '',
+    secondUnit: string | undefined = ''
   ): ProcessedStyle | null {
     const properties = this.property[type]
-    const finalValue = this.processValue(type, value, unit)
-    const finalSecValue = this.processValue(type, secondValue, secondUnit)
+    // Extract "for" from (color:red) => { for: 'color', cleanValue: 'red' }
+    const pattern = /^\(([^:]+):(.+)\)$/
+    let extractedFor: string | null = null
+    let cleanValue = value || ''
+    let extractedSecFor: string | null = null
+    let cleanSecValue = value || ''
+    const matchValue = cleanValue.match(pattern)
+    const matchSecValue = cleanSecValue.match(pattern)
+    if (matchValue) {
+      extractedFor = matchValue[1].trim()
+      cleanValue = matchValue[2].trim()
+    }
+    if (matchSecValue) {
+      extractedSecFor = matchSecValue[1].trim()
+      cleanSecValue = matchSecValue[2].trim()
+    }
+
+    const finalValue = this.processValue(
+      type,
+      value.startsWith('(') && value.includes(extractedFor + ':') ? `(${cleanValue})` : value,
+      unit
+    )
+    const finalSecValue = this.processValue(
+      type,
+      secondValue.startsWith('(') && value.includes(extractedSecFor + ':')
+        ? `(${cleanSecValue})`
+        : secondValue,
+      secondUnit
+    )
 
     if (type.startsWith('[') && type.endsWith(']')) {
       const items = type
@@ -225,16 +247,94 @@ export class TenoxUI {
     }
 
     if (properties) {
-      if (typeof properties === 'object' && 'property' in properties && 'value' in properties) {
+      if (
+        Array.isArray(properties) &&
+        properties.every((item) => typeof item === 'object' && 'for' in item && 'property' in item)
+      ) {
+        const matchedProperties = properties.filter((prop) => {
+          if (extractedFor) return prop.for === extractedFor
+          return true
+        })
+
+        // Changed the type of 'value' parameter to allow undefined if needed.
+        // Alternatively, if 'value' should always be a string, ensure that you pass a string when calling the function.
+        function matchesSyntax(
+          value: string, // Ensure value is a string when calling this function.
+          syntax: '<size>' | '<number>' | '<value>' | RegExp = '<value>'
+        ): boolean {
+          // If syntax is a RegExp, test it directly.
+          if (syntax instanceof RegExp) {
+            return syntax.test(value)
+          }
+
+          if (typeof syntax === 'string') {
+            // Check for a custom syntax pattern like "<option1|option2|...>"
+            const customSyntaxMatch = syntax.match(/^<([^<>]+)>$/)
+            if (customSyntaxMatch) {
+              const allowedValues = customSyntaxMatch[1].split('|')
+              if (allowedValues.includes(value)) return true
+            }
+
+            // Create a record for patterns, using a precise type annotation.
+            const patterns: Record<'<number>' | '<size>', RegExp> = {
+              '<number>': /^(calc\(.+\)|-?\d+(\.\d+)?)$/,
+              '<size>':
+                /^-?\d+(\.\d+)?(px|em|rem|vh|vw|vmin|vmax|dvh|svh|lvh|dvw|svw|lvw|ch|ex|cap|ic|lh|rlh|%)$/
+            }
+
+            // Only check the pattern if syntax is one of the keys in the patterns object.
+            if (syntax === '<number>' || syntax === '<size>') {
+              if (patterns[syntax].test(value)) return true
+            }
+
+            // If syntax is '<value>', then return true.
+            if (syntax === '<value>') return true
+          }
+
+          return false
+        }
+
+        matchedProperties.sort((a, b) => {
+          const isAValue = a.syntax === '<value>'
+          const isBValue = b.syntax === '<value>'
+
+          if (isAValue && !isBValue) return 1
+          if (!isAValue && isBValue) return -1
+          return 0
+        })
+
+        let finalProperty
+        let valuePattern
+        const matchedProp = matchedProperties.find((prop) => matchesSyntax(finalValue, prop.syntax))
+
+        if (matchedProp) {
+          finalProperty = matchedProp.property
+          valuePattern = matchedProp.value ? matchedProp.value : ''
+        }
+
+        const processedValue = valuePattern
+          ? this.parseValuePattern(type, valuePattern, finalValue, '', finalSecValue, '')
+          : finalValue
+
+        return {
+          className: `${type}-${value}${unit}${secondValue ? `/${secondValue}${secondUnit}` : ''}`,
+          cssRules: Array.isArray(finalProperty)
+            ? (finalProperty as string[])
+            : (this.toKebabCase(String(finalProperty)) as string),
+          value: processedValue,
+          prefix
+        }
+      } else if (
+        typeof properties === 'object' &&
+        'property' in properties &&
+        'value' in properties
+      ) {
         const property = properties.property
         const template = properties.value
 
-        const processedValue =
-          value.startsWith('[') && value.endsWith(']')
-            ? finalValue
-            : template
-              ? template.replace(/\{0}/g, finalValue).replace(/\{1}/g, finalSecValue || '')
-              : finalValue
+        const processedValue = template
+          ? this.parseValuePattern(type, template, finalValue, '', finalSecValue, '')
+          : finalValue
 
         return {
           className: `${type}-${value}${unit}`,
@@ -260,6 +360,7 @@ export class TenoxUI {
   }
 
   private parseValuePattern(
+    className: string,
     pattern: string,
     inputValue: string,
     inputUnit: string,
@@ -270,8 +371,8 @@ export class TenoxUI {
       return pattern
 
     const [value, defaultValue] = pattern.split('||').map((s) => s.trim())
-    const finalValue = this.processValue('', inputValue, inputUnit)
-    const finalSecValue = this.processValue('', inputSecValue, inputSecUnit)
+    const finalValue = this.processValue(className, inputValue, inputUnit)
+    const finalSecValue = this.processValue(className, inputSecValue, inputSecUnit)
 
     if ((pattern.includes('{0}') && pattern.includes('{1')) || pattern.includes('{1')) {
       let computedValue = value
@@ -345,6 +446,7 @@ export class TenoxUI {
           if (!classObj) return ''
 
           const processedValue = this.parseValuePattern(
+            className,
             classObj[className] || '',
             value,
             unit,
@@ -512,17 +614,25 @@ export class TenoxUI {
     })
   }
 
-  public generateRulesFromClass(classNames: string) {
-    const processedStyles = new Set<string | string[]>()
-    classNames.split(/\s+/).forEach((className) => {
+  public generateRulesFromClass(classNames: string | string[]) {
+    const processedStyles = new Map<string, string>()
+
+    const classList = Array.isArray(classNames) ? classNames : classNames.split(/\s+/)
+
+    classList.forEach((className) => {
       if (!className) return
 
       const aliasResult = this.processAlias(className)
       if (aliasResult) {
         const { cssRules } = aliasResult
-        processedStyles.add(cssRules)
+        if (typeof cssRules === 'string') {
+          processedStyles.set(cssRules, '')
+        } else if (Array.isArray(cssRules)) {
+          cssRules.forEach((rule) => processedStyles.set(rule, ''))
+        }
         return
       }
+
       const parsed = this.parseClassName(className)
       if (!parsed) return
 
@@ -530,24 +640,28 @@ export class TenoxUI {
       const shouldClasses = this.processCustomClass(type, value, unit, undefined, secValue, secUnit)
       if (shouldClasses) {
         const { cssRules } = shouldClasses
-        processedStyles.add(cssRules)
+        if (typeof cssRules === 'string') {
+          processedStyles.set(cssRules, '')
+        } else if (Array.isArray(cssRules)) {
+          cssRules.forEach((rule) => processedStyles.set(rule, ''))
+        }
         return
       }
+
       const result = this.processShorthand(type, value!, unit, undefined, secValue, secUnit)
       if (result) {
         const { cssRules, value: ruleValue } = result
         const finalValue = ruleValue !== null ? `: ${ruleValue}` : ''
-        if (Array.isArray(cssRules)) {
-          cssRules.forEach((rule) => {
-            processedStyles.add(`${this.toKebabCase(rule)}${finalValue}`)
-          })
-        } else {
-          processedStyles.add(`${cssRules}${finalValue}`)
+
+        if (typeof cssRules === 'string') {
+          processedStyles.set(cssRules, finalValue)
+        } else if (Array.isArray(cssRules)) {
+          cssRules.forEach((rule) => processedStyles.set(this.toKebabCase(rule), finalValue))
         }
       }
     })
 
-    return processedStyles
+    return new Set([...processedStyles.entries()].map(([prop, val]) => `${prop}${val}`))
   }
 
   private processApplyObject(obj: ApplyStyleObject, indentLevel: number = 0): string {
@@ -617,7 +731,7 @@ export class TenoxUI {
     if (Array.isArray(cssRules)) {
       const combinedRule = cssRules
         .map((prop: string) =>
-          value ? `${this.toKebabCase(prop)}: ${value}` : this.toKebabCase(prop)
+          value ? `${this.toKebabCase(prop)}: ${value}` : this.toKebabCase(String(prop))
         )
         .join('; ')
       styleSet.add(combinedRule)

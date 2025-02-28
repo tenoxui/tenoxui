@@ -24,55 +24,6 @@ describe('TenoxUI Static CSS Test', () => {
     })
   })
 
-  describe('Only Test', () => {
-    const ui = new TenoxUI({
-      property: {
-        bg: 'background',
-        cbg: {
-          property: 'backgroundColor',
-          value: 'rgb({0})'
-        },
-        bgx: {
-          property: 'borderColor',
-          value: 'rgb({0} / {1})'
-        }
-      },
-
-      values: {
-        blue: '#ff00ff'
-      },
-
-      classes: {
-        display: {
-          flex: '{0}hello || flex'
-        },
-        '--text-opacity': {
-          text: '{1}% || 1'
-        },
-        color: {
-          text: 'rgb({0} / var(--text-opacity)) || red'
-        }
-      }
-    })
-
-    console.log(ui.generateRulesFromClass('bgx-{red}/{34}'))
-    console.log(ui.generateRulesFromClass('bg-{red}'))
-    console.log(ui.generateRulesFromClass('cbg-[0_0_0]'))
-    console.log(Array.from(ui.generateRulesFromClass('cbg-{0_0_0} [color]-red')).join('; '))
-
-    console.log(ui.generateRulesFromClass('flex'))
-    console.log(ui.generateRulesFromClass('flex-block'))
-    console.log(ui.generateRulesFromClass('flex-[block]'))
-    console.log(ui.generateRulesFromClass('text'))
-    console.log(ui.generateRulesFromClass('text-{255_0_0}/[19-7-]'))
-    console.log(ui.generateRulesFromClass('text-[#65f672]'))
-    console.log(ui.generateRulesFromClass('text-[#65f672]'))
-
-    it('hsh', () => {
-      expect(1).toBe(1)
-    })
-  })
-
   describe('Case Conversion', () => {
     beforeEach(() => {
       tenoxui = new TenoxUI()
@@ -429,11 +380,34 @@ describe('TenoxUI Static CSS Test', () => {
         property: {
           bg: 'backgroundColor',
           p: 'padding',
-          box: ['width', 'height']
+          box: ['width', 'height'],
+          'my-pm': {
+            property: ['margin', 'padding'],
+            value: 'calc({0}px - {1 | 1rem})'
+          },
+          border: [
+            {
+              for: 'style',
+              syntax: '<dashed|solid>',
+              property: 'borderStyle'
+            },
+            {
+              for: 'length',
+              syntax: '<number>',
+              property: 'borderWidth',
+              value: '{0}px'
+            },
+            {
+              for: 'color',
+              syntax: '<value>',
+              property: 'borderColor'
+            }
+          ]
         },
         values: {
           primary: '#ccf654',
-          'my-size': '3rem'
+          'my-size': '3rem',
+          'cst-bg': { hg: '255 0 54' }
         },
         apply: {
           '@layer theme': {
@@ -490,14 +464,25 @@ describe('TenoxUI Static CSS Test', () => {
           'tx-ix-2rem',
           'cst-bg-(255_0_0)/20',
           'cst-bg-[rgb(255_0_0_/_1)]',
+          'cst-bg-hg',
           'shl-bg',
           'shl-bg-yellow',
-          'shl-bg-blue/20'
+          'shl-bg-blue/20',
+          'border-1',
+          'border-red',
+          'border-solid'
         ]
       }
 
       tenoxui = new TenoxUI(config)
       stylesheet = tenoxui.generateStylesheet()
+    })
+
+    it('should process complex shorthand', () => {
+      console.log(stylesheet)
+      expect(stylesheet).toContain('.border-red { border-color: red }')
+      expect(stylesheet).toContain('.border-1 { border-width: 1px }')
+      expect(stylesheet).toContain('.border-solid { border-style: solid }')
     })
     it('should process basic shorthand', () => {
       expect(stylesheet).toContain('.bg-red { background-color: red }')
@@ -530,6 +515,7 @@ describe('TenoxUI Static CSS Test', () => {
       expect(stylesheet).toContain(
         '.cst-bg-\\[rgb\\(255_0_0_\\/_1\\)\\] { background-color: rgb(255 0 0 / 1) }'
       )
+      expect(stylesheet).toContain('.cst-bg-hg { background-color: rgb(255 0 54 / 100%) }')
     })
   })
   describe('All Possible Class Names', () => {
