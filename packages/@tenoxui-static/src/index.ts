@@ -1,12 +1,6 @@
+import type { Values, Aliases, Classes, Breakpoint, CSSPropertyOrVariable } from '@tenoxui/types'
 import type {
   Property,
-  Values,
-  Aliases,
-  Classes,
-  Breakpoint,
-  CSSPropertyOrVariable
-} from '@tenoxui/types'
-import type {
   Config,
   TenoxUIConfig,
   ProcessedStyle,
@@ -193,12 +187,39 @@ export class TenoxUI {
     value: string | undefined = '',
     unit: string | undefined = '',
     prefix: string | undefined,
-    secondValue: string | undefined,
-    secondUnit: string | undefined
+    secondValue: string | undefined = '',
+    secondUnit: string | undefined = ''
   ): ProcessedStyle | null {
     const properties = this.property[type]
-    const finalValue = this.processValue(type, value, unit)
-    const finalSecValue = this.processValue(type, secondValue, secondUnit)
+    // Extract "for" from (color:red) => { for: 'color', cleanValue: 'red' }
+    const pattern = /^\(([^:]+):(.+)\)$/
+    let extractedFor: string | null = null
+    let cleanValue = value || ''
+    let extractedSecFor: string | null = null
+    let cleanSecValue = value || ''
+    const matchValue = cleanValue.match(pattern)
+    const matchSecValue = cleanSecValue.match(pattern)
+    if (matchValue) {
+      extractedFor = matchValue[1].trim()
+      cleanValue = matchValue[2].trim()
+    }
+    if (matchSecValue) {
+      extractedSecFor = matchSecValue[1].trim()
+      cleanSecValue = matchSecValue[2].trim()
+    }
+
+    const finalValue = this.processValue(
+      type,
+      value.startsWith('(') && value.includes(extractedFor + ':') ? `(${cleanValue})` : value,
+      unit
+    )
+    const finalSecValue = this.processValue(
+      type,
+      secondValue.startsWith('(') && value.includes(extractedSecFor + ':')
+        ? `(${cleanSecValue})`
+        : secondValue,
+      secondUnit
+    )
 
     if (type.startsWith('[') && type.endsWith(']')) {
       const items = type
@@ -226,16 +247,94 @@ export class TenoxUI {
     }
 
     if (properties) {
-      if (typeof properties === 'object' && 'property' in properties && 'value' in properties) {
+      if (
+        Array.isArray(properties) &&
+        properties.every((item) => typeof item === 'object' && 'for' in item && 'property' in item)
+      ) {
+        const matchedProperties = properties.filter((prop) => {
+          if (extractedFor) return prop.for === extractedFor
+          return true
+        })
+
+        // Changed the type of 'value' parameter to allow undefined if needed.
+        // Alternatively, if 'value' should always be a string, ensure that you pass a string when calling the function.
+        function matchesSyntax(
+          value: string, // Ensure value is a string when calling this function.
+          syntax: '<size>' | '<number>' | '<value>' | RegExp = '<value>'
+        ): boolean {
+          // If syntax is a RegExp, test it directly.
+          if (syntax instanceof RegExp) {
+            return syntax.test(value)
+          }
+
+          if (typeof syntax === 'string') {
+            // Check for a custom syntax pattern like "<option1|option2|...>"
+            const customSyntaxMatch = syntax.match(/^<([^<>]+)>$/)
+            if (customSyntaxMatch) {
+              const allowedValues = customSyntaxMatch[1].split('|')
+              if (allowedValues.includes(value)) return true
+            }
+
+            // Create a record for patterns, using a precise type annotation.
+            const patterns: Record<'<number>' | '<size>', RegExp> = {
+              '<number>': /^(calc\(.+\)|-?\d+(\.\d+)?)$/,
+              '<size>':
+                /^-?\d+(\.\d+)?(px|em|rem|vh|vw|vmin|vmax|dvh|svh|lvh|dvw|svw|lvw|ch|ex|cap|ic|lh|rlh|%)$/
+            }
+
+            // Only check the pattern if syntax is one of the keys in the patterns object.
+            if (syntax === '<number>' || syntax === '<size>') {
+              if (patterns[syntax].test(value)) return true
+            }
+
+            // If syntax is '<value>', then return true.
+            if (syntax === '<value>') return true
+          }
+
+          return false
+        }
+
+        matchedProperties.sort((a, b) => {
+          const isAValue = a.syntax === '<value>'
+          const isBValue = b.syntax === '<value>'
+
+          if (isAValue && !isBValue) return 1
+          if (!isAValue && isBValue) return -1
+          return 0
+        })
+
+        let finalProperty
+        let valuePattern
+        const matchedProp = matchedProperties.find((prop) => matchesSyntax(finalValue, prop.syntax))
+
+        if (matchedProp) {
+          finalProperty = matchedProp.property
+          valuePattern = matchedProp.value ? matchedProp.value : ''
+        }
+
+        const processedValue = valuePattern
+          ? this.parseValuePattern(type, valuePattern, finalValue, '', finalSecValue, '')
+          : finalValue
+
+        return {
+          className: `${type}-${value}${unit}${secondValue ? `/${secondValue}${secondUnit}` : ''}`,
+          cssRules: Array.isArray(finalProperty)
+            ? (finalProperty as string[])
+            : (this.toKebabCase(String(finalProperty)) as string),
+          value: processedValue,
+          prefix
+        }
+      } else if (
+        typeof properties === 'object' &&
+        'property' in properties &&
+        'value' in properties
+      ) {
         const property = properties.property
         const template = properties.value
 
-        const processedValue =
-          value.startsWith('[') && value.endsWith(']')
-            ? finalValue
-            : template
-              ? template.replace(/\{0}/g, finalValue).replace(/\{1}/g, finalSecValue || '')
-              : finalValue
+        const processedValue = template
+          ? this.parseValuePattern(type, template, finalValue, '', finalSecValue, '')
+          : finalValue
 
         return {
           className: `${type}-${value}${unit}`,
@@ -632,7 +731,7 @@ export class TenoxUI {
     if (Array.isArray(cssRules)) {
       const combinedRule = cssRules
         .map((prop: string) =>
-          value ? `${this.toKebabCase(prop)}: ${value}` : this.toKebabCase(prop)
+          value ? `${this.toKebabCase(prop)}: ${value}` : this.toKebabCase(String(prop))
         )
         .join('; ')
       styleSet.add(combinedRule)
