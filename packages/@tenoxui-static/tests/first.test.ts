@@ -24,6 +24,77 @@ describe('TenoxUI Static CSS Test', () => {
     })
   })
 
+  describe('New Property festure', () => {
+    const ui = new TenoxUI({
+      property: {
+        bg: 'background',
+        p: 'padding',
+        op: {
+          property: ['padding', 'margin'],
+          value: '{0}rem'
+        },
+        border: [
+          {
+            for: 'style',
+            syntax: '<solid|dashed>',
+            property: 'borderStyle'
+          },
+          {
+            for: 'color',
+            syntax: '<value>',
+            property: 'borderColor',
+            value: 'rgn({0} / var(--text-opacity))'
+          },
+          {
+            for: 'width',
+            syntax: '<number>',
+            property: 'borderWidth',
+            value: '{0}px'
+          },
+          {
+            for: 'hehe',
+            syntax: '<value>',
+            property: 'borderColor',
+            value: 'rgb({0} / {1 | 1}) || red'
+          }
+        ],
+        filter: [
+          {
+            for: 'blur',
+            syntax: '<length>',
+            value: 'blur({0})'
+          },
+          {
+            for: 'hue-rotate',
+            syntax: '<angle>',
+            value: 'hue-rotate({0})'
+          }
+        ]
+      },
+      values: {
+        4: '1rem'
+      },
+      apply: {
+        SINGLE_RULE: ["@charset 'UTF-8';", "@import '...';"],
+        ':root': '[--bg-red]-blue',
+        body: 'op-1 [margin]-20px'
+      }
+    })
+
+    console.log(ui.parseValuePattern('bg', 'rgb({0} / {1})', '255 0 0', '', 'var(--opacity)', ''))
+    console.log(ui.processShorthand('border', 'solid'))
+    console.log(ui.processShorthand('border', '(style:dashed)'))
+    console.log(ui.processShorthand('border', '(color:255_0_0)'))
+    console.log(ui.processShorthand('border', '1', '', null, '10', 'rem'))
+    console.log(ui.processShorthand('border', '(hehe:255_0_0)'))
+    console.log(ui.processShorthand('border', '(hehe:255_0_0)', '', null, '10', '%'))
+    console.log(ui.processShorthand('border', '(color:red)'))
+
+    it('gehe', () => {
+      expect(1).toBe(1)
+    })
+  })
+
   describe('Only Test', () => {
     const ui = new TenoxUI({
       property: {
@@ -433,7 +504,29 @@ describe('TenoxUI Static CSS Test', () => {
         property: {
           bg: 'backgroundColor',
           p: 'padding',
-          box: ['width', 'height']
+          box: ['width', 'height'],
+          'my-pm': {
+            property: ['margin', 'padding'],
+            value: 'calc({0}px - {1 | 1rem})'
+          },
+          border: [
+            {
+              for: 'style',
+              syntax: '<dashed|solid>',
+              property: 'borderStyle'
+            },
+            {
+              for: 'length',
+              syntax: '<number>',
+              property: 'borderWidth',
+              value: '{0}px'
+            },
+            {
+              for: 'color',
+              syntax: '<value>',
+              property: 'borderColor'
+            }
+          ]
         },
         values: {
           primary: '#ccf654',
@@ -498,12 +591,22 @@ describe('TenoxUI Static CSS Test', () => {
           'cst-bg-hg',
           'shl-bg',
           'shl-bg-yellow',
-          'shl-bg-blue/20'
+          'shl-bg-blue/20',
+          'border-1',
+          'border-red',
+          'border-solid'
         ]
       }
 
       tenoxui = new TenoxUI(config)
       stylesheet = tenoxui.generateStylesheet()
+    })
+
+    it('should process complex shorthand', () => {
+      console.log(stylesheet)
+      expect(stylesheet).toContain('.border-red { border-color: red }')
+      expect(stylesheet).toContain('.border-1 { border-width: 1px }')
+      expect(stylesheet).toContain('.border-solid { border-style: solid }')
     })
     it('should process basic shorthand', () => {
       expect(stylesheet).toContain('.bg-red { background-color: red }')
