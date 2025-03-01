@@ -58,7 +58,7 @@ export class TenoxUI {
   }
 
   private escapeCSSSelector(str: string): string {
-    return str.replace(/([ #{}.;?%&,@+*~'"!^$[\]()=>|/])/g, '\\$1')
+    return str.replace(/([ #{}.:;?%&,@+*~'"!^$[\]()=>|/])/g, '\\$1')
   }
 
   private getAllClassNames(classRegistry: Classes | undefined): string[] {
@@ -74,6 +74,37 @@ export class TenoxUI {
     })
 
     return Array.from(classNames)
+  }
+
+  private matchesSyntax(
+    value: string,
+    syntax: '<size>' | '<number>' | '<value>' | RegExp = '<value>'
+  ): boolean {
+    if (syntax instanceof RegExp) {
+      return syntax.test(value)
+    }
+
+    if (typeof syntax === 'string') {
+      const customSyntaxMatch = syntax.match(/^<([^<>]+)>$/)
+      if (customSyntaxMatch) {
+        const allowedValues = customSyntaxMatch[1].split('|')
+        if (allowedValues.includes(value)) return true
+      }
+
+      const patterns: Record<'<number>' | '<size>', RegExp> = {
+        '<number>': /^(calc\(.+\)|-?\d+(\.\d+)?)$/,
+        '<size>':
+          /^-?\d+(\.\d+)?(px|em|rem|vh|vw|vmin|vmax|dvh|svh|lvh|dvw|svw|lvw|ch|ex|cap|ic|lh|rlh|%)$/
+      }
+
+      if (syntax === '<number>' || syntax === '<size>') {
+        if (patterns[syntax].test(value)) return true
+      }
+
+      if (syntax === '<value>') return true
+    }
+
+    return false
   }
 
   private getTypePrefixes(): string {
@@ -192,35 +223,31 @@ export class TenoxUI {
   ): ProcessedStyle | null {
     const properties = this.property[type]
     // Extract "for" from (color:red) => { for: 'color', cleanValue: 'red' }
-    const pattern = /^\(([^:]+):(.+)\)$/
+    // Pattern that matches both (label:value) and [label:value] formats
+    const pattern = /^(?:\(|\[)([^:]+):(.+)(?:\)|\])$/
     let extractedFor: string | null = null
     let cleanValue = value || ''
-    let extractedSecFor: string | null = null
-    let cleanSecValue = value || ''
     const matchValue = cleanValue.match(pattern)
-    const matchSecValue = cleanSecValue.match(pattern)
     if (matchValue) {
       extractedFor = matchValue[1].trim()
       cleanValue = matchValue[2].trim()
     }
-    if (matchSecValue) {
-      extractedSecFor = matchSecValue[1].trim()
-      cleanSecValue = matchSecValue[2].trim()
-    }
 
+    // process input value
     const finalValue = this.processValue(
       type,
-      value.startsWith('(') && value.includes(extractedFor + ':') ? `(${cleanValue})` : value,
+      value.startsWith('(') || (value.startsWith('[') && value.includes(extractedFor + ':'))
+        ? value.startsWith('(')
+          ? `(${cleanValue})`
+          : `[${cleanValue}]`
+        : value,
       unit
     )
-    const finalSecValue = this.processValue(
-      type,
-      secondValue.startsWith('(') && value.includes(extractedSecFor + ':')
-        ? `(${cleanSecValue})`
-        : secondValue,
-      secondUnit
-    )
+    // process second value
+    const finalSecValue = this.processValue(type, secondValue, secondUnit)
 
+    // if the type started with square bracket
+    // e.g. [--my-color], [color,borderColor] ...
     if (type.startsWith('[') && type.endsWith(']')) {
       const items = type
         .slice(1, -1)
@@ -240,60 +267,37 @@ export class TenoxUI {
 
       return {
         className: `${`[${type.slice(1, -1)}]-${value}${unit}`}`,
-        cssRules,
-        value: null,
+        cssRules, // return css rules directly
+        value: null, // and set value to null to prevent value duplication
         prefix
       }
     }
 
+    // if type matched property's key
+    // e.g. { property: { bg: 'background' } }
+    // the `bg` is the type
     if (properties) {
+      // conditional array properties
+      // example
+      /**
+       * bg: [{
+       *   for: 'color',
+       *   syntax: '<value>',
+       *   property: 'color'
+       * }]
+       */
       if (
         Array.isArray(properties) &&
         properties.every((item) => typeof item === 'object' && 'for' in item && 'property' in item)
       ) {
+        // prioritize the matched key (`for` field)
         const matchedProperties = properties.filter((prop) => {
           if (extractedFor) return prop.for === extractedFor
           return true
         })
 
-        // Changed the type of 'value' parameter to allow undefined if needed.
-        // Alternatively, if 'value' should always be a string, ensure that you pass a string when calling the function.
-        function matchesSyntax(
-          value: string, // Ensure value is a string when calling this function.
-          syntax: '<size>' | '<number>' | '<value>' | RegExp = '<value>'
-        ): boolean {
-          // If syntax is a RegExp, test it directly.
-          if (syntax instanceof RegExp) {
-            return syntax.test(value)
-          }
-
-          if (typeof syntax === 'string') {
-            // Check for a custom syntax pattern like "<option1|option2|...>"
-            const customSyntaxMatch = syntax.match(/^<([^<>]+)>$/)
-            if (customSyntaxMatch) {
-              const allowedValues = customSyntaxMatch[1].split('|')
-              if (allowedValues.includes(value)) return true
-            }
-
-            // Create a record for patterns, using a precise type annotation.
-            const patterns: Record<'<number>' | '<size>', RegExp> = {
-              '<number>': /^(calc\(.+\)|-?\d+(\.\d+)?)$/,
-              '<size>':
-                /^-?\d+(\.\d+)?(px|em|rem|vh|vw|vmin|vmax|dvh|svh|lvh|dvw|svw|lvw|ch|ex|cap|ic|lh|rlh|%)$/
-            }
-
-            // Only check the pattern if syntax is one of the keys in the patterns object.
-            if (syntax === '<number>' || syntax === '<size>') {
-              if (patterns[syntax].test(value)) return true
-            }
-
-            // If syntax is '<value>', then return true.
-            if (syntax === '<value>') return true
-          }
-
-          return false
-        }
-
+        // sorting the object to always put an object with `<value>` -
+        // as syntax at the bottom of the array, ensuring other syntax treated correctly
         matchedProperties.sort((a, b) => {
           const isAValue = a.syntax === '<value>'
           const isBValue = b.syntax === '<value>'
@@ -305,23 +309,49 @@ export class TenoxUI {
 
         let finalProperty
         let valuePattern
-        const matchedProp = matchedProperties.find((prop) => matchesSyntax(finalValue, prop.syntax))
+        const matchedProp = matchedProperties.find((prop) => {
+          return this.matchesSyntax(finalValue, prop.for === extractedFor ? '<value>' : prop.syntax)
+        })
 
         if (matchedProp) {
-          finalProperty = matchedProp.property
+          finalProperty =
+            typeof matchedProp.property === 'function'
+              ? matchedProp.property({ value, unit, secondValue, secondUnit, key: extractedFor })
+              : matchedProp.property
+
           valuePattern = matchedProp.value ? matchedProp.value : ''
         }
 
-        const processedValue = valuePattern
-          ? this.parseValuePattern(type, valuePattern, finalValue, '', finalSecValue, '')
-          : finalValue
+        let processedValue
+
+        if (matchedProp && typeof valuePattern === 'function') {
+          const computedValue = valuePattern({
+            value: finalValue,
+            unit,
+            secondValue,
+            secondUnit,
+            key: extractedFor
+          })
+
+          if (computedValue.includes(extractedFor + ':')) {
+            processedValue = finalValue
+          } else {
+            processedValue = computedValue
+          }
+        } else if (typeof valuePattern === 'string') {
+          processedValue = valuePattern
+            ? this.parseValuePattern(type, valuePattern, finalValue, '', finalSecValue, '')
+            : finalValue
+        } else processedValue = null
 
         return {
-          className: `${type}-${value}${unit}${secondValue ? `/${secondValue}${secondUnit}` : ''}`,
+          className: `${type}${value ? `-${value}${unit}` : ''}${
+            secondValue ? `/${secondValue}${secondUnit}` : ''
+          }`,
           cssRules: Array.isArray(finalProperty)
             ? (finalProperty as string[])
             : (this.toKebabCase(String(finalProperty)) as string),
-          value: processedValue,
+          value: value.startsWith('[') ? finalValue : processedValue,
           prefix
         }
       } else if (
@@ -329,28 +359,63 @@ export class TenoxUI {
         'property' in properties &&
         'value' in properties
       ) {
-        const property = properties.property
+        const property =
+          typeof properties.property === 'function'
+            ? properties.property({ value, unit, secondValue, secondUnit, key: extractedFor })
+            : properties.property
+
         const template = properties.value
 
-        const processedValue = template
-          ? this.parseValuePattern(type, template, finalValue, '', finalSecValue, '')
-          : finalValue
+        let processedValue
+
+        if (typeof template === 'function') {
+          let currentValue
+
+          if (value.startsWith('(') && value.includes(extractedFor + ':')) {
+            currentValue = finalValue
+          } else if (unit === '') {
+            currentValue = finalValue
+          } else currentValue = value
+
+          console.log(currentValue)
+
+          const computedValue = template({
+            value: currentValue,
+            unit,
+            secondValue: secondUnit === '' ? finalSecValue : secondValue,
+            secondUnit,
+            key: extractedFor
+          })
+
+          processedValue = computedValue
+        } else if (template && typeof template === 'string') {
+          processedValue = this.parseValuePattern(type, template, finalValue, '', finalSecValue, '')
+            ? this.parseValuePattern(type, template, finalValue, '', finalSecValue, '')
+            : finalValue
+        } else processedValue = null
 
         return {
-          className: `${type}-${value}${unit}`,
+          className: `${type}${value ? `-${value}${unit}` : ''}${
+            secondValue ? `/${secondValue}${secondUnit}` : ''
+          }`,
           cssRules: Array.isArray(property)
             ? (property as string[])
             : (this.toKebabCase(String(property)) as string),
-          value: processedValue,
+          value: value.startsWith('[') ? finalValue : processedValue,
           prefix
         }
       }
 
+      const finalRegProperty =
+        typeof properties === 'function'
+          ? properties({ value, unit, secondValue, secondUnit, key: extractedFor })
+          : properties
+
       return {
         className: `${type}-${value}${unit}`,
         cssRules: Array.isArray(properties)
-          ? (properties as string[])
-          : (this.toKebabCase(String(properties)) as string),
+          ? (finalRegProperty as string[])
+          : (this.toKebabCase(String(finalRegProperty)) as string),
         value: finalValue,
         prefix
       }

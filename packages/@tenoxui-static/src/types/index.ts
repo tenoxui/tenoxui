@@ -6,15 +6,41 @@ export type ApplyStyleObject = {
   [key in Exclude<string, 'SINGLE_RULE'>]?: string | ApplyStyleObject
 }
 
+type PropertyParams = {
+  key?: string | null
+  value?: string
+  unit?: string
+  secondValue?: string
+  secondUnit?: string
+}
+
+type ValueParams = {
+  key?: string | null
+  value?: string
+  unit?: string
+  secondValue?: string
+  secondUnit?: string
+}
+
+type PropertyValue = GetCSSProperty | ((params: PropertyParams) => GetCSSProperty)
+
+type ValuePropType = string | ((params: ValueParams) => string)
+
 export type PropertyFor = {
   for: string
   syntax: '<size>' | '<number>' | '<value>' | RegExp
-  property: GetCSSProperty
-  value?: string
+  property: PropertyValue
+  value?: ValuePropType
 }
 
 export type Property = {
-  [type: string]: GetCSSProperty | { property?: GetCSSProperty; value?: string } | PropertyFor[]
+  [type: string]:
+    | PropertyValue
+    | {
+        property?: PropertyValue
+        value?: ValuePropType
+      }
+    | PropertyFor[]
 }
 
 export type CoreConfig = {
