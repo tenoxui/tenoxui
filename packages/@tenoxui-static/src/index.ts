@@ -377,8 +377,6 @@ export class TenoxUI {
             currentValue = finalValue
           } else currentValue = value
 
-          console.log(currentValue)
-
           const computedValue = template({
             value: currentValue,
             unit,
