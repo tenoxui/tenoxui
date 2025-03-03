@@ -316,7 +316,13 @@ export class TenoxUI {
         if (matchedProp) {
           finalProperty =
             typeof matchedProp.property === 'function'
-              ? matchedProp.property({ value, unit, secondValue, secondUnit, key: extractedFor })
+              ? matchedProp.property({
+                  value: unit ? value : finalSecValue,
+                  unit,
+                  secondValue: secondUnit ? secondValue : finalSecValue,
+                  secondUnit,
+                  key: extractedFor
+                })
               : matchedProp.property
 
           valuePattern = matchedProp.value ? matchedProp.value : ''
@@ -325,19 +331,14 @@ export class TenoxUI {
         let processedValue
 
         if (matchedProp && typeof valuePattern === 'function') {
-          const computedValue = valuePattern({
-            value: finalValue,
+          processedValue = valuePattern({
+            value: unit ? value : finalValue,
             unit,
-            secondValue,
+            secondValue: secondUnit ? secondValue : finalSecValue,
             secondUnit,
-            key: extractedFor
+            key: extractedFor,
+            property: finalProperty
           })
-
-          if (computedValue.includes(extractedFor + ':')) {
-            processedValue = finalValue
-          } else {
-            processedValue = computedValue
-          }
         } else if (typeof valuePattern === 'string') {
           processedValue = valuePattern
             ? this.parseValuePattern(type, valuePattern, finalValue, '', finalSecValue, '')
@@ -361,7 +362,13 @@ export class TenoxUI {
       ) {
         const property =
           typeof properties.property === 'function'
-            ? properties.property({ value, unit, secondValue, secondUnit, key: extractedFor })
+            ? properties.property({
+                value: unit ? value : finalValue,
+                unit,
+                secondValue: secondUnit ? secondValue : finalSecValue,
+                secondUnit,
+                key: extractedFor
+              })
             : properties.property
 
         const template = properties.value
@@ -369,23 +376,14 @@ export class TenoxUI {
         let processedValue
 
         if (typeof template === 'function') {
-          let currentValue
-
-          if (value.startsWith('(') && value.includes(extractedFor + ':')) {
-            currentValue = finalValue
-          } else if (unit === '') {
-            currentValue = finalValue
-          } else currentValue = value
-
-          const computedValue = template({
-            value: currentValue,
+          processedValue = template({
+            value: unit ? value : finalValue,
             unit,
-            secondValue: secondUnit === '' ? finalSecValue : secondValue,
+            secondValue: secondUnit ? secondValue : finalSecValue,
             secondUnit,
-            key: extractedFor
+            key: extractedFor,
+            property
           })
-
-          processedValue = computedValue
         } else if (template && typeof template === 'string') {
           processedValue = this.parseValuePattern(type, template, finalValue, '', finalSecValue, '')
             ? this.parseValuePattern(type, template, finalValue, '', finalSecValue, '')

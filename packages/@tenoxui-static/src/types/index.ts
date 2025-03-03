@@ -20,6 +20,7 @@ type ValueParams = {
   unit?: string
   secondValue?: string
   secondUnit?: string
+  property?: GetCSSProperty
 }
 
 type PropertyValue = GetCSSProperty | ((params: PropertyParams) => GetCSSProperty)

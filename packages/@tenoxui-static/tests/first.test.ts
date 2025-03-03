@@ -5,6 +5,65 @@ describe('TenoxUI Static CSS Test', () => {
   let tenoxui: TenoxUI
   let stylesheet: string
 
+  describe('Test Only ', () => {
+    it('should initialize with empty parameters', () => {
+      const ui = new TenoxUI({
+        property: {
+          bgx: [
+            {
+              for: 'color',
+              syntax: '<value>',
+              property: ({ value }) => {
+                if (
+                  /^([0-9]{1,3}) ([0-9]{1,3}) ([0-9]{1,3})$/.test(value) &&
+                  value.split(' ').every((num) => num >= 0 && num <= 255)
+                ) {
+                  return 'background-color'
+                } else return 'background'
+              },
+              value: ({ value }) => {
+                return `rgb(${value})`
+              }
+            }
+          ],
+          bg: {
+            property: ({ key, value }) => {
+              const props = {
+                size: 'backgroundSize',
+                color: 'backgroundColor',
+                clip: 'backgroundClip'
+              }
+
+              return props[key] || 'background'
+            },
+
+            value: ({ value, key }) => {
+              const props = {
+                clip: value.includes('text') ? `${value}-box` : value
+              }
+
+              return props[key] || value
+            }
+          },
+          ui: ({ key }) => key
+        }
+      })
+
+      expect(ui).toBeInstanceOf(TenoxUI)
+    })
+
+    it('should initialize with provided parameters', () => {
+      const config: TenoxUIParams = {
+        property: { bg: 'backgroundColor' },
+        values: { red: '#ff0000' },
+        aliases: { btn: 'bg-blue p-2rem' },
+        breakpoints: [{ name: 'sm', min: 640 }],
+        reserveClass: ['bg-blue']
+      }
+      const instance = new TenoxUI(config)
+      expect(instance).toBeInstanceOf(TenoxUI)
+    })
+  })
   describe('Constructor', () => {
     it('should initialize with empty parameters', () => {
       const instance = new TenoxUI()
@@ -381,6 +440,8 @@ describe('TenoxUI Static CSS Test', () => {
           bg: 'backgroundColor',
           p: 'padding',
           box: ['width', 'height'],
+          bgx: ({ key }) => key,
+
           'my-pm': {
             property: ['margin', 'padding'],
             value: 'calc({0}px - {1 | 1rem})'
@@ -479,7 +540,6 @@ describe('TenoxUI Static CSS Test', () => {
     })
 
     it('should process complex shorthand', () => {
-      console.log(stylesheet)
       expect(stylesheet).toContain('.border-red { border-color: red }')
       expect(stylesheet).toContain('.border-1 { border-width: 1px }')
       expect(stylesheet).toContain('.border-solid { border-style: solid }')
@@ -612,6 +672,112 @@ describe('TenoxUI Static CSS Test', () => {
       expect(stylesheet).toContain(
         '.\\[background\\,--red\\]-\\[rgb\\(var\\(--color\\,_255_0_0\\)\\)\\] { background: rgb(var(--color, 255 0 0)); --red: rgb(var(--color, 255 0 0)) }'
       )
+    })
+  })
+
+  describe('Multiple properties from single type', () => {
+    const ui = new TenoxUI({
+      property: {
+        bg: ({ key }) =>
+          ({
+            size: 'backgroundSize',
+            color: 'backgroundColor'
+          })[key] || 'background',
+        bgx: {
+          property: ({ key }) =>
+            ({
+              size: 'backgroundSize',
+              color: 'backgroundColor'
+            })[key] || 'background',
+          value: ({ value, key }) => {
+            const values = {
+              color: `rgb(${value} / var(--text-opacity))`
+            }
+
+            return values[key] || value
+          }
+        }
+      }
+    })
+
+    it('should handle property', () => {
+      ui.processClassNames(['bg-red', 'bg-(size:cover)', 'bg-(color:rgb(255_0_0_/_0.4))'])
+      const stylesheet = ui.generateStylesheet()
+      expect(stylesheet).toContain('.bg-red { background: red }')
+      expect(stylesheet).toContain('.bg-\\(size\\:cover\\) { background-size: cover }')
+      expect(stylesheet).toContain(
+        '.bg-\\(color\\:rgb\\(255_0_0_\\/_0\\.4\\)\\) { background-color: rgb(255 0 0 / 0.4) }'
+      )
+    })
+    it('should handle property, with different value', () => {
+      ui.processClassNames(['bgx-red', 'bgx-(size:cover)', 'bgx-(color:255_0_0)'])
+      const stylesheet = ui.generateStylesheet()
+
+      expect(stylesheet).toContain('.bg-red { background: red }')
+      expect(stylesheet).toContain('.bg-\\(size\\:cover\\) { background-size: cover }')
+      expect(stylesheet).toContain(
+        '.bg-\\(color\\:rgb\\(255_0_0_\\/_0\\.4\\)\\) { background-color: rgb(255 0 0 / 0.4) }'
+      )
+    })
+  })
+  describe('Conditional properties', () => {
+    const ui = new TenoxUI({
+      property: {
+        h: {
+          property: ({ key }) => {
+            const keys = {
+              max: 'maxHeight',
+              min: 'minHeight'
+            }
+
+            return keys[key] || 'height'
+          },
+          value: ({ value }) => `calc(0.25rem * ${value})`
+        },
+        border: {
+          property: ({ key }) => key || 'border',
+          value: ({ property, value, unit }) => {
+            if (property === 'border-color') return `rgb(${value} / 1)`
+            else return value + unit
+          }
+        },
+        w: {
+          property: ({ value, key }) => {
+            return 'width'
+          },
+          value: ({ value, unit }) => {
+            console.log(value)
+
+            return value + unit
+          }
+        }
+      },
+      values: {
+        full: '100%'
+      }
+    })
+    const stylesheet = ui
+      .processClassNames([
+        'h-4',
+        'h-[max:1rem]',
+        'h-(min:5)',
+        'h-[min:{full}]',
+        'h-full',
+        'w-full',
+        'w-5rem',
+        'w-7',
+        'border-1px',
+        'border-(border-color:255_0_0)'
+      ])
+      .generateStylesheet()
+
+    it('Should create style based on the key', () => {
+      console.log(stylesheet)
+      expect(stylesheet).toContain('.h-4 { height: calc(0.25rem * 4) }')
+      expect(stylesheet).toContain('.h-full { height: calc(0.25rem * 100%) }')
+      expect(stylesheet).toContain('.h-\\[min\\:\\{full\\}\\] { min-height: 100% }')
+      expect(stylesheet).toContain('.h-\\(min\\:5\\) { min-height: calc(0.25rem * 5) }')
+      expect(stylesheet).toContain('.h-\\[max\\:1rem\\] { max-height: 1rem }')
     })
   })
 })
