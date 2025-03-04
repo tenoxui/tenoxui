@@ -720,7 +720,7 @@ describe('TenoxUI Static CSS Test', () => {
       )
     })
   })
-  describe('Conditional properties', () => {
+  describe('Conditional Properties', () => {
     const ui = new TenoxUI({
       property: {
         h: {
@@ -746,8 +746,6 @@ describe('TenoxUI Static CSS Test', () => {
             return 'width'
           },
           value: ({ value, unit }) => {
-            console.log(value)
-
             return value + unit
           }
         }
@@ -772,12 +770,84 @@ describe('TenoxUI Static CSS Test', () => {
       .generateStylesheet()
 
     it('Should create style based on the key', () => {
-      console.log(stylesheet)
       expect(stylesheet).toContain('.h-4 { height: calc(0.25rem * 4) }')
       expect(stylesheet).toContain('.h-full { height: calc(0.25rem * 100%) }')
       expect(stylesheet).toContain('.h-\\[min\\:\\{full\\}\\] { min-height: 100% }')
       expect(stylesheet).toContain('.h-\\(min\\:5\\) { min-height: calc(0.25rem * 5) }')
       expect(stylesheet).toContain('.h-\\[max\\:1rem\\] { max-height: 1rem }')
+    })
+  })
+  describe('Direct Styles', () => {
+    const ui = new TenoxUI({
+      property: {
+        border: ({ value, unit }) => {
+          return `border-style: solid; border-width: ${value || '1'}${unit || 'px'}`
+        }
+      }
+    })
+    const stylesheet = ui
+      .processClassNames(['border', 'border-2', 'border-3rem'])
+      .generateStylesheet()
+
+    it('Should create style based on the key', () => {
+      expect(stylesheet).toContain('.border')
+    })
+  })
+
+  describe('Direct Rules', () => {
+    const ui = new TenoxUI({
+      property: {
+        hehe: 'background',
+        hehe2: { property: 'background', value: '{0}' },
+        tx: ({ value }) => {
+          const values = {
+            'red-500': '55 88 22'
+          }
+
+          return `--bg-opacity: 1; background: rgb(${
+            !value ? '255 0 0' : values[value] || value
+          } / var(--bg-opacity))`
+        },
+        outline: {
+          property: ({ value }) =>
+            `--bg-opacity: 1; background: rgb(${value ? value : '255 0 0'} / var(--bg-opacity))`,
+          value: null
+        }
+      }
+    })
+    ui.processClassNames([
+      'outline',
+      'outline-[24_76_56]',
+      'tx',
+      'tx-red-500',
+      'tx-(43_90_76)',
+      'tx-[43_90_76]',
+      'hehe-(43_90_76)',
+      'hehe-[43_90_76]',
+      'hehe2-(43_90_76)',
+      'hehe2-[43_90_76]'
+    ])
+    const stylesheet = ui.generateStylesheet()
+
+    it('should correctly generate css from direct rules and null value', () => {
+      expect(stylesheet).toContain(
+        '.outline { --bg-opacity: 1; background: rgb(255 0 0 / var(--bg-opacity)) }'
+      )
+      expect(stylesheet).toContain(
+        '.outline-\\[24_76_56\\] { --bg-opacity: 1; background: rgb(24 76 56 / var(--bg-opacity)) }'
+      )
+      expect(stylesheet).toContain(
+        '.tx { --bg-opacity: 1; background: rgb(255 0 0 / var(--bg-opacity)) }'
+      )
+      expect(stylesheet).toContain(
+        '.tx-red-500 { --bg-opacity: 1; background: rgb(55 88 22 / var(--bg-opacity)) }'
+      )
+      expect(stylesheet).toContain(
+        '.tx-\\(43_90_76\\) { --bg-opacity: 1; background: rgb(43 90 76 / var(--bg-opacity)) }'
+      )
+      expect(stylesheet).toContain(
+        '.tx-\\[43_90_76\\] { --bg-opacity: 1; background: rgb(43 90 76 / var(--bg-opacity)) }'
+      )
     })
   })
 })

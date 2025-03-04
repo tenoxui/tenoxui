@@ -233,16 +233,14 @@ export class TenoxUI {
       cleanValue = matchValue[2].trim()
     }
 
+    let finalCleanValue
+
+    if (value.includes(extractedFor + ':')) {
+      finalCleanValue = value.startsWith('(') ? `(${cleanValue})` : `[${cleanValue}]`
+    } else finalCleanValue = value
+
     // process input value
-    const finalValue = this.processValue(
-      type,
-      value.startsWith('(') || (value.startsWith('[') && value.includes(extractedFor + ':'))
-        ? value.startsWith('(')
-          ? `(${cleanValue})`
-          : `[${cleanValue}]`
-        : value,
-      unit
-    )
+    const finalValue = this.processValue(type, finalCleanValue, unit)
     // process second value
     const finalSecValue = this.processValue(type, secondValue, secondUnit)
 
@@ -352,7 +350,7 @@ export class TenoxUI {
           cssRules: Array.isArray(finalProperty)
             ? (finalProperty as string[])
             : (this.toKebabCase(String(finalProperty)) as string),
-          value: value.startsWith('[') ? finalValue : processedValue,
+          value: valuePattern === null ? null : value.startsWith('[') ? finalValue : processedValue,
           prefix
         }
       } else if (
@@ -397,22 +395,31 @@ export class TenoxUI {
           cssRules: Array.isArray(property)
             ? (property as string[])
             : (this.toKebabCase(String(property)) as string),
-          value: value.startsWith('[') ? finalValue : processedValue,
+          value: template === null ? null : value.startsWith('[') ? finalValue : processedValue,
           prefix
         }
       }
 
       const finalRegProperty =
         typeof properties === 'function'
-          ? properties({ value, unit, secondValue, secondUnit, key: extractedFor })
+          ? properties({
+              value: unit ? value : finalValue,
+              unit,
+              secondValue: secondUnit ? secondValue : finalSecValue,
+              secondUnit,
+              key: extractedFor
+            })
           : properties
 
       return {
-        className: `${type}-${value}${unit}`,
+        className: `${type}${value ? '-' + value + unit : ''}`,
         cssRules: Array.isArray(properties)
           ? (finalRegProperty as string[])
           : (this.toKebabCase(String(finalRegProperty)) as string),
-        value: finalValue,
+        value:
+          typeof finalRegProperty === 'string' && finalRegProperty.includes(';')
+            ? null
+            : finalValue,
         prefix
       }
     }
@@ -856,5 +863,6 @@ export class TenoxUI {
   }
 }
 
+export * from './types'
 export { Config, TenoxUIConfig }
 export default { TenoxUI }

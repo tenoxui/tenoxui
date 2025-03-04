@@ -25,7 +25,7 @@ type ValueParams = {
 
 type PropertyValue = GetCSSProperty | ((params: PropertyParams) => GetCSSProperty)
 
-type ValuePropType = string | ((params: ValueParams) => string)
+type ValuePropType = string | ((params: ValueParams) => string | null)
 
 export type PropertyFor = {
   for: string
