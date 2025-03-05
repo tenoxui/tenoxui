@@ -1,6 +1,6 @@
 {
   "name": "@tenoxui/static",
-  "version": "0.4.4",
+  "version": "0.5.0",
   "description": "TenoxUI static-css engine for generating stylesheet",
   "author": "NOuSantx <nousantx@gmail.com>",
   "license": "MIT",

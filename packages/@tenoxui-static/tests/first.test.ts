@@ -9,6 +9,11 @@ describe('TenoxUI Static CSS Test', () => {
     it('should initialize with empty parameters', () => {
       const ui = new TenoxUI({
         property: {
+          'space-x': {
+            classNameSuffix: ' > :not(:last-child)',
+            property: ['marginInlineStart', 'marginInlineEnd'],
+            value: '{0}px'
+          },
           bgx: [
             {
               for: 'color',
@@ -780,17 +785,25 @@ describe('TenoxUI Static CSS Test', () => {
   describe('Direct Styles', () => {
     const ui = new TenoxUI({
       property: {
+        'space-x': {
+          classNameSuffix: ' > :not(:last-child)',
+          property: ['marginInlineStart', 'marginInlineEnd'],
+          value: '{0}px'
+        },
         border: ({ value, unit }) => {
           return `border-style: solid; border-width: ${value || '1'}${unit || 'px'}`
         }
       }
     })
     const stylesheet = ui
-      .processClassNames(['border', 'border-2', 'border-3rem'])
+      .processClassNames(['border', 'border-2', 'border-3rem', 'space-x-4'])
       .generateStylesheet()
 
     it('Should create style based on the key', () => {
-      expect(stylesheet).toContain('.border')
+      expect(stylesheet).toContain('.border { border-style: solid; border-width: 1px }')
+      expect(stylesheet).toContain('.border-2 { border-style: solid; border-width: 2px }')
+      expect(stylesheet).toContain('.border-3rem { border-style: solid; border-width: 3rem }')
+      expect(stylesheet).toContain('.space-x-4 > :not(:last-child)')
     })
   })
 

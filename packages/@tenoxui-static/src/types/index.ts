@@ -6,7 +6,7 @@ export type ApplyStyleObject = {
   [key in Exclude<string, 'SINGLE_RULE'>]?: string | ApplyStyleObject
 }
 
-type PropertyParams = {
+export type PropertyParams = {
   key?: string | null
   value?: string
   unit?: string
@@ -14,7 +14,7 @@ type PropertyParams = {
   secondUnit?: string
 }
 
-type ValueParams = {
+export type ValueParams = {
   key?: string | null
   value?: string
   unit?: string
@@ -38,6 +38,7 @@ export type Property = {
   [type: string]:
     | PropertyValue
     | {
+        classNameSuffix?: string
         property?: PropertyValue
         value?: ValuePropType
       }
@@ -80,8 +81,13 @@ export interface Config {
   apply?: ApplyStyleObject
 }
 
-export type ProcessedStyle = {
+export type ClassModifier = {
   className: string
+  modifier: string
+}
+
+export type ProcessedStyle = {
+  className: string | ClassModifier
   cssRules: string | string[]
   value: string | null
   prefix?: string
