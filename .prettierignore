@@ -1,0 +1,36 @@
+# Istanbul vitest coverage
+**/coverage
+
+# Modules
+**/node_modules
+
+# Build output
+**/dist
+**/build
+**/out
+
+# Typescript definition
+**/*.d.ts
+
+# Minified files
+**/*.min.*
+
+# Map files
+**/*.map
+**/*.map.*
+
+# Log and temporary files
+**/*.log
+**/.temp
+**/*.temp
+**/*.temp.*
+**/.cache
+**/cache
+
+# Backup files
+**/*.bak
+**/*.bak.*
+
+# Lock file
+package-lock.json
+pnpm-*.yaml
