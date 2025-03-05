@@ -135,7 +135,7 @@ describe('TenoxUI Static CSS Test', () => {
         'hover:box-200px'
       ])
 
-      stylesheet = tenoxui.generateStylesheet()
+      stylesheet = tenoxui.generate()
       expect(stylesheet).toContain('.bg-red { background-color: #ff0000 }')
       expect(stylesheet).toContain('.text-blue { color: #0000ff }')
       expect(stylesheet).toContain('.bg-primary { background-color: #ccf654 }')
@@ -154,7 +154,7 @@ describe('TenoxUI Static CSS Test', () => {
       tenoxui = new TenoxUI(config)
       tenoxui.processClassNames(['sm:w-100px'])
 
-      stylesheet = tenoxui.generateStylesheet()
+      stylesheet = tenoxui.generate()
       expect(stylesheet).toContain('@media screen and (min-width: 640px)')
       expect(stylesheet).toContain('width: 100px')
     })
@@ -187,7 +187,7 @@ describe('TenoxUI Static CSS Test', () => {
       const tenoxui = new TenoxUI(config)
       tenoxui.processClassNames(['btn', 'hover:btn-primary', 'max-md:btn', 'btn-secondary'])
 
-      const stylesheet = tenoxui.generateStylesheet()
+      const stylesheet = tenoxui.generate()
 
       expect(stylesheet).toContain('.btn { background-color: blue; padding: 24px }')
       expect(stylesheet).toContain(
@@ -214,7 +214,7 @@ describe('TenoxUI Static CSS Test', () => {
 
       const tenoxui = new TenoxUI(config)
       tenoxui.processClassNames(['btn', 'hover:btn-primary', 'max-md:btn'])
-      const stylesheet = tenoxui.generateStylesheet()
+      const stylesheet = tenoxui.generate()
 
       expect(stylesheet).toContain('.btn { background-color: blue; padding: 24px }')
       expect(stylesheet).toContain('.hover\\:btn-primary:hover { background-color: #ccf654 }')
@@ -243,7 +243,7 @@ describe('TenoxUI Static CSS Test', () => {
       tenoxui = new TenoxUI(config)
       tenoxui.processClassNames(['text-$primary'])
 
-      stylesheet = tenoxui.generateStylesheet()
+      stylesheet = tenoxui.generate()
       expect(stylesheet).toContain('.text-\\$primary { color: var(--primary) }')
       expect(tenoxui.processValue('', 'red')).toBe('red')
       expect(tenoxui.processValue('', '[blue]')).toBe('blue')
@@ -270,7 +270,7 @@ describe('TenoxUI Static CSS Test', () => {
       tenoxui = new TenoxUI(config)
       tenoxui.processClassNames(['grid-[repeat(2,_1fr)]'])
 
-      stylesheet = tenoxui.generateStylesheet()
+      stylesheet = tenoxui.generate()
 
       expect(stylesheet).toContain('grid-template-columns: repeat(2, 1fr)')
     })
@@ -302,7 +302,7 @@ describe('TenoxUI Static CSS Test', () => {
       }
 
       tenoxui = new TenoxUI(config)
-      const stylesheet = tenoxui.generateStylesheet()
+      const stylesheet = tenoxui.generate()
 
       expect(stylesheet).toContain(':root {\n  color-scheme: light dark; --dark_btn: blue\n}')
       expect(stylesheet).toContain("@import '...';")
@@ -345,7 +345,7 @@ describe('TenoxUI Static CSS Test', () => {
         }
       }
       tenoxui = new TenoxUI(config)
-      const stylesheet = tenoxui.generateStylesheet()
+      const stylesheet = tenoxui.generate()
 
       expect(stylesheet).toContain(
         `@keyframes anim {
@@ -368,7 +368,7 @@ describe('TenoxUI Static CSS Test', () => {
         }
       }
       tenoxui = new TenoxUI(config)
-      stylesheet = tenoxui.generateStylesheet()
+      stylesheet = tenoxui.generate()
 
       expect(stylesheet).toContain("@import '...';")
       expect(stylesheet).toContain('@layer base, components, utilities;')
@@ -387,7 +387,7 @@ describe('TenoxUI Static CSS Test', () => {
         }
       }
       tenoxui = new TenoxUI(config)
-      stylesheet = tenoxui.generateStylesheet()
+      stylesheet = tenoxui.generate()
 
       expect(stylesheet).toContain(`:root {
   color-scheme: light dark; --neutral-50: #fff
@@ -425,7 +425,7 @@ describe('TenoxUI Static CSS Test', () => {
         }
       }
       tenoxui = new TenoxUI(config)
-      stylesheet = tenoxui.generateStylesheet()
+      stylesheet = tenoxui.generate()
 
       expect(stylesheet).toContain('html {\n  --bg-opacity: 1; background-color: red\n}')
       expect(stylesheet).toContain(`:root {
@@ -541,7 +541,7 @@ describe('TenoxUI Static CSS Test', () => {
       }
 
       tenoxui = new TenoxUI(config)
-      stylesheet = tenoxui.generateStylesheet()
+      stylesheet = tenoxui.generate()
     })
 
     it('should process complex shorthand', () => {
@@ -645,9 +645,9 @@ describe('TenoxUI Static CSS Test', () => {
         '[background,--red]-[rgb(var(--color,_255_0_0))]',
         'bg-[{primary}]'
       ])
-      tenoxui.generateStylesheet()
+      tenoxui.generate()
 
-      stylesheet = tenoxui.generateStylesheet()
+      stylesheet = tenoxui.generate()
     })
 
     it('should handle regular class names correctly', () => {
@@ -707,7 +707,7 @@ describe('TenoxUI Static CSS Test', () => {
 
     it('should handle property', () => {
       ui.processClassNames(['bg-red', 'bg-(size:cover)', 'bg-(color:rgb(255_0_0_/_0.4))'])
-      const stylesheet = ui.generateStylesheet()
+      const stylesheet = ui.generate()
       expect(stylesheet).toContain('.bg-red { background: red }')
       expect(stylesheet).toContain('.bg-\\(size\\:cover\\) { background-size: cover }')
       expect(stylesheet).toContain(
@@ -716,7 +716,7 @@ describe('TenoxUI Static CSS Test', () => {
     })
     it('should handle property, with different value', () => {
       ui.processClassNames(['bgx-red', 'bgx-(size:cover)', 'bgx-(color:255_0_0)'])
-      const stylesheet = ui.generateStylesheet()
+      const stylesheet = ui.generate()
 
       expect(stylesheet).toContain('.bg-red { background: red }')
       expect(stylesheet).toContain('.bg-\\(size\\:cover\\) { background-size: cover }')
@@ -772,7 +772,7 @@ describe('TenoxUI Static CSS Test', () => {
         'border-1px',
         'border-(border-color:255_0_0)'
       ])
-      .generateStylesheet()
+      .generate()
 
     it('Should create style based on the key', () => {
       expect(stylesheet).toContain('.h-4 { height: calc(0.25rem * 4) }')
@@ -791,13 +791,13 @@ describe('TenoxUI Static CSS Test', () => {
           value: '{0}px'
         },
         border: ({ value, unit }) => {
-          return `border-style: solid; border-width: ${value || '1'}${unit || 'px'}`
+          return `value:border-style: solid; border-width: ${value || '1'}${unit || 'px'}`
         }
       }
     })
     const stylesheet = ui
       .processClassNames(['border', 'border-2', 'border-3rem', 'space-x-4'])
-      .generateStylesheet()
+      .generate()
 
     it('Should create style based on the key', () => {
       expect(stylesheet).toContain('.border { border-style: solid; border-width: 1px }')
@@ -817,7 +817,7 @@ describe('TenoxUI Static CSS Test', () => {
             'red-500': '55 88 22'
           }
 
-          return `--bg-opacity: 1; background: rgb(${
+          return `value:--bg-opacity: 1; background: rgb(${
             !value ? '255 0 0' : values[value] || value
           } / var(--bg-opacity))`
         },
@@ -840,7 +840,7 @@ describe('TenoxUI Static CSS Test', () => {
       'hehe2-(43_90_76)',
       'hehe2-[43_90_76]'
     ])
-    const stylesheet = ui.generateStylesheet()
+    const stylesheet = ui.generate()
 
     it('should correctly generate css from direct rules and null value', () => {
       expect(stylesheet).toContain(
