@@ -2,19 +2,13 @@
   "compilerOptions": {
     "target": "es2017",
     "module": "esnext",
-    "lib": ["es2017", "dom"],
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "sourceMap": true,
-    "removeComments": true,
-    "noUnusedLocals": true,
     "declaration": true,
-    "paths": {
-      "@tenoxui/core/full": ["./@tenoxui-core/dist/tenoxui-full.d.ts"]
-    }
+    "strict": true,
+    "esModuleInterop": true,
+    "noUnusedLocals": true,
+    "moduleResolution": "bundler",
+    "skipLibCheck": true
   },
-  "include": ["**/*.ts"],
+
   "exclude": ["node_modules"]
 }

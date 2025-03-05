@@ -39,7 +39,7 @@ Using CDN :
   <body>
     <h1 class="text-#ccf654 fs-4rem">Hello World!</h1>
     <script>
-      tenoxui({ text: "color", fs: "fontSize" });
+      tenoxui({ text: 'color', fs: 'fontSize' })
     </script>
   </body>
 </html>
@@ -48,19 +48,19 @@ Using CDN :
 ### React :
 
 ```jsx
-import { useLayoutEffect } from "react";
-import tenoxui from "tenoxui";
+import { useLayoutEffect } from 'react'
+import tenoxui from 'tenoxui'
 
 const App = () => {
   useLayoutEffect(() => {
     // add tenoxui
-    tenoxui({ text: "color", fs: "fontSize" });
-  }, []);
+    tenoxui({ text: 'color', fs: 'fontSize' })
+  }, [])
 
-  return <h1 className="text-#ccf654 fs-4rem">Hello World!</h1>;
-};
+  return <h1 className="text-#ccf654 fs-4rem">Hello World!</h1>
+}
 
-export default App;
+export default App
 ```
 
 ## Types and Properties
@@ -78,35 +78,35 @@ npm i tenoxui @tenoxui/property
 ```
 
 ```jsx
-import tenoxui from "tenoxui";
-import property from "@tenoxui/property";
+import tenoxui from 'tenoxui'
+import property from '@tenoxui/property'
 ```
 
 ### Usage example
 
 ```html
 <script>
-  tenoxui(property);
+  tenoxui(property)
 </script>
 ```
 
 Or ReactJS :
 
 ```jsx
-import { useLayoutEffect } from "react";
-import tenoxui from "tenoxui";
-import property from "@tenoxui/property";
+import { useLayoutEffect } from 'react'
+import tenoxui from 'tenoxui'
+import property from '@tenoxui/property'
 
 const App = () => {
   useLayoutEffect(() => {
     // add tenoxui
-    tenoxui(property); // use tenoxui property
-  }, []);
+    tenoxui(property) // use tenoxui property
+  }, [])
 
-  return <h1 className="tc-red">Hello World!</h1>;
-};
+  return <h1 className="tc-red">Hello World!</h1>
+}
 
-export default App;
+export default App
 ```
 
 You can see all types and properties on [GitHub Repository](https://github.com/tenoxui/property) or [Here](https://tenoxui.github.io/property).

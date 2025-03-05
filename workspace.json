@@ -1,4 +1,0 @@
-{
-  "packageManager": "yarn",
-  "workspacesDirs": ["packages/*", "playgrounds/*"]
-}

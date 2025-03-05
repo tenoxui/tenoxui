@@ -1,47 +1,52 @@
-import { MakeTenoxUI, MakeTenoxUIParams } from '@tenoxui/core'
+import { MakeTenoxUI, MakeTenoxUIParams } from '@tenoxui/core/full'
 import { merge } from '@nousantx/someutils'
 
 type CoreConfig = Omit<MakeTenoxUIParams, 'element'>
 
+const baseIgnoreAttributes: string[] = ['style', 'class', 'id', 'src']
 let config: CoreConfig = {
   property: {},
   values: {},
   classes: {},
-  breakpoints: []
+  aliases: {},
+  breakpoints: [],
+  attributify: false,
+  attributifyPrefix: 'tui-',
+  attributifyIgnore: [...baseIgnoreAttributes]
 }
 
 export function use(customConfig: Partial<CoreConfig>): CoreConfig {
   config = {
     ...config,
     ...customConfig,
-    property: { ...config.property, ...customConfig.property },
-    values: merge(
-      config.values as object,
-      (customConfig.values || {}) as object
-    ) as CoreConfig['values'],
-    classes: merge(
-      config.classes as object,
-      (customConfig.classes || {}) as object
-    ) as CoreConfig['classes'],
-    breakpoints: [
-      ...(config.breakpoints || []),
-      ...(customConfig.breakpoints || [])
-    ] as CoreConfig['breakpoints']
+    property: { ...config.property, ...(customConfig.property || {}) },
+    values: merge(config.values ?? {}, customConfig.values ?? {}) as CoreConfig['values'],
+    classes: merge(config.classes ?? {}, customConfig.classes ?? {}) as CoreConfig['classes'],
+    aliases: { ...config.aliases, ...(customConfig.aliases || {}) },
+    breakpoints: [...(config.breakpoints ?? []), ...(customConfig.breakpoints ?? [])],
+    attributify: customConfig.attributify ?? config.attributify,
+    attributifyPrefix: customConfig.attributifyPrefix ?? config.attributifyPrefix,
+    attributifyIgnore: Array.from(
+      new Set([...baseIgnoreAttributes, ...(customConfig.attributifyIgnore ?? [])])
+    )
   }
 
   return config
 }
-
 type EngineConstructor = new (params: MakeTenoxUIParams) => InstanceType<typeof MakeTenoxUI>
 
 export interface TenoxUIConfig {
   property?: CoreConfig['property']
   values?: CoreConfig['values']
   classes?: CoreConfig['classes']
+  aliases?: CoreConfig['aliases']
   breakpoints?: CoreConfig['breakpoints']
   selector?: string
   useDom?: boolean
   useClass?: boolean
+  attributify?: boolean
+  attributifyPrefix?: string
+  attributifyIgnore?: string[]
   customEngine?: EngineConstructor
 }
 
@@ -50,12 +55,34 @@ export function tenoxui(options: TenoxUIConfig = {}): void {
     property = {},
     values = {},
     classes = {},
+    aliases = {},
     breakpoints = [],
     selector = '*[class]',
     useDom = true,
     useClass = false,
+    attributify = false,
+    attributifyPrefix = 'tui-',
+    attributifyIgnore = [],
     customEngine = MakeTenoxUI
   } = options
+
+  config = {
+    ...config,
+    property: { ...config.property, ...property },
+    values: merge(config.values ?? {}, values) as CoreConfig['values'],
+    classes: merge(config.classes ?? {}, classes) as CoreConfig['classes'],
+    aliases: { ...config.aliases, ...aliases },
+    breakpoints: [...(config.breakpoints ?? []), ...breakpoints],
+    attributify,
+    attributifyPrefix,
+    attributifyIgnore: Array.from(
+      new Set([
+        ...baseIgnoreAttributes,
+        ...(config.attributifyIgnore || []),
+        ...(attributifyIgnore || [])
+      ])
+    )
+  }
 
   if (property) {
     config.property = { ...config.property, ...property }
@@ -108,5 +135,5 @@ export function tenoxui(options: TenoxUIConfig = {}): void {
   })
 }
 
-export * from '@tenoxui/core'
+export * from '@tenoxui/core/full'
 export default { MakeTenoxUI, use, tenoxui }
