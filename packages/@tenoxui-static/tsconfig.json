@@ -1,14 +1,8 @@
 {
-  "compilerOptions": {
-    "target": "es2017",
-    "module": "esnext",
-    "declaration": true,
+  "extends": "../tsconfig.base.json",
+  "compilerOotions": {
     "outDir": "dist",
-    "rootDir": "src",
-    "strict": true,
-    "esModuleInterop": true,
-    "noUnusedLocals": true
+    "rootDir": "src"
   },
-  "include": ["src"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["src"]
 }

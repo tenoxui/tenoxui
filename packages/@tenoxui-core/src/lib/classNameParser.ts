@@ -28,7 +28,7 @@ function getTypePrefixes(styleAttribute: Property, classRegistry?: Classes): str
 function generateClassNameRegEx(styleAttribute: Property, classRegistry?: Classes): RegExp {
   const typePrefixes = getTypePrefixes(styleAttribute, classRegistry)
   return new RegExp(
-    `(?:([a-zA-Z0-9-]+):)?(${typePrefixes}|\\[[^\\]]+\\])(?:-(-?(?:\\d+(?:\\.\\d+)?)|(?:[a-zA-Z0-9_]+(?:-[a-zA-Z0-9_]+)*(?:-[a-zA-Z0-9_]+)*)|(?:#[0-9a-fA-F]+)|(?:\\[[^\\]]+\\])|(?:\\$[^\\s]+))([a-zA-Z%]*)(?:\\/(-?(?:\\d+(?:\\.\\d+)?)|(?:[a-zA-Z0-9_]+(?:-[a-zA-Z0-9_]+)*(?:-[a-zA-Z0-9_]+)*)|(?:#[0-9a-fA-F]+)|(?:\\[[^\\]]+\\])|(?:\\$[^\\s]+))([a-zA-Z%]*))?)?`
+    `(?:([a-zA-Z0-9-]+|\\[[^\\]]+\\]|\\([^)]+\\)|\\{[^}]+\\}):)?(${typePrefixes}|\\[[^\\]]+\\])(?:-(-?(?:\\d+(?:\\.\\d+)?)|(?:[a-zA-Z0-9_]+(?:-[a-zA-Z0-9_]+)*(?:-[a-zA-Z0-9_]+)*)|(?:#[0-9a-fA-F]+)|(?:\\[[^\\]]+\\])|(?:\\$[^\\s]+))([a-zA-Z%]*)(?:\\/(-?(?:\\d+(?:\\.\\d+)?)|(?:[a-zA-Z0-9_]+(?:-[a-zA-Z0-9_]+)*(?:-[a-zA-Z0-9_]+)*)|(?:#[0-9a-fA-F]+)|(?:\\[[^\\]]+\\])|(?:\\$[^\\s]+))([a-zA-Z%]*))?)?`
   )
 }
 

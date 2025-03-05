@@ -1,8 +1,0 @@
-{
-  "compilerOptions": {
-    "baseUrl": "./",
-    "paths": {
-      "@tenoxui/core/full": ["./packages/core/src/tenoxui-full.ts"]
-    }
-  }
-}

@@ -48,15 +48,7 @@
     "build": "rollup -c"
   },
   "devDependencies": {
-    "@nousantx/someutils": "^0.3.0",
-    "@rollup/plugin-commonjs": "^28.0.1",
-    "@rollup/plugin-node-resolve": "^15.3.0",
-    "@rollup/plugin-terser": "^0.4.4",
-    "@rollup/plugin-typescript": "^12.1.1",
-    "@types/node": "^22.7.8",
-    "rollup": "^4.24.0",
-    "terser": "^5.31.6",
-    "tslib": "^2.8.0",
-    "typescript": "^5.6.3"
+    "typescript": "^5.6.3",
+    "vite": "^6.1.0"
   }
 }

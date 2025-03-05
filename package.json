@@ -1,26 +1,19 @@
 {
-  "name": "tenoxui-workspace",
-  "version": "1.0.0",
+  "name": "@tenoxui/workspace",
   "private": true,
+  "version": "1.0.0",
   "description": "As its name",
   "author": "NOuSantx <nousantx@gmail.com>",
   "license": "MIT",
+  "workspaces": [
+    "packages/*"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tenoxui/tenoxui.git"
   },
-  "type": "module",
-  "workspaces": [
-    "packages/*",
-    "playgrounds/*"
-  ],
-  "scripts": {
-    "wst:start": "nwm interactive",
-    "format": "prettier --write ."
+  "bugs": {
+    "url": "https://github.com/tenoxui/tenoxui/issues"
   },
-  "packageManager": "yarn@4.5.3",
-  "devDependencies": {
-    "@nousantx/nwm": "^1.1.0",
-    "prettier": "^3.3.3"
-  }
+  "packageManager": "pnpm@10.4.0"
 }
