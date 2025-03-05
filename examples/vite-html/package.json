@@ -1,0 +1,22 @@
+{
+  "name": "@nousantx/anyframe-vite-html-template",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@anyframe/core": "^0.3.0",
+    "@nousantx/color-library": "^0.2.0",
+    "@nousantx/someutils": "^0.6.1",
+    "@nousantx/tenoxui-create-theme": "^1.0.0",
+    "@tenoxui/property": "^1.4.5",
+    "@tenoxui/static": "^0.5.0",
+    "vite": "^6.1.0",
+    "vite-plugin-anyframe": "0.2.1"
+  },
+  "packageManager": "pnpm@10.4.0"
+}
