@@ -5,7 +5,8 @@ import type {
   TenoxUIConfig,
   ProcessedStyle,
   MediaQueryRule,
-  ApplyStyleObject
+  ApplyStyleObject,
+  ClassModifier
 } from './types'
 
 export class TenoxUI {
@@ -173,7 +174,7 @@ export class TenoxUI {
   }
 
   // unique value parser
-  private processValue(type: string, value?: string, unit?: string): string {
+  public processValue(type: string, value?: string, unit?: string): string {
     if (!value) return ''
 
     // Replace values wrapped in {} with values from this.values
@@ -388,10 +389,17 @@ export class TenoxUI {
             : finalValue
         } else processedValue = null
 
+        const className = `${type}${value ? `-${value}${unit}` : ''}${
+          secondValue ? `/${secondValue}${secondUnit}` : ''
+        }`
+
         return {
-          className: `${type}${value ? `-${value}${unit}` : ''}${
-            secondValue ? `/${secondValue}${secondUnit}` : ''
-          }`,
+          className: properties.classNameSuffix
+            ? ({
+                className,
+                modifier: properties.classNameSuffix
+              } as ClassModifier)
+            : (className as string),
           cssRules: Array.isArray(property)
             ? (property as string[])
             : (this.toKebabCase(String(property)) as string),
@@ -591,8 +599,10 @@ export class TenoxUI {
     }
   }
 
-  public processClassNames(classNames: string[]) {
-    classNames.forEach((className) => {
+  public processClassNames(classNames: string | string[]) {
+    const classList = Array.isArray(classNames) ? classNames : classNames.split(/\s+/)
+
+    classList.forEach((className) => {
       if (!className) return this
       // process prefix and actual class name
       const [rprefix, rtype] = className.split(':')
@@ -607,7 +617,7 @@ export class TenoxUI {
         if (breakpoint) {
           const { mediaKey, ruleSet } = this.generateMediaQuery(
             breakpoint,
-            aliasClassName,
+            aliasClassName as string,
             cssRules as string
           )
 
@@ -642,7 +652,7 @@ export class TenoxUI {
         if (breakpoint) {
           const { mediaKey, ruleSet } = this.generateMediaQuery(
             breakpoint,
-            className,
+            className as string,
             cssRules as string
           )
           this.addStyle(mediaKey, ruleSet, null, null)
@@ -656,7 +666,11 @@ export class TenoxUI {
 
       if (result) {
         const { className, cssRules, value: ruleValue, prefix: rulePrefix } = result
-        const processedClass = this.escapeCSSSelector(className)
+        const processedClass =
+          typeof className === 'string'
+            ? this.escapeCSSSelector(className)
+            : this.escapeCSSSelector(className.className) + className.modifier
+
         if (breakpoint) {
           const rules = Array.isArray(cssRules)
             ? cssRules.map((rule) => `${this.toKebabCase(rule)}: ${ruleValue}`).join('; ')
@@ -762,7 +776,7 @@ export class TenoxUI {
   }
 
   public addStyle(
-    className: string,
+    className: string | ClassModifier,
     cssRules: string | string[],
     value?: string | null,
     prefix?: string | null,
