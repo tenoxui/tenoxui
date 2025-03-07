@@ -402,7 +402,9 @@ export class TenoxUI {
             : (className as string),
           cssRules: Array.isArray(property)
             ? (property as string[])
-            : (this.toKebabCase(String(property)) as string),
+            : typeof property === 'string' && (property as string).includes(':')
+              ? (property as string)
+              : (this.toKebabCase(String(property)) as string),
           value: template === null ? null : value.startsWith('[') ? finalValue : processedValue,
           prefix
         }
