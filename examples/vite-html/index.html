@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <script>
+      document.documentElement.setAttribute(
+        'data-theme',
+        localStorage.getItem('theme') ||
+          (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+      )
+    </script>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AnyFrame App</title>
+    <meta name="description" content="An app built with AnyFrame and TenoxUI" />
+  </head>
+  <body
+    class="bg-neutral-50 text-neutral-950 tr-time-300ms tr-prop-[color,background-color,border-color]"
+  >
+    <header
+      class="p-2rem d-flex ai-center jc-space-between pn-fixed w-mx-1280px mx-auto [t,l,r]-0 bg-neutral-50 tr-time-300ms tr-prop-[background-color] h-72px"
+      data-theme-header
+    >
+      <span class="fs-1.1rem fw-500 ls--0.015em">TenoxUI</span>
+      <nav>
+        <button
+          class="[outline]-none bs-solid bw-1px bdr-c-neutral-200 br-6px box-35px d-flex flex-parent-center bg-neutral-50 text-neutral-950 hover:bg-neutral-100 hover:tr-time-300ms"
+          data-af-theme-toggler
+        ></button>
+      </nav>
+    </header>
+    <main class="w-mx-1280px mx-auto">
+      <article
+        class="p-2rem pt-[calc(72px_+_1rem)] h-100vh d-flex flex-d-column flex-parent-center"
+      >
+        <span
+          class="d-flex flex-parent-center px-8px h-30px br-6px bg-neutral-950/5 bw-1px bs-solid border-neutral-200 gap-6px"
+        >
+          <span class="fs-12px">🚀</span>
+          <div class="w-1px h-14px bg-neutral-200"></div>
+          <span class="text-neutral-800 fs-12px fw-500 ls--0.015em lh-1">
+            @tenoxui/static v0.5 just released!
+          </span>
+        </span>
+
+        <header class="mt-1.6rem tw-balance ta-center w-mx-400px mx-auto">
+          <h1 class="fs-2.5rem fw-500 ls--0.045em lh-1.03">
+            Built Your Own
+            <span class="pn-relative d-inline-flex lh-1 px-4px flex-parent-center">
+              <span
+                class="pn-absolute w-100% bg-primary-500/20 br-2px z--1 h-2.6rem [rotate]--0.5deg"
+              ></span>
+              <span class="text-primary-400">CSS Framework</span></span
+            >
+            in Second!
+          </h1>
+        </header>
+      </article>
+    </main>
+    <footer class="p-2rem d-flex flex-parent-center">
+      <p class="ls--0.015em fw-500 fs-0.875rem text-neutral-800">Built with TenoxUI</p>
+    </footer>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

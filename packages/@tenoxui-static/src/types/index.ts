@@ -23,9 +23,9 @@ export type ValueParams = {
   property?: GetCSSProperty
 }
 
-type PropertyValue = GetCSSProperty | ((params: PropertyParams) => GetCSSProperty)
+export type PropertyValue = GetCSSProperty | ((params: PropertyParams) => GetCSSProperty)
 
-type ValuePropType = string | ((params: ValueParams) => string | null)
+export type ValuePropType = string | ((params: ValueParams) => string | null) | null
 
 export type PropertyFor = {
   for: string
@@ -52,6 +52,7 @@ export type CoreConfig = {
   classes?: Classes
   aliases?: Aliases
 }
+
 export type CoreConfigFull = {
   property?: Property
   values?: Values

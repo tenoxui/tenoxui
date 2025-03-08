@@ -402,7 +402,9 @@ export class TenoxUI {
             : (className as string),
           cssRules: Array.isArray(property)
             ? (property as string[])
-            : (this.toKebabCase(String(property)) as string),
+            : typeof property === 'string' && (property as string).includes(':')
+              ? (property as string)
+              : (this.toKebabCase(String(property)) as string),
           value: template === null ? null : value.startsWith('[') ? finalValue : processedValue,
           prefix
         }
@@ -423,9 +425,11 @@ export class TenoxUI {
         className: `${type}${value ? '-' + value + unit : ''}`,
         cssRules: Array.isArray(properties)
           ? (finalRegProperty as string[])
-          : (this.toKebabCase(String(finalRegProperty)) as string),
+          : typeof finalRegProperty === 'string' && finalRegProperty.startsWith('value:')
+            ? finalRegProperty.slice(6)
+            : (this.toKebabCase(String(finalRegProperty)) as string),
         value:
-          typeof finalRegProperty === 'string' && finalRegProperty.includes(';')
+          typeof finalRegProperty === 'string' && finalRegProperty.startsWith('value:')
             ? null
             : finalValue,
         prefix
@@ -841,7 +845,8 @@ export class TenoxUI {
     return stylesheet
   }
 
-  public generateStylesheet() {
+  public generate(classNames?: string | string[]) {
+    if (classNames) this.processClassNames(classNames)
     this.processReservedClasses()
     const fixedCss =
       Object.keys(this.apply).length > 0 ? this.processApplyObject(this.apply) + '\n' : ''
