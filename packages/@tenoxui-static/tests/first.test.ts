@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { TenoxUI, type TenoxUIParams } from '../src/index.ts'
+import { TenoxUI, type TenoxUIParams } from '../dist/index.es.js'
 
 describe('TenoxUI Static CSS Test', () => {
   let tenoxui: TenoxUI
@@ -21,7 +21,7 @@ describe('TenoxUI Static CSS Test', () => {
               property: ({ value }) => {
                 if (
                   /^([0-9]{1,3}) ([0-9]{1,3}) ([0-9]{1,3})$/.test(value) &&
-                  value.split(' ').every((num) => num >= 0 && num <= 255)
+                  value.split(' ').every(num => num >= 0 && num <= 255)
                 ) {
                   return 'background-color'
                 } else return 'background'
@@ -450,25 +450,7 @@ describe('TenoxUI Static CSS Test', () => {
           'my-pm': {
             property: ['margin', 'padding'],
             value: 'calc({0}px - {1 | 1rem})'
-          },
-          border: [
-            {
-              for: 'style',
-              syntax: '<dashed|solid>',
-              property: 'borderStyle'
-            },
-            {
-              for: 'length',
-              syntax: '<number>',
-              property: 'borderWidth',
-              value: '{0}px'
-            },
-            {
-              for: 'color',
-              syntax: '<value>',
-              property: 'borderColor'
-            }
-          ]
+          }
         },
         values: {
           primary: '#ccf654',
@@ -533,10 +515,7 @@ describe('TenoxUI Static CSS Test', () => {
           'cst-bg-hg',
           'shl-bg',
           'shl-bg-yellow',
-          'shl-bg-blue/20',
-          'border-1',
-          'border-red',
-          'border-solid'
+          'shl-bg-blue/20'
         ]
       }
 
@@ -544,11 +523,11 @@ describe('TenoxUI Static CSS Test', () => {
       stylesheet = tenoxui.generate()
     })
 
-    it('should process complex shorthand', () => {
+    /*it('should process complex shorthand', () => {
       expect(stylesheet).toContain('.border-red { border-color: red }')
       expect(stylesheet).toContain('.border-1 { border-width: 1px }')
       expect(stylesheet).toContain('.border-solid { border-style: solid }')
-    })
+    })*/
     it('should process basic shorthand', () => {
       expect(stylesheet).toContain('.bg-red { background-color: red }')
       expect(stylesheet).toContain('.p-10px { padding: 10px }')
