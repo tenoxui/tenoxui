@@ -27,13 +27,6 @@ export type PropertyValue = GetCSSProperty | ((params: PropertyParams) => GetCSS
 
 export type ValuePropType = string | ((params: ValueParams) => string | null) | null
 
-export type PropertyFor = {
-  for: string
-  syntax: '<size>' | '<number>' | '<value>' | RegExp
-  property: PropertyValue
-  value?: ValuePropType
-}
-
 export type Property = {
   [type: string]:
     | PropertyValue
@@ -42,7 +35,6 @@ export type Property = {
         property?: PropertyValue
         value?: ValuePropType
       }
-    | PropertyFor[]
 }
 
 export type CoreConfig = {
