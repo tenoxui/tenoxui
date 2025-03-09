@@ -1,4 +1,11 @@
-import type { Values, Aliases, Classes, Breakpoint, CSSPropertyOrVariable } from '@tenoxui/types'
+import type {
+  Values,
+  Aliases,
+  Classes,
+  Breakpoint,
+  CSSPropertyOrVariable,
+  GetCSSProperty
+} from '@tenoxui/types'
 import type {
   Property,
   Config,
@@ -23,7 +30,10 @@ export class TenoxUI {
     aliases = {},
     breakpoints = []
   }: Config = {}) {
-    this.property = property
+    this.property = {
+      moxie: ({ key }) => key as GetCSSProperty,
+      ...property
+    }
     this.values = values
     this.classes = classes
     this.aliases = aliases
@@ -80,13 +90,48 @@ export class TenoxUI {
 
   private generateClassNameRegEx(): RegExp {
     const typePrefixes = this.getTypePrefixes()
+
+    // 1. Prefix pattern (optional)
+    const prefixPattern =
+      '(?:([a-zA-Z0-9-]+|\\[[^\\]]+\\]|\\([^()]*(?:\\([^()]*\\)[^()]*)*\\)|\\{[^{}]*(?:\\{[^{}]*\\}[^{}]*)*\\}):)?'
+
+    // 2. Type pattern
+    const typePattern = `(${typePrefixes}|\\[[^\\]]+\\])`
+
+    // 3. Separator (optional)
+    const separator = '(?:-)?'
+
+    // 4. Value pattern - modified to handle $ variables correctly
+    const valuePattern =
+      '(-?(?:\\d+(?:\\.\\d+)?)|' + // Numbers
+      '(?:[a-zA-Z0-9_]+(?:-[a-zA-Z0-9_]+)*(?:-[a-zA-Z0-9_]+)*)|' + // Words with hyphens
+      '(?:#[0-9a-fA-F]+)|' + // Hex colors
+      '(?:\\[[^\\]]+\\])|' + // Bracket content
+      '(?:\\{[^{}]*(?:\\{[^{}]*\\}[^{}]*)*\\})|' + // Curly brace content
+      '(?:\\([^()]*(?:\\([^()]*\\)[^()]*)*\\))|' + // Parentheses content
+      '(?:\\$[^\\s\\/]+))' // Dollar sign content
+
+    // 5. Unit pattern (optional)
+    const unitPattern = '([a-zA-Z%]*)'
+
+    // 6. Secondary value pattern (optional)
+    const secondaryPattern =
+      '(?:\\/(-?(?:\\d+(?:\\.\\d+)?)|' + // Same pattern as valuePattern
+      '(?:[a-zA-Z0-9_]+(?:-[a-zA-Z0-9_]+)*(?:-[a-zA-Z0-9_]+)*)|' +
+      '(?:#[0-9a-fA-F]+)|' +
+      '(?:\\[[^\\]]+\\])|' +
+      '(?:\\{[^{}]*(?:\\{[^{}]*\\}[^{}]*)*\\})|' +
+      '(?:\\([^()]*(?:\\([^()]*\\)[^()]*)*\\))|' +
+      '(?:\\$[^\\s\\/]+))' +
+      '([a-zA-Z%]*))?'
+
     return new RegExp(
-      // you dont have to understand this, me neither
-      `(?:([a-zA-Z0-9-]+|\\[[^\\]]+\\]|\\([^()]*(?:\\([^()]*\\)[^()]*)*\\)|\\{[^{}]*(?:\\{[^{}]*\\}[^{}]*)*\\}):)?(${typePrefixes}|\\[[^\\]]+\\])-(-?(?:\\d+(?:\\.\\d+)?)|(?:[a-zA-Z0-9_]+(?:-[a-zA-Z0-9_]+)*(?:-[a-zA-Z0-9_]+)*)|(?:#[0-9a-fA-F]+)|(?:\\[[^\\]]+\\])|(?:\\{[^{}]*(?:\\{[^{}]*\\}[^{}]*)*\\})|(?:\\([^()]*(?:\\([^()]*\\)[^()]*)*\\))|(?:\\$[^\\s]+))([a-zA-Z%]*)(?:\\/(-?(?:\\d+(?:\\.\\d+)?)|(?:[a-zA-Z0-9_]+(?:-[a-zA-Z0-9_]+)*(?:-[a-zA-Z0-9_]+)*)|(?:#[0-9a-fA-F]+)|(?:\\[[^\\]]+\\])|(?:\\{[^{}]*(?:\\{[^{}]*\\}[^{}]*)*\\})|(?:\\([^()]*(?:\\([^()]*\\)[^()]*)*\\))|(?:\\$[^\\s]+))([a-zA-Z%]*))?`
+      prefixPattern + typePattern + separator + valuePattern + unitPattern + secondaryPattern
     )
   }
-  public parseClassName(className: string) {
-    for (const [_property, classObj] of Object.entries(this.classes)) {
+
+  public parse(className: string) {
+    for (const [_, classObj] of Object.entries(this.classes)) {
       if (classObj && typeof classObj === 'object' && className in classObj) {
         return [undefined, className, '', '', undefined, undefined]
       }
@@ -175,7 +220,8 @@ export class TenoxUI {
     unit: string | undefined = '',
     prefix: string | undefined,
     secondValue: string | undefined = '',
-    secondUnit: string | undefined = ''
+    secondUnit: string | undefined = '',
+    isHyphen: boolean = true
   ): ProcessedStyle | null {
     const properties = this.property[type]
     // Extract "for" from (color:red) => { for: 'color', cleanValue: 'red' }
@@ -220,7 +266,7 @@ export class TenoxUI {
         .join('; ')
 
       return {
-        className: `${`[${type.slice(1, -1)}]-${value}${unit}`}`,
+        className: `${`[${type.slice(1, -1)}]${isHyphen ? '-' : ''}${value}${unit}`}`,
         cssRules, // return css rules directly
         value: null, // and set value to null to prevent value duplication
         prefix
@@ -262,9 +308,9 @@ export class TenoxUI {
             : finalValue
         } else processedValue = null
 
-        const className = `${type}${value ? `-${value}${unit}` : ''}${
-          secondValue ? `/${secondValue}${secondUnit}` : ''
-        }`
+        const className = `${type}${
+          value ? `${isHyphen ? (isHyphen ? '-' : '') : ''}${value}${unit}` : ''
+        }${secondValue ? `/${secondValue}${secondUnit}` : ''}`
 
         return {
           className: properties.classNameSuffix
@@ -295,7 +341,7 @@ export class TenoxUI {
           : properties
 
       return {
-        className: `${type}${value ? '-' + value + unit : ''}`,
+        className: `${type}${value ? (isHyphen ? '-' : '') + value + unit : ''}`,
         cssRules: Array.isArray(properties)
           ? (finalRegProperty as string[])
           : typeof finalRegProperty === 'string' && finalRegProperty.startsWith('value:')
@@ -386,7 +432,8 @@ export class TenoxUI {
     unit: string | undefined = '',
     prefix: string | undefined = '',
     secValue: string | undefined = '',
-    secUnit: string | undefined = ''
+    secUnit: string | undefined = '',
+    isHyphen: boolean = true
   ): ProcessedStyle | null {
     if (!className) return null
 
@@ -414,7 +461,7 @@ export class TenoxUI {
 
       const isValueType = className.slice(-(value + unit).length)
 
-      const finalClassName = `${className}${value ? `-${value}${unit}` : ''}${
+      const finalClassName = `${className}${value ? `${isHyphen ? '-' : ''}${value}${unit}` : ''}${
         secValue ? `/${secValue}${secUnit}` : ''
       }`
 
@@ -441,7 +488,7 @@ export class TenoxUI {
       const [rprefix, rtype] = aliasClass.split(':')
       const getType = rtype || rprefix
       const getPrefix = rtype ? rprefix : undefined
-      const parts = this.parseClassName(aliasClass)
+      const parts = this.parse(aliasClass)
       const parsed = parts ? parts : [getPrefix, getType, '', '']
       if (!parsed) return
 
@@ -518,14 +565,18 @@ export class TenoxUI {
         return
       }
 
-      const parts = this.parseClassName(className)
+      const parts = this.parse(className)
       const parsed = parts ? parts : [getPrefix, getType, '', '']
       if (!parsed) return this
 
       const [prefix, type, value, unit, secValue, secUnit] = parsed
 
+      const isHyphen = !className.includes((type || '') + (value || ''))
+
       const classFromClasses =
-        this.getParentClass(`${type}-${value}`).length > 0 ? `${type}-${value}` : type
+        this.getParentClass(`${type}${isHyphen ? '-' : ''}${value}`).length > 0
+          ? `${type}${isHyphen ? '-' : ''}${value}`
+          : type
 
       const shouldClasses = this.processCustomClass(
         classFromClasses,
@@ -533,7 +584,8 @@ export class TenoxUI {
         unit,
         prefix,
         secValue,
-        secUnit
+        secUnit,
+        isHyphen
       )
 
       if (shouldClasses) {
@@ -562,7 +614,7 @@ export class TenoxUI {
         return
       }
 
-      const result = this.processShorthand(type, value!, unit, prefix, secValue, secUnit)
+      const result = this.processShorthand(type, value!, unit, prefix, secValue, secUnit, isHyphen)
 
       if (result) {
         const { className, cssRules, value: ruleValue, prefix: rulePrefix } = result
