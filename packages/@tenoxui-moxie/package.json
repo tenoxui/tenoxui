@@ -1,7 +1,7 @@
 {
-  "name": "@tenoxui/static",
-  "version": "0.6.0",
-  "description": "TenoxUI static-css engine for generating stylesheet",
+  "name": "@tenoxui/moxie",
+  "version": "0.1.0",
+  "description": "Very lightweight utolity-first CSS engine for style generation",
   "author": "NOuSantx <nousantx@gmail.com>",
   "license": "MIT",
   "homepage": "https://github.com/tenoxui/tenoxui#readme",
@@ -12,7 +12,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tenoxui/tenoxui.git",
-    "directory": "packages/@tenoxui-static"
+    "directory": "packages/@tenoxui-moxie"
   },
   "bugs": {
     "url": "https://github.com/tenoxui/tenoxui/issues"
@@ -40,7 +40,6 @@
     "vitest": "^3.0.5"
   },
   "dependencies": {
-    "@tenoxui/moxie": "0.1.0",
     "@tenoxui/types": "^0.1.2"
   }
 }
