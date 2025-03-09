@@ -7,7 +7,8 @@ import type {
   MediaQueryRule,
   ClassModifier
 } from './types'
-
+export * from './types'
+export { Config, TenoxUIConfig }
 export class TenoxUI {
   private property: Property
   private values: Values
@@ -597,6 +598,4 @@ export class TenoxUI {
   }
 }
 
-export * from './types'
-export { Config, TenoxUIConfig }
-export default { TenoxUI }
+export default TenoxUI
