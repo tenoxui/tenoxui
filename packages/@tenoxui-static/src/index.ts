@@ -72,7 +72,7 @@ export class TenoxUI extends Moxie {
         return
       }
 
-      const parsed = this.parseClassName(className)
+      const parsed = this.parse(className)
       if (!parsed) return
 
       const [, type, value, unit, secValue, secUnit] = parsed

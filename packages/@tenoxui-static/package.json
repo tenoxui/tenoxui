@@ -1,6 +1,6 @@
 {
   "name": "@tenoxui/static",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "TenoxUI static-css engine for generating stylesheet",
   "author": "NOuSantx <nousantx@gmail.com>",
   "license": "MIT",
@@ -40,7 +40,7 @@
     "vitest": "^3.0.5"
   },
   "dependencies": {
-    "@tenoxui/moxie": "0.1.0",
+    "@tenoxui/moxie": "0.2.0",
     "@tenoxui/types": "^0.1.2"
   }
 }
