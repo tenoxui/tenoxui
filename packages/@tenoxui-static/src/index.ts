@@ -1,3 +1,4 @@
+export * from '@tenoxui/moxie'
 import type {
   Config,
   TenoxUIConfig,
@@ -6,13 +7,12 @@ import type {
   ClassModifier
 } from '@tenoxui/moxie'
 import { TenoxUI as Moxie } from '@tenoxui/moxie'
-
+export { TenoxUI as Moxie } from '@tenoxui/moxie'
 export class TenoxUI extends Moxie {
   private reserveClass: string[]
   private styleMap: Map<string, Set<string>>
   private apply: ApplyStyleObject
   private config: TenoxUIConfig
-  // private moxie: Moxie
 
   constructor({
     property = {},
@@ -45,7 +45,7 @@ export class TenoxUI extends Moxie {
   }
 
   private processReservedClasses() {
-    this.reserveClass.forEach(className => {
+    this.reserveClass.forEach((className) => {
       const classArray = Array.isArray(className)
         ? className
         : className.split(/\s+/).filter(Boolean)
@@ -58,7 +58,7 @@ export class TenoxUI extends Moxie {
 
     const classList = Array.isArray(classNames) ? classNames : classNames.split(/\s+/)
 
-    classList.forEach(className => {
+    classList.forEach((className) => {
       if (!className) return
 
       const aliasResult = this.processAlias(className)
@@ -67,7 +67,7 @@ export class TenoxUI extends Moxie {
         if (typeof cssRules === 'string') {
           processedStyles.set(cssRules, '')
         } else if (Array.isArray(cssRules)) {
-          cssRules.forEach(rule => processedStyles.set(rule, ''))
+          cssRules.forEach((rule) => processedStyles.set(rule, ''))
         }
         return
       }
@@ -82,7 +82,7 @@ export class TenoxUI extends Moxie {
         if (typeof cssRules === 'string') {
           processedStyles.set(cssRules, '')
         } else if (Array.isArray(cssRules)) {
-          cssRules.forEach(rule => processedStyles.set(rule, ''))
+          cssRules.forEach((rule) => processedStyles.set(rule, ''))
         }
         return
       }
@@ -95,7 +95,7 @@ export class TenoxUI extends Moxie {
         if (typeof cssRules === 'string') {
           processedStyles.set(cssRules, finalValue)
         } else if (Array.isArray(cssRules)) {
-          cssRules.forEach(rule => processedStyles.set(this.toKebabCase(rule), finalValue))
+          cssRules.forEach((rule) => processedStyles.set(this.toKebabCase(rule), finalValue))
         }
       }
     })
@@ -211,7 +211,7 @@ export class TenoxUI extends Moxie {
         const mediaQuery = selector
         if (!mediaQueries.has(mediaQuery)) mediaQueries.set(mediaQuery, new Set())
 
-        rules.forEach(rule => mediaQueries.get(mediaQuery).add(rule))
+        rules.forEach((rule) => mediaQueries.get(mediaQuery).add(rule))
       } else if (selector.endsWith(';')) {
         stylesheet += `${selector}\n`
       } else {
@@ -235,6 +235,5 @@ export class TenoxUI extends Moxie {
   }
 }
 
-export * from '@tenoxui/moxie'
 export { Config, TenoxUIConfig }
-export default { TenoxUI }
+export default TenoxUI

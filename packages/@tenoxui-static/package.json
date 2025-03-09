@@ -4,17 +4,25 @@
   "description": "TenoxUI static-css engine for generating stylesheet",
   "author": "NOuSantx <nousantx@gmail.com>",
   "license": "MIT",
-  "homepage": "https://github.com/nousantx/tenoxcss-static-new#readme",
-  "keywords": ["tenoxui", "css-framework"],
+  "homepage": "https://github.com/tenoxui/tenoxui#readme",
+  "keywords": [
+    "tenoxui",
+    "css-framework"
+  ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nousantx/tenoxcss-static-new.git",
+    "url": "git+https://github.com/tenoxui/tenoxui.git",
     "directory": "packages/@tenoxui-static"
   },
   "bugs": {
-    "url": "https://github.com/nousantx/tenoxcss-static-new/issues"
+    "url": "https://github.com/tenoxui/tenoxui/issues"
   },
-  "files": ["dist", "package.json", "README.md", "LICENSE"],
+  "files": [
+    "dist",
+    "package.json",
+    "README.md",
+    "LICENSE"
+  ],
   "type": "module",
   "types": "dist/index.d.ts",
   "main": "dist/index.cjs",
@@ -27,12 +35,12 @@
     "test:watch": "vitest"
   },
   "devDependencies": {
-    "@tenoxui/moxie": "0.1.0-alpha.0",
     "typescript": "^5.7.3",
     "vite": "^6.1.0",
     "vitest": "^3.0.5"
   },
   "dependencies": {
+    "@tenoxui/moxie": "0.1.0",
     "@tenoxui/types": "^0.1.2"
   }
 }

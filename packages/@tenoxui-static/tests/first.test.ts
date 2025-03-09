@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { TenoxUI, type TenoxUIParams } from '../dist/index.es.js'
+import { TenoxUI, type TenoxUIParams } from '../src/index.ts'
 
 describe('TenoxUI Static CSS Test', () => {
   let tenoxui: TenoxUI
@@ -21,7 +21,7 @@ describe('TenoxUI Static CSS Test', () => {
               property: ({ value }) => {
                 if (
                   /^([0-9]{1,3}) ([0-9]{1,3}) ([0-9]{1,3})$/.test(value) &&
-                  value.split(' ').every(num => num >= 0 && num <= 255)
+                  value.split(' ').every((num) => num >= 0 && num <= 255)
                 ) {
                   return 'background-color'
                 } else return 'background'
