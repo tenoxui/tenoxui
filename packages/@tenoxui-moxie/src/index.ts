@@ -2,42 +2,25 @@ import type {
   Values,
   Aliases,
   Classes,
-  Breakpoint,
   CSSPropertyOrVariable,
   GetCSSProperty
 } from '@tenoxui/types'
-import type {
-  Property,
-  Config,
-  TenoxUIConfig,
-  ProcessedStyle,
-  MediaQueryRule,
-  ClassModifier
-} from './types'
+import type { Property, Config, ProcessedStyle, ClassModifier } from './types'
 export * from './types'
-export { Config, TenoxUIConfig }
 export class TenoxUI {
   private property: Property
   private values: Values
   private classes: Classes
   private aliases: Aliases
-  private breakpoints: Breakpoint[]
 
-  constructor({
-    property = {},
-    values = {},
-    classes = {},
-    aliases = {},
-    breakpoints = []
-  }: Config = {}) {
+  constructor({ property = {}, values = {}, classes = {}, aliases = {} }: Config = {}) {
     this.property = {
-      moxie: ({ key }) => key as GetCSSProperty,
+      moxie: ({ key }) => key as GetCSSProperty, // use moxie-* to access all properties and variables
       ...property
     }
     this.values = values
     this.classes = classes
     this.aliases = aliases
-    this.breakpoints = breakpoints
   }
 
   public toKebabCase(str: string): string {
@@ -149,28 +132,6 @@ export class TenoxUI {
       secValue,
       secUnit
     ]
-  }
-
-  private generateMediaQuery(
-    breakpoint: Breakpoint,
-    className: string,
-    rules: string
-  ): MediaQueryRule {
-    const { name, min, max } = breakpoint
-    let mediaQuery = 'screen and '
-
-    if (min !== undefined && max !== undefined) {
-      mediaQuery += `(min-width: ${min}px) and (max-width: ${max}px)`
-    } else if (min !== undefined) {
-      mediaQuery += `(min-width: ${min}px)`
-    } else if (max !== undefined) {
-      mediaQuery += `(max-width: ${max}px)`
-    }
-
-    return {
-      mediaKey: `@media ${mediaQuery}`,
-      ruleSet: `.${name}\\:${className} { ${rules} }`
-    }
   }
 
   // unique value parser
@@ -534,33 +495,18 @@ export class TenoxUI {
       const [rprefix, rtype] = className.split(':')
       const getType = rtype || rprefix
       const getPrefix = rtype ? rprefix : undefined
-      const breakpoint = this.breakpoints.find((bp) => bp.name === getPrefix)
 
       // process class name aliases
       const aliasResult = this.processAlias(getType, getPrefix)
       if (aliasResult) {
         const { className: aliasClassName, cssRules } = aliasResult
-        if (breakpoint) {
-          const { mediaKey, ruleSet } = this.generateMediaQuery(
-            breakpoint,
-            aliasClassName as string,
-            cssRules as string
-          )
 
-          results.push({
-            className: mediaKey,
-            cssRules: ruleSet,
-            value: null,
-            prefix: null
-          })
-        } else {
-          results.push({
-            className: aliasClassName,
-            cssRules,
-            value: null,
-            prefix: getPrefix
-          })
-        }
+        results.push({
+          className: aliasClassName,
+          cssRules,
+          value: null,
+          prefix: getPrefix
+        })
 
         return
       }
@@ -590,27 +536,14 @@ export class TenoxUI {
 
       if (shouldClasses) {
         const { className, cssRules, prefix } = shouldClasses
-        if (breakpoint) {
-          const { mediaKey, ruleSet } = this.generateMediaQuery(
-            breakpoint,
-            className as string,
-            cssRules as string
-          )
 
-          results.push({
-            className: mediaKey,
-            cssRules: ruleSet,
-            value: null,
-            prefix: null
-          })
-        } else {
-          results.push({
-            className,
-            cssRules,
-            value: null,
-            prefix
-          })
-        }
+        results.push({
+          className,
+          cssRules,
+          value: null,
+          prefix
+        })
+
         return
       }
 
@@ -623,26 +556,12 @@ export class TenoxUI {
             ? this.escapeCSSSelector(className)
             : this.escapeCSSSelector(className.className) + className.modifier
 
-        if (breakpoint) {
-          const rules = Array.isArray(cssRules)
-            ? cssRules.map((rule) => `${this.toKebabCase(rule)}: ${ruleValue}`).join('; ')
-            : `${cssRules}${ruleValue !== null ? `: ${ruleValue}` : ''}`
-          const { mediaKey, ruleSet } = this.generateMediaQuery(breakpoint, processedClass, rules)
-
-          results.push({
-            className: mediaKey,
-            cssRules: ruleSet,
-            value: null,
-            prefix: null
-          })
-        } else {
-          results.push({
-            className: processedClass,
-            cssRules,
-            value: ruleValue,
-            prefix: rulePrefix
-          })
-        }
+        results.push({
+          className: processedClass,
+          cssRules,
+          value: ruleValue,
+          prefix: rulePrefix
+        })
       }
     })
 
