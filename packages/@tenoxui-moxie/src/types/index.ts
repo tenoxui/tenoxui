@@ -31,9 +31,9 @@ export type Property = {
   [type: string]:
     | PropertyValue
     | {
-        classNameSuffix?: string
         property?: PropertyValue
         value?: ValuePropType
+        group?: string
       }
 }
 

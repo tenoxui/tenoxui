@@ -81,7 +81,7 @@ export class TenoxUI {
     const nestedParenPattern = '\\([^()]*(?:\\([^()]*\\)[^()]*)*\\)'
     const nestedBracePattern = '\\{[^{}]*(?:\\{[^{}]*\\}[^{}]*)*\\}'
 
-    // 1. Enhanced Prefix pattern - now allows for complex structures like nth-[...]
+    // 1. Prefix pattern - now allows for complex structures like nth-[...]
     const prefixPattern =
       '(?:(' +
       // Simple prefix (hover, md, focus, etc.)
@@ -156,7 +156,7 @@ export class TenoxUI {
   }
 
   // unique value parser
-  public processValue(type: string, value?: string, unit?: string): string {
+  public processValue(value: string, unit?: string, group?: string): string {
     if (!value) return ''
 
     // Replace values wrapped in {} with values from this.values
@@ -171,11 +171,13 @@ export class TenoxUI {
     if (
       typeof this.values === 'object' &&
       this.values !== null &&
-      ((this.values[type] && typeof this.values[type] === 'object' && this.values[type][value]) ||
+      ((this.values[group] &&
+        typeof this.values[group] === 'object' &&
+        this.values[group][value]) ||
         this.values[value])
     ) {
-      if (typeof this.values[type] === 'object' && this.values[type] !== null) {
-        return this.values[type][value] as string
+      if (typeof this.values[group] === 'object' && this.values[group] !== null) {
+        return this.values[group][value] as string
       }
 
       return this.values[value] as string
@@ -224,9 +226,17 @@ export class TenoxUI {
     } else finalCleanValue = value
 
     // process input value
-    const finalValue = this.processValue(type, finalCleanValue, unit)
+    const finalValue = this.processValue(
+      finalCleanValue,
+      unit,
+      typeof properties === 'object' && properties.group ? properties.group : type
+    )
     // process second value
-    const finalSecValue = this.processValue(type, secondValue, secondUnit)
+    const finalSecValue = this.processValue(
+      secondValue,
+      secondUnit,
+      typeof properties === 'object' && properties.group ? properties.group : type
+    )
 
     // if the type started with square bracket
     // e.g. [--my-color], [color,borderColor] ...
@@ -285,8 +295,16 @@ export class TenoxUI {
             property
           })
         } else if (template && typeof template === 'string') {
-          processedValue = this.parseValuePattern(type, template, finalValue, '', finalSecValue, '')
-            ? this.parseValuePattern(type, template, finalValue, '', finalSecValue, '')
+          const valuesGroup = properties.group || type
+          processedValue = this.parseValuePattern(
+            valuesGroup,
+            template,
+            finalValue,
+            '',
+            finalSecValue,
+            ''
+          )
+            ? this.parseValuePattern(valuesGroup, template, finalValue, '', finalSecValue, '')
             : finalValue
         } else processedValue = null
 
@@ -336,7 +354,7 @@ export class TenoxUI {
   }
 
   private parseValuePattern(
-    className: string,
+    group: string,
     pattern: string,
     inputValue: string,
     inputUnit: string,
@@ -347,8 +365,8 @@ export class TenoxUI {
       return pattern
 
     const [value, defaultValue] = pattern.split('||').map((s) => s.trim())
-    const finalValue = this.processValue(className, inputValue, inputUnit)
-    const finalSecValue = this.processValue(className, inputSecValue, inputSecUnit)
+    const finalValue = this.processValue(inputValue, inputUnit, group)
+    const finalSecValue = this.processValue(inputSecValue, inputSecUnit, group)
 
     if ((pattern.includes('{0}') && pattern.includes('{1')) || pattern.includes('{1')) {
       let computedValue = value
@@ -539,8 +557,6 @@ export class TenoxUI {
         this.getParentClass(`${type}${isHyphen ? '-' : ''}${value}`).length > 0
           ? `${type}${isHyphen ? '-' : ''}${value}`
           : type
-
-      console.log(classFromClasses)
 
       const shouldClasses = this.processCustomClass(
         classFromClasses,
