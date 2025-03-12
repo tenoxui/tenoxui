@@ -44,13 +44,8 @@ export interface Config {
   aliases?: Aliases
 }
 
-export type ClassModifier = {
-  className: string
-  modifier: string
-}
-
 export type ProcessedStyle = {
-  className: string | ClassModifier
+  className: string
   cssRules: string | string[]
   value: string | null
   prefix?: string | null

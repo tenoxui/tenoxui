@@ -5,7 +5,7 @@ import type {
   CSSPropertyOrVariable,
   GetCSSProperty
 } from '@tenoxui/types'
-import type { Property, Config, ProcessedStyle, ClassModifier } from './types'
+import type { Property, Config, ProcessedStyle } from './types'
 export * from './types'
 export class TenoxUI {
   private property: Property
@@ -56,27 +56,47 @@ export class TenoxUI {
     return Array.from(classNames)
   }
 
-  private getTypePrefixes(): string {
+  private getTypePrefixes(safelist: string[] = []): string {
     const styleAttribute = this.property
     const classRegistry = this.classes
     const propertyTypes = Object.keys(styleAttribute)
 
     if (!classRegistry) {
-      return propertyTypes.sort((a, b) => b.length - a.length).join('|')
+      return [...propertyTypes, ...safelist].sort((a, b) => b.length - a.length).join('|')
     }
 
     const classConfigs = this.getAllClassNames(classRegistry)
     const classPatterns = [...classConfigs]
 
-    return [...propertyTypes, ...classPatterns].sort((a, b) => b.length - a.length).join('|')
+    return [...propertyTypes, ...classPatterns, ...safelist]
+      .sort((a, b) => b.length - a.length)
+      .join('|')
   }
 
-  private generateClassNameRegEx(): RegExp {
-    const typePrefixes = this.getTypePrefixes()
+  private generateClassNameRegEx(safelist?: string[]): RegExp {
+    const typePrefixes = this.getTypePrefixes(safelist)
 
-    // 1. Prefix pattern (optional)
+    // Common pattern for handling complex nested structures
+    const nestedBracketPattern = '\\[[^\\]]+\\]'
+    const nestedParenPattern = '\\([^()]*(?:\\([^()]*\\)[^()]*)*\\)'
+    const nestedBracePattern = '\\{[^{}]*(?:\\{[^{}]*\\}[^{}]*)*\\}'
+
+    // 1. Enhanced Prefix pattern - now allows for complex structures like nth-[...]
     const prefixPattern =
-      '(?:([a-zA-Z0-9-]+|\\[[^\\]]+\\]|\\([^()]*(?:\\([^()]*\\)[^()]*)*\\)|\\{[^{}]*(?:\\{[^{}]*\\}[^{}]*)*\\}):)?'
+      '(?:(' +
+      // Simple prefix (hover, md, focus, etc.)
+      '[a-zA-Z0-9_-]+|' +
+      // Prefix with nested structures like nth-[...]
+      '[a-zA-Z0-9_-]+(?:-' +
+      nestedBracketPattern +
+      ')|' +
+      // Direct bracket, parenthesis, or brace content
+      nestedBracketPattern +
+      '|' +
+      nestedParenPattern +
+      '|' +
+      nestedBracePattern +
+      '):)?'
 
     // 2. Type pattern
     const typePattern = `(${typePrefixes}|\\[[^\\]]+\\])`
@@ -89,9 +109,12 @@ export class TenoxUI {
       '(-?(?:\\d+(?:\\.\\d+)?)|' + // Numbers
       '(?:[a-zA-Z0-9_]+(?:-[a-zA-Z0-9_]+)*(?:-[a-zA-Z0-9_]+)*)|' + // Words with hyphens
       '(?:#[0-9a-fA-F]+)|' + // Hex colors
-      '(?:\\[[^\\]]+\\])|' + // Bracket content
-      '(?:\\{[^{}]*(?:\\{[^{}]*\\}[^{}]*)*\\})|' + // Curly brace content
-      '(?:\\([^()]*(?:\\([^()]*\\)[^()]*)*\\))|' + // Parentheses content
+      nestedBracketPattern +
+      '|' + // Bracket content
+      nestedBracePattern +
+      '|' + // Curly brace content
+      nestedParenPattern +
+      '|' + // Parentheses content
       '(?:\\$[^\\s\\/]+))' // Dollar sign content
 
     // 5. Unit pattern (optional)
@@ -102,9 +125,12 @@ export class TenoxUI {
       '(?:\\/(-?(?:\\d+(?:\\.\\d+)?)|' + // Same pattern as valuePattern
       '(?:[a-zA-Z0-9_]+(?:-[a-zA-Z0-9_]+)*(?:-[a-zA-Z0-9_]+)*)|' +
       '(?:#[0-9a-fA-F]+)|' +
-      '(?:\\[[^\\]]+\\])|' +
-      '(?:\\{[^{}]*(?:\\{[^{}]*\\}[^{}]*)*\\})|' +
-      '(?:\\([^()]*(?:\\([^()]*\\)[^()]*)*\\))|' +
+      nestedBracketPattern +
+      '|' +
+      nestedBracePattern +
+      '|' +
+      nestedParenPattern +
+      '|' +
       '(?:\\$[^\\s\\/]+))' +
       '([a-zA-Z%]*))?'
 
@@ -113,25 +139,20 @@ export class TenoxUI {
     )
   }
 
-  public parse(className: string) {
-    for (const [_, classObj] of Object.entries(this.classes)) {
-      if (classObj && typeof classObj === 'object' && className in classObj) {
-        return [undefined, className, '', '', undefined, undefined]
-      }
+  public parse(className: string, safelist?: string[]) {
+    // Check if the className exists in any class object
+    if (Object.values(this.classes).some((classObj) => classObj?.[className])) {
+      return [undefined, className, '', '', undefined, undefined]
     }
-    const classNameRegEx = this.generateClassNameRegEx()
-    const match = className.match(classNameRegEx)
+
+    const classNameRegEx = this.generateClassNameRegEx(safelist)
+    const match = (className + '-dummy').match(classNameRegEx)
     if (!match) return null
+
     const [, prefix, type, value, unit, secValue, secUnit] = match
-    return [
-      prefix, //? as its name. e.g. hover, md, focus
-      type, //? compute css properties or variables that will styled. e.g. [color]-, [--red,background]-, bg-,
-      value || '', //? parsed css value from the class name. e.g. red, space-between, 64, 100
-      unit || '', //? is optional if the value is numbers. e.g. px, rem, %
-      // same as value and unit, parsed after the '/' character
-      secValue,
-      secUnit
-    ]
+    const finalValue = value === 'dummy' ? '' : value.replace('-dummy', '')
+
+    return [prefix, type, finalValue, unit || '', secValue, secUnit]
   }
 
   // unique value parser
@@ -274,12 +295,7 @@ export class TenoxUI {
         }${secondValue ? `/${secondValue}${secondUnit}` : ''}`
 
         return {
-          className: properties.classNameSuffix
-            ? ({
-                className,
-                modifier: properties.classNameSuffix
-              } as ClassModifier)
-            : (className as string),
+          className,
           cssRules: Array.isArray(property)
             ? (property as string[])
             : typeof property === 'string' && (property as string).includes(':')
@@ -427,7 +443,7 @@ export class TenoxUI {
       }`
 
       return {
-        className: this.escapeCSSSelector(value === isValueType ? className : finalClassName),
+        className: value === isValueType ? className : finalClassName,
         cssRules: rules,
         value: null,
         prefix
@@ -524,6 +540,8 @@ export class TenoxUI {
           ? `${type}${isHyphen ? '-' : ''}${value}`
           : type
 
+      console.log(classFromClasses)
+
       const shouldClasses = this.processCustomClass(
         classFromClasses,
         value,
@@ -551,13 +569,9 @@ export class TenoxUI {
 
       if (result) {
         const { className, cssRules, value: ruleValue, prefix: rulePrefix } = result
-        const processedClass =
-          typeof className === 'string'
-            ? this.escapeCSSSelector(className)
-            : this.escapeCSSSelector(className.className) + className.modifier
 
         results.push({
-          className: processedClass,
+          className,
           cssRules,
           value: ruleValue,
           prefix: rulePrefix
