@@ -1,11 +1,5 @@
 import type { GetCSSProperty, Values, Aliases, Classes } from '@tenoxui/types'
 
-export type ApplyStyleObject = {
-  SINGLE_RULE?: string[]
-} & {
-  [key in Exclude<string, 'SINGLE_RULE'>]?: string | ApplyStyleObject
-}
-
 export type PropertyParams = {
   key?: string | null
   value?: string
@@ -20,21 +14,23 @@ export type ValueParams = {
   unit?: string
   secondValue?: string
   secondUnit?: string
-  property?: GetCSSProperty
+  property?: PropertyValue
 }
 
-export type PropertyValue = GetCSSProperty | ((params: PropertyParams) => GetCSSProperty)
+export type PropertyParamValue = GetCSSProperty | ((params: PropertyParams) => GetCSSProperty)
 
 export type ValuePropType = string | ((params: ValueParams) => string | null) | null
 
+export type PropertyValue =
+  | PropertyParamValue
+  | {
+      property?: PropertyValue
+      value?: ValuePropType
+      group?: string
+    }
+
 export type Property = {
-  [type: string]:
-    | PropertyValue
-    | {
-        property?: PropertyValue
-        value?: ValuePropType
-        group?: string
-      }
+  [type: string]: PropertyValue
 }
 
 export interface Config {
