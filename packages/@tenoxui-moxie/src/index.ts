@@ -156,14 +156,20 @@ export class TenoxUI {
   }
 
   // unique value parser
-  public processValue(value: string, unit?: string, group?: string): string {
+  public processValue(value: string, unit: string, group: string): string {
     if (!value) return ''
 
     // Replace values wrapped in {} with values from this.values
     const replaceWithValueRegistry = (text: string): string => {
       return text.replace(/\{([^}]+)\}/g, (match, key) => {
+        const valueRegistry = this.values
         const val =
-          typeof this.values === 'object' && this.values !== null ? this.values[key] : undefined
+          valueRegistry !== null
+            ? typeof valueRegistry[group] === 'object'
+              ? (valueRegistry[group] as { [value: string]: string })[key]
+              : valueRegistry[key]
+            : undefined
+
         return typeof val === 'string' ? val : match
       })
     }
@@ -226,17 +232,9 @@ export class TenoxUI {
     } else finalCleanValue = value
 
     // process input value
-    const finalValue = this.processValue(
-      finalCleanValue,
-      unit,
-      typeof properties === 'object' && properties.group ? properties.group : type
-    )
+    const finalValue = this.processValue(finalCleanValue, unit, type)
     // process second value
-    const finalSecValue = this.processValue(
-      secondValue,
-      secondUnit,
-      typeof properties === 'object' && properties.group ? properties.group : type
-    )
+    const finalSecValue = this.processValue(secondValue, secondUnit, type)
 
     // if the type started with square bracket
     // e.g. [--my-color], [color,borderColor] ...
@@ -296,16 +294,15 @@ export class TenoxUI {
           })
         } else if (template && typeof template === 'string') {
           const valuesGroup = properties.group || type
-          processedValue = this.parseValuePattern(
-            valuesGroup,
-            template,
-            finalValue,
-            '',
-            finalSecValue,
-            ''
-          )
-            ? this.parseValuePattern(valuesGroup, template, finalValue, '', finalSecValue, '')
-            : finalValue
+          const newValue = this.processValue(finalCleanValue, unit, valuesGroup)
+          console.log(finalCleanValue)
+          processedValue =
+            this.values[finalCleanValue] ||
+            (this.values[valuesGroup] as { [value: string]: string })[finalCleanValue] ||
+            finalCleanValue.includes('{') ||
+            template.includes('{')
+              ? this.parseValuePattern(valuesGroup, template, newValue, '', finalSecValue, '')
+              : finalValue
         } else processedValue = null
 
         const className = `${type}${
