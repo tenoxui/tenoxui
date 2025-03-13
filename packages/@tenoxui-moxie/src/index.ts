@@ -269,7 +269,8 @@ export class TenoxUI {
     if (properties) {
       if (typeof properties === 'object' && 'property' in properties && 'value' in properties) {
         const groupValue =
-          properties.group && this.values[properties.group]
+          properties.group &&
+          (this.values[properties.group] as { [value: string]: string })[finalValue]
             ? (this.values[properties.group] as { [value: string]: string })[finalValue]
             : unit
               ? value
