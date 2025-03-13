@@ -268,10 +268,17 @@ export class TenoxUI {
     // the `bg` is the type
     if (properties) {
       if (typeof properties === 'object' && 'property' in properties && 'value' in properties) {
+        const valuesGroup = properties.group || type
+        const groupValue = (this.values[valuesGroup] as { [value: string]: string })[finalValue]
+          ? (this.values[valuesGroup] as { [value: string]: string })[finalValue]
+          : unit
+            ? value
+            : finalValue
+
         const property =
           typeof properties.property === 'function'
             ? properties.property({
-                value: unit ? value : finalValue,
+                value: groupValue,
                 unit,
                 secondValue: secondUnit ? secondValue : finalSecValue,
                 secondUnit,
@@ -285,7 +292,7 @@ export class TenoxUI {
 
         if (typeof template === 'function') {
           processedValue = template({
-            value: unit ? value : finalValue,
+            value: groupValue,
             unit,
             secondValue: secondUnit ? secondValue : finalSecValue,
             secondUnit,
@@ -293,9 +300,8 @@ export class TenoxUI {
             property
           })
         } else if (template && typeof template === 'string') {
-          const valuesGroup = properties.group || type
           const newValue = this.processValue(finalCleanValue, unit, valuesGroup)
-          console.log(finalCleanValue)
+
           processedValue =
             this.values[finalCleanValue] ||
             (this.values[valuesGroup] as { [value: string]: string })[finalCleanValue] ||
