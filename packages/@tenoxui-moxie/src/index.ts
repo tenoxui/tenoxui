@@ -150,9 +150,14 @@ export class TenoxUI {
     if (!match) return null
 
     const [, prefix, type, value, unit, secValue, secUnit] = match
-    const finalValue = value === 'dummy' ? '' : value.replace('-dummy', '')
+    const finalValue = value ? (value === 'dummy' ? '' : value.replace('-dummy', '')) : ''
+    const finalSecValue = secValue
+      ? secValue === 'dummy'
+        ? ''
+        : secValue.replace('-dummy', '')
+      : ''
 
-    return [prefix, type, finalValue, unit || '', secValue, secUnit]
+    return [prefix, type, finalValue, unit || '', finalSecValue, secUnit]
   }
 
   // unique value parser
@@ -297,8 +302,7 @@ export class TenoxUI {
             unit,
             secondValue: secondUnit ? secondValue : finalSecValue,
             secondUnit,
-            key: extractedFor,
-            property
+            key: extractedFor
           })
         } else if (template && typeof template === 'string') {
           const valuesGroup = properties.group || type

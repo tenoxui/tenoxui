@@ -14,7 +14,6 @@ export type ValueParams = {
   unit?: string
   secondValue?: string
   secondUnit?: string
-  property?: PropertyValue
 }
 
 export type PropertyParamValue = GetCSSProperty | ((params: PropertyParams) => GetCSSProperty)
@@ -24,7 +23,7 @@ export type ValuePropType = string | ((params: ValueParams) => string | null) | 
 export type PropertyValue =
   | PropertyParamValue
   | {
-      property?: PropertyValue
+      property?: PropertyParamValue
       value?: ValuePropType
       group?: string
     }
