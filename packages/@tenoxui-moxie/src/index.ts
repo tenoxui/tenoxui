@@ -251,11 +251,9 @@ export class TenoxUI {
 
       const cssRules = items
         .map((item) => {
-          const prop = this.property[item] || item
-          const finalProperty =
-            typeof prop === 'string' && prop.startsWith('--')
-              ? String(prop)
-              : this.toKebabCase(String(prop))
+          const finalProperty = item.startsWith('--')
+            ? String(item)
+            : this.toKebabCase(String(item))
           return `${finalProperty}: ${finalValue}`
         })
         .join('; ')
