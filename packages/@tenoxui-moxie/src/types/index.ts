@@ -1,4 +1,4 @@
-import type { GetCSSProperty, Values, Aliases, Classes } from '@tenoxui/types'
+import type { GetCSSProperty, Values, Classes } from '@tenoxui/types'
 
 export type PropertyParams = {
   key?: string | null
@@ -36,7 +36,6 @@ export interface Config {
   property?: Property
   values?: Values
   classes?: Classes
-  aliases?: Aliases
 }
 
 export type ProcessedStyle = {

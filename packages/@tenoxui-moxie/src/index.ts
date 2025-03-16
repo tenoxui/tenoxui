@@ -1,26 +1,18 @@
-import type {
-  Values,
-  Aliases,
-  Classes,
-  CSSPropertyOrVariable,
-  GetCSSProperty
-} from '@tenoxui/types'
+import type { Values, Classes, CSSPropertyOrVariable, GetCSSProperty } from '@tenoxui/types'
 import type { Property, Config, ProcessedStyle } from './types'
 export * from './types'
 export class TenoxUI {
   private property: Property
   private values: Values
   private classes: Classes
-  private aliases: Aliases
 
-  constructor({ property = {}, values = {}, classes = {}, aliases = {} }: Config = {}) {
+  constructor({ property = {}, values = {}, classes = {} }: Config = {}) {
     this.property = {
       moxie: ({ key }) => key as GetCSSProperty, // use moxie-* to access all properties and variables
       ...property
     }
     this.values = values
     this.classes = classes
-    this.aliases = aliases
   }
 
   public toKebabCase(str: string): string {
@@ -81,15 +73,19 @@ export class TenoxUI {
     const nestedParenPattern = '\\([^()]*(?:\\([^()]*\\)[^()]*)*\\)'
     const nestedBracePattern = '\\{[^{}]*(?:\\{[^{}]*\\}[^{}]*)*\\}'
 
-    // 1. Prefix pattern - now allows for complex structures like nth-[...]
+    // 1. Prefix pattern
     const prefixPattern =
       '(?:(' +
       // Simple prefix (hover, md, focus, etc.)
       '[a-zA-Z0-9_-]+|' +
-      // Prefix with nested structures like nth-[...]
-      '[a-zA-Z0-9_-]+(?:-' +
+      // value-like prefix (nth-(4), max-[445px], etc.)
+      '[a-zA-Z0-9_-]+(?:-(?:' +
       nestedBracketPattern +
-      ')|' +
+      '|' +
+      nestedParenPattern +
+      '|' +
+      nestedBracePattern +
+      '))|' +
       // Direct bracket, parenthesis, or brace content
       nestedBracketPattern +
       '|' +
@@ -270,7 +266,7 @@ export class TenoxUI {
     // e.g. { property: { bg: 'background' } }
     // the `bg` is the type
     if (properties) {
-      if (typeof properties === 'object' && 'property' in properties && 'value' in properties) {
+      if (typeof properties === 'object' && 'property' in properties) {
         const groupValue =
           properties.group &&
           (this.values[properties.group] as { [value: string]: string })[finalValue]
@@ -282,15 +278,15 @@ export class TenoxUI {
         const property =
           typeof properties.property === 'function'
             ? properties.property({
-                value: groupValue,
-                unit,
-                secondValue: secondUnit ? secondValue : finalSecValue,
-                secondUnit,
+                value: value.startsWith('[') ? finalValue : groupValue,
+                unit: value.startsWith('[') ? '' : unit,
+                secondValue: value.startsWith('[') ? '' : secondUnit ? secondValue : finalSecValue,
+                secondUnit: value.startsWith('[') ? '' : secondUnit,
                 key: extractedFor
               })
             : properties.property
 
-        const template = properties.value
+        const template = properties.value || '{0}'
 
         let processedValue
 
@@ -306,13 +302,24 @@ export class TenoxUI {
           const valuesGroup = properties.group || type
           const newValue = this.processValue(finalCleanValue, unit, valuesGroup)
 
-          processedValue =
-            this.values[finalCleanValue] ||
-            (this.values[valuesGroup] as { [value: string]: string })[finalCleanValue] ||
-            finalCleanValue.includes('{') ||
-            template.includes('{')
-              ? this.parseValuePattern(valuesGroup, template, newValue, '', finalSecValue, '')
-              : finalValue
+          if (
+            this.values[valuesGroup] &&
+            typeof this.values[valuesGroup] === 'object' &&
+            this.values[valuesGroup][finalCleanValue]
+          ) {
+            processedValue = this.values[valuesGroup][finalCleanValue]
+          } else if (template.includes('{')) {
+            processedValue = this.parseValuePattern(
+              valuesGroup,
+              template,
+              newValue,
+              '',
+              finalSecValue,
+              ''
+            )
+          } else {
+            processedValue = finalValue
+          }
         } else processedValue = null
 
         const className = `${type}${
@@ -323,10 +330,18 @@ export class TenoxUI {
           className,
           cssRules: Array.isArray(property)
             ? (property as string[])
-            : typeof property === 'string' && (property as string).includes(':')
-              ? (property as string)
+            : typeof property === 'string' &&
+                ((property as string).includes(':') || (property as string).includes('value:'))
+              ? (property as string).includes('value:')
+                ? (property as string).slice(6)
+                : (this.toKebabCase(String(property)) as string)
               : (this.toKebabCase(String(property)) as string),
-          value: template === null ? null : value.startsWith('[') ? finalValue : processedValue,
+          value:
+            template === null || (property as string).includes('value:')
+              ? null
+              : value.startsWith('[')
+                ? finalValue
+                : processedValue,
           prefix
         }
       }
@@ -334,16 +349,18 @@ export class TenoxUI {
       const finalRegProperty =
         typeof properties === 'function'
           ? properties({
-              value: unit ? value : finalValue,
-              unit,
-              secondValue: secondUnit ? secondValue : finalSecValue,
-              secondUnit,
+              value: value.startsWith('[') ? finalValue : unit ? value : finalValue,
+              unit: value.startsWith('[') ? '' : unit,
+              secondValue: value.startsWith('[') ? '' : secondUnit ? secondValue : finalSecValue,
+              secondUnit: value.startsWith('[') ? '' : secondUnit,
               key: extractedFor
             })
           : properties
 
       return {
-        className: `${type}${value ? (isHyphen ? '-' : '') + value + unit : ''}`,
+        className: `${type}${value ? (isHyphen ? '-' : '') + value + unit : ''}${
+          secondValue ? `/${secondValue}${secondUnit}` : ''
+        }`,
         cssRules: Array.isArray(properties)
           ? (finalRegProperty as string[])
           : typeof finalRegProperty === 'string' && finalRegProperty.startsWith('value:')
@@ -478,53 +495,6 @@ export class TenoxUI {
     return null
   }
 
-  public processAlias(className: string, prefix: string = ''): ProcessedStyle | null {
-    const alias = this.aliases[className]
-
-    if (!alias) return null
-
-    const aliasClasses = alias.split(' ')
-    const combinedRules: string[] = []
-
-    aliasClasses.forEach((aliasClass) => {
-      const [rprefix, rtype] = aliasClass.split(':')
-      const getType = rtype || rprefix
-      const getPrefix = rtype ? rprefix : undefined
-      const parts = this.parse(aliasClass)
-      const parsed = parts ? parts : [getPrefix, getType, '', '']
-      if (!parsed) return
-
-      const [prefix, type, value, unit, secValue, secUnit] = parsed
-      const result = this.processShorthand(type, value!, unit, undefined, secValue, secUnit)
-
-      const shouldClasses = this.processCustomClass(type, value, unit, prefix, secValue, secUnit)
-      if (shouldClasses) {
-        const { cssRules } = shouldClasses
-        combinedRules.push(cssRules as string)
-
-        return
-      }
-
-      if (result) {
-        const value = result.value !== null ? `: ${result.value}` : ''
-        if (Array.isArray(result.cssRules)) {
-          result.cssRules.forEach((rule) => {
-            combinedRules.push(`${this.toKebabCase(rule)}${value}`)
-          })
-        } else {
-          combinedRules.push(`${result.cssRules}${value}`)
-        }
-      }
-    })
-
-    return {
-      className,
-      cssRules: combinedRules.join('; '),
-      value: null,
-      prefix
-    }
-  }
-
   public process(classNames: string | string[]): ProcessedStyle[] {
     const classList = Array.isArray(classNames) ? classNames : classNames.split(/\s+/)
 
@@ -536,21 +506,6 @@ export class TenoxUI {
       const [rprefix, rtype] = className.split(':')
       const getType = rtype || rprefix
       const getPrefix = rtype ? rprefix : undefined
-
-      // process class name aliases
-      const aliasResult = this.processAlias(getType, getPrefix)
-      if (aliasResult) {
-        const { className: aliasClassName, cssRules } = aliasResult
-
-        results.push({
-          className: aliasClassName,
-          cssRules,
-          value: null,
-          prefix: getPrefix
-        })
-
-        return
-      }
 
       const parts = this.parse(className)
       const parsed = parts ? parts : [getPrefix, getType, '', '']
