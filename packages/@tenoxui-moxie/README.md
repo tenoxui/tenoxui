@@ -1,6 +1,6 @@
 # `@tenoxui/moxie`
 
-`tenoxui/moxie` is a small and lightweight CSS generation engine for creating custom `utility-first` CSS framework easily.
+`tenoxui/moxie` is a tiny and lightweight CSS generation engine for creating custom `utility-first` CSS framework easily.
 
 ## Features
 
@@ -31,12 +31,7 @@ const ui = new TenoxUI({
     p: {
       property: 'padding',
       value: ({ value, unit }) =>
-        `${
-          // if `unit` isn't specified,
-          // multiply value with `0.25`
-          // or use `value` + `unit`
-          !unit ? 0.25 * Number(value) + 'rem' : value + unit
-        }`
+        `${!isNaN(value + unit) ? 0.25 * Number(value) + 'rem' : value + unit}`
     }
   }
 })
@@ -101,12 +96,10 @@ export default TenoxUI
 
 ```javascript
 export class TenoxUI {
-  constructor({ property = {}, values = {}, classes = {}, aliases = {}, breakpoints = [] } = {}) {
+  constructor({ property = {}, values = {}, classes = {} } = {}) {
     this.property = property
     this.values = values
     this.classes = classes
-    this.aliases = aliases
-    this.breakpoints = breakpoints
   }
 }
 ```
@@ -281,47 +274,6 @@ console.log(ui.processCustomClass('bg', '(0_255_0)', '', 'hover', '40'))
 */
 ```
 
-#### `processAlias`
-
-A method for processing rules from `aliases` field.
-
-```typescript
-processAlias(className: string, prefix?: string): ProcessedStyle | null {}
-```
-
-Example :
-
-```javascript
-const ui = new TenoxUI({
-  property: {
-    bg: 'backgroundColor',
-    size: ['width', 'height']
-  },
-  aliases: {
-    box: 'bg-red size-30px',
-    'btn-primary': 'bg-#ccf654'
-  }
-})
-
-console.log(ui.processAlias('box'))
-console.log(ui.processAlias('btn-primary', 'hover'))
-
-/* Output
-{
-  className: 'box',
-  cssRules: 'background-color: red; width: 30px; height: 30px',
-  value: null,
-  prefix: ''
-}
-{
-  className: 'btn-primary',
-  cssRules: 'background-color: #ccf654',
-  value: null,
-  prefix: 'hover'
-}
-*/
-```
-
 #### `process`
 
 A main method for parsing and processing class names automatically.
@@ -345,10 +297,6 @@ const ui = new TenoxUI({
       flex: 'flex',
       iflex: 'inline-flex'
     }
-  },
-  aliases: {
-    box: 'bg-red size-30px',
-    'btn-primary': 'bg-#ccf654'
   }
 })
 
@@ -361,10 +309,7 @@ console.log(
     'size-30px',
     // classes
     'flex',
-    'iflex',
-    // aliases
-    'box',
-    'btn-primary'
+    'iflex'
   ])
 )
 
@@ -405,18 +350,6 @@ console.log(
     cssRules: 'display: inline-flex',
     value: null,
     prefix: ''
-  },
-  {
-    className: 'box',
-    cssRules: 'background-color: red; width: 30px; height: 30px',
-    value: null,
-    prefix: undefined
-  },
-  {
-    className: 'btn-primary',
-    cssRules: 'background-color: #ccf654',
-    value: null,
-    prefix: undefined
   }
 ]
 */
