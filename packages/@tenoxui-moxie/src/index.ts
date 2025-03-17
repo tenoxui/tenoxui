@@ -50,13 +50,13 @@ export class TenoxUI {
     return Array.from(classNames)
   }
 
-  private getTypePrefixes(safelist: string[] = []): string {
+  private getTypePrefixes(safelist: string[] = []): string[] {
     const styleAttribute = this.property
     const classRegistry = this.classes
     const propertyTypes = Object.keys(styleAttribute)
 
     if (!classRegistry) {
-      return [...propertyTypes, ...safelist].sort((a, b) => b.length - a.length).join('|')
+      return [...propertyTypes, ...safelist].sort((a, b) => b.length - a.length)
     }
 
     const classConfigs = this.getAllClassNames(classRegistry)
