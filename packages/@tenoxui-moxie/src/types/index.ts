@@ -36,6 +36,7 @@ export interface Config {
   property?: Property
   values?: Values
   classes?: Classes
+  alwaysUseHyphens?: boolean
 }
 
 export type ProcessedStyle = {

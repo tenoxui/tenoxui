@@ -5,14 +5,16 @@ export class TenoxUI {
   private property: Property
   private values: Values
   private classes: Classes
+  private useHyphens: boolean
 
-  constructor({ property = {}, values = {}, classes = {} }: Config = {}) {
+  constructor({ property = {}, values = {}, classes = {}, alwaysUseHyphens = true }: Config = {}) {
     this.property = {
       moxie: ({ key }) => key as GetCSSProperty, // use moxie-* to access all properties and variables
       ...property
     }
     this.values = values
     this.classes = classes
+    this.useHyphens = alwaysUseHyphens
   }
 
   public toKebabCase(str: string): string {
@@ -60,13 +62,11 @@ export class TenoxUI {
     const classConfigs = this.getAllClassNames(classRegistry)
     const classPatterns = [...classConfigs]
 
-    return [...propertyTypes, ...classPatterns, ...safelist]
-      .sort((a, b) => b.length - a.length)
-      .join('|')
+    return [...propertyTypes, ...classPatterns, ...safelist].sort((a, b) => b.length - a.length)
   }
 
   private generateClassNameRegEx(safelist?: string[]): RegExp {
-    const typePrefixes = this.getTypePrefixes(safelist)
+    const typePrefixes = this.getTypePrefixes(safelist).join('|')
 
     // Common pattern for handling complex nested structures
     const nestedBracketPattern = '\\[[^\\]]+\\]'
@@ -98,7 +98,7 @@ export class TenoxUI {
     const typePattern = `(${typePrefixes}|\\[[^\\]]+\\])`
 
     // 3. Separator (optional)
-    const separator = '(?:-)?'
+    const separator = this.useHyphens ? '(?:-)' : '(?:-)?'
 
     // 4. Value pattern - modified to handle $ variables correctly
     const valuePattern =
