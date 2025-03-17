@@ -2,21 +2,27 @@
 
 ## `v0.4.0` - `Unreleased`
 
+### Changed
+
+- `getTypePrefixes` now returning an array
+- Enhance `hyphens` checks on `parse`
+
 ### Added
 
-- New unit tests
-- `parse` method now can recognize parentheses and curly bracket as prefix value, previously only recognize square bracket value (e.g. nth-(4):bg-red, max-{445px}:flex)
+- New unit tests.
+- New option: use `alwaysUseHyphens` to only accept class name with hyphens like `bg-red`, `p-1rem` and so on, instead of `p1rem`, `m2` and so on. (default: `true`)
+- `parse` method now can recognize parentheses and curly bracket as prefix value, previously only recognize square bracket value (e.g. nth-(4):bg-red, max-{445px}:flex).
 
 ### Removed
 
-- Ability to use property shorthand inside bracket type
+- Ability to use property shorthand inside bracket type.
 - Alias feature, can be handled better
-- `property` parameter in `ValueParams` type
+- `property` parameter in `ValueParams` type.
 
 ### Fixed
 
-- Remaining `-dummy` on `secondValue` in `parse` method
-- Better value handling on function property and value in `processShorthand` method
+- Remaining `-dummy` on `secondValue` in `parse` method.
+- Better value handling on function property and value in `processShorthand` method.
 
 ## `v0.3.0` - `2025-03-13`
 
