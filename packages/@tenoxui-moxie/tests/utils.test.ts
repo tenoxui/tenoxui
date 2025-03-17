@@ -47,8 +47,8 @@ describe('Utility', () => {
       }
     })
 
-    expect(ui.getTypePrefixes()).toContain('flex|bg')
-    expect(ui.getTypePrefixes(['my-custom-list'])).toContain('my-custom-list|')
+    expect(ui.getTypePrefixes()).toEqual(expect.arrayContaining(['flex', 'bg']))
+    expect(ui.getTypePrefixes(['my-custom-list'])).toContain('my-custom-list')
   })
 
   it('should parse pattern with curly bracket correctly', () => {
