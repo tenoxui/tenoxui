@@ -1,10 +1,4 @@
-import type { GetCSSProperty, Values, Aliases, Classes, Breakpoint } from '@tenoxui/types'
-
-export type ApplyStyleObject = {
-  SINGLE_RULE?: string[]
-} & {
-  [key in Exclude<string, 'SINGLE_RULE'>]?: string | ApplyStyleObject
-}
+import type { GetCSSProperty, Values, Classes } from '@tenoxui/types'
 
 export type PropertyParams = {
   key?: string | null
@@ -20,73 +14,34 @@ export type ValueParams = {
   unit?: string
   secondValue?: string
   secondUnit?: string
-  property?: GetCSSProperty
 }
 
-export type PropertyValue = GetCSSProperty | ((params: PropertyParams) => GetCSSProperty)
+export type PropertyParamValue = GetCSSProperty | ((params: PropertyParams) => GetCSSProperty)
 
 export type ValuePropType = string | ((params: ValueParams) => string | null) | null
 
+export type PropertyValue =
+  | PropertyParamValue
+  | {
+      property?: PropertyParamValue
+      value?: ValuePropType
+      group?: string
+    }
+
 export type Property = {
-  [type: string]:
-    | PropertyValue
-    | {
-        classNameSuffix?: string
-        property?: PropertyValue
-        value?: ValuePropType
-      }
-}
-
-export type CoreConfig = {
-  property?: Property
-  values?: Values
-  breakpoints?: Breakpoint[]
-  classes?: Classes
-  aliases?: Aliases
-}
-
-export type CoreConfigFull = {
-  property?: Property
-  values?: Values
-  breakpoints?: Breakpoint[]
-  classes?: Classes
-  aliases?: Aliases
-  attributify?: boolean
-  attributifyPrefix?: string
-  attributifyIgnore?: string[]
-}
-
-export interface TenoxUIConfig {
-  property: Property
-  values: Values
-  classes: Classes
-  breakpoints: Breakpoint[]
-  aliases: Aliases
+  [type: string]: PropertyValue
 }
 
 export interface Config {
   property?: Property
   values?: Values
   classes?: Classes
-  aliases?: Aliases
-  breakpoints?: Breakpoint[]
-  reserveClass?: string[]
-  apply?: ApplyStyleObject
-}
-
-export type ClassModifier = {
-  className: string
-  modifier: string
+  alwaysUseHyphens?: boolean
 }
 
 export type ProcessedStyle = {
-  className: string | ClassModifier
+  className: string
   cssRules: string | string[]
   value: string | null
   prefix?: string | null
-}
-
-export type MediaQueryRule = {
-  mediaKey: string
-  ruleSet: string
 }

@@ -1,6 +1,6 @@
 {
   "name": "@tenoxui/moxie",
-  "version": "0.2.0",
+  "version": "0.4.0",
   "description": "Very lightweight utility-first CSS engine for style generation",
   "author": "NOuSantx <nousantx@gmail.com>",
   "license": "MIT",
@@ -24,10 +24,17 @@
     "LICENSE"
   ],
   "type": "module",
-  "types": "dist/index.d.ts",
-  "main": "dist/index.cjs",
-  "module": "dist/index.es.js",
-  "browser": "dist/index.iife.js",
+  "types": "./dist/index.d.ts",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.es.js",
+  "browser": "./dist/index.iife.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.cjs.js",
+      "import": "./dist/index.es.js"
+    }
+  },
   "scripts": {
     "dev": "vite build --watch",
     "build": "tsc --noEmit && vite build && tsc --declaration --emitDeclarationOnly --outDir dist",
