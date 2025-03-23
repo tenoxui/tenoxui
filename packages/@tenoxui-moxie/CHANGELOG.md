@@ -1,6 +1,6 @@
 # Changelog
 
-## `v0.4.0` - `Unreleased`
+## `v0.4.0` - `2025-03-23`
 
 ### Changed
 
