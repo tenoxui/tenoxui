@@ -1,5 +1,11 @@
 # Changelog
 
+## `v0.4.1` - `2025-03-29`
+
+### Changed
+
+- Arbitrary value (that starts with `[` or `(`) will not replace `\_` with blank space, only `_`.
+
 ## `v0.4.0` - `2025-03-23`
 
 ### Changed
