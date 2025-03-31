@@ -194,7 +194,12 @@ export class TenoxUI {
       (value.startsWith('[') && value.endsWith(']')) ||
       (value.startsWith('(') && value.endsWith(')'))
     ) {
-      const cleanValue = value.slice(1, -1).replace(/(?<!\\)_/g, ' ') // Replaces `_` but ignores `\_`
+      const cleanValue = value
+        .slice(1, -1)
+        // Replaces `_` but ignores `\_`
+        .replace(/\\\_/g, 'm0x13c55')
+        .replace(/\_/g, ' ')
+        .replace(/m0x13c55/g, '_')
 
       if (cleanValue.includes('{')) {
         return replaceWithValueRegistry(cleanValue)
