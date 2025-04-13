@@ -153,7 +153,7 @@ export class TenoxUI {
         : secValue.replace('-dummy', '')
       : ''
 
-    return [prefix, type, finalValue, unit || '', finalSecValue, secUnit]
+    return [prefix, type, finalValue, unit || '', finalSecValue, secUnit, className]
   }
 
   // unique value parser
