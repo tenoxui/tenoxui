@@ -15,7 +15,7 @@
     "@nousantx/tenoxui-create-theme": "^1.0.0",
     "@tenoxui/property": "^1.4.5",
     "@tenoxui/static": "^0.5.1",
-    "vite": "^6.1.0",
+    "vite": "^6.2.3",
     "vite-plugin-anyframe": "0.2.1"
   },
   "packageManager": "pnpm@10.4.0"
