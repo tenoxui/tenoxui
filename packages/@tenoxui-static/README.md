@@ -23,9 +23,9 @@ const tenoxui = new TenoxUI({
 })
 
 // process the class names and include them to be processed later
-tenoxui.processClassNames(['bg-red', 'bg-green'])
+tenoxui.processClassNames(['bg-red', 'bg-yellow'])
 
-const stylesheet = tenoxui.generateStylesheet()
+const stylesheet = tenoxui.generate()
 
 console.log(stylesheet)
 
@@ -473,7 +473,7 @@ Map(2) {
 }
 ```
 
-### `generateStylesheet`
+### `generate`
 
 Generate CSS style rules that stored inside `styleMap`
 
@@ -482,7 +482,7 @@ Generate CSS style rules that stored inside `styleMap`
 ```javascript
 tenoxui.processClassNames(['bg-red', 'bg-yellow'])
 
-console.log(tenoxui.generateStylesheet())
+console.log(tenoxui.generate())
 
 /* Output :
 .bg-red { background: red }
