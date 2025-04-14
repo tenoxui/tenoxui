@@ -5,6 +5,7 @@ export function createConfig({
   entry = './src/index.ts',
   formats = ['es', 'iife', 'cjs', 'umd'],
   fileName = 'index',
+  sourcemap = true,
   viteOptions = {},
   rollupOptions = {}
 } = {}): Config {
@@ -17,11 +18,10 @@ export function createConfig({
         entry,
         formats,
         fileName: (format, name) =>
-          `${fileName !== 'index' ? fileName : name}.${format}${format !== 'cjs' ? '.js' : ''}`,
+          `${fileName !== 'index' ? fileName : name}.${format !== 'cjs' ? `${format}.js` : format}`,
         ...viteOptions
       },
-      sourcemap: true,
-
+      sourcemap,
       rollupOptions: {
         output: { exports: 'named' },
         ...rollupOptions
