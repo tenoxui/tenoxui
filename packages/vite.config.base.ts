@@ -17,8 +17,7 @@ export function createConfig({
         name,
         entry,
         formats,
-        fileName: (format, name) =>
-          `${fileName !== 'index' ? fileName : name}.${format !== 'cjs' ? `${format}.js` : format}`,
+        fileName: (format, name) => `${fileName !== 'index' ? fileName : name}.${format}.js`,
         ...viteOptions
       },
       sourcemap,
