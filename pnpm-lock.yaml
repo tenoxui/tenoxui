@@ -106,11 +106,11 @@ importers:
   packages/tenoxui:
     devDependencies:
       '@nousantx/someutils':
-        specifier: ^0.3.0
-        version: 0.3.2
-      '@tenoxui/core':
-        specifier: 1.3.2
-        version: 1.3.2
+        specifier: ^0.7.0
+        version: 0.7.0
+      '@tenoxui/moxie':
+        specifier: 0.4.2
+        version: 0.4.2
       typescript:
         specifier: ^5.6.3
         version: 5.8.2
@@ -316,9 +316,6 @@ packages:
   '@nousantx/color-library@0.2.0':
     resolution: {integrity: sha512-ydXBzrLNAOMmZcjVrVDWfKp1sLmfwXJvegNc8gUsTcxW4vWPqhnvKAEcCHu2eFqXhLjb7+eloHhyCoW7v1kOWw==}
 
-  '@nousantx/someutils@0.3.2':
-    resolution: {integrity: sha512-CXipRG4DKm1sHdLW7c5vFUgQL06sdnxbPDGkitNmi4G47zFXVRIrZ41LEmuFJ/TfdZQz/fqrSQ9qCwUK6dlUEA==}
-
   '@nousantx/someutils@0.6.2':
     resolution: {integrity: sha512-LoeoOuHDbFBYk+2sLwfjJmATl+p5Cscv+dOXNnBNNS1Z/XXMiy1nXMB9lVcKnyYDlGknqnHehBG4k973j0YYOQ==}
 
@@ -428,11 +425,11 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@tenoxui/core@1.3.2':
-    resolution: {integrity: sha512-isxiTP9Jx4te3/5f5l2h7BHpfeAbateoL5kjfXFHJ98cmLgZcM4SLdcaHIvHGrWfCo+tkHKsVV32QXsYaFnzNA==}
-
   '@tenoxui/moxie@0.2.0':
     resolution: {integrity: sha512-fxo2H57bOA4eVx+gau8kFhLy3swOv1Os3Fs2rFdFkwGd6D9gw60ud7cO/YKlTXD8KRvqqqE01ZiQsxfKb5iamw==}
+
+  '@tenoxui/moxie@0.4.2':
+    resolution: {integrity: sha512-lk3nfUK+P+N+RJx1tJDMuqjrESwi51AOFTnGM8RsnuXmFX+pCDECKXX6XTYQyKG92O2d0KZ76gizOJ8FSJJsaw==}
 
   '@tenoxui/property@1.4.5':
     resolution: {integrity: sha512-hAaQTiqPh785Yay7LtGXu4t5ThoH9PVZK1Xd5G6NLh6tO3fBgzLv2n0HIGNAiSVd3Fe4N9OwSMNtMQAKR4RFLw==}
@@ -1136,8 +1133,6 @@ snapshots:
 
   '@nousantx/color-library@0.2.0': {}
 
-  '@nousantx/someutils@0.3.2': {}
-
   '@nousantx/someutils@0.6.2':
     dependencies:
       '@tenoxui/types': 0.1.2
@@ -1208,9 +1203,11 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.37.0':
     optional: true
 
-  '@tenoxui/core@1.3.2': {}
-
   '@tenoxui/moxie@0.2.0':
+    dependencies:
+      '@tenoxui/types': 0.1.2
+
+  '@tenoxui/moxie@0.4.2':
     dependencies:
       '@tenoxui/types': 0.1.2
 
