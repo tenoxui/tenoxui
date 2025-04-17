@@ -39,9 +39,15 @@ export interface Config {
   alwaysUseHyphens?: boolean
 }
 
+export type Parsed = null | (string | undefined)[]
+
 export type ProcessedStyle = {
   className: string
   cssRules: string | string[]
   value: string | null
   prefix?: string | null
+}
+
+export type Results = ProcessedStyle & {
+  raw?: Parsed
 }
