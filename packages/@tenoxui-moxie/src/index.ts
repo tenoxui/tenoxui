@@ -1,5 +1,5 @@
 import type { Values, Classes, CSSPropertyOrVariable, GetCSSProperty } from '@tenoxui/types'
-import type { Property, Config, ProcessedStyle } from './types'
+import type { Property, Config, Parsed, ProcessedStyle, Results } from './types'
 export * from './types'
 export class TenoxUI {
   private property: Property
@@ -65,7 +65,7 @@ export class TenoxUI {
     return [...propertyTypes, ...classPatterns, ...safelist].sort((a, b) => b.length - a.length)
   }
 
-  private generateClassNameRegEx(safelist?: string[]): RegExp {
+  public regexp(safelist?: string[]) {
     const typePrefixes = this.getTypePrefixes(safelist).join('|')
 
     // Common pattern for handling complex nested structures
@@ -75,7 +75,6 @@ export class TenoxUI {
 
     // 1. Prefix pattern
     const prefixPattern =
-      '(?:(' +
       // Simple prefix (hover, md, focus, etc.)
       '[a-zA-Z0-9_-]+|' +
       // value-like prefix (nth-(4), max-[445px], etc.)
@@ -91,8 +90,7 @@ export class TenoxUI {
       '|' +
       nestedParenPattern +
       '|' +
-      nestedBracePattern +
-      '):)?'
+      nestedBracePattern
 
     // 2. Type pattern
     const typePattern = `(${typePrefixes}|\\[[^\\]]+\\])`
@@ -130,15 +128,33 @@ export class TenoxUI {
       '(?:\\$[^\\s\\/]+))' +
       '([a-zA-Z%]*))?'
 
-    return new RegExp(
-      prefixPattern + typePattern + separator + valuePattern + unitPattern + secondaryPattern
-    )
+    return {
+      prefix: prefixPattern,
+      type: typePattern,
+      separator: separator,
+      value: valuePattern,
+      unit: unitPattern,
+      secondValuePattern: secondaryPattern,
+      all:
+        '(?:(' +
+        prefixPattern +
+        '):)?' +
+        typePattern +
+        separator +
+        valuePattern +
+        unitPattern +
+        secondaryPattern
+    }
   }
 
-  public parse(className: string, safelist?: string[]) {
+  private generateClassNameRegEx(safelist: string[] = []): RegExp {
+    return new RegExp(this.regexp(safelist).all)
+  }
+
+  public parse(className: string, safelist?: string[]): Parsed {
     // Check if the className exists in any class object
     if (Object.values(this.classes).some((classObj) => classObj?.[className])) {
-      return [undefined, className, '', '', undefined, undefined]
+      return [undefined, className, '', '', undefined, undefined, className]
     }
 
     const classNameRegEx = this.generateClassNameRegEx(safelist)
@@ -467,7 +483,12 @@ export class TenoxUI {
       const rules = properties
         .map((prop) => {
           const classObj = this.classes[prop]
-          if (!classObj) return ''
+          if (
+            !classObj ||
+            (value && !classObj[className].includes('||')) ||
+            (value && !classObj[className].includes('|'))
+          )
+            return ''
 
           const processedValue = this.parseValuePattern(
             className,
@@ -503,7 +524,7 @@ export class TenoxUI {
   public process(classNames: string | string[]): ProcessedStyle[] {
     const classList = Array.isArray(classNames) ? classNames : classNames.split(/\s+/)
 
-    const results: ProcessedStyle[] = []
+    const results: Results[] = []
 
     classList.forEach((className) => {
       if (!className) return this
@@ -537,12 +558,13 @@ export class TenoxUI {
 
       if (shouldClasses) {
         const { className, cssRules, prefix } = shouldClasses
-
+        if (!cssRules || cssRules === 'null') return
         results.push({
           className,
           cssRules,
           value: null,
-          prefix
+          prefix,
+          raw: parsed
         })
 
         return
@@ -552,12 +574,14 @@ export class TenoxUI {
 
       if (result) {
         const { className, cssRules, value: ruleValue, prefix: rulePrefix } = result
+        if (!cssRules || cssRules === 'null') return
 
         results.push({
           className,
           cssRules,
           value: ruleValue,
-          prefix: rulePrefix
+          prefix: rulePrefix,
+          raw: parsed
         })
       }
     })
