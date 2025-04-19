@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Changed
+
+- Return `null` when `key` is defined but in string property
+
 ## `v0.4.4` - `2025-04-19`
 
 ### Changed
