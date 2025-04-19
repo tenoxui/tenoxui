@@ -1,6 +1,6 @@
 {
   "name": "@tenoxui/moxie",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "description": "Very lightweight utility-first CSS engine for style generation",
   "author": "NOuSantx <nousantx@gmail.com>",
   "license": "MIT",
@@ -23,7 +23,6 @@
     "README.md",
     "LICENSE"
   ],
-  "type": "module",
   "types": "./dist/index.d.ts",
   "main": "./dist/index.cjs.js",
   "module": "./dist/index.es.js",
