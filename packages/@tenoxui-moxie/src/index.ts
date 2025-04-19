@@ -357,10 +357,10 @@ export class TenoxUI {
         if (
           typeof properties.property === 'string' &&
           typeof template === 'string' &&
-          !template.includes('{1') &&
-          secondValue
-        )
+          (value.includes(extractedFor + ':') || (!template.includes('{1') && secondValue))
+        ) {
           return null
+        }
 
         return {
           className,
@@ -398,7 +398,12 @@ export class TenoxUI {
             })
           : properties
 
-      if ((typeof properties === 'string' || Array.isArray(properties)) && secondValue) return null
+      if (
+        (typeof properties === 'string' || Array.isArray(properties)) &&
+        (value.includes(extractedFor + ':') || secondValue)
+      ) {
+        return null
+      }
 
       return {
         className: `${type}${value ? (isHyphen ? '-' : '') + value + unit : ''}${
