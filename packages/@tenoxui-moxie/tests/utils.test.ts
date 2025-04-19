@@ -14,6 +14,7 @@ describe('Utility', () => {
   })
 
   it('should escape unique characters', () => {
+    expect(ui.escapeCSSSelector('2xl:w-3xl')).toBe('\\32 xl\\:w-3xl')
     expect(ui.escapeCSSSelector(`#{}.:;?%&,@+*~'"!^$[]()=>|/`)).toBe(
       `\\#\\{\\}\\.\\:\\;\\?\\%\\&\\,\\@\\+\\*\\~\\'\\"\\!\\^\\$\\[\\]\\(\\)\\=\\>\\|\\/`
     )

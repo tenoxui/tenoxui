@@ -210,4 +210,38 @@ describe('Value Processor', () => {
       'padding: 4rem 20px'
     ) // ignoring second value
   })
+
+  // disable secondValue
+  it('should disable various way of secondValue', () => {
+    const ui = new Moxie({
+      property: {
+        p1: 'padding',
+        p2: ['paddingLeft', 'paddingRight'],
+        p3: ({ value, unit, secondValue }) =>
+          secondValue ? null : 'padding: ' + value + (unit || 'px'),
+        p4: {
+          property: ({ value, unit, secondValue }) =>
+            secondValue ? null : 'padding: ' + value + (unit || 'px')
+        }
+      }
+    })
+
+    expect(ui.processShorthand('p1', '2', 'rem').cssRules).toBe('padding')
+    expect(ui.processShorthand('p1', '2', 'rem').value).toBe('2rem')
+    expect(ui.processShorthand('p1', '2', 'rem', '', '4', 'rem')).toBe(null)
+    expect(ui.processShorthand('p2', '2', 'rem').cssRules).toStrictEqual([
+      'paddingLeft',
+      'paddingRight'
+    ])
+    expect(ui.processShorthand('p2', '2', 'rem').value).toBe('2rem')
+    expect(ui.processShorthand('p2', '2', 'rem', '', '4', 'rem')).toBe(null)
+    expect(ui.processShorthand('p3', '2', 'rem').cssRules).toBe('padding: 2rem')
+    expect(ui.processShorthand('p3', '2', 'rem', '', '4', 'rem').cssRules).toBe(null)
+    expect(ui.processShorthand('p4', '2', 'rem').cssRules).toBe('padding: 2rem')
+    expect(ui.processShorthand('p4', '2', 'rem', '', '4', 'rem').cssRules).toBe(null)
+    // moxie-* utility
+    expect(ui.processShorthand('moxie', '(color:red)', '', '').cssRules).toBe('color')
+    expect(ui.processShorthand('moxie', '(color:red)', '', '').value).toBe('red')
+    expect(ui.processShorthand('moxie', '(color:red)', '', '', '4').cssRules).toBe(null)
+  })
 })
