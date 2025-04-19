@@ -1,5 +1,39 @@
 # Changelog
 
+## `v0.4.4` - `2025-04-19`
+
+### Changed
+
+- `moxie-*` utility doesn't allow `secondValue` by default
+- `escapeCSSSelector` method will escape any numbers at the start of the inputted
+
+### Fixed
+
+- Don't stringify `null` `cssRules` on `processShorthand`
+- Return `null` (if `secondValue` is present) on properties and values that is string or shorthand value that doesn't have `{1`.
+
+### Removed
+
+- Remove `type` field from `package.json`
+
+## `v0.4.3` - `2025-04-17`
+
+### Added
+
+- Added `className` inside one of the returned items in `parse()` method
+- New method `regexp`, return standalone `regex` pattern for constructing the final `regex` pattern.
+- Added condition to not processing `cssRules` that is `null`
+
+### Changed
+
+- `generateClassNameRegEx()` method now relying on new `regexp()` method.
+
+## `v0.4.2` - `2025-04-01`
+
+### Fixed
+
+- Shouldn't replace `\_` with blank space, only `_`
+
 ## `v0.4.1` - `2025-03-29`
 
 ### Changed
