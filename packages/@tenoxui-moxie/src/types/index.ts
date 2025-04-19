@@ -16,7 +16,9 @@ export type ValueParams = {
   secondUnit?: string
 }
 
-export type PropertyParamValue = GetCSSProperty | ((params: PropertyParams) => GetCSSProperty)
+export type PropertyParamValue =
+  | GetCSSProperty
+  | ((params: PropertyParams) => null | GetCSSProperty)
 
 export type ValuePropType = string | ((params: ValueParams) => string | null) | null
 
@@ -43,7 +45,7 @@ export type Parsed = null | (string | undefined)[]
 
 export type ProcessedStyle = {
   className: string
-  cssRules: string | string[]
+  cssRules: string | string[] | null
   value: string | null
   prefix?: string | null
 }

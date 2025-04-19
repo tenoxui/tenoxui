@@ -9,7 +9,9 @@ export class TenoxUI {
 
   constructor({ property = {}, values = {}, classes = {}, alwaysUseHyphens = true }: Config = {}) {
     this.property = {
-      moxie: ({ key }) => key as GetCSSProperty, // use moxie-* to access all properties and variables
+      // use moxie-* to access all properties and variables
+      // e.g. `moxie-(color:red)` => `color: red`, `moxie-(--my-var:20px_1rem)` => `--my-var: 20px 1rem`
+      moxie: ({ key, secondValue }) => (secondValue ? null : (key as GetCSSProperty)),
       ...property
     }
     this.values = values
@@ -32,7 +34,9 @@ export class TenoxUI {
   }
 
   public escapeCSSSelector(str: string): string {
-    return str.replace(/([ #{}.:;?%&,@+*~'"!^$[\]()=>|/])/g, '\\$1')
+    return str
+      .replace(/^(\d)/, '\\3$1 ') // escape any digits at the start of the selector
+      .replace(/([#{}.:;?%&,@+*~'"!^$[\]()=>|/])/g, '\\$1')
   }
 
   private getAllClassNames(classRegistry: Classes | undefined): string[] {
@@ -268,9 +272,11 @@ export class TenoxUI {
 
       const cssRules = items
         .map((item) => {
-          const finalProperty = item.startsWith('--')
-            ? String(item)
-            : this.toKebabCase(String(item))
+          const finalProperty = !item
+            ? null
+            : item.startsWith('--')
+              ? String(item)
+              : this.toKebabCase(String(item))
           return `${finalProperty}: ${finalValue}`
         })
         .join('; ')
@@ -342,23 +348,37 @@ export class TenoxUI {
             processedValue = finalValue
           }
         } else processedValue = null
-
         const className = `${type}${
           value ? `${isHyphen ? (isHyphen ? '-' : '') : ''}${value}${unit}` : ''
         }${secondValue ? `/${secondValue}${secondUnit}` : ''}`
 
+        // checking if the second value is present with both property and value is string
+        // if so, return null
+        if (
+          typeof properties.property === 'string' &&
+          typeof template === 'string' &&
+          !template.includes('{1') &&
+          secondValue
+        )
+          return null
+
         return {
           className,
-          cssRules: Array.isArray(property)
-            ? (property as string[])
-            : typeof property === 'string' &&
-                ((property as string).includes(':') || (property as string).includes('value:'))
-              ? (property as string).includes('value:')
-                ? (property as string).slice(6)
-                : (this.toKebabCase(String(property)) as string)
-              : (this.toKebabCase(String(property)) as string),
+          cssRules: !property
+            ? null
+            : Array.isArray(property)
+              ? (property as string[])
+              : typeof property === 'string' &&
+                  ((property as string).includes(':') || (property as string).includes('value:'))
+                ? (property as string).includes('value:')
+                  ? (property as string).slice(6)
+                  : (this.toKebabCase(String(property)) as string)
+                : (this.toKebabCase(String(property)) as string),
           value:
-            template === null || (property as string).includes('value:')
+            template === null ||
+            property === null ||
+            (property as string).includes(':') ||
+            (property as string).includes('value:')
               ? null
               : value.startsWith('[')
                 ? finalValue
@@ -378,17 +398,24 @@ export class TenoxUI {
             })
           : properties
 
+      if ((typeof properties === 'string' || Array.isArray(properties)) && secondValue) return null
+
       return {
         className: `${type}${value ? (isHyphen ? '-' : '') + value + unit : ''}${
           secondValue ? `/${secondValue}${secondUnit}` : ''
         }`,
-        cssRules: Array.isArray(properties)
-          ? (finalRegProperty as string[])
-          : typeof finalRegProperty === 'string' && finalRegProperty.startsWith('value:')
-            ? finalRegProperty.slice(6)
-            : (this.toKebabCase(String(finalRegProperty)) as string),
+        cssRules: !finalRegProperty
+          ? null
+          : Array.isArray(properties)
+            ? (finalRegProperty as string[])
+            : typeof finalRegProperty === 'string' &&
+                (finalRegProperty.includes(':') || finalRegProperty.startsWith('value:'))
+              ? finalRegProperty.startsWith('value:')
+                ? finalRegProperty.slice(6)
+                : (this.toKebabCase(String(finalRegProperty)) as string)
+              : (this.toKebabCase(String(finalRegProperty)) as string),
         value:
-          typeof finalRegProperty === 'string' && finalRegProperty.startsWith('value:')
+          typeof finalRegProperty === 'string' && finalRegProperty.includes(':')
             ? null
             : finalValue,
         prefix
@@ -564,7 +591,7 @@ export class TenoxUI {
           cssRules,
           value: null,
           prefix,
-          raw: parsed
+          raw: [prefix, type, value, unit, secValue, secUnit] as Parsed
         })
 
         return
@@ -581,7 +608,7 @@ export class TenoxUI {
           cssRules,
           value: ruleValue,
           prefix: rulePrefix,
-          raw: parsed
+          raw: [prefix, type, value, unit, secValue, secUnit] as Parsed
         })
       }
     })
