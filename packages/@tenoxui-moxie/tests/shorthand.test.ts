@@ -211,6 +211,52 @@ describe('Value Processor', () => {
     ) // ignoring second value
   })
 
+  it('should return null on string property and value with key', () => {
+    const ui = new Moxie({
+      property: {
+        bg1: 'background',
+        bg2: { property: 'background' },
+        bg3: ({ value, key, secondValue }) => (key || secondValue ? null : `background: ${value}`)
+      }
+    })
+
+    expect(
+      ui.process([
+        'bg1-red',
+        'bg1-red/20',
+        'bg1-(color:red)',
+        'bg2-red',
+        'bg2-red/20',
+        'bg2-(color:red)',
+        'bg3-red',
+        'bg3-red/20',
+        'bg3-(color:red)'
+      ])
+    ).toStrictEqual([
+      {
+        className: 'bg1-red',
+        cssRules: 'background',
+        value: 'red',
+        prefix: undefined,
+        raw: [undefined, 'bg1', 'red', '', '', undefined]
+      },
+      {
+        className: 'bg2-red',
+        cssRules: 'background',
+        value: 'red',
+        prefix: undefined,
+        raw: [undefined, 'bg2', 'red', '', '', undefined]
+      },
+      {
+        className: 'bg3-red',
+        cssRules: 'background: red',
+        value: null,
+        prefix: undefined,
+        raw: [undefined, 'bg3', 'red', '', '', undefined]
+      }
+    ])
+  })
+
   // disable secondValue
   it('should disable various way of secondValue', () => {
     const ui = new Moxie({
