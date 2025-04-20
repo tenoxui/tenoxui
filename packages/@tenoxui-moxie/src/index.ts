@@ -173,7 +173,13 @@ export class TenoxUI {
         : secValue.replace('-dummy', '')
       : ''
 
-    return [prefix, type, finalValue, unit || '', finalSecValue, secUnit, className]
+    const isHyphen = !className.includes((type || '') + (value || ''))
+
+    const constructedClass = `${prefix ? `${prefix}:` : ''}${type}${
+      isHyphen ? '-' : ''
+    }${finalValue}${unit}${secValue ? `/${finalSecValue}${secUnit}` : ''}`
+
+    return [prefix, type, finalValue, unit || '', finalSecValue, secUnit, constructedClass]
   }
 
   // unique value parser
@@ -268,23 +274,18 @@ export class TenoxUI {
       const items = type
         .slice(1, -1)
         .split(',')
-        .map((item) => item.trim())
-
-      const cssRules = items
         .map((item) => {
-          const finalProperty = !item
-            ? null
-            : item.startsWith('--')
-              ? String(item)
-              : this.toKebabCase(String(item))
-          return `${finalProperty}: ${finalValue}`
+          const str = item.trim()
+          if (!str.startsWith('--')) return this.toKebabCase(String(str))
+          return String(str)
         })
-        .join('; ')
+
+      if (!value || secondValue) return null
 
       return {
-        className: `${`[${type.slice(1, -1)}]${isHyphen ? '-' : ''}${value}${unit}`}`,
-        cssRules, // return css rules directly
-        value: null, // and set value to null to prevent value duplication
+        className: `${`${type}${isHyphen ? '-' : ''}${value}${unit}`}`,
+        cssRules: items.length === 1 ? items[0] : items,
+        value: finalValue,
         prefix
       }
     }
@@ -596,7 +597,7 @@ export class TenoxUI {
           cssRules,
           value: null,
           prefix,
-          raw: [prefix, type, value, unit, secValue, secUnit] as Parsed
+          raw: parsed
         })
 
         return
@@ -613,7 +614,7 @@ export class TenoxUI {
           cssRules,
           value: ruleValue,
           prefix: rulePrefix,
-          raw: [prefix, type, value, unit, secValue, secUnit] as Parsed
+          raw: parsed
         })
       }
     })
