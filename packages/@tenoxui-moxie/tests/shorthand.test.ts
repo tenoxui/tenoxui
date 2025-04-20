@@ -2,6 +2,20 @@ import { describe, it, expect } from 'vitest'
 import Moxie from '../src/index.ts'
 
 describe('Value Processor', () => {
+  it('should process direct CSS properties or variables', () => {
+    const ui = new Moxie()
+    expect(ui.processShorthand('[color]')).toBe(null)
+    expect(ui.processShorthand('[color]', 'red').cssRules).toBe('color')
+    expect(ui.processShorthand('[color]', 'red', '', '', '3')).toBe(null)
+    expect(ui.processShorthand('[backgroundColor]', 'red').cssRules).toBe('background-color')
+    expect(ui.processShorthand('[width,height]', 'red').cssRules).toStrictEqual(['width', 'height'])
+    expect(ui.processShorthand('[--my-color]', 'red').cssRules).toBe('--my-color')
+    expect(ui.processShorthand('[--myColor,color]', 'red').cssRules).toStrictEqual([
+      '--myColor',
+      'color'
+    ])
+  })
+
   it('should process basic shorthand', () => {
     const ui = new Moxie({
       property: {
@@ -238,21 +252,21 @@ describe('Value Processor', () => {
         cssRules: 'background',
         value: 'red',
         prefix: undefined,
-        raw: [undefined, 'bg1', 'red', '', '', undefined]
+        raw: [undefined, 'bg1', 'red', '', '', undefined, 'bg1-red']
       },
       {
         className: 'bg2-red',
         cssRules: 'background',
         value: 'red',
         prefix: undefined,
-        raw: [undefined, 'bg2', 'red', '', '', undefined]
+        raw: [undefined, 'bg2', 'red', '', '', undefined, 'bg2-red']
       },
       {
         className: 'bg3-red',
         cssRules: 'background: red',
         value: null,
         prefix: undefined,
-        raw: [undefined, 'bg3', 'red', '', '', undefined]
+        raw: [undefined, 'bg3', 'red', '', '', undefined, 'bg3-red']
       }
     ])
   })
