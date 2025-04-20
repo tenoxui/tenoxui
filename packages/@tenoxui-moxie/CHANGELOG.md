@@ -5,6 +5,8 @@
 ### Changed
 
 - Return `null` when `key` is defined but in string property
+- Return reconstructed class name on `parse` method
+- Refactor direct properties class name functionality, return the CSS properties and variables instead of direct CSS rules
 
 ## `v0.4.4` - `2025-04-19`
 
