@@ -277,11 +277,11 @@ describe('Value Processor', () => {
       property: {
         p1: 'padding',
         p2: ['paddingLeft', 'paddingRight'],
-        p3: ({ value, unit, secondValue }) =>
-          secondValue ? null : 'padding: ' + value + (unit || 'px'),
+        p3: ({ value, unit, secondValue, key }) =>
+          !value || key || secondValue ? null : 'padding: ' + value + (unit || 'px'),
         p4: {
-          property: ({ value, unit, secondValue }) =>
-            secondValue ? null : 'padding: ' + value + (unit || 'px')
+          property: ({ value, unit, secondValue, key }) =>
+            !value || key || secondValue ? null : 'padding: ' + value + (unit || 'px')
         }
       }
     })
@@ -289,16 +289,25 @@ describe('Value Processor', () => {
     expect(ui.processShorthand('p1', '2', 'rem').cssRules).toBe('padding')
     expect(ui.processShorthand('p1', '2', 'rem').value).toBe('2rem')
     expect(ui.processShorthand('p1', '2', 'rem', '', '4', 'rem')).toBe(null)
+    expect(ui.processShorthand('p1')).toBe(null)
+    expect(ui.processShorthand('p1', '(hehe:2rem)')).toBe(null)
     expect(ui.processShorthand('p2', '2', 'rem').cssRules).toStrictEqual([
       'paddingLeft',
       'paddingRight'
     ])
     expect(ui.processShorthand('p2', '2', 'rem').value).toBe('2rem')
     expect(ui.processShorthand('p2', '2', 'rem', '', '4', 'rem')).toBe(null)
+    expect(ui.processShorthand('p2')).toBe(null)
+    expect(ui.processShorthand('p2', '(hehe:2rem)')).toBe(null)
     expect(ui.processShorthand('p3', '2', 'rem').cssRules).toBe('padding: 2rem')
+    expect(ui.processShorthand('p3').cssRules).toBe(null)
     expect(ui.processShorthand('p3', '2', 'rem', '', '4', 'rem').cssRules).toBe(null)
+    expect(ui.processShorthand('p3', '(hehe:2rem)').cssRules).toBe(null)
+    expect(ui.processShorthand('p4').cssRules).toBe(null)
     expect(ui.processShorthand('p4', '2', 'rem').cssRules).toBe('padding: 2rem')
     expect(ui.processShorthand('p4', '2', 'rem', '', '4', 'rem').cssRules).toBe(null)
+    expect(ui.processShorthand('p4', '(hehe:2rem)').cssRules).toBe(null)
+    expect(ui.processShorthand('p4').cssRules).toBe(null)
     // moxie-* utility
     expect(ui.processShorthand('moxie', '(color:red)', '', '').cssRules).toBe('color')
     expect(ui.processShorthand('moxie', '(color:red)', '', '').value).toBe('red')

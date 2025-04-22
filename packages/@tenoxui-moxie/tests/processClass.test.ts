@@ -36,9 +36,10 @@ describe('Value Processor', () => {
       }
     })
 
-    expect(ui.process('flex')[0].cssRules).toBe('display: flex')
-    expect(ui.process('hover:flex')[0].cssRules).toBe('display: flex')
-    expect(ui.process('hover:flex')[0].prefix).toBe('hover')
+    expect(ui.processCustomClass('flex').cssRules).toBe('display: flex')
+    expect(ui.processCustomClass('flex', '', '', 'hover').cssRules).toBe('display: flex')
+    expect(ui.processCustomClass('flex', '', '', 'hover').prefix).toBe('hover')
+    expect(ui.processCustomClass('flex', '4').cssRules).toBe('')
   })
 
   it('should parse classes from `this.classes`, but with custom value', () => {
