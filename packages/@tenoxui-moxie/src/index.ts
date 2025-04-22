@@ -149,33 +149,27 @@ export class TenoxUI {
     }
   }
 
-  private generateClassNameRegEx(safelist: string[] = []): RegExp {
-    return new RegExp(this.regexp(safelist).all)
-  }
+  public parse(className: string, safelist: string[]): Parsed {
+    const regexp = this.regexp(safelist)
 
-  public parse(className: string, safelist?: string[]): Parsed {
-    // Check if the className exists in any class object
-    if (Object.values(this.classes).some((classObj) => classObj?.[className])) {
-      return [undefined, className, '', '', undefined, undefined, className]
+    // catch all possible class names with value defined
+    const fullMatch = className.match(new RegExp(regexp.all))
+    if (fullMatch) {
+      const [, prefix, type, value, unit, secValue, secUnit] = fullMatch
+      const constructedClass = `${prefix ? `${prefix}:` : ''}${type}-${value}${unit}${
+        secValue ? `/${secValue}${secUnit}` : ''
+      }`
+
+      return [prefix, type, value, unit || '', secValue, secUnit, constructedClass]
     }
 
-    const classNameRegEx = this.generateClassNameRegEx(safelist)
-    const match = (className + '-dummy').match(classNameRegEx)
-    if (!match) return null
+    // catch valueless class names, such as from this.classes
+    const valuelessMatch = className.match(new RegExp(`(?:(${regexp.prefix}):)?${regexp.type}`))
 
-    const [, prefix, type, value, unit, secValue, secUnit] = match
-    const finalValue = value ? (value === 'dummy' ? '' : value.replace('-dummy', '')) : ''
-    const finalSecValue = secValue
-      ? secValue === 'dummy'
-        ? ''
-        : secValue.replace('-dummy', '')
-      : ''
+    if (valuelessMatch)
+      return [valuelessMatch[1], valuelessMatch[2], '', '', undefined, undefined, className]
 
-    const constructedClass = `${prefix ? `${prefix}:` : ''}${type}${
-      finalValue ? `-${finalValue}` : ''
-    }${unit}${secValue ? `/${finalSecValue}${secUnit}` : ''}`
-
-    return [prefix, type, finalValue, unit || '', finalSecValue, secUnit, constructedClass]
+    return null
   }
 
   // unique value parser

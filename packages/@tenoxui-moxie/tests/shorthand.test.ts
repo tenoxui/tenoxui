@@ -252,21 +252,21 @@ describe('Value Processor', () => {
         cssRules: 'background',
         value: 'red',
         prefix: undefined,
-        raw: [undefined, 'bg1', 'red', '', '', undefined, 'bg1-red']
+        raw: [undefined, 'bg1', 'red', '', undefined, undefined, 'bg1-red']
       },
       {
         className: 'bg2-red',
         cssRules: 'background',
         value: 'red',
         prefix: undefined,
-        raw: [undefined, 'bg2', 'red', '', '', undefined, 'bg2-red']
+        raw: [undefined, 'bg2', 'red', '', undefined, undefined, 'bg2-red']
       },
       {
         className: 'bg3-red',
         cssRules: 'background: red',
         value: null,
         prefix: undefined,
-        raw: [undefined, 'bg3', 'red', '', '', undefined, 'bg3-red']
+        raw: [undefined, 'bg3', 'red', '', undefined, undefined, 'bg3-red']
       }
     ])
   })
