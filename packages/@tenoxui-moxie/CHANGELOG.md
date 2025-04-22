@@ -2,11 +2,19 @@
 
 ## Unreleased
 
+### Added
+
+- Function `property` (including function `value`) now have access to `raw` data of the class name its processing.
+
 ### Changed
 
-- Return `null` when `key` is defined but in string property
+- Return `null` when `key` is defined but in string property.
 - Return reconstructed class name on `parse` method
-- Refactor direct properties class name functionality, return the CSS properties and variables instead of direct CSS rules
+- Refactor direct properties class name. functionality, return the CSS properties and variables instead of direct CSS rules.
+
+### Deprecated
+
+- Deprecating `alwaysUseHyphens` support, because if set to false, causing so many class names error.
 
 ## `v0.4.4` - `2025-04-19`
 
