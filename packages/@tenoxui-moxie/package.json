@@ -1,13 +1,20 @@
 {
   "name": "@tenoxui/moxie",
-  "version": "0.4.4",
+  "version": "0.5.0-alpha.0",
   "description": "Very lightweight utility-first CSS engine for style generation",
   "author": "NOuSantx <nousantx@gmail.com>",
   "license": "MIT",
   "homepage": "https://github.com/tenoxui/tenoxui#readme",
   "keywords": [
-    "tenoxui",
-    "css-framework"
+    "css",
+    "css-framework",
+    "css-engine",
+    "css-parser",
+    "utility-first",
+    "atomic-css",
+    "frontend",
+    "library",
+    "javascript-library"
   ],
   "repository": {
     "type": "git",
