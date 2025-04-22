@@ -1,6 +1,12 @@
 # Changelog
 
-## Unreleased
+## `v0.5.0-alpha.1` - `2025-04-223`
+
+### Fixed
+
+- Remove remaining separator om valueless class name
+
+## `v0.5.0-alpha.0` - `2025-04-22`
 
 ### Added
 
