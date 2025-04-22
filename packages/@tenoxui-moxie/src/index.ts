@@ -171,9 +171,9 @@ export class TenoxUI {
         : secValue.replace('-dummy', '')
       : ''
 
-    const constructedClass = `${prefix ? `${prefix}:` : ''}${type}-${finalValue}${unit}${
-      secValue ? `/${finalSecValue}${secUnit}` : ''
-    }`
+    const constructedClass = `${prefix ? `${prefix}:` : ''}${type}${
+      finalValue ? `-${finalValue}` : ''
+    }${unit}${secValue ? `/${finalSecValue}${secUnit}` : ''}`
 
     return [prefix, type, finalValue, unit || '', finalSecValue, secUnit, constructedClass]
   }
