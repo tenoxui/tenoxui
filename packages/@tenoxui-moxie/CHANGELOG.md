@@ -1,10 +1,16 @@
 # Changelog
 
-## `v0.5.0-alpha.1` - `2025-04-223`
+## `v0.5.0-alpha.2` - `2025-04-23`
+
+### Changed
+
+- Refactor `parse` method
+
+## `v0.5.0-alpha.1` - `2025-04-22`
 
 ### Fixed
 
-- Remove remaining separator om valueless class name
+- Remove remaining separator from valueless class name
 
 ## `v0.5.0-alpha.0` - `2025-04-22`
 
