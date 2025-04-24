@@ -1,6 +1,6 @@
 import type { Values, Classes, CSSPropertyOrVariable, GetCSSProperty } from '@tenoxui/types'
 import type { Property, Config, Parsed, ProcessedStyle, Results } from './types'
-export * from './types'
+
 export class TenoxUI {
   private property: Property
   private values: Values
@@ -8,7 +8,7 @@ export class TenoxUI {
 
   constructor({ property = {}, values = {}, classes = {} }: Config = {}) {
     this.property = {
-      // use moxie-* to access all properties and variables
+      // use moxie-* utility to access all properties and variables
       // e.g. `moxie-(color:red)` => `color: red`, `moxie-(--my-var:20px_1rem)` => `--my-var: 20px 1rem`
       moxie: ({ key, secondValue }) => (secondValue ? null : (key as GetCSSProperty)),
       ...property
@@ -149,7 +149,7 @@ export class TenoxUI {
     }
   }
 
-  public parse(className: string, safelist: string[]): Parsed {
+  public parse(className: string, safelist?: string[]): Parsed {
     const regexp = this.regexp(safelist)
 
     // catch all possible class names with value defined
@@ -658,4 +658,5 @@ export class TenoxUI {
   }
 }
 
+export * from './types'
 export default TenoxUI

@@ -1,5 +1,16 @@
 # Changelog
 
+## `v0.5.0` - `2025-04-24`
+
+> Stable release after pre-releasing: `v0.5.0-alpha.0`, `v0.5.0-alpha.1`, and `v0.5.0-alpha.2`
+
+### In Summary
+
+- Full rewrite of `parse` logic
+- Internal API adjustments to function shorthand (`bg: () => ...`)
+- Deprecated `alwaysUseHyphens` support
+- Improved stability and parsing reliability
+
 ## `v0.5.0-alpha.2` - `2025-04-23`
 
 ### Changed
@@ -16,7 +27,7 @@
 
 ### Added
 
-- Function `property` (including function `value`) now have access to `raw` data of the class name its processing.
+- Function `property` (including function `value`) now have access to `raw` data of the class name its processing. (e.g. `bg: ({ value, raw }) => ...`)
 
 ### Changed
 
@@ -26,7 +37,7 @@
 
 ### Deprecated
 
-- Deprecating `alwaysUseHyphens` support, because if set to false, causing so many class names error.
+- Deprecating `alwaysUseHyphens` support, because if set to false, causing many error when parsing class names
 
 ## `v0.4.4` - `2025-04-19`
 
