@@ -13,7 +13,7 @@ export type PropertyParamValue =
   | GetCSSProperty
   | ((params: PropertyParams) => null | GetCSSProperty)
 
-export type ValuePropType = string | ((params: PropertyParams) => string | null) | null
+export type ValuePropType = string | string[] | ((params: PropertyParams) => string | null) | null
 
 export type PropertyValue =
   | PropertyParamValue

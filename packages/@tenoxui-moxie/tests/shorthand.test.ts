@@ -313,4 +313,19 @@ describe('Value Processor', () => {
     expect(ui.processShorthand('moxie', '(color:red)', '', '').value).toBe('red')
     expect(ui.processShorthand('moxie', '(color:red)', '', '', '4').cssRules).toBe(null)
   })
+
+  it('only get value from array of values', () => {
+    const ui = new Moxie({
+      property: {
+        'break-after': {
+          property: 'breakAfter',
+          value: ['all', 'auto', 'avoid']
+        }
+      }
+    })
+
+    expect(ui.processShorthand('break-after', 'all').cssRules).toBe('break-after')
+    expect(ui.processShorthand('break-after', 'all').value).toBe('all')
+    expect(ui.processShorthand('break-after', 'hehehe')).toBe(null)
+  })
 })

@@ -361,6 +361,14 @@ export class TenoxUI {
           } else {
             processedValue = finalValue
           }
+        }
+        // if `properties.value` is an array
+        else if (Array.isArray(template)) {
+          // return null when the value isn't available in the array -
+          // or when the secondValue is defined
+          if (!template.includes(value + unit) || secondValue) return null
+          // process further
+          else processedValue = value + unit
         } else processedValue = null
         const className = `${type}${value ? `-${value}${unit}` : ''}${
           secondValue ? `/${secondValue}${secondUnit}` : ''
