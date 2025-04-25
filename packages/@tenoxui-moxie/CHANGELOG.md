@@ -1,5 +1,11 @@
 # Changelog
 
+## `V0.6.0` - `2025-04-25`
+
+### Added
+
+- `value` in shorthand feature now can be defined as array, that stores only specific values. (e.g. `font: { value: ["thin", "normal", "medium"], property: ... }`)
+
 ## `v0.5.0` - `2025-04-24`
 
 > Stable release after pre-releasing: `v0.5.0-alpha.0`, `v0.5.0-alpha.1`, and `v0.5.0-alpha.2`
