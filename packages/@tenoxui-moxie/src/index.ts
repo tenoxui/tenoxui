@@ -156,11 +156,8 @@ export class TenoxUI {
     const fullMatch = className.match(new RegExp(regexp.all))
     if (fullMatch) {
       const [, prefix, type, value, unit, secValue, secUnit] = fullMatch
-      const constructedClass = `${prefix ? `${prefix}:` : ''}${type}-${value}${unit}${
-        secValue ? `/${secValue}${secUnit}` : ''
-      }`
 
-      return [prefix, type, value, unit || '', secValue, secUnit, constructedClass]
+      return [prefix, type, value, unit || '', secValue, secUnit]
     }
 
     // catch valueless class names, such as from this.classes
@@ -170,6 +167,19 @@ export class TenoxUI {
       return [valuelessMatch[1], valuelessMatch[2], '', '', undefined, undefined, className]
 
     return null
+  }
+
+  public constructRaw(
+    prefix: null | undefined | string,
+    type: string,
+    value?: null | string,
+    unit?: null | string,
+    secValue?: null | string,
+    secUnit?: null | string
+  ) {
+    return `${prefix ? `${prefix}:` : ''}${type}${value ? '-' : ''}${value}${unit}${
+      secValue ? `/${secValue}${secUnit}` : ''
+    }`
   }
 
   // unique value parser
@@ -236,6 +246,16 @@ export class TenoxUI {
     raw?: Parsed
   ): ProcessedStyle | null {
     const properties = this.property[type]
+
+    // return null when properties is an object, but doesn't have `property` field
+    if (
+      typeof properties === 'object' &&
+      !Array.isArray(properties) &&
+      !('property' in properties)
+    ) {
+      return null
+    }
+
     // Extract "key" from (color:red) => { key: 'color', cleanValue: 'red' }
     // Pattern that matches both (key:value) and [key:value] formats
     const pattern = /^(?:\(|\[)([^:]+):(.+)(?:\)|\])$/
@@ -282,7 +302,7 @@ export class TenoxUI {
         )
 
       return {
-        className: `${type}-${value}${unit}`,
+        className: this.constructRaw(prefix, type, value, unit),
         cssRules: items.length === 1 ? items[0] : items,
         value: finalValue,
         prefix
@@ -370,9 +390,6 @@ export class TenoxUI {
           // process further
           else processedValue = value + unit
         } else processedValue = null
-        const className = `${type}${value ? `-${value}${unit}` : ''}${
-          secondValue ? `/${secondValue}${secondUnit}` : ''
-        }`
 
         // checking if the second value is present with both property and value is string
         // if so, return null
@@ -385,7 +402,7 @@ export class TenoxUI {
         }
 
         return {
-          className,
+          className: this.constructRaw(prefix, type, value, unit, secondValue, secondUnit),
           cssRules:
             // if not property, or when `properties.property` as function return null
             !property
@@ -433,9 +450,7 @@ export class TenoxUI {
             properties
 
       return {
-        className: `${type}${value ? '-' + value + unit : ''}${
-          secondValue ? `/${secondValue}${secondUnit}` : ''
-        }`,
+        className: this.constructRaw(prefix, type, value, unit, secondValue, secondUnit),
         cssRules: !finalRegProperty
           ? null
           : Array.isArray(properties)
@@ -566,12 +581,11 @@ export class TenoxUI {
 
       const isValueType = className.slice(-(value + unit).length)
 
-      const finalClassName = `${className}${value ? `-${value}${unit}` : ''}${
-        secValue ? `/${secValue}${secUnit}` : ''
-      }`
-
       return {
-        className: value === isValueType ? className : finalClassName,
+        className:
+          value === isValueType
+            ? className
+            : this.constructRaw(prefix, className, value, unit, secValue, secUnit),
         cssRules: rules,
         value: null,
         prefix
@@ -589,6 +603,7 @@ export class TenoxUI {
       for (const className of classList) {
         try {
           if (!className) continue
+
           const parsed = this.parse(className)
           if (!parsed) continue
           const [prefix, type, value, unit, secValue, secUnit] = parsed
@@ -612,11 +627,11 @@ export class TenoxUI {
               const { className, cssRules, prefix } = shouldClasses
               if (!cssRules || cssRules === 'null') continue
               results.push({
-                className,
+                className: this.escapeCSSSelector(className),
                 cssRules,
                 value: null,
                 prefix,
-                raw: parsed
+                raw: [...parsed, this.constructRaw(prefix, type, value, unit, secValue, secUnit)]
               })
               continue
             }
@@ -642,11 +657,11 @@ export class TenoxUI {
               if (!cssRules || cssRules === 'null') continue
 
               results.push({
-                className,
+                className: this.escapeCSSSelector(className),
                 cssRules,
                 value: ruleValue,
                 prefix: rulePrefix,
-                raw: parsed
+                raw: [...parsed, this.constructRaw(prefix, type, value, unit, secValue, secUnit)]
               })
             }
           } catch (shorthardError) {

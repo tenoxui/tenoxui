@@ -38,7 +38,7 @@ describe('Value Processor', () => {
       prefix: undefined
     })
     expect(ui.processShorthand('my-color', 'red', '', 'hover')).toStrictEqual({
-      className: 'my-color-red',
+      className: 'hover:my-color-red',
       cssRules: '--my-color',
       value: 'red',
       prefix: 'hover'
@@ -95,7 +95,7 @@ describe('Value Processor', () => {
       prefix: undefined
     })
     expect(ui.processShorthand('p', 'md', '', 'hover')).toStrictEqual({
-      className: 'p-md',
+      className: 'hover:p-md',
       cssRules: 'padding',
       value: '2rem',
       prefix: 'hover'
@@ -169,13 +169,13 @@ describe('Value Processor', () => {
       prefix: undefined
     })
     expect(ui.processShorthand('m', '4', '', 'hover', '8')).toStrictEqual({
-      className: 'm-4/8',
+      className: 'hover:m-4/8',
       cssRules: 'margin: 1rem 2rem',
       value: null,
       prefix: 'hover'
     })
     expect(ui.processShorthand('m', '[30%]', '', 'hover', '8')).toStrictEqual({
-      className: 'm-[30%]/8', // secondValue is ignored
+      className: 'hover:m-[30%]/8', // secondValue is ignored
       cssRules: 'margin: 30%',
       value: null,
       prefix: 'hover'
