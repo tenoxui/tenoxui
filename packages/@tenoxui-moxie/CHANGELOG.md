@@ -1,5 +1,22 @@
 # Changelog
 
+## `V0.6.1` - `2025-04-27`
+
+### Added
+
+- check if the `this.property[type]` has `property` if defined as an object
+- `constructRaw` method.
+
+
+### Changed
+
+- `className` field in the `process` output now automatically escaped.
+- `processShorthand` and `processCustomClass` now return full class names (`prefix` is not included before).
+
+### Deprecated
+
+- `parse` method wont return `constructedClass` anymore, but it remain the same in the `process` method output.
+
 ## `V0.6.0` - `2025-04-25`
 
 ### Added
