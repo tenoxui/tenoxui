@@ -156,23 +156,24 @@ export class TenoxUI {
     raw?: null | (string | undefined)[]
   ): {
     className: string
-    rules: { cssRules: string; value: string | null }[]
-    value: string | null
-    variants: null | {
-      className: string
-      rules: { cssRules: string; value: string | null }[]
-      variant: string
-    }
+    rules: { cssRules: string | string[] | null; value: string | null }[]
+    variants:
+      | null
+      | {
+          className: string
+          rules: { cssRules: string | string[] | null; value: string | null }[]
+          variant: string
+        }[]
     raw: null | (string | undefined)[]
   } | null {
     if (!className || !this.aliases[className]) return null
 
     let finalClass = this.main.escapeCSSSelector(prefix ? `${prefix}:${className}` : className)
 
-    const allRules: { cssRules: string; value: string | null }[] = []
+    const allRules: { cssRules: string | string[] | null; value: string | null }[] = []
     const prefixRules: {
       className: string
-      cssRules: string
+      cssRules: string | string[] | null
       value: string | null
       variant: string
     }[] = []
@@ -186,12 +187,7 @@ export class TenoxUI {
 
       if (!variants) {
         allRules.push({
-          cssRules:
-            typeof cssRules === 'string'
-              ? cssRules
-              : Array.isArray(cssRules)
-                ? cssRules[0] || ''
-                : '',
+          cssRules,
           value
         })
       } else if (variants && variants.prefix === prefix) return
@@ -200,12 +196,7 @@ export class TenoxUI {
           className: variants.data.includes('&')
             ? variants.data.replace('&', finalClass)
             : finalClass,
-          cssRules:
-            typeof cssRules === 'string'
-              ? cssRules
-              : Array.isArray(cssRules)
-                ? cssRules[0] || ''
-                : '',
+          cssRules,
           value,
           variant: variants.data
         })
@@ -235,7 +226,7 @@ export class TenoxUI {
           string,
           {
             className: string
-            rules: { cssRules: string; value: string | null }[]
+            rules: { cssRules: string | string[] | null; value: string | null }[]
             variant: string
           }
         >
@@ -245,8 +236,7 @@ export class TenoxUI {
     return {
       className: finalClass,
       rules: allRules,
-      value: null,
-      variants: mergedVariants.length > 0 ? mergedVariants[0] : null,
+      variants: mergedVariants.length > 0 ? mergedVariants : null,
       raw: raw || []
     }
   }

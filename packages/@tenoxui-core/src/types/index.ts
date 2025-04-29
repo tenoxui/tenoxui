@@ -42,12 +42,13 @@ export type Result =
     }
   | {
       className: string
-      rules: { cssRules: string; value: string | null }[]
-      value: string | null
-      variants: null | {
-        className: string
-        rules: { cssRules: string; value: string | null }[]
-        variant: string
-      }
+      rules: { cssRules: string | string[] | null; value: string | null }[]
+      variants:
+        | null
+        | {
+            className: string
+            rules: { cssRules: string | string[] | null; value: string | null }[]
+            variant: string
+          }[]
       raw: null | (string | undefined)[]
     }
