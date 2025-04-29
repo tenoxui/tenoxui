@@ -2,7 +2,6 @@ import type { Property } from '@tenoxui/moxie'
 import type { Values, Classes, Aliases } from '@tenoxui/types'
 import type { Variants, Breakpoints, TenoxUIConfig, Config, Result } from './types'
 import { TenoxUI as Moxie } from '@tenoxui/moxie'
-import { functionVariants } from './lib/variants'
 
 export class TenoxUI {
   private main: Moxie
@@ -51,7 +50,7 @@ export class TenoxUI {
     }
     this.main = new this.engine(this.tuiConfig)
     this.prefixLoader = new this.engine({
-      property: { ...(functionVariants as Property), ...this.customVariants },
+      property: this.customVariants as Property,
       values: this.breakpoints
     })
   }
@@ -281,7 +280,6 @@ export class TenoxUI {
   }
 }
 
-export { merge, transformClasses as createUtilityStyle } from '@nousantx/someutils'
 export { TenoxUI as Moxie } from '@tenoxui/moxie'
 export { is } from './utils/is'
 export * from './types'

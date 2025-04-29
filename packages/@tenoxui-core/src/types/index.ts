@@ -8,14 +8,6 @@ export type Variants = {
 export type Breakpoints = {
   [bpName: string]: string
 }
-export type Keys = {
-  [name: string]: string
-}
-export type ApplyStyleObject = {
-  SINGLE_RULE?: string[]
-} & {
-  [key in Exclude<string, 'SINGLE_RULE'>]?: string | ApplyStyleObject
-}
 export interface TenoxUIConfig {
   property?: Property
   values?: Values
