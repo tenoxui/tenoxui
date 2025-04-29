@@ -282,5 +282,6 @@ export class TenoxUI {
 
 export { TenoxUI as Moxie } from '@tenoxui/moxie'
 export { is } from './utils/is'
+export * from './utils/converter'
 export * from './types'
 export default TenoxUI
