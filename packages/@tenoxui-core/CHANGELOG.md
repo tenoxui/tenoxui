@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- Types import from `@tenoxui/moxie`
+- `prefix` field on `processAlias` return
+
+### Removed
+
+- `is` function
+
 ## v2.0.0 (dev start) - `2025-04-29`
 
 ### Notes
