@@ -235,6 +235,7 @@ export class TenoxUI {
     return {
       className: finalClass,
       rules: allRules,
+      prefix: prefix ? { name: prefix, data: this.generatePrefix(prefix) } : null,
       variants: mergedVariants.length > 0 ? mergedVariants : null,
       raw: raw || []
     }
