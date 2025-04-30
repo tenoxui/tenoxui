@@ -44,3 +44,13 @@ export type Result =
           }[]
       raw: null | (string | undefined)[]
     }
+export {
+  PropertyParamValue,
+  PropertyParams,
+  ValuePropType,
+  PropertyValue,
+  Property,
+  Config as MoxieConfig,
+  Parsed,
+  ProcessedStyle
+} from '@tenoxui/moxie'
