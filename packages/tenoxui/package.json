@@ -1,9 +1,10 @@
 {
   "name": "tenoxui",
-  "version": "0.13.0-alpha.0",
-  "description": "A CSS Framework without CSS file :D",
+  "version": "0.14.0-alpha.0",
+  "description": "Core component of tenoxui",
   "author": "NOuSantx <nousantx@gmail.com>",
   "license": "MIT",
+  "keywords": ["css-framework", "tenoxui", "ui-library", "utility-first", "frontend"],
   "homepage": "https://tenoxui.web.app",
   "repository": {
     "type": "git",
@@ -13,32 +14,34 @@
   "bugs": {
     "url": "https://github.com/tenoxui/tenoxui/issues"
   },
-  "keywords": [
-    "framework",
-    "css",
-    "css-in-js",
-    "utility-first"
-  ],
-  "type": "module",
-  "types": "./dist/js/tenoxui.d.ts",
-  "main": "./dist/js/tenoxui.js",
-  "module": "./dist/js/tenoxui.esm.js",
-  "style": "./dist/css/tenoxui.css",
-  "files": [
-    "dist/*",
-    "package.json",
-    "README.md",
-    "LICENSE"
-  ],
+  "files": ["dist/*", "package.json", "README.md", "LICENSE"],
+  "types": "./dist/index.d.ts",
+  "main": "./dist/index.cjs.js",
+  "module": "./dist/index.es.js",
+  "browser": "./dist/index.iife.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.cjs.js",
+      "import": "./dist/index.es.js"
+    }
+  },
   "scripts": {
-    "dev": "rollup -c -w",
-    "build": "rollup -c",
-    "build:css": "cleancss src/css/tenoxui.css -o dist/css/tenoxui.min.css --source-map && cp src/css/tenoxui.css dist/css/"
+    "dev": "vite build --watch",
+    "build": "vite build",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "type:check": "tsc --noEmit",
+    "type:build": "tsc --declaration --emitDeclarationOnly --outDir dist",
+    "build:prod": "pnpm type:check && pnpm build && pnpm type:build"
   },
   "devDependencies": {
-    "@nousantx/someutils": "^0.3.0",
-    "@tenoxui/core": "1.3.2",
-    "typescript": "^5.6.3",
-    "vite": "^6.2.3"
+    "@tenoxui/core": "^2.0.0-alpha.0",
+    "typescript": "^5.7.3",
+    "vite": "^6.2.3",
+    "vitest": "^3.0.5"
+  },
+  "dependencies": {
+    "@tenoxui/types": "^0.1.2"
   }
 }
