@@ -44,7 +44,7 @@ export type Result =
           }[]
       raw: null | (string | undefined)[]
     }
-export {
+export type {
   PropertyParamValue,
   PropertyParams,
   ValuePropType,
