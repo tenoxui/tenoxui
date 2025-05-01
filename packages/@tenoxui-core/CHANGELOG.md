@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v2.0.0-alpha.1 - `2025-05-01`
 
 ### Added
 
