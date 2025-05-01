@@ -156,6 +156,7 @@ export class TenoxUI {
   ): {
     className: string
     rules: { cssRules: string | string[] | null; value: string | null }[]
+    prefix: null | { name: string; data: string }
     variants:
       | null
       | {
