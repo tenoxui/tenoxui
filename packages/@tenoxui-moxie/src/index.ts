@@ -482,7 +482,6 @@ export class TenoxUI {
   ): string {
     if (!pattern.includes('{0}') && !pattern.includes('{1') && !pattern.includes('||'))
       return pattern
-
     const [value, defaultValue] = pattern.split('||').map((s) => s.trim())
     const finalValue = this.processValue(inputValue, inputUnit, group)
     const finalSecValue = this.processValue(inputSecValue, inputSecUnit, group)
@@ -490,35 +489,44 @@ export class TenoxUI {
     if ((pattern.includes('{0}') && pattern.includes('{1')) || pattern.includes('{1')) {
       let computedValue = value
       if (inputValue) {
-        computedValue = computedValue.replace('{0}', finalValue)
+        computedValue = computedValue.replace(/\{0\}/g, finalValue)
       }
+
       if (pattern.includes('{1')) {
-        // find {1 ... } pattern and extract default value if present
-        const match = computedValue.match(/{1([^}]*)}/)
+        // handle simple {1} replacements first
         if (pattern.includes('{1}')) {
           if (inputSecValue) {
             computedValue = inputSecValue.startsWith('[')
               ? finalSecValue
-              : computedValue.replace('{1}', finalSecValue)
+              : computedValue.replace(/\{1\}/g, finalSecValue)
           } else {
-            computedValue = defaultValue
+            computedValue = defaultValue || value
           }
-        } else if (match) {
+        }
+
+        // handle {1 | defaultValue} pattern with optional default values
+        // find {1 ... } pattern and extract default value if present
+        const regex = /\{1([^}]*)\}/g
+        let match
+
+        while ((match = regex.exec(computedValue)) !== null) {
           const fullMatch = match[0]
           const innerContent = match[1].trim()
-
           let replacementValue = finalSecValue
+
           if (!replacementValue && innerContent.includes('|')) {
-            // use default value after | if second value isn provided
+            // use default value after | if second value isn't provided
             replacementValue = innerContent.split('|')[1].trim()
           } else if (!replacementValue) {
             replacementValue = ''
           }
+
           computedValue = inputValue.startsWith('[')
             ? finalValue
             : computedValue.replace(fullMatch, replacementValue)
         }
       }
+
       return inputValue ? computedValue : defaultValue || value
     }
     // Handle only {0} replacement
@@ -526,7 +534,7 @@ export class TenoxUI {
       return inputValue
         ? inputValue.startsWith('[')
           ? finalValue
-          : value.replace('{0}', finalValue)
+          : value.replace(/\{0\}/g, finalValue)
         : defaultValue || value
     }
   }
