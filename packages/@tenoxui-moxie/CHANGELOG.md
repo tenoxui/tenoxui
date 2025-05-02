@@ -1,12 +1,17 @@
 # Changelog
 
+## `V0.6.2` - `2025-05-02`
+
+### Changed
+
+- `parseValuePattern` now can handle multiple `{0}` and `{1...}` from single pattern
+
 ## `V0.6.1` - `2025-04-27`
 
 ### Added
 
 - check if the `this.property[type]` has `property` if defined as an object
 - `constructRaw` method.
-
 
 ### Changed
 
