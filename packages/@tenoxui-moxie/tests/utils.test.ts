@@ -87,6 +87,19 @@ describe('Utility', () => {
     expect(ui.parseValuePattern('', 'rgb({0} / {1 | 1}) || blue', '(255_0_0)', '', '20', '%')).toBe(
       'rgb(255 0 0 / 20%)'
     )
+    expect(
+      ui.parseValuePattern(
+        '',
+        'rgb({0} / {1 | 1}) rgb({0} / {1 | 1}) || blue',
+        '(255_0_0)',
+        '',
+        '20',
+        '%'
+      )
+    ).toBe('rgb(255 0 0 / 20%) rgb(255 0 0 / 20%)')
+    expect(
+      ui.parseValuePattern('', 'rgb({0} / {1 | 1}) rgb({0} / {1 | 1}) || blue', '', '', '', '')
+    ).toBe('blue')
     expect(ui.parseValuePattern('', 'rgb({0} / {1 | 1}) || blue', '', '', '', '')).toBe('blue')
   })
 })
