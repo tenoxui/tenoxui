@@ -4,7 +4,13 @@
   "description": "Core component of tenoxui",
   "author": "NOuSantx <nousantx@gmail.com>",
   "license": "MIT",
-  "keywords": ["css-framework", "tenoxui", "ui-library", "utility-first", "frontend"],
+  "keywords": [
+    "css-framework",
+    "tenoxui",
+    "ui-library",
+    "utility-first",
+    "frontend"
+  ],
   "homepage": "https://tenoxui.web.app",
   "repository": {
     "type": "git",
@@ -14,7 +20,12 @@
   "bugs": {
     "url": "https://github.com/tenoxui/tenoxui/issues"
   },
-  "files": ["dist/*", "package.json", "README.md", "LICENSE"],
+  "files": [
+    "dist/*",
+    "package.json",
+    "README.md",
+    "LICENSE"
+  ],
   "types": "./dist/index.d.ts",
   "main": "./dist/index.cjs.js",
   "module": "./dist/index.es.js",
@@ -36,7 +47,8 @@
     "build:prod": "pnpm type:check && pnpm build && pnpm type:build"
   },
   "devDependencies": {
-    "@tenoxui/core": "^2.0.0-alpha.0",
+    "@tenoxui/core": "2.0.0-alpha.1",
+    "@tenoxui/moxie": "^0.6.2",
     "typescript": "^5.7.3",
     "vite": "^6.2.3",
     "vitest": "^3.0.5"
