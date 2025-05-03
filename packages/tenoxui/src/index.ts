@@ -104,12 +104,12 @@ export class TenoxUI extends Core {
     return template.replace(/&/g, `.${className}`)
   }
 
-  public processApplyObject(selectorObject: Record<string, string>): string[] {
+  public processApplyObject(selectorObject: Record<string, string | string[]>): string[] {
     const finalResults: string[] = []
 
     for (const [rawSelector, classNames] of Object.entries(selectorObject)) {
       const data = this.process(classNames)
-      if (!data || !data.length > 0) return []
+      if (!data || 0 > data.length) return []
       const baseRules: string[] = []
       const variantBlocks: string[] = []
       data.forEach((item) => {
