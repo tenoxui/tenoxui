@@ -9,9 +9,12 @@ export type PropertyParams = {
   raw?: Parsed
 }
 
+export type DirectValue = `value:${string}`
+
 export type PropertyParamValue =
   | GetCSSProperty
-  | ((params: PropertyParams) => null | GetCSSProperty)
+  | DirectValue
+  | ((params: PropertyParams) => null | GetCSSProperty | DirectValue)
 
 export type ValuePropType = string | string[] | ((params: PropertyParams) => string | null) | null
 
