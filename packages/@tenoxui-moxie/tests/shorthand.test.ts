@@ -125,7 +125,9 @@ describe('Value Processor', () => {
           return `value:margin: ${create(value, unit)}${
             secondValue ? ` ${create(secondValue, secondUnit)}` : ''
           }`
-        }
+        },
+        flex: 'display: flex',
+        grid: 'value:display: grid'
       },
       values: {
         fakeblue: 'red'
@@ -177,6 +179,30 @@ describe('Value Processor', () => {
     expect(ui.processShorthand('m', '[30%]', '', 'hover', '8')).toStrictEqual({
       className: 'hover:m-[30%]/8', // secondValue is ignored
       cssRules: 'margin: 30%',
+      value: null,
+      prefix: 'hover'
+    })
+    expect(ui.processShorthand('flex')).toStrictEqual({
+      className: 'flex', // secondValue is ignored
+      cssRules: 'display: flex',
+      value: null,
+      prefix: undefined
+    })
+    expect(ui.processShorthand('flex', '', '', 'hover')).toStrictEqual({
+      className: 'hover:flex', // secondValue is ignored
+      cssRules: 'display: flex',
+      value: null,
+      prefix: 'hover'
+    })
+    expect(ui.processShorthand('grid')).toStrictEqual({
+      className: 'grid', // secondValue is ignored
+      cssRules: 'display: grid',
+      value: null,
+      prefix: undefined
+    })
+    expect(ui.processShorthand('grid', '', '', 'hover')).toStrictEqual({
+      className: 'hover:grid', // secondValue is ignored
+      cssRules: 'display: grid',
       value: null,
       prefix: 'hover'
     })
