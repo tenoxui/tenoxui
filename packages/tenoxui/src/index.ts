@@ -1,4 +1,4 @@
-import { TenoxUI as Core, toKebabCase } from '@tenoxui/core'
+import { TenoxUI as Core, toKebabCase, Result } from '@tenoxui/core'
 import { TenoxUI as Moxie } from '@tenoxui/moxie'
 import { Config } from './types'
 import type { CSSProperty } from '@tenoxui/types'
@@ -7,6 +7,7 @@ export class TenoxUI extends Core {
   private safelist: string[]
   private tabSize: number
   private simpleMode: boolean
+  private classNameOrder: string[]
 
   constructor({
     // core config
@@ -22,7 +23,8 @@ export class TenoxUI extends Core {
     tabSize = 2,
     simple = false,
     moxie = Moxie,
-    moxieOptions = {}
+    moxieOptions = {},
+    classNameOrder = []
   }: Partial<Config> = {}) {
     super({
       property,
@@ -39,6 +41,7 @@ export class TenoxUI extends Core {
     this.safelist = safelist
     this.tabSize = simple ? 0 : tabSize
     this.simpleMode = simple
+    this.classNameOrder = classNameOrder
   }
 
   public simple() {
@@ -223,13 +226,42 @@ export class TenoxUI extends Core {
     }
   }
 
+  public sortedClassNameItem(classNames: string | string[]): Result[] | null {
+    const processedResults = this.process(classNames)
+
+    if (!processedResults || processedResults.length === 0) return null
+
+    const sortedResults = [...processedResults]
+
+    return sortedResults.sort((a, b) => {
+      const aRaw = a.raw || []
+      const bRaw = b.raw || []
+      const aUtility = aRaw[1] || ''
+      const bUtility = bRaw[1] || ''
+
+      // find the index in the order array, default to -1 if not found
+      const aIndex = this.classNameOrder.indexOf(aUtility)
+      const bIndex = this.classNameOrder.indexOf(bUtility)
+
+      // sort based on the index
+      if (aIndex !== -1 && bIndex !== -1) {
+        return aIndex - bIndex
+      }
+
+      if (aIndex !== -1) return -1
+      if (bIndex !== -1) return 1
+
+      return 0
+    })
+  }
+
   public render(
     ...classParams: Array<string | string[] | Record<string, string | string[]>>
   ): string[] {
     let results: string[] = []
 
     if (this.safelist.length > 0) {
-      const safelistData = this.process(this.safelist)
+      const safelistData = this.sortedClassNameItem(this.safelist)
       if (safelistData && safelistData.length > 0) {
         safelistData.forEach((item) => {
           if ('rules' in item) results.push(...this.processAliasItem(item))
@@ -249,7 +281,7 @@ export class TenoxUI extends Core {
       // Process array type
       else if (Array.isArray(param)) {
         if (param.length > 0) {
-          const data = this.process(param)
+          const data = this.sortedClassNameItem(param)
           if (data && data.length > 0) {
             data.forEach((item) => {
               if ('rules' in item) results.push(...this.processAliasItem(item))
@@ -262,7 +294,7 @@ export class TenoxUI extends Core {
       else if (typeof param === 'string') {
         const classes = param.split(/\s+/).filter(Boolean)
         if (classes.length > 0) {
-          const data = this.process(classes)
+          const data = this.sortedClassNameItem(classes)
           if (data && data.length > 0) {
             data.forEach((item) => {
               if ('rules' in item) results.push(...this.processAliasItem(item))
