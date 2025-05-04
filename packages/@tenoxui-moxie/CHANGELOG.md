@@ -1,5 +1,15 @@
 # Changelog
 
+## `V0.6.3` - `2025-05-04`
+
+### Added
+
+- New `DirectValue` types in `property`
+
+### Fixed
+
+- can't use direct values on string properties even the `type` has `value:`
+
 ## `V0.6.2` - `2025-05-02`
 
 ### Changed
