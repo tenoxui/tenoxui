@@ -272,7 +272,8 @@ export class TenoxUI {
     // shouldn't have `key` (or label)
     // shouldn't have `secondValue`
     if (
-      (typeof properties === 'string' || Array.isArray(properties)) &&
+      ((typeof properties === 'string' && !properties.includes(':')) ||
+        Array.isArray(properties)) &&
       (!value || value.includes(extractedFor + ':') || secondValue)
     ) {
       return null
