@@ -1,5 +1,11 @@
 # Changelog
 
+## `V0.6.4` - `2025-05-05`
+
+### Fixed
+
+- Same class name causes longer class name not being processed on `processCustomClass`.
+
 ## `V0.6.3` - `2025-05-04`
 
 ### Added
@@ -8,7 +14,7 @@
 
 ### Fixed
 
-- can't use direct values on string properties even the `type` has `value:`
+- Can't use direct values on string properties even the `type` has `value:`
 
 ## `V0.6.2` - `2025-05-02`
 

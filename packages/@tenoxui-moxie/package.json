@@ -1,6 +1,6 @@
 {
   "name": "@tenoxui/moxie",
-  "version": "0.6.3",
+  "version": "0.6.4",
   "description": "Very lightweight utility-first CSS engine for style generation",
   "author": "NOuSantx <nousantx@gmail.com>",
   "license": "MIT",
