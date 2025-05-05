@@ -561,6 +561,9 @@ export class TenoxUI {
 
     const properties = this.getParentClass(className)
 
+    // check if the class name is already a combined type and value
+    const hasAppendedValue = value && className.endsWith(`-${value}${unit}`)
+
     if (properties.length > 0) {
       const rules = properties
         .map((prop) => {
@@ -569,8 +572,11 @@ export class TenoxUI {
           // if not, don't process it
           if (
             !classObj ||
-            (value && !classObj[className].includes('||')) ||
-            (value && !classObj[className].includes('|'))
+            (value &&
+              !hasAppendedValue &&
+              classObj[className] &&
+              !classObj[className].includes('{0}') &&
+              !classObj[className].includes('|'))
           )
             return null
 
@@ -588,13 +594,10 @@ export class TenoxUI {
         .filter(Boolean)
         .join('; ')
 
-      const isValueType = className.slice(-(value + unit).length)
-
       return {
-        className:
-          value === isValueType
-            ? className
-            : this.constructRaw(prefix, className, value, unit, secValue, secUnit),
+        className: hasAppendedValue
+          ? className
+          : this.constructRaw(prefix, className, value, unit, secValue, secUnit),
         cssRules: rules,
         value: null,
         prefix
