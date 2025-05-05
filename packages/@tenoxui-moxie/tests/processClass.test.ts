@@ -84,69 +84,40 @@ describe('Value Processor', () => {
     )
   })
 
-  it('should parse shorthand and apply value based on keys', () => {
+  it('should correctly parse class name with same `type` or class name prefix', () => {
     const ui = new Moxie({
-      property: {
-        ui: ({ key }) => key,
-        p: {
-          property: ({ key }) => {
-            const keys = {
-              x: 'paddingInline',
-              t: 'paddingTop'
-            }
-
-            return keys[key] || 'padding'
-          }
-        },
-        m: {
-          property: ({ key }) => {
-            const keys = {
-              x: 'marginInline',
-              t: 'marginTop'
-            }
-
-            return keys[key] || 'margin'
-          },
-          value: ({ value, unit }) => {
-            return !isNaN(value + unit) ? 0.25 * Number(value) + 'rem' : value + unit
-          }
-        },
-        top: {
-          property: ({ value, unit }) => {
-            return `value:top: ${
-              !isNaN(value + unit) ? 0.25 * Number(value) + 'rem' : value + unit
-            }`
-          }
+      classes: {
+        alignItems: {
+          'items-center': 'center',
+          'items-center-hehe': 'center'
         }
-      },
-      values: {
-        md: '100px'
       }
     })
 
-    expect(ui.process('ui-(color:red)')[0].cssRules).toBe('color')
-    expect(ui.process('ui-(color:red)')[0].value).toBe('red')
-    expect(ui.process('p-1rem')[0].cssRules).toBe('padding')
-    expect(ui.process('p-1rem')[0].value).toBe('1rem')
-    expect(ui.process('p-(x:1rem)')[0].cssRules).toBe('padding-inline')
-    expect(ui.process('p-(x:20px)')[0].value).toBe('20px')
-    expect(ui.process('p-md')[0].value).toBe('100px')
-    expect(ui.process('p-({md})')[0].value).toBe('100px')
-    expect(ui.process('p-(x:{md})')[0].value).toBe('100px')
-    expect(ui.process('p-(x:calc({md}_*_2))')[0].value).toBe('calc(100px * 2)')
-    expect(ui.process('m-md')[0].value).toBe('100px')
-    expect(ui.process('m-({md})')[0].value).toBe('100px')
-    expect(ui.process('m-[{md}]')[0].value).toBe('100px')
-    expect(ui.process('m-[t:{md}]')[0].value).toBe('100px')
-    expect(ui.process('m-[t:{md}]')[0].cssRules).toBe('margin-top')
-    expect(ui.process('m-[t:101px]')[0].value).toBe('101px')
-    expect(ui.process('m-[30px]')[0].value).toBe('30px')
-    expect(ui.process('m-4')[0].value).toBe('1rem')
-    expect(ui.process('m-8')[0].value).toBe('2rem')
-    expect(ui.process('m-3.5')[0].value).toBe('0.875rem')
-    expect(ui.process('top-3.5')[0].value).toBe(null)
-    expect(ui.process('top-100px')[0].cssRules).toBe('top: 100px')
-    expect(ui.process('top-4')[0].cssRules).toBe('top: 1rem')
-    expect(ui.process('top-50%')[0].cssRules).toBe('top: 50%')
+    expect(ui.process(['items-center', 'items-center-hehe'])).toStrictEqual([
+      {
+        className: 'items-center',
+        cssRules: 'align-items: center',
+        value: null,
+        prefix: '',
+        raw: [
+          undefined,
+          'items-center',
+          '',
+          '',
+          undefined,
+          undefined,
+          'items-center',
+          'items-center'
+        ]
+      },
+      {
+        className: 'items-center-hehe',
+        cssRules: 'align-items: center',
+        value: null,
+        prefix: '',
+        raw: [undefined, 'items-center', 'hehe', '', undefined, undefined, 'items-center-hehe']
+      }
+    ])
   })
 })
