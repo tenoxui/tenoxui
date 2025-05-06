@@ -1,12 +1,18 @@
 # Changelog
 
-## `V0.6.4` - `2025-05-05`
+## `v0.6.5` - `2025-05-07`
+
+### Fixed
+
+- `parse` method not parsing the entire string.
+
+## `v0.6.4` - `2025-05-05`
 
 ### Fixed
 
 - Same class name causes longer class name not being processed on `processCustomClass`.
 
-## `V0.6.3` - `2025-05-04`
+## `v0.6.3` - `2025-05-04`
 
 ### Added
 
@@ -16,13 +22,13 @@
 
 - Can't use direct values on string properties even the `type` has `value:`
 
-## `V0.6.2` - `2025-05-02`
+## `v0.6.2` - `2025-05-02`
 
 ### Changed
 
 - `parseValuePattern` now can handle multiple `{0}` and `{1...}` from single pattern
 
-## `V0.6.1` - `2025-04-27`
+## `v0.6.1` - `2025-04-27`
 
 ### Added
 
@@ -38,7 +44,7 @@
 
 - `parse` method wont return `constructedClass` anymore, but it remain the same in the `process` method output.
 
-## `V0.6.0` - `2025-04-25`
+## `v0.6.0` - `2025-04-25`
 
 ### Added
 

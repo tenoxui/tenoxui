@@ -86,6 +86,15 @@ describe('Value Processor', () => {
 
   it('should correctly parse class name with same `type` or class name prefix', () => {
     const ui = new Moxie({
+      // until v0.6.4, class name isn't being parsed correctly if you have -
+      // shorthand that matched the class names such as from this.classes
+      // for example :
+      // class name `items-center` is being matched as `ms-center` only, -
+      // the `ite` is being ignored.
+      // `ite{type:ms}-{value:center}`
+      property: {
+        ms: '...'
+      },
       classes: {
         alignItems: {
           'items-center': 'center',
