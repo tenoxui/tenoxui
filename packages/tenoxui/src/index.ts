@@ -62,12 +62,55 @@ export class TenoxUI extends Core {
   public beautifyRules(input: string): string {
     if (this.simpleMode) return input
 
-    return input
-      .split(';')
-      .map((line) => line.trim())
-      .filter((line) => line.length > 0)
-      .map((line) => line + ';')
-      .join('\n')
+    let nestingLevel = 0
+    let result = []
+
+    const parts = input.split(';')
+
+    for (let i = 0; i < parts.length; i++) {
+      let part = parts[i].trim()
+      if (part === '') continue
+
+      // handle closing braces
+      if (part.includes('}')) {
+        const closingBraceParts = part.split('}')
+
+        for (let j = 0; j < closingBraceParts.length; j++) {
+          let subPart = closingBraceParts[j].trim()
+
+          if (subPart !== '')
+            result.push((nestingLevel > 0 ? this.addTabs(subPart) : subPart) + ';')
+
+          // add closing brace
+          if (j < closingBraceParts.length - 1) {
+            nestingLevel = Math.max(0, nestingLevel - 1)
+            result.push(nestingLevel > 0 ? this.addTabs('}') : '}')
+          }
+        }
+      }
+
+      // handle opening braces
+      else if (part.includes('{')) {
+        const openingBraceParts = part.split('{')
+
+        for (let j = 0; j < openingBraceParts.length; j++) {
+          let subPart = openingBraceParts[j].trim()
+
+          if (subPart !== '') {
+            const ending = j < openingBraceParts.length - 1 ? ' {' : ';'
+            result.push((nestingLevel > 0 ? this.addTabs(subPart) : subPart) + ending)
+          }
+          if (j < openingBraceParts.length - 1) {
+            nestingLevel++
+          }
+        }
+      }
+
+      // handle normal rules
+      else result.push((nestingLevel > 0 ? this.addTabs(part) : part) + ';')
+    }
+
+    return result.join('\n')
   }
 
   private formatRules(cssRules: string | string[] | null, value: string | null): string {
