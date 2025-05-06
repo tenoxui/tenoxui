@@ -1,5 +1,11 @@
 # Changelog
 
+## `v1.0.0-alpha.2` - `2025-05-06`
+
+### Added
+
+- `beutifyRules` support for nested rules
+
 ## `v1.0.0-alpha.1` - `2025-05-04`
 
 ### Added
