@@ -138,14 +138,15 @@ export class TenoxUI {
       unit: unitPattern,
       secondValuePattern: secondaryPattern,
       all:
-        '(?:(' +
+        '^(?:(' +
         prefixPattern +
         '):)?' +
         typePattern +
         separator +
         valuePattern +
         unitPattern +
-        secondaryPattern
+        secondaryPattern +
+        '$'
     }
   }
 
@@ -161,7 +162,7 @@ export class TenoxUI {
     }
 
     // catch valueless class names, such as from this.classes
-    const valuelessMatch = className.match(new RegExp(`(?:(${regexp.prefix}):)?${regexp.type}`))
+    const valuelessMatch = className.match(new RegExp(`^(?:(${regexp.prefix}):)?${regexp.type}$`))
 
     if (valuelessMatch)
       return [valuelessMatch[1], valuelessMatch[2], '', '', undefined, undefined, className]
