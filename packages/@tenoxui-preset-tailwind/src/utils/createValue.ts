@@ -1,13 +1,18 @@
 import { is } from 'cssrxp'
 import { toKebab } from './toKebab'
-import type { CSSProperty } from '@tenoxui/types'
+import type { CSSProperty, CSSPropertyOrVariable } from '@tenoxui/types'
 import type { DirectValue, PropertyParamValue } from '@tenoxui/moxie'
 
-export function createColorType(prop: string, value: string, secondValue?: string): DirectValue {
-  value = value.replace('current', 'currentColor')
+export function createColorType(
+  prop: CSSPropertyOrVariable,
+  value: string,
+  secondValue?: string
+): DirectValue {
+  const finalValue = value.replace('current', 'currentColor')
+  const finalProp = !prop.startsWith('--') ? toKebab(prop) : prop
   return secondValue
-    ? `value:${prop}: color-mix(in srgb, ${value} ${secondValue}%, transparent); @supports (color: color-mix(in lab, red, red)) { ${prop}: color-mix(in oklab, ${value} ${secondValue}%, transparent); }`
-    : `value:${prop}: ${value}`
+    ? `value:${finalProp}: color-mix(in srgb, ${finalValue} ${secondValue}%, transparent); @supports (color: color-mix(in lab, red, red)) { ${finalProp}: color-mix(in oklab, ${finalValue} ${secondValue}%, transparent); }`
+    : `value:${finalProp}: ${finalValue};`
 }
 
 export function createColorTypew(value: string, secondValue?: string) {
