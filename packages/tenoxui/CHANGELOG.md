@@ -1,4 +1,11 @@
-# Changelog
+# hangelog
+
+## `v1.0.0-alpha.4` - `2025-05-10`
+
+### Changed
+
+- Use `tenoxui/moxie@0.6.5`
+- Update exports
 
 ## `v1.0.0-alpha.3` - `2025-05-10`
 
