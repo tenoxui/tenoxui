@@ -14,47 +14,52 @@ import { svg } from './lib/property/svg'
 import { accessibility } from './lib/property/accessibility'
 import { values } from './lib/values'
 import { variants, customVariants } from './lib/variants'
-import type { Property } from '@tenoxui/moxie'
-import type { Values, Classes } from '@tenoxui/types'
+import type { Config, Property } from 'tenoxui'
+import type { Classes } from '@tenoxui/types'
 
-export const preset = ({ sizing = 0.25 } = {}): {
-  property: Property
-  values: Values
-  classes: Classes
-} => ({
-  variants,
-  customVariants,
-  property: {
-    ...layout.property(sizing),
-    ...flexAndGrid.property(sizing),
-    ...sizingUtilities(sizing),
-    ...typography.property(sizing),
-    ...background.property(sizing),
-    ...border.property(sizing),
-    ...effect.property(sizing),
-    ...filter(sizing),
-    ...table.property(sizing),
-    ...transition(sizing),
-    ...transform(sizing),
-    ...interactivity(sizing),
-    ...svg,
-    ...accessibility
-  },
-  values,
-  classes: {
-    ...layout.classes,
-    ...flexAndGrid.classes,
-    ...typography.classes,
-    ...effect.classes,
-    ...table.classes
-  },
-  breakpoints: {
-    sm: '40rem',
-    md: '48rem',
-    lg: '64rem',
-    xl: '80rem',
-    '2xl': '96rem'
-  }
+const property = (sizing: number = 0.25): Property => ({
+  ...layout.property(sizing),
+  ...flexAndGrid.property(sizing),
+  ...sizingUtilities(sizing),
+  ...typography.property(sizing),
+  ...background.property(sizing),
+  ...border.property(sizing),
+  ...effect.property(sizing),
+  ...filter(sizing),
+  ...table.property(sizing),
+  ...transition(sizing),
+  ...transform(sizing),
+  ...interactivity(sizing),
+  ...svg,
+  ...accessibility
 })
 
+const classes: Classes = {
+  ...layout.classes,
+  ...flexAndGrid.classes,
+  ...typography.classes,
+  ...effect.classes,
+  ...table.classes
+}
+
+const breakpoints: { [bp: string]: string } = {
+  sm: '40rem',
+  md: '48rem',
+  lg: '64rem',
+  xl: '80rem',
+  '2xl': '96rem'
+}
+
+export const preset = ({ sizing = 0.25 } = {}): Partial<Config> => ({
+  variants,
+  customVariants,
+  property: property(sizing),
+  values,
+  classes,
+  breakpoints
+})
+
+export { property, classes, breakpoints }
+export { values } from './lib/values'
+export { variants, customVariants } from './lib/variants'
 export default preset

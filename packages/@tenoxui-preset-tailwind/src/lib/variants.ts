@@ -1,8 +1,8 @@
 import type { Property } from '@tenoxui/moxie'
-import { is } from 'cssrxp'
 import { values } from './values'
 
-const supportCustom = {
+const continerBreakpoints = values['container-size'] as Record<string, string>
+const supportCustom: Record<string, string> = {
   // 1 ✓
   hover: '&:hover',
   focus: '&:focus',
@@ -99,11 +99,11 @@ export const customVariants: Property = {
   'at-min': ({ key, value, unit }) =>
     !value || key
       ? null
-      : `value:@container (width >= ${values['container-size'][value + unit] || value + unit})`,
+      : `value:@container (width >= ${continerBreakpoints[value + unit] || value + unit})`,
   'at-max': ({ key, value, unit }) =>
     !value || key
       ? null
-      : `value:@container (width < ${values['container-size'][value + unit] || value + unit})`,
+      : `value:@container (width < ${continerBreakpoints[value + unit] || value + unit})`,
 
   has: ({ key, value }) =>
     !value || key
