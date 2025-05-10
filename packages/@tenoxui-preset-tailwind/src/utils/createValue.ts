@@ -9,7 +9,7 @@ export function createColorType(
   secondValue?: string
 ): DirectValue {
   const finalValue = value.replace('current', 'currentColor')
-  const finalProp = !prop.startsWith('--') ? toKebab(prop) : prop
+  const finalProp = (!(prop as string).startsWith('--') ? toKebab(prop) : prop) as string
   return secondValue
     ? `value:${finalProp}: color-mix(in srgb, ${finalValue} ${secondValue}%, transparent); @supports (color: color-mix(in lab, red, red)) { ${finalProp}: color-mix(in oklab, ${finalValue} ${secondValue}%, transparent); }`
     : `value:${finalProp}: ${finalValue};`
@@ -37,17 +37,25 @@ export function createSizingType(
   allowFraction: boolean = false,
   values: Record<string, string> = {}
 ): PropertyParamValue {
-  return (({ value = '', unit = '', secondValue = '', secondUnit = '', key = '' }) => {
+  return (({ value = '', unit = '', secondValue = '', secondUnit = '', key = '', raw }) => {
     if (!value || key || (!allowSecondValue && secondValue)) return null
 
-    const finalValue = values[value + unit] || processValue(value, unit, sizing)
+    const [, , inVal, inUn] = raw as string[]
+
+    const finalValue =
+      values[value + unit] || values[inVal + inUn] || processValue(value, unit, sizing)
 
     if (allowSecondValue && secondValue) {
       const finalSecondValue = processValue(secondValue, secondUnit, sizing)
 
       let finalValueFRFR = `${finalValue} ${finalSecondValue}`
-      if (allowFraction && is.number.test(value + unit) && is.number.test(secondValue + secondUnit))
-        finalValueFRFR = (Number(value) / Number(secondValue)) * 100 + '%'
+      if (
+        allowFraction &&
+        is.number.test(value + unit) &&
+        is.number.test(secondValue + secondUnit)
+      ) {
+        finalValueFRFR = ((Number(value) / Number(secondValue)) * 100).toFixed(2) + '%'
+      }
 
       return valueOnly
         ? finalValueFRFR
