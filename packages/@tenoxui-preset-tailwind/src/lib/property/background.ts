@@ -5,10 +5,9 @@
  */
 
 import { toKebab } from '../../utils/toKebab'
-import { createSizingType, createColorType } from '../../utils/createValue'
+import { createColorType } from '../../utils/createValue'
 import type { Property } from '@tenoxui/moxie'
-import type { Classes, CSSProperty } from '@tenoxui/types'
-import { createSameValue, transformClasses } from '@nousantx/someutils'
+import type { Classes } from '@tenoxui/types'
 import { is } from 'cssrxp'
 
 export const background: {
@@ -47,7 +46,7 @@ export const background: {
           'top-right',
           'bottom-left',
           'bottom-right'
-        ].includes((raw as (string | undefined)[])[2])
+        ].includes((raw as string[])[2])
       )
         return secondValue ? null : `value:${toKebab('backgroundPosition')}: ${value}`
 
@@ -133,8 +132,11 @@ export const background: {
       if (is.color.test(value))
         return secondUnit
           ? null
-          : createColorType('--tw-gradient-from', value, secondValue) +
-              '--tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));'
+          : `${createColorType(
+              '--tw-gradient-from',
+              value,
+              secondValue
+            )} --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));`
 
       return null
     },
@@ -146,8 +148,11 @@ export const background: {
       if (is.color.test(value))
         return secondUnit
           ? null
-          : createColorType('--tw-gradient-via', value, secondValue) +
-              ' --tw-gradient-via-stops: var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-via) var(--tw-gradient-via-position), var(--tw-gradient-to) var(--tw-gradient-to-position); --tw-gradient-stops: var(--tw-gradient-via-stops);'
+          : `${createColorType(
+              '--tw-gradient-via',
+              value,
+              secondValue
+            )} --tw-gradient-via-stops: var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-via) var(--tw-gradient-via-position), var(--tw-gradient-to) var(--tw-gradient-to-position); --tw-gradient-stops: var(--tw-gradient-via-stops);`
 
       return null
     },
@@ -159,8 +164,11 @@ export const background: {
       if (is.color.test(value))
         return secondUnit
           ? null
-          : createColorType('--tw-gradient-to', value, secondValue) +
-              ' --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));'
+          : `${createColorType(
+              '--tw-gradient-to',
+              value,
+              secondValue
+            )} --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));`
 
       return null
     }
