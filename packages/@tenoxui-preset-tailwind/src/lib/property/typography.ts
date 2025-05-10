@@ -177,12 +177,16 @@ export const typography: {
           return `value:${toKebab('textDecorationStyle')} ${value}`
         }
 
-        return !is.color.test(value) && value !== 'current'
+        return key === 'color' || (!is.color.test(value) && value !== 'current')
           ? null
           : createColorType('textDecorationColor', value, secondValue)
       },
       'underline-offset': 'textUnderlineOffset',
-      leading: createSizingType('lineHeight', sizing, false, false, false, lineHeightAlias),
+      leading: ({ key = '', value = '', unit = '', secondValue = '' }) => {
+        if (key || secondValue) return null
+
+        return `value:${toKebab('lineHeight')}: ${lineHeightAlias[value + unit] || value + unit}`
+      },
       indent: createSizingType('textIndent', sizing),
       align: ({ key = '', value = '', unit = '', secondValue = '' }) => {
         if (

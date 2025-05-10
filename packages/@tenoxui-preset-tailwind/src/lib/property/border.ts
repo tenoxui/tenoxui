@@ -28,7 +28,7 @@ export const border: {
 } = {
   property: (sizing: number = 0.25): Property => ({
     border: ({ key = '', value = '', unit = '', secondValue = '', secondUnit = '' }) => {
-      if ((key && !['length'].includes(key)) || secondUnit) return null
+      if ((key && !['length', 'color'].includes(key)) || secondUnit) return null
       const base = 'border'
       if (!value) return `value:${toKebab(`${base}Width`)}: 1px`
       if (['solid', 'dashed', 'dotted', 'double', 'hidden', 'none'].includes(value)) {
@@ -37,7 +37,7 @@ export const border: {
       if (key === 'length' || is.number.test(value)) {
         return secondValue ? null : `value:${toKebab(`${base}Width`)}: ${value}${unit || 'px'}`
       }
-      if (is.color.test(value)) {
+      if (key === 'color' || is.color.test(value)) {
         return createColorType(`${base}Color`, value, secondValue)
       }
       return `value:${base}: ${value}`
