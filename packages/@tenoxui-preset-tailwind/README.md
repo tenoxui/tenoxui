@@ -2,7 +2,7 @@
 
 > This package provides TailwindCSS preset configurations for TenoxUI. It is not affiliated with, endorsed by, or sponsored by Tailwind Labs Inc. "Tailwind" and "TailwindCSS" are trademarks of Tailwind Labs Inc.
 
-A ready-to-use TailwindCSS preset for TenoxUI. For TailwindCSS documentation, please visit the official [TailwindCSS Website](https://tailwindcss.com).
+A ready-to-use TailwindCSS (v4.1.5) preset for TenoxUI. For TailwindCSS documentation, please visit the official [TailwindCSS Website](https://tailwindcss.com).
 
 ## Disclaimer
 
