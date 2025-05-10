@@ -59,6 +59,8 @@ export const preset = ({ sizing = 0.25 } = {}): Partial<Config> => ({
   breakpoints
 })
 
+export { preflight } from './styles/preflight'
+export { properties as defaultProperties } from './styles/properties'
 export { property, classes, breakpoints }
 export { values } from './lib/values'
 export { variants, customVariants } from './lib/variants'
