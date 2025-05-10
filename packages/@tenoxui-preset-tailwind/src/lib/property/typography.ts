@@ -68,9 +68,7 @@ export const typography: {
 
             const [fontSize, lineHeight] = sizes[sizeKey]
             return `value:${toKebab('fontSize')}: ${fontSize}; ${toKebab('lineHeight')}: ${
-              is.number.test(secondValue + secondUnit)
-                ? sizing * Number(secondValue) + 'rem'
-                : lineHeightAlias[secondValue] || secondValue + secondUnit || lineHeight
+              lineHeightAlias[secondValue] || secondValue + secondUnit || lineHeight
             }`
           }
           return `value:${toKebab('fontSize')}: ${
@@ -78,9 +76,7 @@ export const typography: {
           }${
             secondValue
               ? `; ${toKebab('lineHeight')}: ${
-                  is.number.test(secondValue + secondUnit)
-                    ? sizing * Number(secondValue) + 'rem'
-                    : lineHeightAlias[secondValue] || secondValue + secondUnit
+                  lineHeightAlias[secondValue] || secondValue + secondUnit
                 }`
               : ''
           }`
