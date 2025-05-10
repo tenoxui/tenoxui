@@ -354,4 +354,17 @@ export class TenoxUI extends Core {
   }
 }
 
+export * from './types'
 export { TenoxUI as Core } from '@tenoxui/core'
+export type {
+  PropertyParamValue,
+  PropertyParams,
+  ValuePropType,
+  PropertyValue,
+  Property,
+  MoxieConfig,
+  Config as CoreConfig,
+  Parsed,
+  ProcessedStyle
+} from '@tenoxui/core'
+export default TenoxUI
