@@ -185,14 +185,16 @@ export class TenoxUI extends Core {
 
           if (!variants) {
             baseRules.push(rules + valueItem)
-          } else if (variants.data.includes('&')) {
-            const selector = variants.data.replace(/&/g, rawSelector)
-            const finalRules = this.beautifyRules(rules + valueItem)
-            variantBlocks.push(this.createCssBlock(selector, finalRules))
-          } else {
-            const finalRules = this.beautifyRules(rules + valueItem)
-            const innerBlock = this.createCssBlock(rawSelector, finalRules)
-            variantBlocks.push(this.createCssBlock(variants.data, innerBlock))
+          } else if (variants && variants.data) {
+            if (variants.data.includes('&')) {
+              const selector = variants.data.replace(/&/g, rawSelector)
+              const finalRules = this.beautifyRules(rules + valueItem)
+              variantBlocks.push(this.createCssBlock(selector, finalRules))
+            } else {
+              const finalRules = this.beautifyRules(rules + valueItem)
+              const innerBlock = this.createCssBlock(rawSelector, finalRules)
+              variantBlocks.push(this.createCssBlock(variants.data, innerBlock))
+            }
           }
         }
       })

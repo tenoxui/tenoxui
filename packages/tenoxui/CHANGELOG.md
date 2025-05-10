@@ -1,5 +1,12 @@
 # Changelog
 
+## `v1.0.0-alpha.3` - `2025-05-10`
+
+### Development
+
+- Bump `tenoxui/core` to `v2.0.0-alpha.2`
+- Added some changes to match the new core version's types
+
 ## `v1.0.0-alpha.2` - `2025-05-06`
 
 ### Added
