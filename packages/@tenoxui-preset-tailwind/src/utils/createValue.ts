@@ -25,7 +25,8 @@ export function createColorTypew(value: string, secondValue?: string) {
 
 export function processValue(value: string, unit: string, sizing: number = 0.25) {
   let finalValue = is.length.test(value) ? value : value + unit
-  if (is.number.test(value + unit)) finalValue = Number(value) * sizing + 'rem'
+  if (is.number.test(value + unit) && value + unit !== '0')
+    finalValue = Number(value) * sizing + 'rem'
   return finalValue
 }
 
