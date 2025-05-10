@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.0.0-alpha.2 - `2025-05-10`
+
+### **Removed**
+
+- `pseudo-element` and `pseudo-classes` variants (define yourself!)
+- Default breakpoints
+
 ## v2.0.0-alpha.1 - `2025-05-01`
 
 ### Added
