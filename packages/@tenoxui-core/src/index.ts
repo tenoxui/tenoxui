@@ -30,18 +30,11 @@ export class TenoxUI {
     this.engine = tenoxui
     this.variants = variants
     this.customVariants = customVariants
-    this.breakpoints = {
-      sm: '40rem',
-      md: '48rem',
-      lg: '64rem',
-      xl: '80rem',
-      '2xl': '96rem',
-      ...breakpoints
-    }
     this.property = property
+    this.values = values
     this.classes = classes
     this.aliases = aliases
-    this.values = values
+    this.breakpoints = breakpoints
     this.tuiConfig = {
       ...tenoxuiOptions,
       property: this.property,
@@ -61,27 +54,6 @@ export class TenoxUI {
 
   public getConfig() {
     return this.tuiConfig
-  }
-
-  private getPseudoSyntax(prefix: string): string {
-    const doubleColonPrefixes = [
-      'after',
-      'backdrop',
-      'before',
-      'cue',
-      'cue-region',
-      'file-selector-button',
-      'first-letter',
-      'first-line',
-      'grammar-error',
-      'marker',
-      'placeholder',
-      'selection',
-      'spelling-error',
-      'target-text'
-    ]
-
-    return doubleColonPrefixes.includes(prefix) ? '::' : ':'
   }
 
   private getBreakpointQuery(prefix: string): string | null {
@@ -145,8 +117,7 @@ export class TenoxUI {
 
     if (this.variants[prefix]) return this.variants[prefix]
 
-    const pseudoSyntax = this.getPseudoSyntax(prefix)
-    return `&${pseudoSyntax}${prefix}`
+    return null
   }
 
   public processAlias(
@@ -190,7 +161,7 @@ export class TenoxUI {
           cssRules,
           value
         })
-      } else if (variants && variants.prefix === prefix) return
+      } else if ((variants && variants.prefix === prefix) || !variants.data) return
       else {
         prefixRules.push({
           className: variants.data.includes('&')
@@ -258,6 +229,7 @@ export class TenoxUI {
 
       if (parsed && parsed[1] && this.aliases[parsed[1]]) {
         const [prefix, type] = parsed
+        if (prefix && !this.generatePrefix(prefix)) return
         const aliasResult = this.processAlias(type, prefix, parsed)
         if (aliasResult) {
           result.push(aliasResult)
@@ -267,6 +239,9 @@ export class TenoxUI {
 
         processed.forEach((item) => {
           const { className: itemClassName, cssRules, value, prefix, raw } = item
+
+          if (prefix && !this.generatePrefix(prefix)) return
+
           result.push({
             className: itemClassName,
             cssRules,
