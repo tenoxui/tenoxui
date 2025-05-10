@@ -29,13 +29,13 @@ export type Result =
       className: string
       cssRules: string | string[] | null
       value: string | null
-      variants: null | { name: string; data: string }
+      variants: null | { name: string; data: string | null }
       raw: null | (string | undefined)[]
     }
   | {
       className: string
       rules: { cssRules: string | string[] | null; value: string | null }[]
-      prefix: null | { name: string; data: string }
+      prefix: null | { name: string; data: string | null }
       variants:
         | null
         | {

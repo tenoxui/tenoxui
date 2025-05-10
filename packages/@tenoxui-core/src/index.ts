@@ -90,7 +90,7 @@ export class TenoxUI {
     return null
   }
 
-  private generatePrefix(prefix: string): string {
+  private generatePrefix(prefix: string): null | string {
     if (this.isCustomPrefix(prefix)) {
       const moxieRule = this.processCustomPrefix(prefix)
       if (moxieRule && typeof moxieRule === 'string') {
@@ -127,7 +127,7 @@ export class TenoxUI {
   ): {
     className: string
     rules: { cssRules: string | string[] | null; value: string | null }[]
-    prefix: null | { name: string; data: string }
+    prefix: null | { name: string; data: string | null }
     variants:
       | null
       | {
@@ -229,7 +229,7 @@ export class TenoxUI {
 
       if (parsed && parsed[1] && this.aliases[parsed[1]]) {
         const [prefix, type] = parsed
-        if (prefix && !this.generatePrefix(prefix)) return
+        if (prefix && !this.generatePrefix(prefix)) return null
         const aliasResult = this.processAlias(type, prefix, parsed)
         if (aliasResult) {
           result.push(aliasResult)
