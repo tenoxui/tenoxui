@@ -19,6 +19,9 @@ export const values: Values = {
   'top-right': 'top right',
   'bottom-left': 'bottom left',
   'bottom-right': 'bottom right',
+  'light-dark': 'light dark',
+  'only-light': 'only light',
+  'only-dark': 'only dark',
   'container-size': {
     '3xs': '16rem' /* 256px */,
     '2xs': '18rem' /* 288px */,
