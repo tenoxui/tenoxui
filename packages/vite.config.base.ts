@@ -5,14 +5,17 @@ export function createConfig({
   entry = './src/index.ts',
   formats = ['es', 'iife', 'cjs', 'umd'],
   fileName = 'index',
+  target = 'es2017',
   sourcemap = true,
+  minify = true,
   viteOptions = {},
   rollupOptions = {}
 } = {}): Config {
   return {
     build: {
-      // minify: false,
-      target: 'es2017',
+      minify,
+      sourcemap,
+      target,
       lib: {
         name,
         entry,
@@ -20,7 +23,6 @@ export function createConfig({
         fileName: (format, name) => `${fileName !== 'index' ? fileName : name}.${format}.js`,
         ...viteOptions
       },
-      sourcemap,
       rollupOptions: {
         output: { exports: 'named' },
         ...rollupOptions
