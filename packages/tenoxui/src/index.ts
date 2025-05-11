@@ -129,13 +129,11 @@ export class TenoxUI extends Core {
   private formatAliasRules(rules: any[]): string {
     return rules
       .map((rule) => {
-        if (typeof rule.cssRules === 'string' && rule.value === null) {
-          return rule.cssRules
-        } else {
-          const prop = rule.cssRules
-          const val = rule.value !== null ? `: ${rule.value}` : ''
-          return `${prop}${val}`
-        }
+        const rules = this.formatRules(rule.cssRules, rule.value)
+        const valueItem =
+          Array.isArray(rule.cssRules) || rule.value === null ? '' : `: ${rule.value}`
+
+        return `${rules}${valueItem}`
       })
       .join('; ')
   }
