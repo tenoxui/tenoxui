@@ -104,12 +104,14 @@ describe('TenoxUI Unit Test', () => {
     const ui = new TenoxUI({
       property: {
         bg: 'background',
-        m: 'margin'
+        m: 'margin',
+        size: ['width', 'height']
       },
       aliases: {
         btn: 'bg-red m-10px',
         btn2: 'bg-red m-10px hover:bg-blue',
-        btn3: 'bg-red m-10px hover:bg-blue md:m-20px'
+        btn3: 'bg-red m-10px hover:bg-blue md:m-20px',
+        box: 'size-50px'
       },
       variants: {
         hover: '&:hover'
@@ -119,6 +121,10 @@ describe('TenoxUI Unit Test', () => {
       }
     })
 
+    expect(ui.render('box').join('\n')).toBe(`.box {
+  width: 50px;
+  height: 50px;
+}`)
     expect(ui.render('btn')[0]).toBe(`.btn {
   background: red;
   margin: 10px;
