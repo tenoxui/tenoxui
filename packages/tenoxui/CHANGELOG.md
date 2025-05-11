@@ -1,5 +1,11 @@
 # hangelog
 
+## `v1.0.0-alpha.5` - `2025-05-11`
+
+### Fixed
+
+- Not correctly process multiple properties (array properties) on `aliases`.
+
 ## `v1.0.0-alpha.4` - `2025-05-10`
 
 ### Changed
