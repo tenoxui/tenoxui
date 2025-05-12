@@ -1,5 +1,26 @@
 # hangelog
 
+## `v1.0.0-alpha.6` - `2025-05-12`
+
+### Added
+
+- New `selectorPrefix` option to add prefix before all selectors
+
+### Changed
+
+- `classNameOrder` option become `typeOrder` for better purpose
+
+### **Deprecated**
+
+- `customVariants` option, in updated `core` module now support custom variants directly in `variants` option
+- `isCustomPrefix` helper method
+
+### Development
+
+- Bump `@tenoxui/moxie` to `v0.6.6`
+- Bump `@tenoxui/core` to `v2.0.0-alpha.3`
+- New tests
+
 ## `v1.0.0-alpha.5` - `2025-05-11`
 
 ### Fixed

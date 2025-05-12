@@ -7,7 +7,8 @@ export class TenoxUI extends Core {
   private safelist: string[]
   private tabSize: number
   private simpleMode: boolean
-  private classNameOrder: string[]
+  private typeOrder: string[]
+  private selectorPrefix: string
 
   constructor({
     // core config
@@ -17,14 +18,14 @@ export class TenoxUI extends Core {
     aliases = {},
     breakpoints = {},
     variants = {},
-    customVariants = {},
     // tenoxui config
     safelist = [],
     tabSize = 2,
     simple = false,
     moxie = Moxie,
     moxieOptions = {},
-    classNameOrder = []
+    typeOrder = [],
+    selectorPrefix = ''
   }: Partial<Config> = {}) {
     super({
       property,
@@ -34,14 +35,14 @@ export class TenoxUI extends Core {
       breakpoints,
       tenoxui: moxie,
       tenoxuiOptions: moxieOptions,
-      variants,
-      customVariants
+      variants
     })
 
     this.safelist = safelist
     this.tabSize = simple ? 0 : tabSize
     this.simpleMode = simple
-    this.classNameOrder = classNameOrder
+    this.typeOrder = typeOrder
+    this.selectorPrefix = selectorPrefix
   }
 
   public simple() {
@@ -138,10 +139,12 @@ export class TenoxUI extends Core {
       .join('; ')
   }
 
-  private createCssBlock(selector: string, rules: string): string {
+  private createCssBlock(selector: string, rules: string, allowPrefix: boolean = true): string {
     const spacing = this.simpleMode ? ' ' : '\n'
 
-    return `${selector} {${spacing}${this.addTabs(rules)}${spacing}}`
+    return `${allowPrefix ? this.selectorPrefix : ''}${selector} {${spacing}${this.addTabs(
+      rules
+    )}${spacing}}`
   }
 
   private replaceAmpersand(template: string, className: string): string {
@@ -172,7 +175,7 @@ export class TenoxUI extends Core {
                 variantBlocks.push(this.createCssBlock(selector, variantRules))
               } else {
                 const innerBlock = this.createCssBlock(rawSelector, variantRules)
-                variantBlocks.push(this.createCssBlock(variantType, innerBlock))
+                variantBlocks.push(this.createCssBlock(variantType, innerBlock, false))
               }
             })
           }
@@ -191,7 +194,7 @@ export class TenoxUI extends Core {
             } else {
               const finalRules = this.beautifyRules(rules + valueItem)
               const innerBlock = this.createCssBlock(rawSelector, finalRules)
-              variantBlocks.push(this.createCssBlock(variants.data, innerBlock))
+              variantBlocks.push(this.createCssBlock(variants.data, innerBlock, false))
             }
           }
         }
@@ -223,7 +226,7 @@ export class TenoxUI extends Core {
       } else {
         // Handle nested variant wrapper
         const innerBlock = this.createCssBlock(`.${mainClassName}`, mainRules)
-        results.push(this.createCssBlock(item.prefix.data, innerBlock))
+        results.push(this.createCssBlock(item.prefix.data, innerBlock, false))
       }
     } else {
       // no variant
@@ -242,7 +245,7 @@ export class TenoxUI extends Core {
           results.push(this.createCssBlock(selector, variantRules))
         } else {
           const innerBlock = this.createCssBlock(`.${variantClassName}`, variantRules)
-          results.push(this.createCssBlock(variantType, innerBlock))
+          results.push(this.createCssBlock(variantType, innerBlock, false))
         }
       })
     }
@@ -265,7 +268,7 @@ export class TenoxUI extends Core {
       return this.createCssBlock(selector, finalRules)
     } else {
       const innerBlock = this.createCssBlock(`.${className}`, finalRules)
-      return this.createCssBlock(variants.data, innerBlock)
+      return this.createCssBlock(variants.data, innerBlock, false)
     }
   }
 
@@ -283,8 +286,8 @@ export class TenoxUI extends Core {
       const bUtility = bRaw[1] || ''
 
       // find the index in the order array, default to -1 if not found
-      const aIndex = this.classNameOrder.indexOf(aUtility)
-      const bIndex = this.classNameOrder.indexOf(bUtility)
+      const aIndex = this.typeOrder.indexOf(aUtility)
+      const bIndex = this.typeOrder.indexOf(bUtility)
 
       // sort based on the index
       if (aIndex !== -1 && bIndex !== -1) {

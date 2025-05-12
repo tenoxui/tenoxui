@@ -14,5 +14,6 @@ export interface Config extends CoreConfig {
   safelist: string[]
   tabSize: number
   simple: boolean
-  classNameOrder: string[]
+  typeOrder: string[]
+  selectorPrefix: string
 }

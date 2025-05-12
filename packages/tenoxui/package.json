@@ -1,6 +1,6 @@
 {
   "name": "tenoxui",
-  "version": "1.0.0-alpha.5",
+  "version": "1.0.0-alpha.6",
   "description": "Core component of tenoxui",
   "author": "NOuSantx <nousantx@gmail.com>",
   "license": "MIT",
@@ -47,8 +47,8 @@
     "build:prod": "pnpm type:check && pnpm build && pnpm type:build"
   },
   "devDependencies": {
-    "@tenoxui/core": "2.0.0-alpha.2",
-    "@tenoxui/moxie": "^0.6.5",
+    "@tenoxui/core": "2.0.0-alpha.3",
+    "@tenoxui/moxie": "^0.6.6",
     "typescript": "^5.7.3",
     "vite": "^6.2.3",
     "vitest": "^3.0.5"

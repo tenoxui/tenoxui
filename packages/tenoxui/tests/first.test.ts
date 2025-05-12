@@ -149,4 +149,58 @@ describe('TenoxUI Unit Test', () => {
   }
 }`)
   })
+  it('should add prefix before selectors and new tab size', () => {
+    const ui = new TenoxUI({
+      tabSize: 4,
+      property: {
+        bg: 'background',
+        m: 'margin',
+        size: ['width', 'height']
+      },
+      aliases: {
+        btn: 'bg-red m-10px',
+        btn2: 'bg-red m-10px hover:bg-blue',
+        btn3: 'bg-red m-10px hover:bg-blue md:m-20px',
+        box: 'size-50px'
+      },
+      variants: {
+        hover: '&:hover'
+      },
+      breakpoints: {
+        md: '48rem'
+      },
+      selectorPrefix: '#tui-haha '
+    })
+
+    expect(ui.render('bg-red').join('\n')).toBe(`#tui-haha .bg-red {
+    background: red;
+}`)
+    expect(ui.render('box').join('\n')).toBe(`#tui-haha .box {
+    width: 50px;
+    height: 50px;
+}`)
+    expect(ui.render('btn')[0]).toBe(`#tui-haha .btn {
+    background: red;
+    margin: 10px;
+}`)
+    expect(ui.render('btn2').join('\n')).toBe(`#tui-haha .btn2 {
+    background: red;
+    margin: 10px;
+}
+#tui-haha .btn2:hover {
+    background: blue;
+}`)
+    expect(ui.render('btn3').join('\n')).toBe(`#tui-haha .btn3 {
+    background: red;
+    margin: 10px;
+}
+#tui-haha .btn3:hover {
+    background: blue;
+}
+@media (width >= 48rem) {
+    #tui-haha .btn3 {
+        margin: 20px;
+    }
+}`)
+  })
 })
