@@ -8,7 +8,6 @@ export class TenoxUI {
   private prefixLoader: Moxie
   private engine: typeof Moxie
   private variants: Variants
-  private customVariants: Property
   private property: Property
   private values: Values
   private classes: Classes
@@ -18,7 +17,6 @@ export class TenoxUI {
 
   constructor({
     variants = {},
-    customVariants = {},
     property = {},
     values = {},
     classes = {},
@@ -29,7 +27,6 @@ export class TenoxUI {
   }: Partial<Config> = {}) {
     this.engine = tenoxui
     this.variants = variants
-    this.customVariants = customVariants
     this.property = property
     this.values = values
     this.classes = classes
@@ -43,7 +40,7 @@ export class TenoxUI {
     }
     this.main = new this.engine(this.tuiConfig)
     this.prefixLoader = new this.engine({
-      property: this.customVariants as Property,
+      property: this.variants as Property,
       values: this.breakpoints
     })
   }
@@ -73,14 +70,10 @@ export class TenoxUI {
     return null
   }
 
-  private isCustomPrefix(prefix: string): boolean {
-    const parsed = this.prefixLoader.parse(prefix)
-    return Boolean(parsed && parsed[1] && parsed[2])
-  }
-
   private processCustomPrefix(prefix: string): string | string[] | null {
     try {
       const processedItems = this.prefixLoader.process(prefix)
+
       if (processedItems?.length > 0) {
         return processedItems[0].cssRules
       }
@@ -91,7 +84,7 @@ export class TenoxUI {
   }
 
   private generatePrefix(prefix: string): null | string {
-    if (this.isCustomPrefix(prefix)) {
+    if (this.prefixLoader.parse(prefix)) {
       const moxieRule = this.processCustomPrefix(prefix)
       if (moxieRule && typeof moxieRule === 'string') {
         if (moxieRule.startsWith('value:')) {
@@ -114,8 +107,6 @@ export class TenoxUI {
     // Handle breakpoints
     const breakpointQuery = this.getBreakpointQuery(prefix)
     if (breakpointQuery) return breakpointQuery
-
-    if (this.variants[prefix]) return this.variants[prefix]
 
     return null
   }

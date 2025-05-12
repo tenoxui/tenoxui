@@ -1,13 +1,23 @@
 # Changelog
 
-## v2.0.0-alpha.2 - `2025-05-10`
+## `v2.0.0-alpha.3` - `2025-05-12`
+
+### Changed
+
+- `customVariants` option, the `prefixLoader` now will process directly from `variants`. So now, user can define their `customVariants` directly from `variants` option
+
+### Development
+
+- Bump `@tenoxui/moxie` to `v0.6.6`
+
+## `v2.0.0-alpha.2` - `2025-05-10`
 
 ### **Removed**
 
 - `pseudo-element` and `pseudo-classes` variants (define yourself!)
 - Default breakpoints
 
-## v2.0.0-alpha.1 - `2025-05-01`
+## `v2.0.0-alpha.1` - `2025-05-01`
 
 ### Added
 
@@ -18,7 +28,7 @@
 
 - `is` function
 
-## v2.0.0 (dev start) - `2025-04-29`
+## `v2.0.0` (dev start) - `2025-04-29`
 
 ### Notes
 

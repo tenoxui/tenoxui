@@ -2,9 +2,33 @@ import { TenoxUI as Moxie } from '@tenoxui/moxie'
 import type { Property, Config as MoxieOptions } from '@tenoxui/moxie'
 import type { Values, Classes, Aliases } from '@tenoxui/types'
 
-export type Variants = {
-  [name: string]: string
+export type VariantParams = {
+  key?: string | null
+  value?: string
+  unit?: string
+  raw?: (string | undefined)[]
 }
+
+export type DirectValue = `value:${string}`
+
+export type VariantParamValue =
+  | string
+  | DirectValue
+  | ((params: VariantParams) => null | string | DirectValue)
+
+export type ValueVariantType = string | string[] | ((params: VariantParams) => string | null) | null
+
+export type VariantValue =
+  | VariantParamValue
+  | {
+      property?: VariantParamValue
+      value?: ValueVariantType
+    }
+
+export type Variants = {
+  [variantName: string]: VariantValue
+}
+
 export type Breakpoints = {
   [bpName: string]: string
 }
@@ -18,7 +42,6 @@ export interface Config {
   values: Values
   classes: Classes
   variants: Variants
-  customVariants: Property
   breakpoints: Breakpoints
   aliases: Aliases
   tenoxui: typeof Moxie
