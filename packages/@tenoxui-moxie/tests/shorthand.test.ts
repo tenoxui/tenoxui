@@ -60,6 +60,10 @@ describe('Value Processor', () => {
         bg: {
           property: 'background',
           value: 'rgb({0}) || red'
+        },
+        m2: {
+          property: 'margin',
+          value: '5rem'
         }
       },
       values: {
@@ -106,6 +110,13 @@ describe('Value Processor', () => {
       value: '4px',
       prefix: undefined
     })
+    expect(ui.processShorthand('m2')).toStrictEqual({
+      className: 'm2',
+      cssRules: 'margin',
+      value: '5rem',
+      prefix: undefined
+    })
+    expect(ui.processShorthand('m2', '4')).toBe(null)
   })
 
   it('should process basic shorthand with direct value', () => {

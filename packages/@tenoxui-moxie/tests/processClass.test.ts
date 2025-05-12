@@ -109,16 +109,7 @@ describe('Value Processor', () => {
         cssRules: 'align-items: center',
         value: null,
         prefix: '',
-        raw: [
-          undefined,
-          'items-center',
-          '',
-          '',
-          undefined,
-          undefined,
-          'items-center',
-          'items-center'
-        ]
+        raw: [undefined, 'items-center', '', '', undefined, undefined, 'items-center']
       },
       {
         className: 'items-center-hehe',

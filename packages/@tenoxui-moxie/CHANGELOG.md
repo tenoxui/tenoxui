@@ -1,5 +1,16 @@
 # Changelog
 
+## `v0.6.6` - `2025-05-12`
+
+### Added
+
+- New condition for object `type` in `processShorthand` method
+
+### Fixed
+
+- Object shorthand should be able to create valueless utility when `type.property` and `type.value` is both string and `type.value` doesn't have `{0}`
+- `process` method returned double class names on valueless type
+
 ## `v0.6.5` - `2025-05-07`
 
 ### Fixed

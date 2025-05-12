@@ -44,7 +44,7 @@ describe('Parser', () => {
     expect(ui.parse('m-20px')[3]).toBe('px')
     expect(ui.parse('md:flex')[0]).toBe('md')
     expect(ui.parse('md:flex')[1]).toBe('flex')
-    expect(ui.parse('md:flex')[6]).toBe('md:flex')
+    expect(ui.process('md:flex')[0].raw[6]).toBe('md:flex')
   })
 
   it('should parse value and second value', () => {
