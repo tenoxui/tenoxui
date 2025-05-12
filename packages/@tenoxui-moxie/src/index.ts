@@ -164,8 +164,7 @@ export class TenoxUI {
     // catch valueless class names, such as from this.classes
     const valuelessMatch = className.match(new RegExp(`^(?:(${regexp.prefix}):)?${regexp.type}$`))
 
-    if (valuelessMatch)
-      return [valuelessMatch[1], valuelessMatch[2], '', '', undefined, undefined, className]
+    if (valuelessMatch) return [valuelessMatch[1], valuelessMatch[2], '', '', undefined, undefined]
 
     return null
   }
@@ -380,6 +379,8 @@ export class TenoxUI {
               finalSecValue,
               ''
             )
+          } else if (typeof template === 'string' && !template.includes('{')) {
+            processedValue = template
           } else {
             processedValue = finalValue
           }
@@ -396,9 +397,19 @@ export class TenoxUI {
         // checking if the second value is present with both property and value is string
         // if so, return null
         if (
-          typeof properties.property === 'string' &&
-          typeof template === 'string' &&
-          (value.includes(extractedFor + ':') || (!template.includes('{1') && secondValue))
+          ((typeof properties.property === 'string' || Array.isArray(properties.property)) &&
+            typeof template === 'string' &&
+            (value.includes(extractedFor + ':') || (!template.includes('{1') && secondValue))) ||
+          // check if the property is string or array of properties
+          // but the value is null
+          ((typeof properties.property === 'string' || Array.isArray(properties.property)) &&
+            template === null) ||
+          // check if the type is a direct rules but has `value` defined
+          (typeof properties.property === 'string' && properties.property.includes(':') && value) ||
+          ((typeof properties.property === 'string' || Array.isArray(properties.property)) &&
+            typeof properties.value === 'string' &&
+            !properties.value.includes('{') &&
+            value)
         ) {
           return null
         }
