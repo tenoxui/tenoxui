@@ -1,4 +1,6 @@
-# `@tenoxui/static`
+## `@tenoxui/static` (Deprecated ⚠️)
+
+> This package will be no longer maintained! All of the core function already moved into `@tenoxui/moxie` and extended again on `@tenoxui/core`. Thanks
 
 This package contains CSS rule generator if you don't want to use `inline-style` approach. Recommended for build.
 

@@ -1,4 +1,4 @@
-# TenoxUI Class and Properties
+# TenoxUI Class and Properties (Deprecated ⚠️)
 
 ## About
 

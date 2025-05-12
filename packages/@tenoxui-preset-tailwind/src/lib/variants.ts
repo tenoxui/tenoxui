@@ -87,8 +87,8 @@ export const variants: Record<string, string> = {
 }
 
 export const customVariants: Property = {
-  supports: ({ key, value }) => `value:@supports (${key}: ${value})`,
-  'not-supports': ({ key, value }) => `value:@supports not (${key}: ${value})`,
+  supports: ({ key, value }) => (!value ? null : `value:@supports (${key}: ${value})`),
+  'not-supports': ({ key, value }) => (!value ? null : `value:@supports not (${key}: ${value})`),
   nth: ({ key, value }) => (!value || key ? null : `value:&:nth-child(${value})`),
   'nth-last': ({ key, value }) => (!value || key ? null : `value:&:nth-last-child(${value})`),
   'nth-of-type': ({ key, value }) => (!value || key ? null : `value:&:nth-of-type(${value})`),
