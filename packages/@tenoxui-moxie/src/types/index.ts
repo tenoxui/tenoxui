@@ -34,6 +34,7 @@ export interface Config {
   property?: Property
   values?: Values
   classes?: Classes
+  prefixChars?: string[]
 }
 
 export type Parsed = null | (string | undefined)[]

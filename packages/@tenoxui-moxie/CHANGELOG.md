@@ -1,5 +1,12 @@
 # Changelog
 
+## `v0.6.7` - `2025-05-13`
+
+### Added
+
+- `prefix` now supports value after `/`
+- New option `prefixChars` for adding custom characters to `prefix` pattern
+
 ## `v0.6.6` - `2025-05-12`
 
 ### Added

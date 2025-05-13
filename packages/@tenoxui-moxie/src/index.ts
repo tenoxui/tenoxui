@@ -5,8 +5,9 @@ export class TenoxUI {
   private property: Property
   private values: Values
   private classes: Classes
+  private prefixChars: string[]
 
-  constructor({ property = {}, values = {}, classes = {} }: Config = {}) {
+  constructor({ property = {}, values = {}, classes = {}, prefixChars = [] }: Config = {}) {
     this.property = {
       // use moxie-* utility to access all properties and variables
       // e.g. `moxie-(color:red)` => `color: red`, `moxie-(--my-var:20px_1rem)` => `--my-var: 20px 1rem`
@@ -15,6 +16,7 @@ export class TenoxUI {
     }
     this.values = values
     this.classes = classes
+    this.prefixChars = prefixChars
   }
 
   public toKebabCase(str: string): string {
@@ -75,18 +77,33 @@ export class TenoxUI {
     const nestedParenPattern = '\\([^()]*(?:\\([^()]*\\)[^()]*)*\\)'
     const nestedBracePattern = '\\{[^{}]*(?:\\{[^{}]*\\}[^{}]*)*\\}'
 
+    const prefixChars = `[${['a-zA-Z0-9_\\-', ...this.prefixChars].join('')}]`
+
     // 1. Prefix pattern
     const prefixPattern =
       // Simple prefix (hover, md, focus, etc.)
-      '[a-zA-Z0-9_-]+|' +
+      prefixChars +
+      '+|' +
       // value-like prefix (nth-(4), max-[445px], etc.)
-      '[a-zA-Z0-9_-]+(?:-(?:' +
+      prefixChars +
+      '+(?:-(?:' +
       nestedBracketPattern +
       '|' +
       nestedParenPattern +
       '|' +
       nestedBracePattern +
       '))|' +
+      // added support for custom secondValue for prefix
+      prefixChars +
+      '+(?:-(?:' +
+      nestedBracketPattern +
+      '|' +
+      nestedParenPattern +
+      '|' +
+      nestedBracePattern +
+      '))?(?:\\/' +
+      '[a-zA-Z0-9_\\-]' +
+      '+)|' +
       // Direct bracket, parenthesis, or brace content
       nestedBracketPattern +
       '|' +

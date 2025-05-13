@@ -8,7 +8,8 @@ describe('Parser', () => {
     ui = new Moxie({
       property: {
         h: '...'
-      }
+      },
+      reservedPrefixChars: ['@', '*']
     })
 
     expect(ui.parse('hover:h')[0]).toBe('hover')
@@ -21,6 +22,9 @@ describe('Parser', () => {
     expect(ui.parse('max-(50%):h')[0]).toBe('max-(50%)')
     expect(ui.parse('max-50px:h')[0]).toBe('max-50px')
     expect(ui.parse('(&:hover):h')[0]).toBe('(&:hover)')
+    expect(ui.parse('first-second/third:h')[0]).toBe('first-second/third')
+    expect(ui.parse('@max-md:h')[0]).toBe('@max-md')
+    expect(ui.parse('*:h')[0]).toBe('*')
   })
 
   it('should parse basic shorthand', () => {
