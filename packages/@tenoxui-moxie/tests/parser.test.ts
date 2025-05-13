@@ -9,7 +9,7 @@ describe('Parser', () => {
       property: {
         h: '...'
       },
-      reservedPrefixChars: ['@', '*']
+      prefixChars: ['@', '*']
     })
 
     expect(ui.parse('hover:h')[0]).toBe('hover')
