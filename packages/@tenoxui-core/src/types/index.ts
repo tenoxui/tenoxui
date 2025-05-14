@@ -1,22 +1,19 @@
 import { TenoxUI as Moxie } from '@tenoxui/moxie'
-import type { Property, Config as MoxieOptions } from '@tenoxui/moxie'
+import type { Property, Config as MoxieOptions, PropertyParams } from '@tenoxui/moxie'
 import type { Values, Classes, Aliases } from '@tenoxui/types'
-
-export type VariantParams = {
-  key?: string | null
-  value?: string
-  unit?: string
-  raw?: (string | undefined)[]
-}
 
 export type DirectValue = `value:${string}`
 
 export type VariantParamValue =
   | string
   | DirectValue
-  | ((params: VariantParams) => null | string | DirectValue)
+  | ((params: PropertyParams) => null | string | DirectValue)
 
-export type ValueVariantType = string | string[] | ((params: VariantParams) => string | null) | null
+export type ValueVariantType =
+  | string
+  | string[]
+  | ((params: PropertyParams) => string | null)
+  | null
 
 export type VariantValue =
   | VariantParamValue
@@ -52,18 +49,24 @@ export type Result =
       className: string
       cssRules: string | string[] | null
       value: string | null
+      isImportant: boolean
       variants: null | { name: string; data: string | null }
       raw: null | (string | undefined)[]
     }
   | {
       className: string
-      rules: { cssRules: string | string[] | null; value: string | null }[]
+      rules: { cssRules: string | string[] | null; value: string | null; isImportant: boolean }[]
+      isImportant: boolean
       prefix: null | { name: string; data: string | null }
       variants:
         | null
         | {
             className: string
-            rules: { cssRules: string | string[] | null; value: string | null }[]
+            rules: {
+              cssRules: string | string[] | null
+              value: string | null
+              isImportant: boolean
+            }[]
             variant: string
           }[]
       raw: null | (string | undefined)[]

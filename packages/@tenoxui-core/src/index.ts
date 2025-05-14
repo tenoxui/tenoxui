@@ -16,12 +16,12 @@ export class TenoxUI {
   private tuiConfig: TenoxUIConfig
 
   constructor({
-    variants = {},
     property = {},
     values = {},
     classes = {},
     aliases = {},
     breakpoints = {},
+    variants = {},
     tenoxui = Moxie,
     tenoxuiOptions = {}
   }: Partial<Config> = {}) {
@@ -83,7 +83,7 @@ export class TenoxUI {
     return null
   }
 
-  private generatePrefix(prefix: string): null | string {
+  public generatePrefix(prefix: string): null | string {
     if (this.prefixLoader.parse(prefix)) {
       const moxieRule = this.processCustomPrefix(prefix)
       if (moxieRule && typeof moxieRule === 'string') {
@@ -96,7 +96,7 @@ export class TenoxUI {
       }
     }
 
-    // Handle direct prefix
+    // handle direct prefix
     if (
       (prefix.startsWith('[') && prefix.endsWith(']')) ||
       (prefix.startsWith('(') && prefix.endsWith(')'))
@@ -104,26 +104,85 @@ export class TenoxUI {
       return this.prefixLoader.processValue(prefix, '', '')
     }
 
-    // Handle breakpoints
+    // handle breakpoints
     const breakpointQuery = this.getBreakpointQuery(prefix)
     if (breakpointQuery) return breakpointQuery
 
     return null
   }
 
+  private isImportantClass(
+    className: string,
+    index: number,
+    importantMap: Record<string, boolean>
+  ): boolean {
+    const uniqueKey = `${className}:${index}`
+    return importantMap[uniqueKey] || false
+  }
+
+  private parseImportantClassNames(classNames: string | string[]): {
+    parsedClassNames: string[]
+    importantMap: Record<string, boolean>
+  } {
+    const parsedClassNames: string[] = []
+    const importantMap: Record<string, boolean> = {}
+
+    const classArray = Array.isArray(classNames)
+      ? classNames
+      : classNames.split(/\s+/).filter(Boolean)
+
+    // collect all class names with their important status
+    const processedClasses: { name: string; isImportant: boolean; originalIndex: number }[] = []
+
+    classArray.forEach((className, index) => {
+      if (className.startsWith('!')) {
+        // remove the `!` prefix
+        const originalName = className.slice(1)
+        processedClasses.push({
+          name: originalName,
+          isImportant: true,
+          originalIndex: index
+        })
+      } else {
+        processedClasses.push({
+          name: className,
+          isImportant: false,
+          originalIndex: index
+        })
+      }
+    })
+
+    // create unique keys for the importantMap
+    processedClasses.forEach(({ name, isImportant, originalIndex }) => {
+      parsedClassNames.push(name)
+
+      // create a unique key using both the class name and its position
+      const uniqueKey = `${name}:${originalIndex}`
+      importantMap[uniqueKey] = isImportant
+    })
+
+    return { parsedClassNames, importantMap }
+  }
+
   public processAlias(
     className?: string,
     prefix?: string,
-    raw?: null | (string | undefined)[]
+    raw?: null | (string | undefined)[],
+    isImportant: boolean = false
   ): {
     className: string
-    rules: { cssRules: string | string[] | null; value: string | null }[]
+    rules: { cssRules: string | string[] | null; value: string | null; isImportant: boolean }[]
+    isImportant: boolean
     prefix: null | { name: string; data: string | null }
     variants:
       | null
       | {
           className: string
-          rules: { cssRules: string | string[] | null; value: string | null }[]
+          rules: {
+            cssRules: string | string[] | null
+            value: string | null
+            isImportant: boolean
+          }[]
           variant: string
         }[]
     raw: null | (string | undefined)[]
@@ -132,16 +191,26 @@ export class TenoxUI {
 
     let finalClass = this.main.escapeCSSSelector(prefix ? `${prefix}:${className}` : className)
 
-    const allRules: { cssRules: string | string[] | null; value: string | null }[] = []
+    const allRules: {
+      cssRules: string | string[] | null
+      value: string | null
+      isImportant: boolean
+    }[] = []
     const prefixRules: {
       className: string
       cssRules: string | string[] | null
       value: string | null
+      isImportant: boolean
       variant: string
     }[] = []
 
-    this.main.process(this.aliases[className]).map((item) => {
-      const { cssRules, value, prefix: itemPrefix } = item
+    const { parsedClassNames, importantMap } = this.parseImportantClassNames(
+      this.aliases[className]
+    )
+
+    this.main.process(parsedClassNames).map((item, index) => {
+      const { cssRules, value, prefix: itemPrefix, raw } = item
+      const isImportant = this.isImportantClass((raw as string[])[6], index, importantMap)
 
       const variants = itemPrefix
         ? { prefix: itemPrefix, data: this.generatePrefix(itemPrefix) }
@@ -150,7 +219,8 @@ export class TenoxUI {
       if (!variants) {
         allRules.push({
           cssRules,
-          value
+          value,
+          isImportant
         })
       } else if ((variants && variants.prefix === prefix) || !variants.data) return
       else {
@@ -160,6 +230,7 @@ export class TenoxUI {
             : finalClass,
           cssRules,
           value,
+          isImportant,
           variant: variants.data
         })
       }
@@ -180,7 +251,8 @@ export class TenoxUI {
           }
           acc[key].rules.push({
             cssRules: curr.cssRules,
-            value: curr.value
+            value: curr.value,
+            isImportant: curr.isImportant
           })
           return acc
         },
@@ -188,7 +260,11 @@ export class TenoxUI {
           string,
           {
             className: string
-            rules: { cssRules: string | string[] | null; value: string | null }[]
+            rules: {
+              cssRules: string | string[] | null
+              value: string | null
+              isImportant: boolean
+            }[]
             variant: string
           }
         >
@@ -196,8 +272,9 @@ export class TenoxUI {
     )
 
     return {
-      className: finalClass,
+      className: (isImportant ? '\\!' : '') + finalClass,
       rules: allRules,
+      isImportant,
       prefix: prefix ? { name: prefix, data: this.generatePrefix(prefix) } : null,
       variants: mergedVariants.length > 0 ? mergedVariants : null,
       raw: raw || []
@@ -211,17 +288,20 @@ export class TenoxUI {
         : classNames.split(/\s+/).filter(Boolean)
       : []
 
-    if (!classes || classes.length === 0) return null
+    const { parsedClassNames, importantMap } = this.parseImportantClassNames(classes)
+
+    if (!parsedClassNames || parsedClassNames.length === 0) return null
 
     const result: Result[] = []
 
-    for (const className of classes) {
+    parsedClassNames.forEach((className, index) => {
       const parsed = this.main.parse(className, Object.keys(this.aliases))
+      const isImportant = this.isImportantClass(className, index, importantMap)
 
       if (parsed && parsed[1] && this.aliases[parsed[1]]) {
         const [prefix, type] = parsed
         if (prefix && !this.generatePrefix(prefix)) return null
-        const aliasResult = this.processAlias(type, prefix, parsed)
+        const aliasResult = this.processAlias(type, prefix, parsed, isImportant)
         if (aliasResult) {
           result.push(aliasResult)
         }
@@ -234,7 +314,8 @@ export class TenoxUI {
           if (prefix && !this.generatePrefix(prefix)) return
 
           result.push({
-            className: itemClassName,
+            className: (isImportant ? '\\!' : '') + itemClassName,
+            isImportant,
             cssRules,
             value,
             variants: prefix ? { name: prefix, data: this.generatePrefix(prefix) } : null,
@@ -242,7 +323,7 @@ export class TenoxUI {
           })
         })
       }
-    }
+    })
 
     return result
   }
