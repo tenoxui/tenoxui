@@ -1,5 +1,15 @@
 # Changelog
 
+## `v2.0.0-alpha.4` - `2025-05-14`
+
+### Added
+
+- Use `!` mark before any class names to mark them as `important` rules
+
+### Development
+
+- Bump `@tenoxui/moxie` to `v0.6.7`
+
 ## `v2.0.0-alpha.3` - `2025-05-12`
 
 ### Changed
