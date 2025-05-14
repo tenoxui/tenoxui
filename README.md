@@ -1,65 +1,82 @@
 # TenoxUI
 
-TenoxUI is JavaScript library for creating extensible, flexible, and highly customized, **utility-first CSS framework engine**.
+TenoxUI is JavaScript library for creating extensible, flexible, and highly customized, **utility-first CSS framework**.
 
-## Overview
+## Installation
+
+```bash
+npm install tenoxui
+```
+
+## Example Usage
 
 ```javascript
-import { TenoxUI } from '@tenoxui/moxie'
+import { TenoxUI } from 'tenoxui'
 
-const ui = new TenoxUI({
+const css = new TenoxUI({
   property: {
     bg: 'background',
-    m: 'margin'
+    m: 'margin',
+    p: ({ value }) => `padding: ${value * 0.25 + 'rem'}`
+  },
+  variants: {
+    hover: '&:hover',
+    dark: '@media (prefers-color-scheme: dark)'
+  },
+  breakpoints: {
+    md: '48rem'
   }
 })
 
-// process class names
 console.log(
-  ui.process(['bg-red', 'hover:bg-blue', 'focus:bg-[rgb(255_0_0)]', 'm-12px', '[padding]-1rem'])
+  css
+    .render([
+      'bg-red',
+      'm-10px',
+      'p-4',
+      'p-3.5',
+      'hover:bg-#ccf654',
+      'dark:bg-[rgb(255_0_0)]',
+      'md:bg-blue',
+      'max-md:m-3.5rem'
+    ])
+    .join('\n')
 )
 ```
 
 Output :
 
-```javascript
-;[
-  {
-    className: 'bg-red',
-    cssRules: 'background',
-    value: 'red',
-    prefix: undefined,
-    raw: [undefined, 'bg', 'red', '', undefined, undefined, 'bg-red']
-  },
-  {
-    className: 'bg-blue',
-    cssRules: 'background',
-    value: 'blue',
-    prefix: 'hover',
-    raw: ['hover', 'bg', 'blue', '', undefined, undefined, 'hover:bg-blue']
-  },
-  {
-    className: 'bg-[rgb(255_0_0)]',
-    cssRules: 'background',
-    value: 'rgb(255 0 0)',
-    prefix: 'focus',
-    raw: ['focus', 'bg', '[rgb(255_0_0)]', '', undefined, undefined, 'focus:bg-[rgb(255_0_0)]']
-  },
-  {
-    className: 'm-12px',
-    cssRules: 'margin',
-    value: '12px',
-    prefix: undefined,
-    raw: [undefined, 'm', '12', 'px', undefined, undefined, 'm-12px']
-  },
-  {
-    className: '[padding]-1rem',
-    cssRules: 'padding',
-    value: '1rem',
-    prefix: undefined,
-    raw: [undefined, '[padding]', '1', 'rem', undefined, undefined, '[padding]-1rem']
+```css
+.bg-red {
+  background: red;
+}
+.m-10px {
+  margin: 10px;
+}
+.p-4 {
+  padding: 1rem;
+}
+.p-3\.5 {
+  padding: 0.875rem;
+}
+.hover\:bg-\#ccf654:hover {
+  background: #ccf654;
+}
+@media (prefers-color-scheme: dark) {
+  .dark\:bg-\[rgb\(255_0_0\)\] {
+    background: rgb(255 0 0);
   }
-]
+}
+@media (width >= 48rem) {
+  .md\:bg-blue {
+    background: blue;
+  }
+}
+@media (width < 48rem) {
+  .max-md\:m-3\.5rem {
+    margin: 3.5rem;
+  }
+}
 ```
 
 ## License

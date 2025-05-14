@@ -13,7 +13,6 @@ export interface Config extends CoreConfig {
   moxieOptions: MoxieConfig
   safelist: string[]
   tabSize: number
-  simple: boolean
   typeOrder: string[]
   selectorPrefix: string
 }

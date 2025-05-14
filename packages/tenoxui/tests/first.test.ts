@@ -155,7 +155,8 @@ describe('TenoxUI Unit Test', () => {
       property: {
         bg: 'background',
         m: 'margin',
-        size: ['width', 'height']
+        size: ['width', 'height'],
+        flex: 'value:display: flex'
       },
       aliases: {
         btn: 'bg-red m-10px',
@@ -201,6 +202,51 @@ describe('TenoxUI Unit Test', () => {
     #tui-haha .btn3 {
         margin: 20px;
     }
+}`)
+    expect(
+      ui
+        .render({
+          body: 'bg-red ![display]-flex'
+        })
+        .join('\n')
+    ).toBe(`#tui-haha body {
+    background: red;
+    display: flex !important;
+}`)
+  })
+  it('should apply important class names', () => {
+    const css = new TenoxUI({
+      property: {
+        flex: 'display: flex',
+        grid: 'display: grid !important',
+        bg: 'background'
+      },
+      aliases: {
+        box: ['flex', 'bg-blue', '[border-radius]-4rem']
+      },
+      variants: {
+        hover: '&:hover'
+      }
+    })
+
+    expect(css.render('flex !flex grid !grid').join('\n')).toContain(`.flex {
+  display: flex;
+}
+.\\!flex {
+  display: flex !important;
+}
+.grid {
+  display: grid !important;
+}
+.\\!grid {
+  display: grid !important;
+}`)
+    expect(css.render({ div: 'bg-red !flex hover:bg-blue' }).join('\n')).toContain(`div {
+  background: red;
+  display: flex !important;
+}
+div:hover {
+  background: blue;
 }`)
   })
 })

@@ -2,6 +2,57 @@ import { test, describe, expect } from 'vitest'
 import { TenoxUI } from '../src/index.ts'
 
 describe('TenoxUI Unit Test', () => {
+  test('Main Overview', () => {
+    const css = new TenoxUI({
+      property: {
+        bg: 'background',
+        m: 'margin'
+      },
+      variants: {
+        hover: '&:hover',
+        dark: '@media (prefers-color-scheme: dark)'
+      },
+      breakpoints: {
+        md: '48rem'
+      }
+    })
+
+    expect(
+      css
+        .render([
+          'bg-red',
+          'm-10px',
+          'hover:bg-#ccf654',
+          'dark:bg-[rgb(255_0_0)]',
+          'md:bg-blue',
+          'max-md:m-3.5rem'
+        ])
+        .join('\n')
+    ).toBe(`.bg-red {
+  background: red;
+}
+.m-10px {
+  margin: 10px;
+}
+.hover\\:bg-\\#ccf654:hover {
+  background: #ccf654;
+}
+@media (prefers-color-scheme: dark) {
+  .dark\\:bg-\\[rgb\\(255_0_0\\)\\] {
+    background: rgb(255 0 0);
+  }
+}
+@media (width >= 48rem) {
+  .md\\:bg-blue {
+    background: blue;
+  }
+}
+@media (width < 48rem) {
+  .max-md\\:m-3\\.5rem {
+    margin: 3.5rem;
+  }
+}`)
+  })
   test('Overview', () => {
     const css = new TenoxUI({
       property: {

@@ -6,7 +6,6 @@ import type { CSSProperty } from '@tenoxui/types'
 export class TenoxUI extends Core {
   private safelist: string[]
   private tabSize: number
-  private simpleMode: boolean
   private typeOrder: string[]
   private selectorPrefix: string
 
@@ -21,7 +20,6 @@ export class TenoxUI extends Core {
     // tenoxui config
     safelist = [],
     tabSize = 2,
-    simple = false,
     moxie = Moxie,
     moxieOptions = {},
     typeOrder = [],
@@ -39,16 +37,9 @@ export class TenoxUI extends Core {
     })
 
     this.safelist = safelist
-    this.tabSize = simple ? 0 : tabSize
-    this.simpleMode = simple
+    this.tabSize = tabSize
     this.typeOrder = typeOrder
     this.selectorPrefix = selectorPrefix
-  }
-
-  public simple() {
-    this.simpleMode = true
-    this.tabSize = 0
-    return this
   }
 
   public addTabs(str: string, size: number = 2, fixedTabs: boolean = false): string {
@@ -60,13 +51,13 @@ export class TenoxUI extends Core {
       .join('\n')
   }
 
-  public beautifyRules(input: string): string {
-    if (this.simpleMode) return input
-
+  public beautifyRules(input: string, isImportant: boolean = false): string {
     let nestingLevel = 0
     let result = []
 
-    const parts = input.split(';')
+    const partsTemp = isImportant ? input.replace(/\s*!important\s*/g, '') : input
+    const parts = partsTemp.split(';')
+    const hasImportant = isImportant ? ' !important;' : ';'
 
     for (let i = 0; i < parts.length; i++) {
       let part = parts[i].trim()
@@ -80,7 +71,7 @@ export class TenoxUI extends Core {
           let subPart = closingBraceParts[j].trim()
 
           if (subPart !== '')
-            result.push((nestingLevel > 0 ? this.addTabs(subPart) : subPart) + ';')
+            result.push((nestingLevel > 0 ? this.addTabs(subPart) : subPart) + hasImportant)
 
           // add closing brace
           if (j < closingBraceParts.length - 1) {
@@ -98,7 +89,7 @@ export class TenoxUI extends Core {
           let subPart = openingBraceParts[j].trim()
 
           if (subPart !== '') {
-            const ending = j < openingBraceParts.length - 1 ? ' {' : ';'
+            const ending = j < openingBraceParts.length - 1 ? ' {' : hasImportant
             result.push((nestingLevel > 0 ? this.addTabs(subPart) : subPart) + ending)
           }
           if (j < openingBraceParts.length - 1) {
@@ -108,7 +99,7 @@ export class TenoxUI extends Core {
       }
 
       // handle normal rules
-      else result.push((nestingLevel > 0 ? this.addTabs(part) : part) + ';')
+      else result.push((nestingLevel > 0 ? this.addTabs(part) : part) + hasImportant)
     }
 
     return result.join('\n')
@@ -134,17 +125,13 @@ export class TenoxUI extends Core {
         const valueItem =
           Array.isArray(rule.cssRules) || rule.value === null ? '' : `: ${rule.value}`
 
-        return `${rules}${valueItem}`
+        return `${rules}${valueItem}${rule.isImportant ? ' !important' : ''}`
       })
       .join('; ')
   }
 
   private createCssBlock(selector: string, rules: string, allowPrefix: boolean = true): string {
-    const spacing = this.simpleMode ? ' ' : '\n'
-
-    return `${allowPrefix ? this.selectorPrefix : ''}${selector} {${spacing}${this.addTabs(
-      rules
-    )}${spacing}}`
+    return `${allowPrefix ? this.selectorPrefix : ''}${selector} {\n${this.addTabs(rules)}\n}`
   }
 
   private replaceAmpersand(template: string, className: string): string {
@@ -180,19 +167,19 @@ export class TenoxUI extends Core {
             })
           }
         } else {
-          const { cssRules, value, variants } = item
+          const { cssRules, value, variants, isImportant } = item
           const rules = this.formatRules(cssRules, value)
           const valueItem = Array.isArray(cssRules) || value === null ? '' : `: ${value}`
 
           if (!variants) {
-            baseRules.push(rules + valueItem)
+            baseRules.push(this.beautifyRules(rules + valueItem, isImportant))
           } else if (variants && variants.data) {
             if (variants.data.includes('&')) {
               const selector = variants.data.replace(/&/g, rawSelector)
-              const finalRules = this.beautifyRules(rules + valueItem)
+              const finalRules = this.beautifyRules(rules + valueItem, isImportant)
               variantBlocks.push(this.createCssBlock(selector, finalRules))
             } else {
-              const finalRules = this.beautifyRules(rules + valueItem)
+              const finalRules = this.beautifyRules(rules + valueItem, isImportant)
               const innerBlock = this.createCssBlock(rawSelector, finalRules)
               variantBlocks.push(this.createCssBlock(variants.data, innerBlock, false))
             }
@@ -215,7 +202,7 @@ export class TenoxUI extends Core {
 
   private processAliasItem(item: any, className?: string): string[] {
     const results: string[] = []
-    const mainRules = this.beautifyRules(this.formatAliasRules(item.rules))
+    const mainRules = this.beautifyRules(this.formatAliasRules(item.rules), item.isImportant)
     const mainClassName = className || item.className
 
     if (item.prefix) {
@@ -236,7 +223,10 @@ export class TenoxUI extends Core {
     // Process variants array if any
     if (item.variants && Array.isArray(item.variants)) {
       item.variants.forEach((variant: any) => {
-        const variantRules = this.beautifyRules(this.formatAliasRules(variant.rules))
+        const variantRules = this.beautifyRules(
+          this.formatAliasRules(variant.rules),
+          item.isImportant
+        )
         const variantClassName = variant.className
         const variantType = variant.variant
 
@@ -254,10 +244,10 @@ export class TenoxUI extends Core {
   }
 
   private processShorthandItem(item: any): string {
-    const { className, cssRules, value, variants } = item
+    const { className, cssRules, value, variants, isImportant } = item
     const rules = this.formatRules(cssRules, value)
     const valueItem = Array.isArray(cssRules) || value === null ? '' : `: ${value}`
-    const finalRules = this.beautifyRules(rules + valueItem)
+    const finalRules = this.beautifyRules(rules + valueItem, isImportant)
 
     if (!variants) {
       return this.createCssBlock(`.${className}`, finalRules)
@@ -306,48 +296,31 @@ export class TenoxUI extends Core {
   ): string[] {
     let results: string[] = []
 
-    if (this.safelist.length > 0) {
-      const safelistData = this.sortedClassNameItem(this.safelist)
-      if (safelistData && safelistData.length > 0) {
-        safelistData.forEach((item) => {
+    // helper function for apply shorthand and alias
+    const apply = (classNames: string | string[]) => {
+      const data = this.sortedClassNameItem(classNames)
+      if (data && data.length > 0) {
+        data.forEach((item) => {
           if ('rules' in item) results.push(...this.processAliasItem(item))
           else results.push(this.processShorthandItem(item))
         })
       }
     }
 
-    // Process each parameter in order
+    // process safelist
+    if (this.safelist.length > 0) apply(this.safelist)
+
+    // process parameters
     classParams.forEach((param) => {
       if (param === undefined || param === null) return
 
-      // Process styles from object, direct styles
+      // process object parameter
       if (typeof param === 'object' && !Array.isArray(param)) {
         results = results.concat(this.processApplyObject(param))
       }
-      // Process array type
-      else if (Array.isArray(param)) {
-        if (param.length > 0) {
-          const data = this.sortedClassNameItem(param)
-          if (data && data.length > 0) {
-            data.forEach((item) => {
-              if ('rules' in item) results.push(...this.processAliasItem(item))
-              else results.push(this.processShorthandItem(item))
-            })
-          }
-        }
-      }
-      // Process string type
-      else if (typeof param === 'string') {
-        const classes = param.split(/\s+/).filter(Boolean)
-        if (classes.length > 0) {
-          const data = this.sortedClassNameItem(classes)
-          if (data && data.length > 0) {
-            data.forEach((item) => {
-              if ('rules' in item) results.push(...this.processAliasItem(item))
-              else results.push(this.processShorthandItem(item))
-            })
-          }
-        }
+      // process array ir string parameter
+      else if (Array.isArray(param) || typeof param === 'string') {
+        if (param.length > 0) apply(param)
       }
     })
 

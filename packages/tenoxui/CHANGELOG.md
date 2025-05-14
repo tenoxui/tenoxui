@@ -1,4 +1,24 @@
-# hangelog
+# Changelog
+
+## `v1.0.0-alpha.7` - `2025-05-14`
+
+## Changed
+
+- Refactor `render` method
+
+## Added
+
+- Use `!` mark before any class names to add `!important` mark to output rules
+
+### **Removed**
+
+- Simple mode (including `simpleMode` option and `simple()` method)
+
+### Development
+
+- Bump `@tenoxui/moxie` to `v0.6.7`
+- Bump `@tenoxui/core` to `v2.0.0-alpha.4`
+- Update test
 
 ## `v1.0.0-alpha.6` - `2025-05-12`
 
