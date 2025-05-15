@@ -1,5 +1,7 @@
 import type { Values, Classes, CSSPropertyOrVariable, GetCSSProperty } from '@tenoxui/types'
 import type { Property, Config, Parsed, ProcessedStyle, Results } from './types'
+import { toKebabCase, escapeCSSSelector, constructRaw } from './utils'
+import { regexp, escapeRegex } from './lib/regexp'
 
 export class TenoxUI {
   private property: Property
@@ -10,172 +12,25 @@ export class TenoxUI {
   constructor({ property = {}, values = {}, classes = {}, prefixChars = [] }: Config = {}) {
     this.property = {
       // use moxie-* utility to access all properties and variables
-      // e.g. `moxie-(color:red)` => `color: red`, `moxie-(--my-var:20px_1rem)` => `--my-var: 20px 1rem`
+      // e.g. `moxie-(color:red)` => `color: red`, `moxie-(--my-var:20px_1rem)` => `--my-var: 20px 1rem`input
       moxie: ({ key, secondValue }) => (secondValue ? null : (key as GetCSSProperty)),
       ...property
     }
     this.values = values
     this.classes = classes
-    this.prefixChars = prefixChars.map(this.escapeRegex)
-  }
-
-  public toKebabCase(str: string): string {
-    if (/^(webkit|moz|ms|o)[A-Z]/.test(str)) {
-      const match = str.match(/^(webkit|moz|ms|o)/)
-      if (match) {
-        const prefix = match[0]
-        return `-${prefix}${str
-          .slice(prefix.length)
-          .replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)}`
-      }
-    }
-
-    return str.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)
-  }
-
-  public escapeCSSSelector(str: string): string {
-    return str
-      .replace(/^(\d)/, '\\3$1 ') // escape any digits at the start of the selector
-      .replace(/([#{}.:;?%&,@+*~'"!^$[\]()=>|/])/g, '\\$1')
-  }
-
-  private escapeRegex(str: string): string {
-    return str.replace(/[.*+?^${}()|[\]\\/\\-]/g, '\\$&')
-  }
-
-  private getAllClassNames(classRegistry: Classes | undefined): string[] {
-    if (!classRegistry) return []
-    const classNames = new Set<string>()
-
-    Object.entries(classRegistry).forEach(([property, classObj]) => {
-      if (classObj && typeof classObj === 'object') {
-        Object.keys(classObj).forEach((className) => {
-          classNames.add(className)
-        })
-      }
-    })
-
-    return Array.from(classNames)
-  }
-
-  private getTypePrefixes(safelist: string[] = []): string[] {
-    const classRegistry = this.classes
-    const propertyTypes = Object.keys(this.property)
-
-    if (!classRegistry) {
-      return [...propertyTypes, ...safelist].sort((a, b) => b.length - a.length)
-    }
-
-    const classConfigs = this.getAllClassNames(classRegistry)
-    const classPatterns = [...classConfigs]
-
-    return [...propertyTypes, ...classPatterns, ...safelist].sort((a, b) => b.length - a.length)
-  }
-
-  public regexp(safelist?: string[]) {
-    // escape possible characters before passed to `type` RegExp pattern
-    const typePrefixes = this.getTypePrefixes(safelist).map(this.escapeRegex).join('|')
-
-    // Common pattern for handling complex nested structures
-    const nestedBracketPattern = '\\[[^\\]]+\\]'
-    const nestedParenPattern = '\\([^()]*(?:\\([^()]*\\)[^()]*)*\\)'
-    const nestedBracePattern = '\\{[^{}]*(?:\\{[^{}]*\\}[^{}]*)*\\}'
-
-    const prefixChars = `[${['a-zA-Z0-9_\\-', ...this.prefixChars].join('')}]`
-
-    // 1. Prefix pattern
-    const prefixPattern =
-      // Simple prefix (hover, md, focus, etc.)
-      prefixChars +
-      '+|' +
-      // value-like prefix (nth-(4), max-[445px], etc.)
-      prefixChars +
-      '+(?:-(?:' +
-      nestedBracketPattern +
-      '|' +
-      nestedParenPattern +
-      '|' +
-      nestedBracePattern +
-      '))|' +
-      // added support for custom secondValue for prefix
-      prefixChars +
-      '+(?:-(?:' +
-      nestedBracketPattern +
-      '|' +
-      nestedParenPattern +
-      '|' +
-      nestedBracePattern +
-      '))?(?:\\/' +
-      '[a-zA-Z0-9_\\-]' +
-      '+)|' +
-      // Direct bracket, parenthesis, or brace content
-      nestedBracketPattern +
-      '|' +
-      nestedParenPattern +
-      '|' +
-      nestedBracePattern
-
-    // 2. Type pattern
-    const typePattern = `(${typePrefixes}|\\[[^\\]]+\\])`
-
-    // 3. Separator
-    const separator = '(?:-)'
-
-    // 4. Value pattern - modified to handle $ variables correctly
-    const valuePattern =
-      '(-?(?:\\d+(?:\\.\\d+)?)|' + // Numbers
-      '(?:[a-zA-Z0-9_]+(?:-[a-zA-Z0-9_]+)*(?:-[a-zA-Z0-9_]+)*)|' + // Words with hyphens
-      '(?:#[0-9a-fA-F]+)|' + // Hex colors
-      nestedBracketPattern +
-      '|' + // Bracket content
-      nestedBracePattern +
-      '|' + // Curly brace content
-      nestedParenPattern +
-      '|' + // Parentheses content
-      '(?:\\$[^\\s\\/]+))' // Dollar sign content
-
-    // 5. Unit pattern (optional)
-    const unitPattern = '([a-zA-Z%]*)'
-
-    // 6. Secondary value pattern (optional)
-    const secondaryPattern =
-      '(?:\\/(-?(?:\\d+(?:\\.\\d+)?)|' + // Same pattern as valuePattern
-      '(?:[a-zA-Z0-9_]+(?:-[a-zA-Z0-9_]+)*(?:-[a-zA-Z0-9_]+)*)|' +
-      '(?:#[0-9a-fA-F]+)|' +
-      nestedBracketPattern +
-      '|' +
-      nestedBracePattern +
-      '|' +
-      nestedParenPattern +
-      '|' +
-      '(?:\\$[^\\s\\/]+))' +
-      '([a-zA-Z%]*))?'
-
-    return {
-      prefix: prefixPattern,
-      type: typePattern,
-      separator: separator,
-      value: valuePattern,
-      unit: unitPattern,
-      secondValuePattern: secondaryPattern,
-      all:
-        '^(?:(' +
-        prefixPattern +
-        '):)?' +
-        typePattern +
-        separator +
-        valuePattern +
-        unitPattern +
-        secondaryPattern +
-        '$'
-    }
+    this.prefixChars = prefixChars.map(escapeRegex)
   }
 
   public parse(className: string, safelist?: string[]): Parsed {
-    const regexp = this.regexp(safelist)
+    const patterns = regexp({
+      safelist,
+      property: this.property,
+      classes: this.classes,
+      inputPrefixChars: this.prefixChars
+    })
 
     // catch all possible class names with value defined
-    const fullMatch = className.match(new RegExp(regexp.all))
+    const fullMatch = className.match(new RegExp(patterns.all))
     if (fullMatch) {
       const [, prefix, type, value, unit, secValue, secUnit] = fullMatch
 
@@ -183,24 +38,13 @@ export class TenoxUI {
     }
 
     // catch valueless class names, such as from this.classes
-    const valuelessMatch = className.match(new RegExp(`^(?:(${regexp.prefix}):)?${regexp.type}$`))
+    const valuelessMatch = className.match(
+      new RegExp(`^(?:(${patterns.prefix}):)?${patterns.type}$`)
+    )
 
     if (valuelessMatch) return [valuelessMatch[1], valuelessMatch[2], '', '', undefined, undefined]
 
     return null
-  }
-
-  public constructRaw(
-    prefix: null | undefined | string,
-    type: string,
-    value?: null | string,
-    unit?: null | string,
-    secValue?: null | string,
-    secUnit?: null | string
-  ) {
-    return `${prefix ? `${prefix}:` : ''}${type}${value ? '-' : ''}${value}${unit}${
-      secValue ? `/${secValue}${secUnit}` : ''
-    }`
   }
 
   // unique value parser
@@ -320,11 +164,11 @@ export class TenoxUI {
         .slice(1, -1)
         .split(',')
         .map((item) =>
-          item.trim().startsWith('--') ? String(item.trim()) : this.toKebabCase(String(item.trim()))
+          item.trim().startsWith('--') ? String(item.trim()) : toKebabCase(String(item.trim()))
         )
 
       return {
-        className: this.constructRaw(prefix, type, value, unit),
+        className: constructRaw(prefix, type, value, unit),
         cssRules: items.length === 1 ? items[0] : items,
         value: finalValue,
         prefix
@@ -360,6 +204,24 @@ export class TenoxUI {
               // the `p` is the type or the shorthand for `padding` property -
               // and has support for second value
               properties.property
+
+        // return direct data from `type`
+        if (
+          property &&
+          typeof property === 'object' &&
+          !Array.isArray(property) &&
+          'cssRules' in property
+        ) {
+          const { className, cssRules, value, prefix = raw[0] } = property
+
+          return {
+            className: className || raw[6],
+            cssRules,
+            value,
+            prefix,
+            isCustom: Boolean(className)
+          }
+        }
 
         // `properties.value` handler
         const template = properties.value || '{0}' // defaulting to `{0}` if `properties.value` is not defined
@@ -436,7 +298,7 @@ export class TenoxUI {
         }
 
         return {
-          className: this.constructRaw(prefix, type, value, unit, secondValue, secondUnit),
+          className: constructRaw(prefix, type, value, unit, secondValue, secondUnit),
           cssRules:
             // if not property, or when `properties.property` as function return null
             !property
@@ -448,9 +310,9 @@ export class TenoxUI {
                     ((property as string).includes(':') || (property as string).includes('value:'))
                   ? (property as string).includes('value:')
                     ? (property as string).slice(6)
-                    : (this.toKebabCase(String(property)) as string)
+                    : (toKebabCase(String(property)) as string)
                   : // basic string property
-                    (this.toKebabCase(String(property)) as string),
+                    (toKebabCase(String(property)) as string),
           value:
             template === null ||
             property === null ||
@@ -483,8 +345,26 @@ export class TenoxUI {
             // the `bg` is the type or the shorthand for `background` property
             properties
 
+      // return direct data from `type` an object and have `cssRules` field in it
+      if (
+        finalRegProperty &&
+        typeof finalRegProperty === 'object' &&
+        !Array.isArray(finalRegProperty) &&
+        'cssRules' in finalRegProperty
+      ) {
+        const { className, cssRules, value, prefix = raw[0] } = finalRegProperty
+
+        return {
+          className: className || raw[6],
+          cssRules,
+          value,
+          prefix,
+          isCustom: Boolean(className) // check if the className is present
+        }
+      }
+
       return {
-        className: this.constructRaw(prefix, type, value, unit, secondValue, secondUnit),
+        className: constructRaw(prefix, type, value, unit, secondValue, secondUnit),
         cssRules: !finalRegProperty
           ? null
           : Array.isArray(properties)
@@ -493,8 +373,8 @@ export class TenoxUI {
                 (finalRegProperty.includes(':') || finalRegProperty.startsWith('value:'))
               ? finalRegProperty.startsWith('value:')
                 ? finalRegProperty.slice(6)
-                : (this.toKebabCase(String(finalRegProperty)) as string)
-              : (this.toKebabCase(String(finalRegProperty)) as string),
+                : (toKebabCase(String(finalRegProperty)) as string)
+              : (toKebabCase(String(finalRegProperty)) as string),
         value:
           typeof finalRegProperty === 'string' && finalRegProperty.includes(':')
             ? null
@@ -622,7 +502,7 @@ export class TenoxUI {
             secUnit
           )
 
-          return `${this.toKebabCase(String(prop))}: ${processedValue}`
+          return `${toKebabCase(String(prop))}: ${processedValue}`
         })
         .filter(Boolean)
         .join('; ')
@@ -630,7 +510,7 @@ export class TenoxUI {
       return {
         className: hasAppendedValue
           ? className
-          : this.constructRaw(prefix, className, value, unit, secValue, secUnit),
+          : constructRaw(prefix, className, value, unit, secValue, secUnit),
         cssRules: rules,
         value: null,
         prefix
@@ -653,6 +533,7 @@ export class TenoxUI {
           if (!parsed) continue
           const [prefix, type, value, unit, secValue, secUnit] = parsed
           if (!type) continue // Skip if type is missing
+          const raw = [...parsed, constructRaw(prefix, type, value, unit, secValue, secUnit)]
 
           const classFromClasses =
             this.getParentClass(`${type}-${value}`).length > 0 ? `${type}-${value}` : type
@@ -672,11 +553,11 @@ export class TenoxUI {
               const { className, cssRules, prefix } = shouldClasses
               if (!cssRules || cssRules === 'null') continue
               results.push({
-                className: this.escapeCSSSelector(className),
+                className: escapeCSSSelector(className),
                 cssRules,
                 value: null,
                 prefix,
-                raw: [...parsed, this.constructRaw(prefix, type, value, unit, secValue, secUnit)]
+                raw
               })
               continue
             }
@@ -687,26 +568,18 @@ export class TenoxUI {
 
           // Try shorthand processing
           try {
-            const result = this.processShorthand(
-              type,
-              value!,
-              unit,
-              prefix,
-              secValue,
-              secUnit,
-              parsed
-            )
+            const result = this.processShorthand(type, value!, unit, prefix, secValue, secUnit, raw)
 
             if (result) {
-              const { className, cssRules, value: ruleValue, prefix: rulePrefix } = result
+              const { className, cssRules, value: ruleValue, prefix: rulePrefix, isCustom } = result
               if (!cssRules || cssRules === 'null') continue
 
               results.push({
-                className: this.escapeCSSSelector(className),
+                className: isCustom ? className : escapeCSSSelector(className),
                 cssRules,
                 value: ruleValue,
                 prefix: rulePrefix,
-                raw: [...parsed, this.constructRaw(prefix, type, value, unit, secValue, secUnit)]
+                raw
               })
             }
           } catch (shorthardError) {
@@ -727,4 +600,6 @@ export class TenoxUI {
 }
 
 export * from './types'
+export * from './utils'
+export { regexp } from './lib/regexp'
 export default TenoxUI

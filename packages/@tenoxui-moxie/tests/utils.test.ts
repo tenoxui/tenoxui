@@ -1,28 +1,29 @@
 import { describe, it, expect } from 'vitest'
-import Moxie from '../src/index.ts'
+import { TenoxUI as Moxie, toKebabCase, escapeCSSSelector } from '../src'
+import { getAllClassNames, getTypePrefixes } from '../src/lib/regexp'
 
 describe('Utility', () => {
   const ui = new Moxie()
 
   it('should convert camelCase to kebab-case', () => {
-    expect(ui.toKebabCase('someCamelCase')).toBe('some-camel-case')
-    expect(ui.toKebabCase('marginInline')).toBe('margin-inline')
-    expect(ui.toKebabCase('webkitAnimation')).toBe('-webkit-animation')
-    expect(ui.toKebabCase('oTransition')).toBe('-o-transition')
-    expect(ui.toKebabCase('mozTransition')).toBe('-moz-transition')
-    expect(ui.toKebabCase('msTransition')).toBe('-ms-transition')
+    expect(toKebabCase('someCamelCase')).toBe('some-camel-case')
+    expect(toKebabCase('marginInline')).toBe('margin-inline')
+    expect(toKebabCase('webkitAnimation')).toBe('-webkit-animation')
+    expect(toKebabCase('oTransition')).toBe('-o-transition')
+    expect(toKebabCase('mozTransition')).toBe('-moz-transition')
+    expect(toKebabCase('msTransition')).toBe('-ms-transition')
   })
 
   it('should escape unique characters', () => {
-    expect(ui.escapeCSSSelector('2xl:w-3xl')).toBe('\\32 xl\\:w-3xl')
-    expect(ui.escapeCSSSelector(`#{}.:;?%&,@+*~'"!^$[]()=>|/`)).toBe(
+    expect(escapeCSSSelector('2xl:w-3xl')).toBe('\\32 xl\\:w-3xl')
+    expect(escapeCSSSelector(`#{}.:;?%&,@+*~'"!^$[]()=>|/`)).toBe(
       `\\#\\{\\}\\.\\:\\;\\?\\%\\&\\,\\@\\+\\*\\~\\'\\"\\!\\^\\$\\[\\]\\(\\)\\=\\>\\|\\/`
     )
   })
 
   it('should get all class names inside classes object ', () => {
     expect(
-      ui.getAllClassNames({
+      getAllClassNames({
         display: {
           flex: '...',
           block: '...',
@@ -37,19 +38,19 @@ describe('Utility', () => {
   })
 
   it('should generate shorthand list to be matched', () => {
-    const ui = new Moxie({
-      property: {
-        bg: '...'
-      },
-      classes: {
-        display: {
-          flex: '...'
+    expect(
+      getTypePrefixes({
+        property: {
+          bg: '...'
+        },
+        classes: {
+          display: {
+            flex: '...'
+          }
         }
-      }
-    })
-
-    expect(ui.getTypePrefixes()).toEqual(expect.arrayContaining(['flex', 'bg']))
-    expect(ui.getTypePrefixes(['my-custom-list'])).toContain('my-custom-list')
+      })
+    ).toEqual(expect.arrayContaining(['flex', 'bg']))
+    expect(getTypePrefixes({ safelist: ['my-custom-list'] })).toContain('my-custom-list')
   })
 
   it('should parse pattern with curly bracket correctly', () => {

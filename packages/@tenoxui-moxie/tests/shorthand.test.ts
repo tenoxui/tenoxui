@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import Moxie from '../src/index.ts'
+import { TenoxUI as Moxie, escapeCSSSelector } from '../src/index.ts'
 
 describe('Value Processor', () => {
   it('should process direct CSS properties or variables', () => {
@@ -399,6 +399,14 @@ describe('Value Processor', () => {
               !isNaN(value + unit) ? 0.25 * Number(value) + 'rem' : value + unit
             }`
           }
+        },
+        'space-x': ({ value, unit, raw }) => {
+          return {
+            className: `${escapeCSSSelector(raw[6])} > :not(:last-child)`,
+            cssRules: 'margin',
+            value: value + unit,
+            prefix: raw[0]
+          }
         }
       },
       values: {
@@ -430,5 +438,9 @@ describe('Value Processor', () => {
     expect(ui.process('top-100px')[0].cssRules).toBe('top: 100px')
     expect(ui.process('top-4')[0].cssRules).toBe('top: 1rem')
     expect(ui.process('top-50%')[0].cssRules).toBe('top: 50%')
+    expect(ui.process('hover:space-x-50rem')[0].className).toBe(
+      'hover\\:space-x-50rem > :not(:last-child)'
+    )
+    expect(ui.process('hover:space-x-50rem')[0].value).toBe('50rem')
   })
 })
