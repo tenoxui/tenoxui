@@ -33,6 +33,7 @@ export interface TenoxUIConfig {
   property?: Property
   values?: Values
   classes?: Classes
+  prefixChars?: string[] // @tenoxui/moxie@0.6.7+
 }
 export interface Config {
   property: Property
@@ -43,6 +44,8 @@ export interface Config {
   aliases: Aliases
   tenoxui: typeof Moxie
   tenoxuiOptions: MoxieOptions
+  reservedVariantChars: string[]
+  prefixLoaderOptions: MoxieOptions
 }
 export type Result =
   | {

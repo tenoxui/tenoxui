@@ -165,14 +165,21 @@ describe('TenoxUI Unit Test', () => {
         box: 'size-50px'
       },
       variants: {
-        hover: '&:hover'
+        hover: '&:hover',
+        '@akl': 'value:@media print'
       },
       breakpoints: {
         md: '48rem'
       },
-      selectorPrefix: '#tui-haha '
+      selectorPrefix: '#tui-haha ',
+      reservedVariantChars: ['@']
     })
 
+    expect(ui.render('@akl:bg-red').join('\n')).toBe(`@media print {
+    #tui-haha .\\@akl\\:bg-red {
+        background: red;
+    }
+}`)
     expect(ui.render('bg-red').join('\n')).toBe(`#tui-haha .bg-red {
     background: red;
 }`)
@@ -247,6 +254,27 @@ describe('TenoxUI Unit Test', () => {
 }
 div:hover {
   background: blue;
+}`)
+  })
+  it('should add config for prefixLoader', () => {
+    const ui = new TenoxUI({
+      property: {
+        bg: 'background'
+      },
+      moxieOptions: {
+        prefixChars: ['@']
+      },
+      prefixLoaderOptions: {
+        property: {
+          '@akl': 'value:@media print'
+        }
+      }
+    })
+
+    expect(ui.render('@akl:bg-red').join('\n')).toBe(`@media print {
+  .\\@akl\\:bg-red {
+    background: red;
+  }
 }`)
   })
 })

@@ -2,6 +2,7 @@ import type { Property } from '@tenoxui/moxie'
 import type { Values, Classes, Aliases } from '@tenoxui/types'
 import type { Variants, Breakpoints, TenoxUIConfig, Config, Result } from './types'
 import { TenoxUI as Moxie } from '@tenoxui/moxie'
+import { merge } from '@nousantx/someutils'
 
 export class TenoxUI {
   private main: Moxie
@@ -23,7 +24,9 @@ export class TenoxUI {
     breakpoints = {},
     variants = {},
     tenoxui = Moxie,
-    tenoxuiOptions = {}
+    tenoxuiOptions = {},
+    reservedVariantChars = [],
+    prefixLoaderOptions = {}
   }: Partial<Config> = {}) {
     this.engine = tenoxui
     this.variants = variants
@@ -32,17 +35,26 @@ export class TenoxUI {
     this.classes = classes
     this.aliases = aliases
     this.breakpoints = breakpoints
-    this.tuiConfig = {
-      ...tenoxuiOptions,
-      property: this.property,
-      values: this.values,
-      classes: this.classes
-    }
+    this.tuiConfig = merge(
+      {
+        property: this.property,
+        values: this.values,
+        classes: this.classes,
+        prefixChars: reservedVariantChars
+      },
+      tenoxuiOptions
+    )
     this.main = new this.engine(this.tuiConfig)
-    this.prefixLoader = new this.engine({
-      property: this.variants as Property,
-      values: this.breakpoints
-    })
+    this.prefixLoader = new this.engine(
+      merge(
+        {
+          property: this.variants as Property,
+          values: this.breakpoints,
+          prefixChars: reservedVariantChars
+        },
+        prefixLoaderOptions
+      )
+    )
   }
 
   public createEngine(inputConfig: Partial<TenoxUIConfig> = {}): Moxie {

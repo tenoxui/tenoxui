@@ -1,5 +1,16 @@
 # Changelog
 
+## `v2.0.0-alpha.5` - `2025-05-15`
+
+### Added
+
+- `prefixChars` option to pass reserved prefix characters to the main engine and `prefixLoader`
+- `prefixLoaderOptions` option to customize `prefixLoader` configuration
+
+### Development
+
+- Add new package: `@nousantx/someutils@0.7.1`
+
 ## `v2.0.0-alpha.4` - `2025-05-14`
 
 ### Added

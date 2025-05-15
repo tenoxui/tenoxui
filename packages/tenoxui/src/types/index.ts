@@ -15,4 +15,6 @@ export interface Config extends CoreConfig {
   tabSize: number
   typeOrder: string[]
   selectorPrefix: string
+  prefixLoaderOptions: MoxieConfig
+  reservedVariantChars: string[]
 }

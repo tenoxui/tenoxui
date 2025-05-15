@@ -22,6 +22,8 @@ export class TenoxUI extends Core {
     tabSize = 2,
     moxie = Moxie,
     moxieOptions = {},
+    prefixLoaderOptions = {},
+    reservedVariantChars = [],
     typeOrder = [],
     selectorPrefix = ''
   }: Partial<Config> = {}) {
@@ -33,6 +35,8 @@ export class TenoxUI extends Core {
       breakpoints,
       tenoxui: moxie,
       tenoxuiOptions: moxieOptions,
+      prefixLoaderOptions,
+      reservedVariantChars,
       variants
     })
 

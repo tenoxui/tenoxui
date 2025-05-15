@@ -1,5 +1,15 @@
 # Changelog
 
+## `v1.0.0-alpha.8` - `2025-05-15`
+
+### Added
+
+- `reservedVariantChars` and `prefixLoaderOptions` options. New options for `@tenoxui/core`
+
+### Development
+
+- Bump `@tenoxui/core` to `v2.0.0-alpha.5`
+
 ## `v1.0.0-alpha.7` - `2025-05-14`
 
 ## Changed
