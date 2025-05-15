@@ -16,7 +16,7 @@ export class TenoxUI {
     }
     this.values = values
     this.classes = classes
-    this.prefixChars = prefixChars
+    this.prefixChars = prefixChars.map(this.escapeRegex)
   }
 
   public toKebabCase(str: string): string {
@@ -39,6 +39,10 @@ export class TenoxUI {
       .replace(/([#{}.:;?%&,@+*~'"!^$[\]()=>|/])/g, '\\$1')
   }
 
+  private escapeRegex(str: string): string {
+    return str.replace(/[.*+?^${}()|[\]\\/\\-]/g, '\\$&')
+  }
+
   private getAllClassNames(classRegistry: Classes | undefined): string[] {
     if (!classRegistry) return []
     const classNames = new Set<string>()
@@ -55,9 +59,8 @@ export class TenoxUI {
   }
 
   private getTypePrefixes(safelist: string[] = []): string[] {
-    const styleAttribute = this.property
     const classRegistry = this.classes
-    const propertyTypes = Object.keys(styleAttribute)
+    const propertyTypes = Object.keys(this.property)
 
     if (!classRegistry) {
       return [...propertyTypes, ...safelist].sort((a, b) => b.length - a.length)
@@ -70,7 +73,8 @@ export class TenoxUI {
   }
 
   public regexp(safelist?: string[]) {
-    const typePrefixes = this.getTypePrefixes(safelist).join('|')
+    // escape possible characters before passed to `type` RegExp pattern
+    const typePrefixes = this.getTypePrefixes(safelist).map(this.escapeRegex).join('|')
 
     // Common pattern for handling complex nested structures
     const nestedBracketPattern = '\\[[^\\]]+\\]'

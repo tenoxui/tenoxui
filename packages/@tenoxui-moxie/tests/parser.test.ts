@@ -66,5 +66,14 @@ describe('Parser', () => {
     expect(ui.parse(className, safelist)[3]).toBe('px')
     expect(ui.parse(className, safelist)[4]).toBe('1')
     expect(ui.parse(className, safelist)[5]).toBe('rem')
+    expect(ui.parse('hover:**-10px/30rem', ['**'])[5]).toBe('rem')
+    expect(ui.parse('mad-567px/40rem:.*+?^${}()|[]/--10px/30rem', ['.*+?^${}()|[]/-'])[5]).toBe(
+      'rem'
+    )
+    expect(
+      new Moxie({ prefixChars: ['@'] }).parse('@max-567px/40rem:.*+?^${}()|[]/--10px/30rem', [
+        '.*+?^${}()|[]/-'
+      ])[5]
+    ).toBe('rem')
   })
 })

@@ -1,5 +1,11 @@
 # Changelog
 
+## `v0.6.8` - `2025-05-15`
+
+### Fixed
+
+- The `prefixChars` and `property` keys should be escaped first before included to final `regexp`
+
 ## `v0.6.7` - `2025-05-13`
 
 ### Added
