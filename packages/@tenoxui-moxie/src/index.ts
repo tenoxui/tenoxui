@@ -1,4 +1,4 @@
-import type { Values, Classes, CSSPropertyOrVariable, GetCSSProperty } from '@tenoxui/types'
+import type { Values, Classes, CSSPropertyOrVariable } from '@tenoxui/types'
 import type { Property, Config, Parsed, ProcessedStyle, Results } from './types'
 import { toKebabCase, escapeCSSSelector, constructRaw } from './utils'
 import { regexp, escapeRegex } from './lib/regexp'
@@ -10,12 +10,7 @@ export class TenoxUI {
   private prefixChars: string[]
 
   constructor({ property = {}, values = {}, classes = {}, prefixChars = [] }: Config = {}) {
-    this.property = {
-      // use moxie-* utility to access all properties and variables
-      // e.g. `moxie-(color:red)` => `color: red`, `moxie-(--my-var:20px_1rem)` => `--my-var: 20px 1rem`input
-      moxie: ({ key, secondValue }) => (secondValue ? null : (key as GetCSSProperty)),
-      ...property
-    }
+    this.property = property
     this.values = values
     this.classes = classes
     this.prefixChars = prefixChars.map(escapeRegex)
@@ -108,7 +103,8 @@ export class TenoxUI {
     prefix: string | undefined,
     secondValue: string | undefined = '',
     secondUnit: string | undefined = '',
-    raw?: Parsed
+    className: string = '',
+    raw: Parsed
   ): ProcessedStyle | null {
     const properties = this.property[type]
 
@@ -212,14 +208,14 @@ export class TenoxUI {
           !Array.isArray(property) &&
           'cssRules' in property
         ) {
-          const { className, cssRules, value, prefix = raw[0] } = property
+          const { className: itemClass, cssRules, value, prefix: itemPrefix } = property
 
           return {
-            className: className || raw[6],
+            className: itemClass || className,
             cssRules,
             value,
-            prefix,
-            isCustom: Boolean(className)
+            prefix: itemPrefix || prefix,
+            isCustom: Boolean(itemClass)
           }
         }
 
@@ -352,14 +348,14 @@ export class TenoxUI {
         !Array.isArray(finalRegProperty) &&
         'cssRules' in finalRegProperty
       ) {
-        const { className, cssRules, value, prefix = raw[0] } = finalRegProperty
+        const { className: itemClass, cssRules, value, prefix: itemPrefix } = finalRegProperty
 
         return {
-          className: className || raw[6],
+          className: itemClass || className,
           cssRules,
           value,
-          prefix,
-          isCustom: Boolean(className) // check if the className is present
+          prefix: itemPrefix || prefix,
+          isCustom: Boolean(itemClass)
         }
       }
 
@@ -568,7 +564,16 @@ export class TenoxUI {
 
           // Try shorthand processing
           try {
-            const result = this.processShorthand(type, value!, unit, prefix, secValue, secUnit, raw)
+            const result = this.processShorthand(
+              type,
+              value!,
+              unit,
+              prefix,
+              secValue,
+              secUnit,
+              className,
+              raw
+            )
 
             if (result) {
               const { className, cssRules, value: ruleValue, prefix: rulePrefix, isCustom } = result

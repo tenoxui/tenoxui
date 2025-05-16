@@ -319,7 +319,8 @@ describe('Value Processor', () => {
         p4: {
           property: ({ value, unit, secondValue, key }) =>
             !value || key || secondValue ? null : 'padding: ' + value + (unit || 'px')
-        }
+        },
+        moxie: ({ key, secondValue }) => (secondValue ? null : key)
       }
     })
 

@@ -1,5 +1,19 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- User can return direct data as `ProcessedStyle` from the shorthand
+
+### Changed
+
+- Refactor some utility functions
+
+### **Removed**
+
+- Default `moxie-*` utility
+
 ## `v0.6.8` - `2025-05-15`
 
 ### Fixed
