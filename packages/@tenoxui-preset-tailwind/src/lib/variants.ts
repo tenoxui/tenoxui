@@ -49,43 +49,6 @@ const supportCustom: Record<string, string> = {
   open: '&:is([open], :popover-open, :open)' //*
 }
 
-export const variants: Record<string, string> = {
-  dark: '@media (prefers-color-scheme: dark)',
-  light: '@media (prefers-color-scheme: light)',
-
-  // pseudo-element
-  before: '&::before',
-  after: '&::after',
-  'first-letter': '&::first-letter',
-  'first-line': '&::first-line',
-  marker: '&::marker, & *::marker',
-  selection: '&::selection',
-  file: '&::file-selector-button',
-  backdrop: '&::backdrop',
-  placeholder: '&::placeholder',
-
-  // media queries
-  'motion-safe': '@media (prefers-reduced-motion: no-preference)',
-  'motion-reduce': '@media (prefers-reduced-motion: reduce)',
-  'contrast-more': '@media (prefers-contrast: more)',
-  'contrast-less': '@media (prefers-contrast: less)',
-  'forced-colors': '@media (forced-colors: active)',
-  'inverted-colors': '@media (inverted-colors: inverted)',
-  'pointer-fine': '@media (pointer: fine)',
-  'pointer-coarse': '@media (pointer: coarse)',
-  'pointer-none': '@media (pointer: none)',
-  'any-pointer-fine': '@media (any-pointer: fine)',
-  'any-pointer-coarse': '@media (any-pointer: coarse)',
-  'any-pointer-none': '@media (any-pointer: none)',
-  portrait: '@media (orientation: portrait)',
-  landscape: '@media (orientation: landscape)',
-  noscript: '@media (scripting: none)',
-  print: '@media print',
-
-  // pseudo-classes
-  ...supportCustom
-}
-
 export const customVariants: Property = {
   supports: ({ key, value }) => (!value ? null : `value:@supports (${key}: ${value})`),
   'not-supports': ({ key, value }) => (!value ? null : `value:@supports not (${key}: ${value})`),
@@ -96,11 +59,11 @@ export const customVariants: Property = {
     !value || key ? null : `value:&:nth-last-of-type(${value})`,
   min: ({ key, value, unit }) => (!value || key ? null : `value:@media (width >= ${value}${unit})`),
   max: ({ key, value, unit }) => (!value || key ? null : `value:@media (width < ${value}${unit})`),
-  'at-min': ({ key, value, unit }) =>
+  '@min': ({ key, value, unit }) =>
     !value || key
       ? null
       : `value:@container (width >= ${continerBreakpoints[value + unit] || value + unit})`,
-  'at-max': ({ key, value, unit }) =>
+  '@max': ({ key, value, unit }) =>
     !value || key
       ? null
       : `value:@container (width < ${continerBreakpoints[value + unit] || value + unit})`,
@@ -147,9 +110,44 @@ export const customVariants: Property = {
         } ~ *)`
 }
 
-/**
- * List of unavailable variants
- * `*` - selecting only direct children within the selector
- * `**` - selecting all children within the selector no matter how deep nested the elements are
- * `@*` - all
- */
+export const variants: Record<string, string> = {
+  dark: 'value:@media (prefers-color-scheme: dark)',
+  light: 'value:@media (prefers-color-scheme: light)',
+
+  '*': ':is(& > *)',
+  '**': ':is(& *)',
+
+  // pseudo-element
+  before: '&::before',
+  after: '&::after',
+  'first-letter': '&::first-letter',
+  'first-line': '&::first-line',
+  marker: '&::marker, & *::marker',
+  selection: '&::selection',
+  file: '&::file-selector-button',
+  backdrop: '&::backdrop',
+  placeholder: '&::placeholder',
+
+  // media queries
+  'motion-safe': '@media (prefers-reduced-motion: no-preference)',
+  'motion-reduce': '@media (prefers-reduced-motion: reduce)',
+  'contrast-more': '@media (prefers-contrast: more)',
+  'contrast-less': '@media (prefers-contrast: less)',
+  'forced-colors': '@media (forced-colors: active)',
+  'inverted-colors': '@media (inverted-colors: inverted)',
+  'pointer-fine': '@media (pointer: fine)',
+  'pointer-coarse': '@media (pointer: coarse)',
+  'pointer-none': '@media (pointer: none)',
+  'any-pointer-fine': '@media (any-pointer: fine)',
+  'any-pointer-coarse': '@media (any-pointer: coarse)',
+  'any-pointer-none': '@media (any-pointer: none)',
+  portrait: '@media (orientation: portrait)',
+  landscape: '@media (orientation: landscape)',
+  noscript: '@media (scripting: none)',
+  print: '@media print',
+
+  // pseudo-classes
+  ...supportCustom,
+  // functional variants
+  ...customVariants
+}
