@@ -6,17 +6,17 @@ import { is } from 'cssrxp'
 
 export const interactivity = (sizing: number = 0.25): Property => ({
   accent: ({ key = '', value = '', unit = '', secondValue = '', secondUnit = '' }) =>
-    !value || key || secondUnit || !is.color.test(value)
+    !value || key || secondUnit || (!is.color.test(value) && value !== 'current')
       ? null
-      : createColorType('accentColor', value, secondUnit),
+      : createColorType('accentColor', value, secondValue),
   appearance: {
     property: 'appearance',
     value: ['none', 'auto']
   },
   caret: ({ key = '', value = '', unit = '', secondValue = '', secondUnit = '' }) =>
-    !value || key || secondUnit || !is.color.test(value)
+    !value || key || secondUnit || (!is.color.test(value) && value !== 'current')
       ? null
-      : createColorType('caretColor', value, secondUnit),
+      : createColorType('caretColor', value, secondValue),
   scheme: ({ key = '', value = '', unit = '', secondValue = '', secondUnit = '', raw }) => {
     if (
       !value ||
@@ -109,15 +109,5 @@ export const interactivity = (sizing: number = 0.25): Property => ({
     property: 'userSelect',
     value: ['all', 'none', 'auto', 'text']
   },
-  'will-change': 'willChange',
-  fill: ({ key = '', value = '', unit = '', secondValue = '', secondUnit = '' }) =>
-    !value || key || secondUnit || !is.color.test(value)
-      ? null
-      : createColorType('fill', value, secondUnit),
-  stroke: ({ key = '', value = '', unit = '', secondValue = '', secondUnit = '' }) =>
-    !value || key || secondUnit
-      ? null
-      : is.color.test(value)
-        ? createColorType('stroke', value, secondUnit)
-        : `value:${toKebab('strokeWidth')}: ${value + unit}`
+  'will-change': 'willChange'
 })

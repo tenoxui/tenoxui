@@ -20,7 +20,12 @@ npm i tenoxui @tenoxui/preset-tailwind
 import { TenoxUI } from 'tenoxui'
 import { preset } from '@tenoxui/preset-tailwind'
 
-const css = new TenoxUI({ ...preset() })
+const css = new TenoxUI(
+  preset({
+    sizing: 0.25,
+    order: false
+  })
+)
 
 console.log(css.render(['bg-red-500', 'mt-4', 'md:p-10']))
 ```

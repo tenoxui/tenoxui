@@ -9,6 +9,8 @@ export const sizing = (sizing: number = 0.25): Property => ({
   pr: createSizingType('paddingRight', sizing),
   py: createSizingType('paddingBlock', sizing),
   px: createSizingType('paddingInline', sizing),
+  ps: createSizingType('paddingInlineStart', sizing),
+  pe: createSizingType('paddingInlineEnd', sizing),
   m: createSizingType('margin', sizing),
   mt: createSizingType('marginTop', sizing),
   ml: createSizingType('marginLeft', sizing),

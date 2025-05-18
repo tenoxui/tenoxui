@@ -1,6 +1,6 @@
 {
   "name": "@tenoxui/preset-tailwind",
-  "version": "1.0.0-alpha.2",
+  "version": "1.0.0-alpha.3",
   "description": "Minimal tailwindcss preset for tenoxui",
   "author": "NOuSantx <nousantx@gmail.com>",
   "license": "MIT",

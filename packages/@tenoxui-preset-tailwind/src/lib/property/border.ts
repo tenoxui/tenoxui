@@ -5,8 +5,8 @@
 
 import { toKebab } from '../../utils/toKebab'
 import { createSizingType, createColorType } from '../../utils/createValue'
-import type { Property } from '@tenoxui/moxie'
-import type { Classes } from '@tenoxui/types'
+import type { Property, PropertyParamValue } from '@tenoxui/moxie'
+import type { Classes, CSSPropertyOrVariable } from '@tenoxui/types'
 import { is } from 'cssrxp'
 
 const roundedValues: Record<string, string> = {
@@ -20,6 +20,23 @@ const roundedValues: Record<string, string> = {
   '2xl': '1rem',
   '3xl': '1.5rem',
   '4xl': '2rem'
+}
+
+function createBorder(base: string = 'border'): PropertyParamValue {
+  return ({ key = '', value = '', unit = '', secondValue = '', secondUnit = '' }) => {
+    if ((key && !['length'].includes(key)) || secondUnit) return null
+
+    if (!value) return `value:${toKebab(`${base}Width` as CSSPropertyOrVariable)}: 1px`
+    if (key === 'length' || is.number.test(value)) {
+      return secondValue
+        ? null
+        : `value:${toKebab(`${base}Width` as CSSPropertyOrVariable)}: ${value}${unit || 'px'}`
+    }
+    if (is.color.test(value) || value === 'current') {
+      return createColorType(`${base}Color` as CSSPropertyOrVariable, value, secondValue)
+    }
+    return `value:${base}: ${value}`
+  }
 }
 
 export const border: {
@@ -37,107 +54,20 @@ export const border: {
       if (key === 'length' || is.number.test(value)) {
         return secondValue ? null : `value:${toKebab(`${base}Width`)}: ${value}${unit || 'px'}`
       }
-      if (key === 'color' || is.color.test(value)) {
+      if (key === 'color' || is.color.test(value) || value === 'current') {
         return createColorType(`${base}Color`, value, secondValue)
       }
       return `value:${base}: ${value}`
     },
-    'border-x': ({ key = '', value = '', unit = '', secondValue = '', secondUnit = '' }) => {
-      if ((key && !['length'].includes(key)) || secondUnit) return null
-      const base = 'borderInline'
-      if (!value) return `value:${toKebab(`${base}Width`)}: 1px`
-      if (key === 'length' || is.number.test(value)) {
-        return secondValue ? null : `value:${toKebab(`${base}Width`)}: ${value}${unit || 'px'}`
-      }
-      if (is.color.test(value)) {
-        return createColorType(`${base}Color`, value, secondValue)
-      }
-      return `value:${base}: ${value}`
-    },
-    'border-y': ({ key = '', value = '', unit = '', secondValue = '', secondUnit = '' }) => {
-      if ((key && !['length'].includes(key)) || secondUnit) return null
-      const base = 'borderBlock'
-      if (!value) return `value:${toKebab(`${base}Width`)}: 1px`
-      if (key === 'length' || is.number.test(value)) {
-        return secondValue ? null : `value:${toKebab(`${base}Width`)}: ${value}${unit || 'px'}`
-      }
-      if (is.color.test(value)) {
-        return createColorType(`${base}Color`, value, secondValue)
-      }
-      return `value:${base}: ${value}`
-    },
-    'border-s': ({ key = '', value = '', unit = '', secondValue = '', secondUnit = '' }) => {
-      if ((key && !['length'].includes(key)) || secondUnit) return null
-      const base = 'borderInlineStart'
-      if (!value) return `value:${toKebab(`${base}Width`)}: 1px`
-      if (key === 'length' || is.number.test(value)) {
-        return secondValue ? null : `value:${toKebab(`${base}Width`)}: ${value}${unit || 'px'}`
-      }
-      if (is.color.test(value)) {
-        return createColorType(`${base}Color`, value, secondValue)
-      }
-      return `value:${base}: ${value}`
-    },
-    'border-e': ({ key = '', value = '', unit = '', secondValue = '', secondUnit = '' }) => {
-      if ((key && !['length'].includes(key)) || secondUnit) return null
-      const base = 'borderInlineEnd'
-      if (!value) return `value:${toKebab(`${base}Width`)}: 1px`
-      if (key === 'length' || is.number.test(value)) {
-        return secondValue ? null : `value:${toKebab(`${base}Width`)}: ${value}${unit || 'px'}`
-      }
-      if (is.color.test(value)) {
-        return createColorType(`${base}Color`, value, secondValue)
-      }
-      return `value:${base}: ${value}`
-    },
-    'border-t': ({ key = '', value = '', unit = '', secondValue = '', secondUnit = '' }) => {
-      if ((key && !['length'].includes(key)) || secondUnit) return null
-      const base = 'borderTop'
-      if (!value) return `value:${toKebab(`${base}Width`)}: 1px`
-      if (key === 'length' || is.number.test(value)) {
-        return secondValue ? null : `value:${toKebab(`${base}Width`)}: ${value}${unit || 'px'}`
-      }
-      if (is.color.test(value)) {
-        return createColorType(`${base}Color`, value, secondValue)
-      }
-      return `value:${base}: ${value}`
-    },
-    'border-l': ({ key = '', value = '', unit = '', secondValue = '', secondUnit = '' }) => {
-      if ((key && !['length'].includes(key)) || secondUnit) return null
-      const base = 'borderLeft'
-      if (!value) return `value:${toKebab(`${base}Width`)}: 1px`
-      if (key === 'length' || is.number.test(value)) {
-        return secondValue ? null : `value:${toKebab(`${base}Width`)}: ${value}${unit || 'px'}`
-      }
-      if (is.color.test(value)) {
-        return createColorType(`${base}Color`, value, secondValue)
-      }
-      return `value:${base}: ${value}`
-    },
-    'border-b': ({ key = '', value = '', unit = '', secondValue = '', secondUnit = '' }) => {
-      if ((key && !['length'].includes(key)) || secondUnit) return null
-      const base = 'borderBottom'
-      if (!value) return `value:${toKebab(`${base}Width`)}: 1px`
-      if (key === 'length' || is.number.test(value)) {
-        return secondValue ? null : `value:${toKebab(`${base}Width`)}: ${value}${unit || 'px'}`
-      }
-      if (is.color.test(value)) {
-        return createColorType(`${base}Color`, value, secondValue)
-      }
-      return `value:${base}: ${value}`
-    },
-    'border-r': ({ key = '', value = '', unit = '', secondValue = '', secondUnit = '' }) => {
-      if ((key && !['length'].includes(key)) || secondUnit) return null
-      const base = 'borderRight'
-      if (!value) return `value:${toKebab(`${base}Width`)}: 1px`
-      if (key === 'length' || is.number.test(value)) {
-        return secondValue ? null : `value:${toKebab(`${base}Width`)}: ${value}${unit || 'px'}`
-      }
-      if (is.color.test(value)) {
-        return createColorType(`${base}Color`, value, secondValue)
-      }
-      return `value:${base}: ${value}`
-    },
+    'border-x': createBorder('borderInline'),
+    'border-y': createBorder('borderBlock'),
+    'border-s': createBorder('borderInlineStart'),
+    'border-e': createBorder('borderInlineEnd'),
+    'border-t': createBorder('borderTop'),
+    'border-r': createBorder('borderRight'),
+    'border-b': createBorder('borderBottom'),
+    'border-l': createBorder('borderLeft'),
+
     rounded: createSizingType('borderRadius', sizing, false, false, false, roundedValues),
     'rounded-ss': createSizingType(
       'borderStartStartRadius',
@@ -265,7 +195,7 @@ export const border: {
       if (key === 'length' || is.number.test(value)) {
         return secondValue ? null : `value:${toKebab(`${base}Width`)}: ${value}${unit || 'px'}`
       }
-      if (is.color.test(value)) {
+      if (is.color.test(value) || value === 'current') {
         return createColorType(`${base}Color`, value, secondValue)
       }
       return `value:${base}: ${value}`
@@ -279,10 +209,6 @@ export const border: {
 
       return `value:${toKebab(`outlineOffset`)}: ${value}${unit}`
     },
-    /**
-     * Using divide-* utility
-     *
-     */
     'divide-x': ({ value, unit, key, secondValue, raw }) => {
       if (key || (secondValue && secondValue !== 'reverse')) return null
       const className = `${(raw as string[])[6]} > :not(:last-child)`
@@ -307,11 +233,21 @@ ${toKebab('borderBottomWidth')}: ${!secondValue ? finalValue : '0px'};`,
         value: null
       }
     },
+    /**
+     * Using divide-* utility to set border-style and border-color properties for dividers
+     */
     divide: ({ key = '', value = '', unit = '', secondValue = '', secondUnit = '', raw }) => {
-      if (!value || key || secondUnit || !is.color.test(value)) return null
+      if (!value || key || secondUnit) return null
+
       return {
         className: `${(raw as string[])[6]} > :not(:last-child)`,
-        cssRules: createColorType('borderColor', value, secondUnit).slice(6),
+        cssRules: ['solid', 'dashed', 'dotted', 'double', 'hidden', 'none'].includes(value)
+          ? secondValue
+            ? null
+            : `${toKebab('borderStyle')}: ${value}`
+          : is.color.test(value) || value === 'current'
+            ? createColorType('borderColor', value, secondValue).slice(6)
+            : null,
         value: null
       }
     }

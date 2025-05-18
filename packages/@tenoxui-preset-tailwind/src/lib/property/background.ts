@@ -189,7 +189,7 @@ export const background: {
       if (is.number.test(value))
         return `value:--tw-gradient-from-position: ${value + (unit || '%')}`
 
-      if (is.color.test(value))
+      if (is.color.test(value) || value === 'current')
         return secondUnit
           ? null
           : `${createColorType(
@@ -205,7 +205,7 @@ export const background: {
 
       if (is.number.test(value)) return `value:--tw-gradient-via-position: ${value + (unit || '%')}`
 
-      if (is.color.test(value))
+      if (is.color.test(value) || value === 'current')
         return secondUnit
           ? null
           : `${createColorType(
@@ -221,7 +221,7 @@ export const background: {
 
       if (is.number.test(value)) return `value:--tw-gradient-to-position: ${value + (unit || '%')}`
 
-      if (is.color.test(value))
+      if (is.color.test(value) || value === 'current')
         return secondUnit
           ? null
           : `${createColorType(

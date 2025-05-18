@@ -50,57 +50,78 @@ const supportCustom: Record<string, string> = {
 }
 
 export const customVariants: Property = {
-  supports: ({ key, value }) => (!value ? null : `value:@supports (${key}: ${value})`),
-  'not-supports': ({ key, value }) => (!value ? null : `value:@supports not (${key}: ${value})`),
-  nth: ({ key, value }) => (!value || key ? null : `value:&:nth-child(${value})`),
-  'nth-last': ({ key, value }) => (!value || key ? null : `value:&:nth-last-child(${value})`),
-  'nth-of-type': ({ key, value }) => (!value || key ? null : `value:&:nth-of-type(${value})`),
-  'nth-last-of-type': ({ key, value }) =>
-    !value || key ? null : `value:&:nth-last-of-type(${value})`,
-  min: ({ key, value, unit }) => (!value || key ? null : `value:@media (width >= ${value}${unit})`),
-  max: ({ key, value, unit }) => (!value || key ? null : `value:@media (width < ${value}${unit})`),
-  '@min': ({ key, value, unit }) =>
-    !value || key
+  supports: ({ key, value, secondValue }) =>
+    !value || secondValue ? null : `value:@supports (${key}: ${value})`,
+
+  'not-supports': ({ key, value, secondValue }) =>
+    !value || secondValue ? null : `value:@supports not (${key}: ${value})`,
+
+  nth: ({ key, value, secondValue }) =>
+    !value || key || secondValue ? null : `value:&:nth-child(${value})`,
+
+  'nth-last': ({ key, value, secondValue }) =>
+    !value || key || secondValue ? null : `value:&:nth-last-child(${value})`,
+
+  'nth-of-type': ({ key, value, secondValue }) =>
+    !value || key || secondValue ? null : `value:&:nth-of-type(${value})`,
+
+  'nth-last-of-type': ({ key, value, secondValue }) =>
+    !value || key || secondValue ? null : `value:&:nth-last-of-type(${value})`,
+
+  min: ({ key, value, unit, secondValue }) =>
+    !value || key || secondValue ? null : `value:@media (width >= ${value}${unit})`,
+
+  max: ({ key, value, unit, secondValue }) =>
+    !value || key || secondValue ? null : `value:@media (width < ${value}${unit})`,
+
+  '@min': ({ key, value, unit, secondValue }) =>
+    !value || key || secondValue
       ? null
       : `value:@container (width >= ${continerBreakpoints[value + unit] || value + unit})`,
-  '@max': ({ key, value, unit }) =>
-    !value || key
+
+  '@max': ({ key, value, unit, secondValue }) =>
+    !value || key || secondValue
       ? null
       : `value:@container (width < ${continerBreakpoints[value + unit] || value + unit})`,
-  has: ({ key, value }) =>
-    !value || key
+
+  has: ({ key, value, secondValue }) =>
+    !value || key || secondValue
       ? null
       : `value:&:has(${
           Object.keys(supportCustom).includes(value)
             ? supportCustom[value].replace('&', '*')
             : `:is(${value})`
         })`,
-  in: ({ key, value }) =>
-    !value || key
+
+  in: ({ key, value, secondValue }) =>
+    !value || key || secondValue
       ? null
       : `value::where(${
           Object.keys(supportCustom).includes(value)
             ? supportCustom[value].replace('&', '*')
             : `:is(${value})`
         }) &`,
-  not: ({ key, value }) =>
-    !value || key
+
+  not: ({ key, value, secondValue }) =>
+    !value || key || secondValue
       ? null
       : `value:&:not(${
           Object.keys(supportCustom).includes(value)
             ? supportCustom[value].replace('&', '*')
             : `:is(${value})`
         })`,
-  group: ({ key, value }) =>
-    !value || key
+
+  group: ({ key, value, secondValue }) =>
+    !value || key || secondValue
       ? null
       : `value:&:is(:where(.group)${
           Object.keys(supportCustom).includes(value)
             ? supportCustom[value].replace('&', '')
             : `:is(${value})`
         } *)`,
-  peer: ({ key, value }) =>
-    !value || key
+
+  peer: ({ key, value, secondValue }) =>
+    !value || key || secondValue
       ? null
       : `value:&:is(:where(.peer)${
           Object.keys(supportCustom).includes(value)

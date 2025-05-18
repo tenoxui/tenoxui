@@ -9,6 +9,8 @@ export const values: Values = {
   max: 'max-content',
   fit: 'fit-content',
   fr: 'minmax(0, 1fr)',
+  vh: '100vh',
+  vw: '100vw',
   dvw: '100dvw',
   dvh: '100dvh',
   lvw: '100lvw',

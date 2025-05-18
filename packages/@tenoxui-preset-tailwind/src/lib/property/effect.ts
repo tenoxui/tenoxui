@@ -176,10 +176,7 @@ export const effect: {
         ? null
         : `value:${toKebab('maskOrigin')} ${value}-box`,
     mask: ({ key = '', value = '', secondValue = '', raw }) => {
-      if (key || secondValue) return null
-
-      if (['add', 'substract', 'intersect', 'exclude'].includes(value))
-        return `value:${toKebab('maskComposite')}: ${value}`
+      if (!value || key || secondValue) return null
 
       if (
         [
@@ -195,6 +192,9 @@ export const effect: {
       )
         return `value:${toKebab('maskPosition')}: ${value}`
 
+      if (['add', 'substract', 'intersect', 'exclude'].includes(value))
+        return `value:${toKebab('maskComposite')}: ${value}`
+
       if (
         ['repeat', 'repeat-x', 'repeat-y', 'no-repeat', 'repeat-space', 'repeat-round'].includes(
           value
@@ -209,10 +209,9 @@ export const effect: {
       if (['cover', 'auto', 'contain'].includes(value))
         return `value:${toKebab('maskSize')}: ${value}`
 
-      /* mask-image logic later 🗿 */
-
-      return null
+      return `value:${toKebab('maskImage')}: ${value}`
     },
+    /* mask-image logic later 🗿 */
     'mask-position': 'maskPosition',
     'mask-size': 'maskSize',
     'mask-type': {

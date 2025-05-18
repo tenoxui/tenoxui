@@ -1,5 +1,20 @@
 # Changelog
 
+## `v1.0.0-alpha.3` - `2025-05-18`
+
+### Added
+
+- Class names order from tailwindcss to give the right order of generated CSS
+- `order` option in `preset` to enable typeOrder, default `false`
+- `border-style` in `divide-*` utility
+- `ps-*` and `pe-*` utilities
+- `vh` and `vw` value aliases for `100vh` and `100vw`
+
+### Fixed
+
+- Most of colored type doesn't support `current` as value
+- Some colored type uses `secondUnit` instead of `secondValue` as included parameter
+
 ## `v1.0.0-alpha.2` - `2025-05-18`
 
 ### Added

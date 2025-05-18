@@ -14,6 +14,7 @@ import { svg } from './lib/property/svg'
 import { accessibility } from './lib/property/accessibility'
 import { values } from './lib/values'
 import { variants } from './lib/variants'
+import { typeOrder } from './lib/typeOrder'
 import type { Config, Property } from 'tenoxui'
 import type { Classes } from '@tenoxui/types'
 
@@ -50,13 +51,14 @@ const breakpoints: { [bp: string]: string } = {
   '2xl': '96rem'
 }
 
-export const preset = ({ sizing = 0.25 } = {}): Partial<Config> => ({
+export const preset = ({ sizing = 0.25, order = true } = {}): Partial<Config> => ({
   variants,
   property: property(sizing),
   values,
   classes,
   breakpoints,
-  reservedVariantChars: ['@', '*']
+  reservedVariantChars: ['@', '*'],
+  typeOrder: order ? typeOrder : []
 })
 
 export { preflight } from './styles/preflight'
@@ -64,4 +66,5 @@ export { properties as defaultProperties } from './styles/properties'
 export { property, classes, breakpoints }
 export { values } from './lib/values'
 export { variants } from './lib/variants'
+export { typeOrder } from './lib/typeOrder'
 export default preset
