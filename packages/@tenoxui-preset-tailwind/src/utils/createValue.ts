@@ -15,14 +15,6 @@ export function createColorType(
     : `value:${finalProp}: ${finalValue};`
 }
 
-export function createColorTypew(value: string, secondValue?: string) {
-  return ['inherit', 'current', 'black', 'white', 'transparent'].includes(value)
-    ? value.replace('current', 'currentColor')
-    : value.includes('(') && value.endsWith(')')
-      ? `${value.slice(0, -1)}${secondValue ? ' / ' + secondValue + '%)' : ')'}`
-      : value + secondValue
-}
-
 export function processValue(value: string, unit: string, sizing: number = 0.25) {
   let finalValue = is.length.test(value) ? value : value + unit
   if (is.number.test(value + unit) && value + unit !== '0')
@@ -43,8 +35,9 @@ export function createSizingType(
 
     const [, , inVal, inUn] = raw as string[]
 
-    const finalValue =
-      values[value + unit] || values[inVal + inUn] || processValue(value, unit, sizing)
+    const finalValue = inVal.startsWith('[')
+      ? value
+      : values[value + unit] || values[inVal + inUn] || processValue(value, unit, sizing)
 
     if (allowSecondValue && secondValue) {
       const finalSecondValue = processValue(secondValue, secondUnit, sizing)

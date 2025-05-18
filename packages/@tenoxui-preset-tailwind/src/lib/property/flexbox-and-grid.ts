@@ -62,12 +62,7 @@ export const flexAndGrid = {
     /* Grid Utilities */
     /* Grid Columns */
     'grid-cols': ({ value = '', unit = '', secondValue = '', key = '' }) => {
-      if (
-        key ||
-        secondValue ||
-        (!is.number.test(value + unit) && !['subgrid', 'none'].includes(value))
-      )
-        return null
+      if (key || secondValue) return null
 
       let finalValue = value + unit
 
@@ -95,12 +90,7 @@ export const flexAndGrid = {
 
     /* Grid Rows */
     'grid-rows': ({ value = '', unit = '', secondValue = '', key = '' }) => {
-      if (
-        key ||
-        secondValue ||
-        (!is.number.test(value + unit) && !['subgrid', 'none'].includes(value))
-      )
-        return null
+      if (key || secondValue) return null
       let finalValue = value + unit
       if (is.number.test(value + unit)) finalValue = `repeat(${value}, minmax(0, 1fr))`
       return `value:${toKebab('gridTemplateRows')}: ${finalValue}`

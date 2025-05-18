@@ -31,7 +31,9 @@ export const background: {
     'bg-position': 'backgroundPosition',
     'bg-size': 'backgroundSize',
     bg: ({ key = '', value = '', unit = '', secondUnit = '', secondValue = '', raw }) => {
-      if (!value || (key && !['image'].includes(key))) return null
+      if (!value || (key && !['image', 'size'].includes(key))) return null
+
+      if (key === 'size') return secondValue ? null : `value:${toKebab('backgroundSize')}: ${value}`
 
       if (key === 'image' || value.startsWith('url('))
         return secondValue ? null : `value:${toKebab('backgroundImage')}: ${value}`

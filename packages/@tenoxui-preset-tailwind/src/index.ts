@@ -15,6 +15,9 @@ import { accessibility } from './lib/property/accessibility'
 import { values } from './lib/values'
 import { variants } from './lib/variants'
 import { typeOrder } from './lib/typeOrder'
+import { createColorType, processValue } from './utils/createValue'
+import { is } from 'cssrxp'
+import type { CSSPropertyOrVariable } from '@tenoxui/types'
 import type { Config, Property } from 'tenoxui'
 import type { Classes } from '@tenoxui/types'
 
@@ -32,7 +35,19 @@ const property = (sizing: number = 0.25): Property => ({
   ...transform(sizing),
   ...interactivity(sizing),
   ...svg,
-  ...accessibility
+  ...accessibility,
+  _size: ({ key = '', value = '', unit = '', secondValue = '', raw }) =>
+    !value || secondValue
+      ? null
+      : `value:${key || '--tw-size-f-type'}: ${
+          (raw as string[])[2].startsWith('[') ? value : processValue(value, unit, sizing)
+        }`,
+  _color: ({ key = '', value = '', secondValue = '', secondUnit = '' }) =>
+    !value || secondUnit || (!is.color.test(value) && value !== 'current')
+      ? null
+      : createColorType((key || '--tw-color-f-type') as CSSPropertyOrVariable, value, secondValue),
+  _all: ({ key = '', value = '', unit = '', secondValue = '' }) =>
+    !value || secondValue ? null : `value:${key || '--tw-f-type'}: ${value + unit}`
 })
 
 const classes: Classes = {

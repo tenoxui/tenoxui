@@ -1,5 +1,5 @@
 import { toKebab } from '../../utils/toKebab'
-import { createSizingType, createColorType } from '../../utils/createValue'
+import { createSizingType, createColorType, processValue } from '../../utils/createValue'
 import type { Property } from '@tenoxui/moxie'
 import type { Classes, CSSProperty } from '@tenoxui/types'
 import { createSameValue, transformClasses } from '@nousantx/someutils'
@@ -20,7 +20,7 @@ export const typography: {
     }
 
     return {
-      text: ({ key = '', value = '', unit = '', secondValue = '', secondUnit = '' }) => {
+      text: ({ key = '', value = '', unit = '', secondValue = '', secondUnit = '', raw }) => {
         if (!value || (key && !['length', 'color'].includes(key))) return null
         type SizesType = Record<string, string[]>
 
@@ -67,8 +67,15 @@ export const typography: {
             const sizeKey = (value + unit) as keyof SizesType
 
             const [fontSize, lineHeight] = sizes[sizeKey]
+
             return `value:${toKebab('fontSize')}: ${fontSize}; ${toKebab('lineHeight')}: ${
-              lineHeightAlias[secondValue] || secondValue + secondUnit || lineHeight
+              lineHeightAlias[secondValue] ||
+              ((raw as string[])[4].startsWith('[') || (raw as string[])[4].startsWith('(')
+                ? secondValue
+                : is.number.test(secondValue + secondUnit)
+                  ? processValue(secondValue, secondUnit, sizing)
+                  : secondValue + secondUnit) ||
+              lineHeight
             }`
           }
           return `value:${toKebab('fontSize')}: ${
@@ -177,11 +184,26 @@ export const typography: {
           ? null
           : createColorType('textDecorationColor', value, secondValue)
       },
-      'underline-offset': 'textUnderlineOffset',
-      leading: ({ key = '', value = '', unit = '', secondValue = '' }) => {
+      'underline-offset': {
+        property: 'textUnderlineOffset',
+        value: ({ value = '', unit = '', key = '', secondValue = '' }) => {
+          if (key || secondValue) return null
+
+          return is.number.test(value + unit) ? value + (unit || 'px') : value + unit
+        }
+      },
+      leading: ({ key = '', value = '', unit = '', secondValue = '', raw }) => {
         if (key || secondValue) return null
 
-        return `value:${toKebab('lineHeight')}: ${lineHeightAlias[value + unit] || value + unit}`
+        return `value:${toKebab('lineHeight')}: ${
+          lineHeightAlias[value] ||
+          (raw as string[])[2].startsWith('[') ||
+          (raw as string[])[2].startsWith('(')
+            ? value
+            : is.number.test(value + unit)
+              ? processValue(value, unit, sizing)
+              : value + unit
+        }`
       },
       indent: createSizingType('textIndent', sizing),
       align: ({ key = '', value = '', unit = '', secondValue = '' }) => {

@@ -24,18 +24,19 @@ const roundedValues: Record<string, string> = {
 
 function createBorder(base: string = 'border'): PropertyParamValue {
   return ({ key = '', value = '', unit = '', secondValue = '', secondUnit = '' }) => {
-    if ((key && !['length'].includes(key)) || secondUnit) return null
+    if ((key && !['length', 'color'].includes(key)) || secondUnit) return null
 
-    if (!value) return `value:${toKebab(`${base}Width` as CSSPropertyOrVariable)}: 1px`
+    if (is.length.test(value))
+      return `value:${toKebab(`${base}Width` as CSSPropertyOrVariable)}: ${value}`
     if (key === 'length' || is.number.test(value)) {
       return secondValue
         ? null
         : `value:${toKebab(`${base}Width` as CSSPropertyOrVariable)}: ${value}${unit || 'px'}`
     }
-    if (is.color.test(value) || value === 'current') {
+    if (key === 'color' || is.color.test(value) || value === 'current') {
       return createColorType(`${base}Color` as CSSPropertyOrVariable, value, secondValue)
     }
-    return `value:${base}: ${value}`
+    return `value:${toKebab(base as CSSPropertyOrVariable)}: ${value}`
   }
 }
 
@@ -44,10 +45,35 @@ export const border: {
   classes?: Classes
 } = {
   property: (sizing: number = 0.25): Property => ({
+    'border-x': createBorder('borderInline'),
+    'border-y': createBorder('borderBlock'),
+    'border-s': createBorder('borderInlineStart'),
+    'border-e': createBorder('borderInlineEnd'),
+    'border-t': createBorder('borderTop'),
+    'border-r': createBorder('borderRight'),
+    'border-b': createBorder('borderBottom'),
+    'border-l': createBorder('borderLeft'),
     border: ({ key = '', value = '', unit = '', secondValue = '', secondUnit = '' }) => {
       if ((key && !['length', 'color'].includes(key)) || secondUnit) return null
+
       const base = 'border'
+
       if (!value) return `value:${toKebab(`${base}Width`)}: 1px`
+
+      if (['x', 'y', 's', 'e', 't', 'r', 'b', 'l'].includes(value) && !secondValue) {
+        const keys: Record<string, string> = {
+          x: 'borderInline',
+          y: 'borderBlock',
+          s: 'borderInlineStart',
+          e: 'borderInlineEnd',
+          t: 'borderInlineTop',
+          r: 'borderInlineRight',
+          b: 'borderInlineBottom',
+          l: 'borderInlineLeft'
+        }
+
+        return `value:${toKebab(`${keys[value]}Width` as CSSPropertyOrVariable)}: 1px`
+      }
       if (['solid', 'dashed', 'dotted', 'double', 'hidden', 'none'].includes(value)) {
         return secondValue ? null : `value:${toKebab(`${base}Style`)}: ${value}`
       }
@@ -59,14 +85,6 @@ export const border: {
       }
       return `value:${base}: ${value}`
     },
-    'border-x': createBorder('borderInline'),
-    'border-y': createBorder('borderBlock'),
-    'border-s': createBorder('borderInlineStart'),
-    'border-e': createBorder('borderInlineEnd'),
-    'border-t': createBorder('borderTop'),
-    'border-r': createBorder('borderRight'),
-    'border-b': createBorder('borderBottom'),
-    'border-l': createBorder('borderLeft'),
 
     rounded: createSizingType('borderRadius', sizing, false, false, false, roundedValues),
     'rounded-ss': createSizingType(
