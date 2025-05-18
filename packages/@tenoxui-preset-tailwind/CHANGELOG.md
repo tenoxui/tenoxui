@@ -1,5 +1,22 @@
 # Changelog
 
+## `v1.0.0-alpha.2` - `2025-05-18`
+
+### Added
+
+- Add reserved `reservedVariantChars` related to tailwindcss variants
+- `*` and `**` variants
+- New utilities: `space-x-*`, `space-y-*`, `divide-x-*`, `divide-y-*`, `divide-*`, `bg-radial-*`, and `bg-conic-*`
+
+### Changed
+
+- Merging `customVariants` with default `variants`
+- Update `variants` name, such as `at-max` => `@max`
+
+### Fixed
+
+- Forgot to include `gradient`-related variables
+
 ## `v1.0.0-alpha.1` - `2025-05-11`
 
 ### Added

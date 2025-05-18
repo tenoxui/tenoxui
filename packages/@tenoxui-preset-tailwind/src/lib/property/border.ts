@@ -278,6 +278,42 @@ export const border: {
       }
 
       return `value:${toKebab(`outlineOffset`)}: ${value}${unit}`
+    },
+    /**
+     * Using divide-* utility
+     *
+     */
+    'divide-x': ({ value, unit, key, secondValue, raw }) => {
+      if (key || (secondValue && secondValue !== 'reverse')) return null
+      const className = `${(raw as string[])[6]} > :not(:last-child)`
+      const finalValue = !value ? '1px' : is.length.test(value) ? value : value + (unit || 'px')
+
+      return {
+        className,
+        cssRules: `${toKebab('borderInlineStartWidth')}: ${secondValue ? finalValue : '0px'};
+${toKebab('borderInlineEndWidth')}: ${!secondValue ? finalValue : '0px'};`,
+        value: null
+      }
+    },
+    'divide-y': ({ value, unit, key, secondValue, raw }) => {
+      if (key || (secondValue && secondValue !== 'reverse')) return null
+      const className = `${(raw as string[])[6]} > :not(:last-child)`
+      const finalValue = !value ? '1px' : is.length.test(value) ? value : value + (unit || 'px')
+
+      return {
+        className,
+        cssRules: `${toKebab('borderTopWidth')}: ${secondValue ? finalValue : '0px'};
+${toKebab('borderBottomWidth')}: ${!secondValue ? finalValue : '0px'};`,
+        value: null
+      }
+    },
+    divide: ({ key = '', value = '', unit = '', secondValue = '', secondUnit = '', raw }) => {
+      if (!value || key || secondUnit || !is.color.test(value)) return null
+      return {
+        className: `${(raw as string[])[6]} > :not(:last-child)`,
+        cssRules: createColorType('borderColor', value, secondUnit).slice(6),
+        value: null
+      }
     }
   })
 }

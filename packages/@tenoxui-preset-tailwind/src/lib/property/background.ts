@@ -36,6 +36,32 @@ export const background: {
       if (key === 'image' || value.startsWith('url('))
         return secondValue ? null : `value:${toKebab('backgroundImage')}: ${value}`
 
+      if (value === 'radial' || value === 'conic') {
+        if (
+          key ||
+          (secondValue &&
+            ![
+              'srgb',
+              'hsl',
+              'oklab',
+              'oklch',
+              'longer',
+              'shorter',
+              'increasing',
+              'decreasing'
+            ].includes(secondValue))
+        )
+          return null
+
+        return `value:--tw-gradient-position: in ${
+          secondValue
+            ? ['srgb', 'hsl', 'oklab', 'oklch'].includes(secondValue)
+              ? secondValue
+              : `oklch ${secondValue} hue`
+            : 'oklab'
+        }; ${toKebab('backgroundImage')}: ${value}-gradient(var(--tw-gradient-stops))`
+      }
+
       if (
         [
           'top',
@@ -122,6 +148,40 @@ export const background: {
             : `oklch ${secondValue} hue`
           : 'oklab'
       }; } ${toKebab('backgroundImage')}: linear-gradient(var(--tw-gradient-stops))`
+    },
+    'bg-radial': ({ key = '', value = '', unit = '', secondValue = '' }) => {
+      if (key || secondValue) return null
+
+      return `value:--tw-gradient-position: ${value + unit}; ${toKebab(
+        'backgroundImage'
+      )}: radial-gradient(var(--tw-gradient-stops, ${value + unit}))`
+    },
+    'bg-conic': ({ key = '', value = '', unit = '', secondValue = '' }) => {
+      if (
+        !value ||
+        key ||
+        (secondValue &&
+          ![
+            'srgb',
+            'hsl',
+            'oklab',
+            'oklch',
+            'longer',
+            'shorter',
+            'increasing',
+            'decreasing'
+          ].includes(secondValue)) ||
+        (!is.number.test(value) && !is.angle.test(value + unit))
+      )
+        return null
+
+      return `value:--tw-gradient-position: from ${value + (unit || 'deg')} in ${
+        secondValue
+          ? ['srgb', 'hsl', 'oklab', 'oklch'].includes(secondValue)
+            ? secondValue
+            : `oklch ${secondValue} hue`
+          : 'oklab'
+      }; ${toKebab('backgroundImage')}: conic-gradient(var(--tw-gradient-stops))`
     },
     from: ({ key = '', value = '', unit = '', secondValue = '', secondUnit = '' }) => {
       if (!value || key || (unit && unit !== '%') || secondUnit) return null

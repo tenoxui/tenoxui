@@ -3,7 +3,7 @@ import { values } from './values'
 
 const continerBreakpoints = values['container-size'] as Record<string, string>
 const supportCustom: Record<string, string> = {
-  // 1 ✓
+  // Group 1
   hover: '&:hover',
   focus: '&:focus',
   'focus-within': '&:focus-within',
@@ -12,7 +12,7 @@ const supportCustom: Record<string, string> = {
   visited: '&:visited',
   target: '&:target',
 
-  // 2 ✓
+  // Group 2
   inert: '&:is([inert], [inert] *)',
   first: '&:first-child',
   last: '&:last-child',
@@ -23,30 +23,30 @@ const supportCustom: Record<string, string> = {
   'last-of-type': '&:last-of-type',
   'only-of-type': '&:only-of-type',
 
-  // 3
-  empty: '&:empty', //*
-  disabled: '&:disabled', //*
-  enabled: '&:enabled', //*
-  checked: '&:checked', //*
-  indeterminate: '&:indeterminate', //*
-  default: '&:default', //*
-  optional: '&:optional', //*
-  required: '&:required', //*
-  valid: '&:valid', //*
-  invalid: '&:invalid', //*
-  'user-valid': '&:user-valid', //*
-  'user-invalid': '&:user-invalid', //*
-  'in-range': '&:in-range', //*
-  'out-of-range': '&:out-of-range', //*
-  'placeholder-shown': '&:placeholder-shown', //*
+  // Group 3
+  empty: '&:empty',
+  disabled: '&:disabled',
+  enabled: '&:enabled',
+  checked: '&:checked',
+  indeterminate: '&:indeterminate',
+  default: '&:default',
+  optional: '&:optional',
+  required: '&:required',
+  valid: '&:valid',
+  invalid: '&:invalid',
+  'user-valid': '&:user-valid',
+  'user-invalid': '&:user-invalid',
+  'in-range': '&:in-range',
+  'out-of-range': '&:out-of-range',
+  'placeholder-shown': '&:placeholder-shown',
   'details-content': '&:details-content',
-  autofill: '&:autofill', //*
-  'read-only': '&:read-only', //*
+  autofill: '&:autofill',
+  'read-only': '&:read-only',
 
-  // 4
-  rtl: '&:where(:dir(rtl), [dir="rtl"], [dir="rtl"] *)', //*
-  ltr: '&:where(:dir(ltr), [dir="ltr"], [dir="ltr"] *)', //*
-  open: '&:is([open], :popover-open, :open)' //*
+  // Group 4
+  rtl: '&:where(:dir(rtl), [dir="rtl"], [dir="rtl"] *)',
+  ltr: '&:where(:dir(ltr), [dir="ltr"], [dir="ltr"] *)',
+  open: '&:is([open], :popover-open, :open)'
 }
 
 export const customVariants: Property = {
@@ -67,7 +67,6 @@ export const customVariants: Property = {
     !value || key
       ? null
       : `value:@container (width < ${continerBreakpoints[value + unit] || value + unit})`,
-
   has: ({ key, value }) =>
     !value || key
       ? null
@@ -114,8 +113,8 @@ export const variants: Record<string, string> = {
   dark: 'value:@media (prefers-color-scheme: dark)',
   light: 'value:@media (prefers-color-scheme: light)',
 
-  '*': ':is(& > *)',
-  '**': ':is(& *)',
+  '*': 'value:& > *',
+  '**': 'value:& *',
 
   // pseudo-element
   before: '&::before',
@@ -148,6 +147,6 @@ export const variants: Record<string, string> = {
 
   // pseudo-classes
   ...supportCustom,
-  // functional variants
+  // functional variants / complex variants
   ...customVariants
 }

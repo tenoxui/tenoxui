@@ -1,6 +1,6 @@
 {
   "name": "@tenoxui/preset-tailwind",
-  "version": "1.0.0-alpha.1",
+  "version": "1.0.0-alpha.2",
   "description": "Minimal tailwindcss preset for tenoxui",
   "author": "NOuSantx <nousantx@gmail.com>",
   "license": "MIT",
@@ -48,9 +48,10 @@
   },
   "devDependencies": {
     "@nousantx/someutils": "0.7.1",
-    "@tenoxui/moxie": "^0.6.5",
+    "@tenoxui/core": "^2.0.0",
+    "@tenoxui/moxie": "^0.7.0",
     "cssrxp": "^0.3.0",
-    "tenoxui": "1.0.0-alpha.4",
+    "tenoxui": "1.0.0-pre.0",
     "typescript": "^5.7.3",
     "vite": "^6.2.3",
     "vitest": "^3.0.5"

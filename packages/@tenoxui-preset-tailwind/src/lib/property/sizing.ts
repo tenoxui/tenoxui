@@ -1,11 +1,4 @@
-/**
- * Unavailable utilities
- *
- * space-x-*
- * space-y-*
- */
-
-import { createSizingType } from '../../utils/createValue'
+import { createSizingType, processValue } from '../../utils/createValue'
 import type { Property } from '@tenoxui/moxie'
 
 export const sizing = (sizing: number = 0.25): Property => ({
@@ -44,13 +37,30 @@ export const sizing = (sizing: number = 0.25): Property => ({
     property: createSizingType(['width', 'height'], sizing, false, true, true),
     group: 'container-size'
   },
-  leading: createSizingType('lineHeight', sizing, false, false, false, {
-    none: '1',
-    tight: '1.25',
-    snug: '1.375',
-    normal: '1.5',
-    relaxed: '1.625',
-    loose: '2'
-  }),
-  indent: createSizingType('textIndent', sizing)
+  'space-x': ({ value = '', unit = '', key = '', secondValue = '', raw }) => {
+    if (key || secondValue) return null
+
+    const finalValue = processValue(value, unit, sizing)
+
+    return {
+      className: `${(raw as string[])[6]} > :not(:last-child)`,
+      cssRules: `--tw-space-x-reverse: 0;
+margin-inline-start: calc(${finalValue} * var(--tw-space-x-reverse));
+margin-inline-end: calc(${finalValue} * calc(1 - var(--tw-space-x-reverse)));`,
+      value: null
+    }
+  },
+  'space-y': ({ value = '', unit = '', key = '', secondValue = '', raw }) => {
+    if (!value || key || secondValue) return null
+
+    const finalValue = processValue(value, unit, sizing)
+
+    return {
+      className: `${(raw as string[])[6]} > :not(:last-child)`,
+      cssRules: `--tw-space-y-reverse: 0;
+margin-block-start: calc(${finalValue} * var(--tw-space-y-reverse));
+margin-block-end: calc(${finalValue} * calc(1 - var(--tw-space-y-reverse)));`,
+      value: null
+    }
+  }
 })

@@ -13,7 +13,7 @@ import { interactivity } from './lib/property/interactivity'
 import { svg } from './lib/property/svg'
 import { accessibility } from './lib/property/accessibility'
 import { values } from './lib/values'
-import { variants, customVariants } from './lib/variants'
+import { variants } from './lib/variants'
 import type { Config, Property } from 'tenoxui'
 import type { Classes } from '@tenoxui/types'
 
@@ -52,16 +52,16 @@ const breakpoints: { [bp: string]: string } = {
 
 export const preset = ({ sizing = 0.25 } = {}): Partial<Config> => ({
   variants,
-  customVariants,
   property: property(sizing),
   values,
   classes,
-  breakpoints
+  breakpoints,
+  reservedVariantChars: ['@', '*']
 })
 
 export { preflight } from './styles/preflight'
 export { properties as defaultProperties } from './styles/properties'
 export { property, classes, breakpoints }
 export { values } from './lib/values'
-export { variants, customVariants } from './lib/variants'
+export { variants } from './lib/variants'
 export default preset
