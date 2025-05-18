@@ -1,6 +1,12 @@
 # Changelog
 
-## Unreleased
+## `v0.7.1` - `2025-05-18`
+
+### Added
+
+- Access `regexp` function directly from the instance, new method `regexp`
+
+## `v0.7.0` - `2025-05-16`
 
 ### Added
 
