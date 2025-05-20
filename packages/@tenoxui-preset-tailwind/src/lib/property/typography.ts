@@ -1,3 +1,17 @@
+/** Notes
+ *
+ * 1. color
+ *     Use text-<color>/<opacity> to set color property, there's not -
+ *     only ready-to-use color such as red-500, lime-500, or -
+ *     neutral-950. You can use _any_ color and they also can -
+ *     be processed and mixed the opacity just like other color.
+ *
+ * 2. font-stretch
+ *    font-stretch-* utility is merged directly with font-* -
+ *    utility for shorter class names, using `scretch` key -
+ *    is also available. Using font-stretch-* still available.
+ */
+
 import { toKebab } from '../../utils/toKebab'
 import { createSizingType, createColorType, processValue } from '../../utils/createValue'
 import type { Property } from '@tenoxui/moxie'
@@ -70,12 +84,13 @@ export const typography: {
 
             return `value:${toKebab('fontSize')}: ${fontSize}; ${toKebab('lineHeight')}: ${
               lineHeightAlias[secondValue] ||
-              ((raw as string[])[4].startsWith('[') || (raw as string[])[4].startsWith('(')
+              ((raw as string[]) &&
+              (raw as string[])[4] &&
+              ((raw as string[])[4].startsWith('[') || (raw as string[])[4].startsWith('('))
                 ? secondValue
                 : is.number.test(secondValue + secondUnit)
                   ? processValue(secondValue, secondUnit, sizing)
-                  : secondValue + secondUnit) ||
-              lineHeight
+                  : lineHeight)
             }`
           }
           return `value:${toKebab('fontSize')}: ${
@@ -83,7 +98,14 @@ export const typography: {
           }${
             secondValue
               ? `; ${toKebab('lineHeight')}: ${
-                  lineHeightAlias[secondValue] || secondValue + secondUnit
+                  lineHeightAlias[secondValue] ||
+                  ((raw as string[]) &&
+                  (raw as string[])[4] &&
+                  ((raw as string[])[4].startsWith('[') || (raw as string[])[4].startsWith('('))
+                    ? secondValue
+                    : is.number.test(secondValue + secondUnit)
+                      ? processValue(secondValue, secondUnit, sizing)
+                      : secondValue + secondUnit)
                 }`
               : ''
           }`
@@ -96,7 +118,7 @@ export const typography: {
         property: ({ value = '', unit = '', secondValue = '', key = '' }) => {
           if (
             !value ||
-            (key && !['weight', 'family-name', 'stretch'].includes(key)) ||
+            (key && !['weight', 'family-name', 'family', 'stretch'].includes(key)) ||
             secondValue ||
             (unit && unit !== '%')
           )
@@ -118,6 +140,7 @@ export const typography: {
           ) {
             return `value:${toKebab('fontWeight')}: ${weightAlias[value] || value}`
           }
+
           if (
             key === 'stretch' ||
             [
@@ -139,6 +162,7 @@ export const typography: {
           return unit ? null : `value:${toKebab('fontFamily')}: ${value}`
         }
       },
+      'font-stretch': 'fontStretch',
       tracking: ({ key = '', value = '', unit = '', secondValue = '' }) => {
         if (!value || key || secondValue) return null
         const values: Record<string, string> = {
@@ -166,9 +190,12 @@ export const typography: {
       list: 'listStyleType',
       'list-image': 'listStyleImage',
       decoration: ({ key = '', value = '', unit = '', secondValue = '', secondUnit = '' }) => {
-        if (key || secondUnit) return null
+        if ((key && !['length', 'color'].includes(key)) || secondUnit) return null
 
-        if (!secondValue && (is.number.test(value) || ['from-font', 'auto'].includes(value))) {
+        if (
+          key === 'length' ||
+          (!secondValue && (is.number.test(value) || ['from-font', 'auto'].includes(value)))
+        ) {
           return `value:${toKebab('textDecorationThickness')}: ${
             is.number.test(value) ? `${value}${unit || 'px'}` : value
           }`
@@ -197,12 +224,11 @@ export const typography: {
 
         return `value:${toKebab('lineHeight')}: ${
           lineHeightAlias[value] ||
-          (raw as string[])[2].startsWith('[') ||
-          (raw as string[])[2].startsWith('(')
+          ((raw as string[])[2].startsWith('[') || (raw as string[])[2].startsWith('(')
             ? value
             : is.number.test(value + unit)
               ? processValue(value, unit, sizing)
-              : value + unit
+              : value + unit)
         }`
       },
       indent: createSizingType('textIndent', sizing),
@@ -253,7 +279,7 @@ export const typography: {
       },
       antialiased: {
         ['webkitFontSmoothing' as CSSProperty]: 'antialiased',
-        ['mozOsxFontSmoothing' as CSSProperty]: 'antialiased'
+        ['mozOsxFontSmoothing' as CSSProperty]: 'grayscale'
       },
       'subpixel-antialiased': {
         ['webkitFontSmoothing' as CSSProperty]: 'auto',

@@ -15,11 +15,7 @@ export const effect: {
 } = {
   property: (sizing: number = 0.25): Property => ({
     shadow: ({ key = '', value = '', unit = '', secondValue = '', secondUnit = '' }) => {
-      if (!value || key || secondUnit) return null
-
-      if (value === 'current' || is.color.test(value)) {
-        return createColorType('--tw-shadow-color', value, secondValue)
-      }
+      if (key || secondUnit) return null
 
       const values: Record<string, string> = {
         '2xs': '0 1px var(--tw-shadow-color, rgb(0 0 0 / 0.05))',
@@ -32,10 +28,14 @@ export const effect: {
         none: '0 0 #0000'
       }
 
+      if (value === 'current' || is.color.test(value)) {
+        return createColorType('--tw-shadow-color', value, secondValue)
+      }
+
       return secondValue || is.length.test(value + unit)
         ? null
         : `value:--tw-shadow: ${
-            values[value + unit] || value + unit
+            !value ? values.sm : values[value + unit] || value + unit
           };box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);`
     },
     'inset-shadow': ({ key = '', value = '', unit = '', secondValue = '', secondUnit = '' }) => {
@@ -143,7 +143,7 @@ export const effect: {
       ]
     },
     'bg-blend': {
-      property: 'mixBlendMode',
+      property: 'backgroundBlendMode',
       value: [
         'normal',
         'multiply',

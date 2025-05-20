@@ -1,13 +1,9 @@
-/**
- * Not available (yet)
- * divide-* utility
- */
-
 import { toKebab } from '../../utils/toKebab'
 import { createSizingType, createColorType } from '../../utils/createValue'
 import type { Property, PropertyParamValue } from '@tenoxui/moxie'
 import type { Classes, CSSPropertyOrVariable } from '@tenoxui/types'
 import { is } from 'cssrxp'
+import { escapeCSSSelector } from '@tenoxui/moxie'
 
 const roundedValues: Record<string, string> = {
   full: 'calc(infinity * 1px)',
@@ -229,7 +225,7 @@ export const border: {
     },
     'divide-x': ({ value, unit, key, secondValue, raw }) => {
       if (key || (secondValue && secondValue !== 'reverse')) return null
-      const className = `${(raw as string[])[6]} > :not(:last-child)`
+      const className = `${escapeCSSSelector((raw as string[])[6])} > :not(:last-child)`
       const finalValue = !value ? '1px' : is.length.test(value) ? value : value + (unit || 'px')
 
       return {
@@ -241,7 +237,7 @@ ${toKebab('borderInlineEndWidth')}: ${!secondValue ? finalValue : '0px'};`,
     },
     'divide-y': ({ value, unit, key, secondValue, raw }) => {
       if (key || (secondValue && secondValue !== 'reverse')) return null
-      const className = `${(raw as string[])[6]} > :not(:last-child)`
+      const className = `${escapeCSSSelector((raw as string[])[6])} > :not(:last-child)`
       const finalValue = !value ? '1px' : is.length.test(value) ? value : value + (unit || 'px')
 
       return {
@@ -258,7 +254,7 @@ ${toKebab('borderBottomWidth')}: ${!secondValue ? finalValue : '0px'};`,
       if (!value || key || secondUnit) return null
 
       return {
-        className: `${(raw as string[])[6]} > :not(:last-child)`,
+        className: `${escapeCSSSelector((raw as string[])[6])} > :not(:last-child)`,
         cssRules: ['solid', 'dashed', 'dotted', 'double', 'hidden', 'none'].includes(value)
           ? secondValue
             ? null

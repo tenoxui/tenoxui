@@ -66,6 +66,7 @@ export const background: {
 
       if (
         [
+          'center',
           'top',
           'left',
           'bottom',

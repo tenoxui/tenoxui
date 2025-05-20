@@ -21,7 +21,7 @@ import type { CSSPropertyOrVariable } from '@tenoxui/types'
 import type { Config, Property } from 'tenoxui'
 import type { Classes } from '@tenoxui/types'
 
-const property = (sizing: number = 0.25): Property => ({
+export const property = (sizing: number = 0.25): Property => ({
   ...layout.property(sizing),
   ...flexAndGrid.property(sizing),
   ...sizingUtilities(sizing),
@@ -39,18 +39,33 @@ const property = (sizing: number = 0.25): Property => ({
   _size: ({ key = '', value = '', unit = '', secondValue = '', raw }) =>
     !value || secondValue
       ? null
-      : `value:${key || '--tw-size-f-type'}: ${
-          (raw as string[])[2].startsWith('[') ? value : processValue(value, unit, sizing)
-        }`,
+      : {
+          className: (raw as string[])[6],
+          cssRules: key ? key.split(',').map((x) => x.trim()) : '--tw-size-f-type',
+          value: (raw as string[])[2].startsWith('[') ? value : processValue(value, unit, sizing)
+        },
   _color: ({ key = '', value = '', secondValue = '', secondUnit = '' }) =>
     !value || secondUnit || (!is.color.test(value) && value !== 'current')
       ? null
-      : createColorType((key || '--tw-color-f-type') as CSSPropertyOrVariable, value, secondValue),
-  _all: ({ key = '', value = '', unit = '', secondValue = '' }) =>
-    !value || secondValue ? null : `value:${key || '--tw-f-type'}: ${value + unit}`
+      : createColorType(
+          (key
+            ? key.split(',').map((x) => x.trim())
+            : '--tw-color-f-type') as CSSPropertyOrVariable,
+          value,
+          secondValue
+        ),
+
+  _all: ({ key = '', value = '', unit = '', secondValue = '', raw }) =>
+    !value || secondValue
+      ? null
+      : {
+          className: (raw as string[])[6],
+          cssRules: key ? key.split(',').map((x) => x.trim()) : '--tw-f-type',
+          value: `${value + unit}`
+        }
 })
 
-const classes: Classes = {
+export const classes: Classes = {
   ...layout.classes,
   ...flexAndGrid.classes,
   ...typography.classes,
@@ -58,7 +73,7 @@ const classes: Classes = {
   ...table.classes
 }
 
-const breakpoints: { [bp: string]: string } = {
+export const breakpoints: { [bp: string]: string } = {
   sm: '40rem',
   md: '48rem',
   lg: '64rem',
@@ -78,7 +93,6 @@ export const preset = ({ sizing = 0.25, order = true } = {}): Partial<Config> =>
 
 export { preflight } from './styles/preflight'
 export { properties as defaultProperties } from './styles/properties'
-export { property, classes, breakpoints }
 export { values } from './lib/values'
 export { variants } from './lib/variants'
 export { typeOrder } from './lib/typeOrder'

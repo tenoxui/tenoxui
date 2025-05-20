@@ -13,7 +13,7 @@ export const flexAndGrid = {
       if (['row', 'col', 'row-reverse', 'col-reverse'].includes(value))
         return `value:${toKebab('flexDirection')}: ${value.replace('col', 'column')}`
       if (['wrap', 'wrap-reverse', 'nowrap'].includes(value))
-        return `value:${toKebab('flexDirection')}: ${value}`
+        return `value:${toKebab('flexWrap')}: ${value}`
 
       const flexValues: Record<string, string> = {
         auto: '1 1 auto',
@@ -114,7 +114,7 @@ export const flexAndGrid = {
     'grid-flow': ({ value = '', secondValue = '', key = '' }) => {
       return key || !['row', 'col', 'dense', 'row-dense', 'col-dense'].includes(value)
         ? null
-        : `value:${toKebab('gridAutoFlow')}: ${value.replace('-', ' ')}`
+        : `value:${toKebab('gridAutoFlow')}: ${value.replace('-', ' ').replace('col', 'column')}`
     },
 
     'auto-cols': ({ value = '', unit = '', secondValue = '', key = '' }) =>

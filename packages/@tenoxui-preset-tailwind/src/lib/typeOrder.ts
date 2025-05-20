@@ -20,6 +20,10 @@ export const typeOrder: string[] = [
   'invisible',
   ...Object.keys(layout.classes.position),
   'inset',
+  'inset-x',
+  'inset-y',
+  'start',
+  'end',
   'top',
   'right',
   'bottom',
@@ -84,6 +88,9 @@ export const typeOrder: string[] = [
   'min-w',
 
   'flex',
+  'basis',
+  'grow',
+  'shrink',
 
   'table-auto',
   'table-fixed',
@@ -173,6 +180,10 @@ export const typeOrder: string[] = [
   ...Object.keys(flexAndGrid.classes.placeSelf),
   ...Object.keys(flexAndGrid.classes.alignSelf),
   ...Object.keys(flexAndGrid.classes.justifySelf),
+
+  'overflow',
+  'overflow-x',
+  'overflow-y',
 
   'scroll',
 

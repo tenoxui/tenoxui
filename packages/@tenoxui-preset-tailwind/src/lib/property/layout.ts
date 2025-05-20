@@ -72,7 +72,8 @@ export const layout = {
           'center'
         ]
         if (
-          ![...fitValue, ...pnValue].includes((raw as (string | undefined)[])[2] as string) ||
+          (![...fitValue, ...pnValue].includes((raw as (string | undefined)[])[2] as string) &&
+            !((raw as string[])[2].startsWith('[') || (raw as string[])[2].startsWith('('))) ||
           (key && !['position', 'fit'].includes(key)) ||
           secondValue
         )
@@ -111,15 +112,15 @@ export const layout = {
       property: 'overscrollBehaviorY',
       value: ['auto', 'contain', 'none']
     },
-    top: createSizingType('top', sizing),
-    left: createSizingType('left', sizing),
-    bottom: createSizingType('bottom', sizing),
-    right: createSizingType('right', sizing),
-    inset: createSizingType('inset', sizing),
-    'inset-x': createSizingType('insetInline', sizing),
-    'inset-y': createSizingType('insetBlock', sizing),
-    start: createSizingType('insetInlineStart', sizing),
-    end: createSizingType('insetInlineEnd', sizing),
+    top: createSizingType('top', sizing, false, true, true),
+    left: createSizingType('left', sizing, false, true, true),
+    bottom: createSizingType('bottom', sizing, false, true, true),
+    right: createSizingType('right', sizing, false, true, true),
+    inset: createSizingType('inset', sizing, false, true, true),
+    'inset-x': createSizingType('insetInline', sizing, false, true, true),
+    'inset-y': createSizingType('insetBlock', sizing, false, true, true),
+    start: createSizingType('insetInlineStart', sizing, false, true, true),
+    end: createSizingType('insetInlineEnd', sizing, false, true, true),
     z: ({ value = '', unit = '', key = '', secondValue = '' }) =>
       !value || ((unit || key || secondValue || is.length.test(value + unit)) && value !== 'auto')
         ? null

@@ -4,15 +4,31 @@ import type { CSSProperty, CSSPropertyOrVariable } from '@tenoxui/types'
 import type { DirectValue, PropertyParamValue } from '@tenoxui/moxie'
 
 export function createColorType(
-  prop: CSSPropertyOrVariable,
+  prop: CSSPropertyOrVariable | CSSPropertyOrVariable[],
   value: string,
   secondValue?: string
 ): DirectValue {
   const finalValue = value.replace('current', 'currentColor')
-  const finalProp = (!(prop as string).startsWith('--') ? toKebab(prop) : prop) as string
-  return secondValue
-    ? `value:${finalProp}: color-mix(in srgb, ${finalValue} ${secondValue}%, transparent); @supports (color: color-mix(in lab, red, red)) { ${finalProp}: color-mix(in oklab, ${finalValue} ${secondValue}%, transparent); }`
-    : `value:${finalProp}: ${finalValue};`
+
+  const normalizeProp = (p: CSSPropertyOrVariable): string =>
+    typeof p === 'string' && !p.startsWith('--') ? toKebab(p) : (p as string)
+
+  const props = Array.isArray(prop) ? prop.map(normalizeProp) : [normalizeProp(prop)]
+
+  if (secondValue) {
+    const srgbMix = props
+      .map((p) => `${p}: color-mix(in srgb, ${finalValue} ${secondValue}%, transparent);`)
+      .join('\n')
+
+    const oklabMix = props
+      .map((p) => `${p}: color-mix(in oklab, ${finalValue} ${secondValue}%, transparent);`)
+      .join('\n')
+
+    return `value:${srgbMix} @supports (color: color-mix(in lab, red, red)) { ${oklabMix} }`
+  }
+
+  const plain = props.map((p) => `${p}: ${finalValue}`).join(';')
+  return `value:${plain};`
 }
 
 export function processValue(value: string, unit: string, sizing: number = 0.25) {

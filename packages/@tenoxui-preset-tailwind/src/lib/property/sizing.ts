@@ -1,5 +1,6 @@
 import { createSizingType, processValue } from '../../utils/createValue'
 import type { Property } from '@tenoxui/moxie'
+import { escapeCSSSelector } from '@tenoxui/moxie'
 
 export const sizing = (sizing: number = 0.25): Property => ({
   p: createSizingType('padding', sizing),
@@ -45,7 +46,7 @@ export const sizing = (sizing: number = 0.25): Property => ({
     const finalValue = processValue(value, unit, sizing)
 
     return {
-      className: `${(raw as string[])[6]} > :not(:last-child)`,
+      className: `${escapeCSSSelector((raw as string[])[6])} > :not(:last-child)`,
       cssRules: `--tw-space-x-reverse: 0;
 margin-inline-start: calc(${finalValue} * var(--tw-space-x-reverse));
 margin-inline-end: calc(${finalValue} * calc(1 - var(--tw-space-x-reverse)));`,
@@ -58,7 +59,7 @@ margin-inline-end: calc(${finalValue} * calc(1 - var(--tw-space-x-reverse)));`,
     const finalValue = processValue(value, unit, sizing)
 
     return {
-      className: `${(raw as string[])[6]} > :not(:last-child)`,
+      className: `${escapeCSSSelector((raw as string[])[6])} > :not(:last-child)`,
       cssRules: `--tw-space-y-reverse: 0;
 margin-block-start: calc(${finalValue} * var(--tw-space-y-reverse));
 margin-block-end: calc(${finalValue} * calc(1 - var(--tw-space-y-reverse)));`,

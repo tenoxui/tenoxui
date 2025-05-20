@@ -1,5 +1,34 @@
 Changelog
 
+## `v1.0.0-alpha.5` - `2025-05-20`
+
+### Changed
+
+- Refactor `createColorType` function
+- Custom utility `_all`, `_size`, and `_color` now support multiple `key`s separated by coma `,`. (e.g. `_color-(--my-color,backgroundColor:red)`)
+- Allow `<ratio>` value for `inset`, `inset-x`, `inset-y`, `top`, `right`, `bottom`, and `left`
+
+### Added
+
+- `basis`, `grow`, `shrink`, `overflow`, `overflow-x`, and `overflow-y` `type` to `typeOrder`
+- Added `length` for `decoration-*` utility to set `decoration-thickness`
+- `font-stretch-*` utility
+
+### Fixed
+
+- The `line-height` on `text-*/{lineHeight}` cause error when `secondValue` isn't defined, because `raw[4]` can be `undefined`
+- All supposed `flex-wrap` utility returned `flex-direction` as property instead of `flex-wrap`
+- Not replacing `col` with `column` on `grid-flow` utility
+- `space-x`, `space-y`, `divide-x`, `divide-y`, and `divide` utilities generating un-escapped `className`
+- `leading-*` utility can't access value from `lineHeightAlias` (e.g. `leading-loose` => `line-height: loose`)
+- `bg-center` generating `background: center` instead of `background-position: center`
+- `bg-blend-*` generate `mix-blend-mode` instead of `background-blend-mode`
+
+### Development
+
+- Add some unit tests
+- Remove sourcemap from distribution
+
 ## `v1.0.0-alpha.4` - `2025-05-19`
 
 ### Changed
