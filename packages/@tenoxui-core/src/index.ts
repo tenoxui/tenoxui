@@ -1,7 +1,7 @@
 import type { Property } from '@tenoxui/moxie'
 import type { Values, Classes, Aliases } from '@tenoxui/types'
 import type { Variants, Breakpoints, TenoxUIConfig, Config, Result } from './types'
-import { TenoxUI as Moxie } from '@tenoxui/moxie'
+import { TenoxUI as Moxie, escapeCSSSelector } from '@tenoxui/moxie'
 import { merge } from '@nousantx/someutils'
 
 export class TenoxUI {
@@ -201,7 +201,7 @@ export class TenoxUI {
   } | null {
     if (!className || !this.aliases[className]) return null
 
-    let finalClass = this.main.escapeCSSSelector(prefix ? `${prefix}:${className}` : className)
+    let finalClass = escapeCSSSelector(prefix ? `${prefix}:${className}` : className)
 
     const allRules: {
       cssRules: string | string[] | null
@@ -309,11 +309,12 @@ export class TenoxUI {
     parsedClassNames.forEach((className, index) => {
       const parsed = this.main.parse(className, Object.keys(this.aliases))
       const isImportant = this.isImportantClass(className, index, importantMap)
-
-      if (parsed && parsed[1] && this.aliases[parsed[1]]) {
-        const [prefix, type] = parsed
+      const aliasClass = parsed && parsed[0] ? className.slice(parsed[0].length + 1) : className
+      if (parsed && parsed[1] && this.aliases[aliasClass]) {
+        const [prefix] = parsed
         if (prefix && !this.generatePrefix(prefix)) return null
-        const aliasResult = this.processAlias(type, prefix, parsed, isImportant)
+
+        const aliasResult = this.processAlias(aliasClass, prefix, parsed, isImportant)
         if (aliasResult) {
           result.push(aliasResult)
         }
@@ -341,7 +342,7 @@ export class TenoxUI {
   }
 }
 
-export { TenoxUI as Moxie } from '@tenoxui/moxie'
+export { escapeCSSSelector, constructRaw, regexp, TenoxUI as Moxie } from '@tenoxui/moxie'
 export * from './utils/converter'
 export * from './types'
 export default TenoxUI

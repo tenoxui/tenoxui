@@ -1,6 +1,6 @@
 {
   "name": "@tenoxui/core",
-  "version": "2.0.0-alpha.5",
+  "version": "2.0.1",
   "description": "Core component of tenoxui",
   "author": "NOuSantx <nousantx@gmail.com>",
   "license": "MIT",
@@ -45,14 +45,17 @@
     "type:build": "tsc --declaration --emitDeclarationOnly --outDir dist",
     "build:prod": "pnpm type:check && pnpm build && pnpm type:build"
   },
+  "peerDependencies": {
+    "@tenoxui/moxie": ">=0.7.0"
+  },
   "devDependencies": {
     "@nousantx/someutils": "0.7.1",
-    "@tenoxui/moxie": "^0.6.7",
     "typescript": "^5.7.3",
     "vite": "^6.2.3",
     "vitest": "^3.0.5"
   },
   "dependencies": {
+    "@tenoxui/moxie": "^0.7.0",
     "@tenoxui/types": "^0.1.2"
   }
 }

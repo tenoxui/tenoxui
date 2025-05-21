@@ -1,5 +1,18 @@
 # Changelog
 
+## `v2.0.1` - `2025-05-21`
+
+### Fixed
+
+– Failed to parse `alias` with same prefix name
+
+## `v2.0.0` - `2025-05-17`
+
+### Development
+
+- Use `@tenoxui/moxie` as external module
+- Bump `@tenoxui/moxie` to `v0.7.0` and as dependencies
+
 ## `v2.0.0-alpha.5` - `2025-05-15`
 
 ### Added
