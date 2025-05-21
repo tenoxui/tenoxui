@@ -408,6 +408,10 @@ describe('Value Processor', () => {
             value: value + unit,
             prefix: raw[0]
           }
+        },
+        moxie: ({ key }) => key.split(','),
+        moxie2: {
+          property: ({ key }) => key.split(',')
         }
       },
       values: {
@@ -443,5 +447,15 @@ describe('Value Processor', () => {
       'hover\\:space-x-50rem > :not(:last-child)'
     )
     expect(ui.process('hover:space-x-50rem')[0].value).toBe('50rem')
+    expect(ui.process('moxie-(padding,margin,--my-size:0)')[0].cssRules).toStrictEqual([
+      'padding',
+      'margin',
+      '--my-size'
+    ])
+    expect(ui.process('moxie2-(padding,margin,--my-size:0)')[0].cssRules).toStrictEqual([
+      'padding',
+      'margin',
+      '--my-size'
+    ])
   })
 })

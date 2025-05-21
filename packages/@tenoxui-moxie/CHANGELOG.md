@@ -1,10 +1,18 @@
 # Changelog
 
-## `v0.7.1` - `2025-05-18`
+## `v0.7.1` - `2025-05-22`
+
+### Changed
+
+- Make all params of `ProcessedStyle` on functional hooks optional
 
 ### Added
 
 - Access `regexp` function directly from the instance, new method `regexp`
+
+### Fixed
+
+- `processShorthand` didn't check if functional hook shorthands returned `array`
 
 ## `v0.7.0` - `2025-05-16`
 

@@ -16,14 +16,17 @@ export class TenoxUI {
     this.prefixChars = prefixChars.map(escapeRegex)
   }
 
-  public parse(className: string, safelist?: string[]): Parsed {
-    const patterns = regexp({
+  public regexp(safelist?: string[]) {
+    return regexp({
       safelist,
       property: this.property,
       classes: this.classes,
       inputPrefixChars: this.prefixChars
     })
+  }
 
+  public parse(className: string, safelist?: string[]): Parsed {
+    const patterns = this.regexp(safelist)
     // catch all possible class names with value defined
     const fullMatch = className.match(new RegExp(patterns.all))
     if (fullMatch) {
@@ -208,7 +211,12 @@ export class TenoxUI {
           !Array.isArray(property) &&
           'cssRules' in property
         ) {
-          const { className: itemClass, cssRules, value, prefix: itemPrefix } = property
+          const {
+            className: itemClass,
+            cssRules = null,
+            value = null,
+            prefix: itemPrefix
+          } = property
 
           return {
             className: itemClass || className,
@@ -348,7 +356,12 @@ export class TenoxUI {
         !Array.isArray(finalRegProperty) &&
         'cssRules' in finalRegProperty
       ) {
-        const { className: itemClass, cssRules, value, prefix: itemPrefix } = finalRegProperty
+        const {
+          className: itemClass,
+          cssRules = null,
+          value = null,
+          prefix: itemPrefix
+        } = finalRegProperty
 
         return {
           className: itemClass || className,
@@ -363,7 +376,7 @@ export class TenoxUI {
         className: constructRaw(prefix, type, value, unit, secondValue, secondUnit),
         cssRules: !finalRegProperty
           ? null
-          : Array.isArray(properties)
+          : Array.isArray(finalRegProperty)
             ? (finalRegProperty as string[])
             : typeof finalRegProperty === 'string' &&
                 (finalRegProperty.includes(':') || finalRegProperty.startsWith('value:'))

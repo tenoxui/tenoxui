@@ -14,7 +14,7 @@ export type DirectValue = `value:${string}`
 export type PropertyParamValue =
   | GetCSSProperty
   | DirectValue
-  | ((params: PropertyParams) => null | GetCSSProperty | DirectValue | ProcessedStyle)
+  | ((params: PropertyParams) => null | GetCSSProperty | DirectValue | Partial<ProcessedStyle>)
 
 export type ValuePropType = string | string[] | ((params: PropertyParams) => string | null) | null
 
