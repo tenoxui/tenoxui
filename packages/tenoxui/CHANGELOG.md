@@ -1,5 +1,29 @@
 # Changelog
 
+## `v1.0.0` - `2025-05-22`
+
+### Development
+
+Released `v1.0.0` after :
+
+- `v1.0.0-alpha.{0-8}`
+- `v1.0.0-pre.{0,2}`
+
+## `v1.0.0-pre.0` - `2025-05-17`
+
+### Added
+
+- Update remaining `any` types
+- After major release, dependencies become external
+- New dist files, `bundle.*` for `iife` and `umd` variants
+
+### Development
+
+- Bump `@tenoxui/core` to `v2.0.0`
+- Bump `@tenoxui/core` to `v0.7.0`
+- Added peer dependencies for both `core` and `moxie`
+- Use both packages as dependencies and external module
+
 ## `v1.0.0-alpha.8` - `2025-05-15`
 
 ### Added

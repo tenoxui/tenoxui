@@ -1,5 +1,6 @@
 import { test, describe, expect } from 'vitest'
 import { TenoxUI } from '../src/index.ts'
+import { regexp } from '@tenoxui/moxie'
 
 describe('TenoxUI Unit Test', () => {
   test('Main Overview', () => {
@@ -18,16 +19,14 @@ describe('TenoxUI Unit Test', () => {
     })
 
     expect(
-      css
-        .render([
-          'bg-red',
-          'm-10px',
-          'hover:bg-#ccf654',
-          'dark:bg-[rgb(255_0_0)]',
-          'md:bg-blue',
-          'max-md:m-3.5rem'
-        ])
-        .join('\n')
+      css.render([
+        'bg-red',
+        'm-10px',
+        'hover:bg-#ccf654',
+        'dark:bg-[rgb(255_0_0)]',
+        'md:bg-blue',
+        'max-md:m-3.5rem'
+      ])
     ).toBe(`.bg-red {
   background: red;
 }
@@ -66,7 +65,7 @@ describe('TenoxUI Unit Test', () => {
       }
     })
 
-    expect(css.render(['bg-red', 'size-40px', 'm-5']).join('\n')).toBe(`.bg-red {
+    expect(css.render(['bg-red', 'size-40px', 'm-5'])).toBe(`.bg-red {
   background: red;
 }
 .size-40px {
@@ -79,21 +78,21 @@ describe('TenoxUI Unit Test', () => {
   })
 
   test('pattern: Generating type pattern with configured shorthands', () => {
-    const regexp = new TenoxUI({
+    const patterns = regexp({
       property: {
         bg: '...',
         whatever: '...',
         'is-this': '...'
       }
-    }).main.regexp()
+    })
 
-    expect(regexp.type).toBe('(whatever|is-this|moxie|bg|\\[[^\\]]+\\])')
+    expect(patterns.type).toBe('(whatever|is\\-this|bg|\\[[^\\]]+\\])')
   })
 
   test('property: Direct shorthand', () => {
     const css = new TenoxUI()
 
-    expect(css.render(['[background]-red', '[width,height]-100px', '[margin]-1rem']).join('\n'))
+    expect(css.render(['[background]-red', '[width,height]-100px', '[margin]-1rem']))
       .toBe(`.\\[background\\]-red {
   background: red;
 }
@@ -122,21 +121,19 @@ describe('TenoxUI Unit Test', () => {
     })
 
     expect(
-      css
-        .render([
-          // basic props
-          'bg-red',
-          'p-4px',
-          // multiple props
-          'size-100px',
-          'px-2rem',
-          // variable props
-          'var1-blue',
-          'var2-20rem',
-          // mixed
-          'var3-purple'
-        ])
-        .join('\n')
+      css.render([
+        // basic props
+        'bg-red',
+        'p-4px',
+        // multiple props
+        'size-100px',
+        'px-2rem',
+        // variable props
+        'var1-blue',
+        'var2-20rem',
+        // mixed
+        'var3-purple'
+      ])
     ).toBe(`.bg-red {
   background: red;
 }
@@ -181,7 +178,7 @@ describe('TenoxUI Unit Test', () => {
       }
     })
 
-    expect(css.render(['img-(/image.jpg)', 'm', 'm-10', 'm-15/7', 'p-1rem', 'p-10px']).join('\n'))
+    expect(css.render(['img-(/image.jpg)', 'm', 'm-10', 'm-15/7', 'p-1rem', 'p-10px']))
       .toBe(`.img-\\(\\/image\\.jpg\\) {
   background-image: url(/image.jpg);
 }

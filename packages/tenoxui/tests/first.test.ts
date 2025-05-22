@@ -1,5 +1,6 @@
 import { it, describe, expect } from 'vitest'
 import { TenoxUI } from '../src/index.ts'
+
 describe('TenoxUI Unit Test', () => {
   it('should generate css from direct properties shorthand', () => {
     const ui = new TenoxUI({
@@ -9,17 +10,17 @@ describe('TenoxUI Unit Test', () => {
       }
     })
 
-    expect(ui.render('[background]-red')[0]).toBe('.\\[background\\]-red {\n  background: red;\n}')
-    expect(ui.render('md:[background]-blue')[0]).toBe(`@media (width >= 48rem) {
+    expect(ui.render('[background]-red')).toBe('.\\[background\\]-red {\n  background: red;\n}')
+    expect(ui.render('md:[background]-blue')).toBe(`@media (width >= 48rem) {
   .md\\:\\[background\\]-blue {
     background: blue;
   }
 }`)
-    expect(ui.render('[width,height]-100px')[0]).toBe(
+    expect(ui.render('[width,height]-100px')).toBe(
       '.\\[width\\,height\\]-100px {\n  width: 100px;\n  height: 100px;\n}'
     )
-    expect(ui.render('[--my-var]-red')[0]).toBe('.\\[--my-var\\]-red {\n  --my-var: red;\n}')
-    expect(ui.render('hover:[--my-var]-red')[0]).toBe(
+    expect(ui.render('[--my-var]-red')).toBe('.\\[--my-var\\]-red {\n  --my-var: red;\n}')
+    expect(ui.render('hover:[--my-var]-red')).toBe(
       '.hover\\:\\[--my-var\\]-red:hover {\n  --my-var: red;\n}'
     )
   })
@@ -36,15 +37,15 @@ describe('TenoxUI Unit Test', () => {
       }
     })
 
-    expect(ui.render('bg-red')[0]).toBe('.bg-red {\n  background: red;\n}')
-    expect(ui.render('md:bg-blue')[0]).toBe(`@media (width >= 48rem) {
+    expect(ui.render('bg-red')).toBe('.bg-red {\n  background: red;\n}')
+    expect(ui.render('md:bg-blue')).toBe(`@media (width >= 48rem) {
   .md\\:bg-blue {
     background: blue;
   }
 }`)
-    expect(ui.render('size-100px')[0]).toBe('.size-100px {\n  width: 100px;\n  height: 100px;\n}')
-    expect(ui.render('my-var-red')[0]).toBe('.my-var-red {\n  --my-var: red;\n}')
-    expect(ui.render('hover:my-var-blue')[0]).toBe(
+    expect(ui.render('size-100px')).toBe('.size-100px {\n  width: 100px;\n  height: 100px;\n}')
+    expect(ui.render('my-var-red')).toBe('.my-var-red {\n  --my-var: red;\n}')
+    expect(ui.render('hover:my-var-blue')).toBe(
       '.hover\\:my-var-blue:hover {\n  --my-var: blue;\n}'
     )
   })
@@ -62,19 +63,19 @@ describe('TenoxUI Unit Test', () => {
       }
     })
 
-    expect(ui.render('bg-red')[0]).toBe('.bg-red {\n  background: red;\n}')
-    expect(ui.render('md:bg-blue')[0]).toBe(`@media (width >= 48rem) {
+    expect(ui.render('bg-red')).toBe('.bg-red {\n  background: red;\n}')
+    expect(ui.render('md:bg-blue')).toBe(`@media (width >= 48rem) {
   .md\\:bg-blue {
     background: blue;
   }
 }`)
-    expect(ui.render('size-100px')[0]).toBe('.size-100px {\n  width: 100px;\n  height: 100px;\n}')
-    expect(ui.render('my-var-red')[0]).toBe('.my-var-red {\n  --my-var: red;\n}')
-    expect(ui.render('hover:my-var-blue')[0]).toBe(
+    expect(ui.render('size-100px')).toBe('.size-100px {\n  width: 100px;\n  height: 100px;\n}')
+    expect(ui.render('my-var-red')).toBe('.my-var-red {\n  --my-var: red;\n}')
+    expect(ui.render('hover:my-var-blue')).toBe(
       '.hover\\:my-var-blue:hover {\n  --my-var: blue;\n}'
     )
-    expect(ui.render('m-10')[0]).toBe('.m-10 {\n  margin: 10px;\n}')
-    expect(ui.render('hover:m-10.5')[0]).toBe('.hover\\:m-10\\.5:hover {\n  margin: 10.5px;\n}')
+    expect(ui.render('m-10')).toBe('.m-10 {\n  margin: 10px;\n}')
+    expect(ui.render('hover:m-10.5')).toBe('.hover\\:m-10\\.5:hover {\n  margin: 10.5px;\n}')
   })
   it('should generate css from custom function shorthand', () => {
     const ui = new TenoxUI({
@@ -93,12 +94,12 @@ describe('TenoxUI Unit Test', () => {
         'aflex-ehatever-it-is-and-whatever-how-long-it-is-shoyld-be-this-way-i-dont-know'
       )[0].className
     ).toBe('aflex-ehatever-it-is-and-whatever-how-long-it-is-shoyld-be-this-way-i-dont-know')
-    expect(ui.render('flex')[0]).toBe('.flex {\n  display: flex;\n}')
-    expect(ui.render('aflex')[0]).toBe('.aflex {\n  display: flex;\n}')
-    expect(ui.render('aflex-hehehe')[0]).toBe('.aflex-hehehe {\n  display: flex;\n}')
-    expect(ui.render('aflex-whatever')[0]).toBe('.aflex-whatever {\n  display: flex;\n}')
-    expect(ui.render('aflex-10px')[0]).toBe('.aflex-10px {\n  display: flex;\n}')
-    expect(ui.render('aflex-10px/30px')[0]).toBe('.aflex-10px\\/30px {\n  display: flex;\n}')
+    expect(ui.render('flex')).toBe('.flex {\n  display: flex;\n}')
+    expect(ui.render('aflex')).toBe('.aflex {\n  display: flex;\n}')
+    expect(ui.render('aflex-hehehe')).toBe('.aflex-hehehe {\n  display: flex;\n}')
+    expect(ui.render('aflex-whatever')).toBe('.aflex-whatever {\n  display: flex;\n}')
+    expect(ui.render('aflex-10px')).toBe('.aflex-10px {\n  display: flex;\n}')
+    expect(ui.render('aflex-10px/30px')).toBe('.aflex-10px\\/30px {\n  display: flex;\n}')
   })
   it('should create css from alias', () => {
     const ui = new TenoxUI({
@@ -121,22 +122,22 @@ describe('TenoxUI Unit Test', () => {
       }
     })
 
-    expect(ui.render('box').join('\n')).toBe(`.box {
+    expect(ui.render('box')).toBe(`.box {
   width: 50px;
   height: 50px;
 }`)
-    expect(ui.render('btn')[0]).toBe(`.btn {
+    expect(ui.render('btn')).toBe(`.btn {
   background: red;
   margin: 10px;
 }`)
-    expect(ui.render('btn2').join('\n')).toBe(`.btn2 {
+    expect(ui.render('btn2')).toBe(`.btn2 {
   background: red;
   margin: 10px;
 }
 .btn2:hover {
   background: blue;
 }`)
-    expect(ui.render('btn3').join('\n')).toBe(`.btn3 {
+    expect(ui.render('btn3')).toBe(`.btn3 {
   background: red;
   margin: 10px;
 }
@@ -175,30 +176,30 @@ describe('TenoxUI Unit Test', () => {
       reservedVariantChars: ['@']
     })
 
-    expect(ui.render('@akl:bg-red').join('\n')).toBe(`@media print {
+    expect(ui.render('@akl:bg-red')).toBe(`@media print {
     #tui-haha .\\@akl\\:bg-red {
         background: red;
     }
 }`)
-    expect(ui.render('bg-red').join('\n')).toBe(`#tui-haha .bg-red {
+    expect(ui.render('bg-red')).toBe(`#tui-haha .bg-red {
     background: red;
 }`)
-    expect(ui.render('box').join('\n')).toBe(`#tui-haha .box {
+    expect(ui.render('box')).toBe(`#tui-haha .box {
     width: 50px;
     height: 50px;
 }`)
-    expect(ui.render('btn')[0]).toBe(`#tui-haha .btn {
+    expect(ui.render('btn')).toBe(`#tui-haha .btn {
     background: red;
     margin: 10px;
 }`)
-    expect(ui.render('btn2').join('\n')).toBe(`#tui-haha .btn2 {
+    expect(ui.render('btn2')).toBe(`#tui-haha .btn2 {
     background: red;
     margin: 10px;
 }
 #tui-haha .btn2:hover {
     background: blue;
 }`)
-    expect(ui.render('btn3').join('\n')).toBe(`#tui-haha .btn3 {
+    expect(ui.render('btn3')).toBe(`#tui-haha .btn3 {
     background: red;
     margin: 10px;
 }
@@ -211,11 +212,9 @@ describe('TenoxUI Unit Test', () => {
     }
 }`)
     expect(
-      ui
-        .render({
-          body: 'bg-red ![display]-flex'
-        })
-        .join('\n')
+      ui.render({
+        body: 'bg-red ![display]-flex'
+      })
     ).toBe(`#tui-haha body {
     background: red;
     display: flex !important;
@@ -236,7 +235,7 @@ describe('TenoxUI Unit Test', () => {
       }
     })
 
-    expect(css.render('flex !flex grid !grid').join('\n')).toContain(`.flex {
+    expect(css.render('flex !flex grid !grid')).toContain(`.flex {
   display: flex;
 }
 .\\!flex {
@@ -248,7 +247,7 @@ describe('TenoxUI Unit Test', () => {
 .\\!grid {
   display: grid !important;
 }`)
-    expect(css.render({ div: 'bg-red !flex hover:bg-blue' }).join('\n')).toContain(`div {
+    expect(css.render({ div: 'bg-red !flex hover:bg-blue' })).toContain(`div {
   background: red;
   display: flex !important;
 }
@@ -271,7 +270,7 @@ div:hover {
       }
     })
 
-    expect(ui.render('@akl:bg-red').join('\n')).toBe(`@media print {
+    expect(ui.render('@akl:bg-red')).toBe(`@media print {
   .\\@akl\\:bg-red {
     background: red;
   }

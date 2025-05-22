@@ -1,6 +1,6 @@
 import { TenoxUI as Core, toKebabCase, Result } from '@tenoxui/core'
 import { TenoxUI as Moxie } from '@tenoxui/moxie'
-import { Config } from './types'
+import { Config, ShorthandItem, AliasItem } from './types'
 import type { CSSProperty } from '@tenoxui/types'
 
 export class TenoxUI extends Core {
@@ -109,7 +109,7 @@ export class TenoxUI extends Core {
     return result.join('\n')
   }
 
-  private formatRules(cssRules: string | string[] | null, value: string | null): string {
+  public formatRules(cssRules: string | string[] | null, value: string | null): string {
     if (Array.isArray(cssRules) && value !== null) {
       return cssRules
         .map((prop: string) =>
@@ -122,7 +122,9 @@ export class TenoxUI extends Core {
     return cssRules as string
   }
 
-  private formatAliasRules(rules: any[]): string {
+  private formatAliasRules(
+    rules: { cssRules: string | string[] | null; value: string | null; isImportant: boolean }[]
+  ): string {
     return rules
       .map((rule) => {
         const rules = this.formatRules(rule.cssRules, rule.value)
@@ -156,7 +158,7 @@ export class TenoxUI extends Core {
           baseRules.push(mainRules)
 
           if (item.variants && Array.isArray(item.variants)) {
-            item.variants.forEach((variant: any) => {
+            item.variants.forEach((variant) => {
               const variantRules = this.beautifyRules(this.formatAliasRules(variant.rules))
               const variantType = variant.variant
 
@@ -204,12 +206,12 @@ export class TenoxUI extends Core {
     return finalResults
   }
 
-  private processAliasItem(item: any, className?: string): string[] {
+  private processAliasItem(item: AliasItem, className?: string): string[] {
     const results: string[] = []
     const mainRules = this.beautifyRules(this.formatAliasRules(item.rules), item.isImportant)
     const mainClassName = className || item.className
 
-    if (item.prefix) {
+    if (item.prefix && item.prefix.data) {
       if (item.prefix.data.includes('&')) {
         // Handle ampersand variant, such as pseudo-classes
         const selector = this.replaceAmpersand(item.prefix.data, mainClassName)
@@ -226,7 +228,7 @@ export class TenoxUI extends Core {
 
     // Process variants array if any
     if (item.variants && Array.isArray(item.variants)) {
-      item.variants.forEach((variant: any) => {
+      item.variants.forEach((variant) => {
         const variantRules = this.beautifyRules(
           this.formatAliasRules(variant.rules),
           item.isImportant
@@ -247,7 +249,7 @@ export class TenoxUI extends Core {
     return results
   }
 
-  private processShorthandItem(item: any): string {
+  private processShorthandItem(item: ShorthandItem): string {
     const { className, cssRules, value, variants, isImportant } = item
     const rules = this.formatRules(cssRules, value)
     const valueItem = Array.isArray(cssRules) || value === null ? '' : `: ${value}`
@@ -257,16 +259,16 @@ export class TenoxUI extends Core {
       return this.createCssBlock(`.${className}`, finalRules)
     }
 
-    if (variants.data.includes('&')) {
+    if (variants.data && variants.data.includes('&')) {
       const selector = this.replaceAmpersand(variants.data, className)
       return this.createCssBlock(selector, finalRules)
     } else {
       const innerBlock = this.createCssBlock(`.${className}`, finalRules)
-      return this.createCssBlock(variants.data, innerBlock, false)
+      return this.createCssBlock(variants.data as string, innerBlock, false)
     }
   }
 
-  public sortedClassNameItem(classNames: string | string[]): Result[] | null {
+  private sortedClassNameItem(classNames: string | string[]): Result[] | null {
     const processedResults = this.process(classNames)
 
     if (!processedResults || processedResults.length === 0) return null
@@ -295,7 +297,7 @@ export class TenoxUI extends Core {
     })
   }
 
-  public render(
+  public getRulesData(
     ...classParams: Array<string | string[] | Record<string, string | string[]>>
   ): string[] {
     let results: string[] = []
@@ -330,10 +332,17 @@ export class TenoxUI extends Core {
 
     return results
   }
+
+  public render(
+    ...classParams: Array<string | string[] | Record<string, string | string[]>>
+  ): string {
+    return this.getRulesData(...classParams).join('\n')
+  }
 }
 
 export * from './types'
 export { TenoxUI as Core } from '@tenoxui/core'
+export { escapeCSSSelector, constructRaw, regexp, Moxie } from '@tenoxui/core'
 export type {
   PropertyParamValue,
   PropertyParams,

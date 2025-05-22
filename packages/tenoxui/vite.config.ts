@@ -3,6 +3,17 @@ import { createConfig } from '../vite.config.base.ts'
 export default createConfig({
   name: '__tenoxui__',
   entry: 'src/index.ts',
-  formats: ['es', 'iife', 'cjs', 'umd'],
-  sourcemap: true
+  formats: ['es', 'cjs', 'iife', 'umd'],
+  sourcemap: true,
+  outDir: '.temp',
+  rollupOptions: {
+    output: {
+      exports: 'named',
+      globals: {
+        '@tenoxui/moxie': '__tenoxui_moxie__',
+        '@tenoxui/core': '__tenoxui_core__'
+      }
+    },
+    external: ['@tenoxui/moxie', '@tenoxui/core']
+  }
 })
