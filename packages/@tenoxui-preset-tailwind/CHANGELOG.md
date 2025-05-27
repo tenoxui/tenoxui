@@ -1,5 +1,11 @@
 Changelog
 
+## `v1.0.0-alpha.6` - `2025-05-27`
+
+### Added
+
+- Added CSS variables for before the fallback for `default-font-family` group in `values`
+
 ## `v1.0.0-alpha.5` - `2025-05-20`
 
 ### Changed

@@ -14,13 +14,13 @@ describe('Typography', () => {
     ]
     expect(css.render(classNames)).toBe(
       `.font-sans {
-  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-family: var(--tw-default-font-sans), ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 .font-serif {
-  font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  font-family: var(--tw-default-font-serif), ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
 }
 .font-mono {
-  font-family: FMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-family: var(--tw-default-font-mono), FMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 .font-\\(family-name\\:Inter\\,_sans-serif\\) {
   font-family: Inter, sans-serif;
