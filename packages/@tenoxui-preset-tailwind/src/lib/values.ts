@@ -41,9 +41,8 @@ export const values: Values = {
   },
   /* font family value */
   'default-font-family': {
-    sans: 'var(--tw-default-font-sans), ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"',
-    serif:
-      'var(--tw-default-font-serif), ui-serif, Georgia, Cambria, "Times New Roman", Times, serif',
-    mono: 'var(--tw-default-font-mono), FMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace'
+    sans: 'var(--tw-default-font-sans, var(--tw-font-sans, sans-serif))',
+    serif: 'var(--tw-default-font-serif, var(--tw-font-serif, serif))',
+    mono: 'var(--tw-default-font-mono, var(--tw-font-mono, monospace))'
   }
 }

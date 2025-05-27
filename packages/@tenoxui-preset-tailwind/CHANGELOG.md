@@ -1,5 +1,9 @@
 Changelog
 
+## `v1.0.0` - `2025-05-27`
+
+- Final enhancements and release `v1`
+
 ## `v1.0.0-alpha.6` - `2025-05-27`
 
 ### Added

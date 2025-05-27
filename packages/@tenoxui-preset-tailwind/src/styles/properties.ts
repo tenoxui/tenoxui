@@ -93,5 +93,8 @@ export const properties: Record<string, string | string[]> = {
     [--tw-ease]-[initial]
     [--tw-text-shadow-color]-[initial]
     [--tw-text-shadow-alpha]-[100%]
-    [--tw-font-weight]-[initial]`
+    [--tw-font-weight]-[initial]
+    [--tw-font-sans]-[ui-sans-serif,_system-ui,_sans-serif,_"Apple_Color_Emoji",_"Segoe_UI_Emoji",_"Segoe_UI_Symbol",_"Noto_Color_Emoji"]
+    [--tw-font-serif]-[ui-serif,_Georgia,_Cambria,_"Times_New_Roman",_Times,_serif]
+    [--tw-font-mono]-[FMono-Regular,_Menlo,_Monaco,_Consolas,_"Liberation_Mono",_"Courier_New",_monospace]`
 }
