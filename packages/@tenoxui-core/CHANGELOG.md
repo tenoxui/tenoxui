@@ -1,5 +1,19 @@
 # Changelog
 
+## `v2.0.3` - `2025-05-27`
+
+### Changed
+
+- All string `variants` will handled directly without `prefixLoader`
+
+### Fixed
+
+- `variant` with same prefix isn't handled properly.
+
+## `v2.0.2` - `2025-05-22`
+
+- Types are not generated and not included on distribution
+
 ## `v2.0.1` - `2025-05-21`
 
 ### Fixed

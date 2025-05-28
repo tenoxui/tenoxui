@@ -9,6 +9,7 @@ export class TenoxUI {
   private prefixLoader: Moxie
   private engine: typeof Moxie
   private variants: Variants
+  private variantRules: Variants
   private property: Property
   private values: Values
   private classes: Classes
@@ -45,10 +46,13 @@ export class TenoxUI {
       tenoxuiOptions
     )
     this.main = new this.engine(this.tuiConfig)
+
+    const { property: prefixProperty = {} } = prefixLoaderOptions
+    this.variantRules = { ...this.variants, ...(prefixProperty as Variants) }
     this.prefixLoader = new this.engine(
       merge(
         {
-          property: this.variants as Property,
+          property: this.variantRules as Property,
           values: this.breakpoints,
           prefixChars: reservedVariantChars
         },
@@ -96,14 +100,23 @@ export class TenoxUI {
   }
 
   public generatePrefix(prefix: string): null | string {
-    if (this.prefixLoader.parse(prefix)) {
-      const moxieRule = this.processCustomPrefix(prefix)
-      if (moxieRule && typeof moxieRule === 'string') {
-        if (moxieRule.startsWith('value:')) {
-          const actualRule = moxieRule.substring(6)
+    // handle string variants directly
+    const variantRegistry = this.variantRules[prefix]
+    if (variantRegistry && typeof variantRegistry === 'string') {
+      return variantRegistry.startsWith('value:') // tenoxui direct value `type`
+        ? variantRegistry.substring(6)
+        : variantRegistry
+    }
 
-          return actualRule
-        }
+    // handle dynamic variants/variant function with hooks using prefixLoader
+    const parsed = this.prefixLoader.parse(prefix)
+    if (parsed) {
+      if (typeof this.variantRules[(parsed as string[])[1]] === 'string' && parsed[2]) return null
+
+      const moxieRule = this.processCustomPrefix(prefix)
+
+      if (moxieRule && typeof moxieRule === 'string') {
+        if (moxieRule.startsWith('value:')) return moxieRule.substring(6)
         return moxieRule
       }
     }
