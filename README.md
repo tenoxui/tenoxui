@@ -29,18 +29,16 @@ const css = new TenoxUI({
 })
 
 console.log(
-  css
-    .render([
-      'bg-red',
-      'm-10px',
-      'p-4',
-      'p-3.5',
-      'hover:bg-#ccf654',
-      'dark:bg-[rgb(255_0_0)]',
-      'md:bg-blue',
-      'max-md:m-3.5rem'
-    ])
-    .join('\n')
+  css.render([
+    'bg-red',
+    'm-10px',
+    'p-4',
+    'p-3.5',
+    'hover:bg-#ccf654',
+    'dark:bg-[rgb(255_0_0)]',
+    'md:bg-blue',
+    'max-md:m-3.5rem'
+  ])
 )
 ```
 
