@@ -62,10 +62,10 @@ export const border: {
           y: 'borderBlock',
           s: 'borderInlineStart',
           e: 'borderInlineEnd',
-          t: 'borderInlineTop',
-          r: 'borderInlineRight',
-          b: 'borderInlineBottom',
-          l: 'borderInlineLeft'
+          t: 'borderTop',
+          r: 'borderRight',
+          b: 'borderBottom',
+          l: 'borderLeft'
         }
 
         return `value:${toKebab(`${keys[value]}Width` as CSSPropertyOrVariable)}: 1px`

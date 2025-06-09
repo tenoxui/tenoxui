@@ -134,10 +134,10 @@ describe('Border', () => {
   border-block-width: 1px;
 }
 .border-t {
-  border-inline-top-width: 1px;
+  border-top-width: 1px;
 }
 .border-b {
-  border-inline-bottom-width: 1px;
+  border-bottom-width: 1px;
 }
 .border-4 {
   border-width: 4px;

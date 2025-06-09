@@ -1,5 +1,11 @@
 Changelog
 
+## `v1.0.1` - `2025-06-09`
+
+### Fixed
+
+- `border-{t|r|b|l}` utility classes returns `border-inline-{direction}-width` instead of `border-{direction}-width`
+
 ## `v1.0.0` - `2025-05-27`
 
 - Final enhancements and release `v1`
