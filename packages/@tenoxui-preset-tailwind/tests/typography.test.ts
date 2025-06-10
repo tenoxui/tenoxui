@@ -450,6 +450,17 @@ describe('Typography', () => {
 }`
     )
   })
+  test('Text Decoration Style', () => {
+    const classNames = ['decoration-dashed', 'decoration-solid']
+    expect(css.render(classNames)).toBe(
+      `.decoration-dashed {
+  text-decoration-style: dashed;
+}
+.decoration-solid {
+  text-decoration-style: solid;
+}`
+    )
+  })
   test('Text Decoration Color', () => {
     const classNames = [
       'decoration-rebeccapurple',

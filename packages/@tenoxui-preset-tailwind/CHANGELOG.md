@@ -1,5 +1,11 @@
 Changelog
 
+## `v1.0.2` - `2025-06-10`
+
+### Fixed
+
+- `decoration-{style}` utility returns css rules without `:` (e.g. `decoration-dashed` => `text-decoration-style dashed`)
+
 ## `v1.0.1` - `2025-06-09`
 
 ### Fixed

@@ -204,7 +204,7 @@ export const typography: {
         if (unit) return null
 
         if (['solid', 'double', 'wavy', 'dotted', 'dashed'].includes(value) && !secondValue) {
-          return `value:${toKebab('textDecorationStyle')} ${value}`
+          return `value:${toKebab('textDecorationStyle')}: ${value}`
         }
 
         return key === 'color' || (!is.color.test(value) && value !== 'current')
