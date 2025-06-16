@@ -1,8 +1,56 @@
-import { TenoxUI as Moxie } from '@tenoxui/moxie'
-import type { Property, Config as MoxieOptions, PropertyParams } from '@tenoxui/moxie'
-import type { Values, Classes, Aliases } from '@tenoxui/types'
+import { Core as Moxie } from '../lib/core'
+import type { GetCSSProperty, Values, Classes, Aliases } from '@tenoxui/types'
+
+export type PropertyParams = {
+  key?: string | null
+  value?: string
+  unit?: string
+  secondValue?: string
+  secondUnit?: string
+  raw?: Parsed
+}
 
 export type DirectValue = `value:${string}`
+
+export type PropertyParamValue =
+  | GetCSSProperty
+  | DirectValue
+  | ((params: PropertyParams) => null | GetCSSProperty | DirectValue | Partial<ProcessedStyle>)
+
+export type ValuePropType = string | string[] | ((params: PropertyParams) => string | null) | null
+
+export type PropertyValue =
+  | PropertyParamValue
+  | {
+      property?: PropertyParamValue
+      value?: ValuePropType
+      group?: string
+    }
+
+export type Property<T = PropertyValue> = {
+  [type: string]: T
+}
+
+export interface MoxieConfig {
+  property?: Property
+  values?: Values
+  classes?: Classes
+  prefixChars?: string[]
+}
+
+export type Parsed = null | (string | undefined)[]
+
+export type ProcessedStyle = {
+  className: string
+  cssRules: string | string[] | null
+  value: string | null
+  prefix?: string | null
+  isCustom?: boolean | null
+}
+
+export type Results = ProcessedStyle & {
+  raw?: Parsed
+}
 
 export type VariantParamValue =
   | string
@@ -29,12 +77,7 @@ export type Variants = {
 export type Breakpoints = {
   [bpName: string]: string
 }
-export interface TenoxUIConfig {
-  property?: Property
-  values?: Values
-  classes?: Classes
-  prefixChars?: string[] // @tenoxui/moxie@0.6.7+
-}
+
 export interface Config {
   property: Property
   values: Values
@@ -43,10 +86,11 @@ export interface Config {
   breakpoints: Breakpoints
   aliases: Aliases
   tenoxui: typeof Moxie
-  tenoxuiOptions: MoxieOptions
+  tenoxuiOptions: MoxieConfig
   reservedVariantChars: string[]
-  prefixLoaderOptions: MoxieOptions
+  prefixLoaderOptions: MoxieConfig
 }
+
 export type Result =
   | {
       className: string
@@ -74,13 +118,3 @@ export type Result =
           }[]
       raw: null | (string | undefined)[]
     }
-export type {
-  PropertyParamValue,
-  PropertyParams,
-  ValuePropType,
-  PropertyValue,
-  Property,
-  Config as MoxieConfig,
-  Parsed,
-  ProcessedStyle
-} from '@tenoxui/moxie'

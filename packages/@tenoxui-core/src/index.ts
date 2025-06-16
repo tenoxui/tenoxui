@@ -1,7 +1,7 @@
-import type { Property } from '@tenoxui/moxie'
 import type { Values, Classes, Aliases } from '@tenoxui/types'
-import type { Variants, Breakpoints, TenoxUIConfig, Config, Result } from './types'
-import { TenoxUI as Moxie, escapeCSSSelector } from '@tenoxui/moxie'
+import type { Property, Variants, Breakpoints, MoxieConfig, Config, Result } from './types'
+import { Core as Moxie } from './lib/core'
+import { escapeCSSSelector } from './utils/escapeSelector'
 import { merge } from '@nousantx/someutils'
 
 export class TenoxUI {
@@ -15,7 +15,7 @@ export class TenoxUI {
   private classes: Classes
   private aliases: Aliases
   private breakpoints: Breakpoints
-  private tuiConfig: TenoxUIConfig
+  private tuiConfig: MoxieConfig
 
   constructor({
     property = {},
@@ -27,7 +27,8 @@ export class TenoxUI {
     tenoxui = Moxie,
     tenoxuiOptions = {},
     reservedVariantChars = [],
-    prefixLoaderOptions = {}
+    prefixLoaderOptions = {},
+    plugins = []
   }: Partial<Config> = {}) {
     this.engine = tenoxui
     this.variants = variants
@@ -36,6 +37,7 @@ export class TenoxUI {
     this.classes = classes
     this.aliases = aliases
     this.breakpoints = breakpoints
+    this.plugins = plugins
     this.tuiConfig = merge(
       {
         property: this.property,
@@ -61,7 +63,7 @@ export class TenoxUI {
     )
   }
 
-  public createEngine(inputConfig: Partial<TenoxUIConfig> = {}): Moxie {
+  public createEngine(inputConfig: Partial<MoxieConfig> = {}): Moxie {
     return new this.engine(inputConfig)
   }
 
@@ -100,6 +102,16 @@ export class TenoxUI {
   }
 
   public generatePrefix(prefix: string): null | string {
+    let pluginResult
+
+    if (this.plugins.length > 0) {
+      this.plugins.forEach((plugin) => {
+        pluginResult = plugin.processVariant(prefix)
+      })
+    }
+
+    if (pluginResult) return pluginResult
+
     // handle string variants directly
     const variantRegistry = this.variantRules[prefix]
     if (variantRegistry && typeof variantRegistry === 'string') {
@@ -355,7 +367,7 @@ export class TenoxUI {
   }
 }
 
-export { escapeCSSSelector, constructRaw, regexp, TenoxUI as Moxie } from '@tenoxui/moxie'
-export * from './utils/converter'
+export { Core as Moxie } from './lib/core'
+export * from './utils'
 export * from './types'
 export default TenoxUI
