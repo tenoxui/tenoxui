@@ -1,7 +1,4 @@
-import type { CSSProperty } from '@tenoxui/types'
-
-export function toKebabCase(prop: CSSProperty): string {
-  const str = prop as string
+export function toKebabCase(str: string): string {
   if (/^(webkit|moz|ms|o)[A-Z]/.test(str)) {
     const match = str.match(/^(webkit|moz|ms|o)/)
     if (match) {

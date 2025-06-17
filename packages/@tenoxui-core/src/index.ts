@@ -1,5 +1,5 @@
 import type { Values, Classes, Aliases } from '@tenoxui/types'
-import type { Property, Variants, Breakpoints, MoxieConfig, Config, Result } from './types'
+import type { Property, Variants, Breakpoints, MoxieConfig, Config, Result, Plugin } from './types'
 import { Core as Moxie } from './lib/core'
 import { escapeCSSSelector } from './utils/escapeSelector'
 import { merge } from '@nousantx/someutils'
@@ -10,15 +10,16 @@ export class TenoxUI {
   private engine: typeof Moxie
   private variants: Variants
   private variantRules: Variants
-  private property: Property
+  private utilities: Property
   private values: Values
   private classes: Classes
   private aliases: Aliases
   private breakpoints: Breakpoints
   private tuiConfig: MoxieConfig
+  private plugins: Plugin[]
 
   constructor({
-    property = {},
+    utilities = {},
     values = {},
     classes = {},
     aliases = {},
@@ -32,7 +33,7 @@ export class TenoxUI {
   }: Partial<Config> = {}) {
     this.engine = tenoxui
     this.variants = variants
-    this.property = property
+    this.utilities = utilities
     this.values = values
     this.classes = classes
     this.aliases = aliases
@@ -40,7 +41,7 @@ export class TenoxUI {
     this.plugins = plugins
     this.tuiConfig = merge(
       {
-        property: this.property,
+        utilities: this.utilities,
         values: this.values,
         classes: this.classes,
         prefixChars: reservedVariantChars
@@ -49,18 +50,20 @@ export class TenoxUI {
     )
     this.main = new this.engine(this.tuiConfig)
 
-    const { property: prefixProperty = {} } = prefixLoaderOptions
+    const { utilities: prefixProperty = {} } = prefixLoaderOptions
     this.variantRules = { ...this.variants, ...(prefixProperty as Variants) }
     this.prefixLoader = new this.engine(
       merge(
         {
-          property: this.variantRules as Property,
+          utilities: this.variantRules as Property,
           values: this.breakpoints,
           prefixChars: reservedVariantChars
         },
         prefixLoaderOptions
       )
     )
+
+    this.initPlugin()
   }
 
   public createEngine(inputConfig: Partial<MoxieConfig> = {}): Moxie {
@@ -69,6 +72,16 @@ export class TenoxUI {
 
   public getConfig() {
     return this.tuiConfig
+  }
+
+  private initPlugin() {
+    /*
+    if (this.plugins.length > 0) {
+      this.plugins.forEach((plugin) => {
+        if (plugin.addUtilities) plugin.addUtilities()
+      })
+    }
+    */
   }
 
   private getBreakpointQuery(prefix: string): string | null {
@@ -102,15 +115,19 @@ export class TenoxUI {
   }
 
   public generatePrefix(prefix: string): null | string {
-    let pluginResult
-
     if (this.plugins.length > 0) {
+      let pluginResult
       this.plugins.forEach((plugin) => {
-        pluginResult = plugin.processVariant(prefix)
+        if (plugin.processVariant) {
+          try {
+            pluginResult = plugin.processVariant(prefix)
+          } catch (err) {
+            console.error(`${plugin.name}: Error occurred when processing variant`, err)
+          }
+        }
       })
+      if (pluginResult) return pluginResult
     }
-
-    if (pluginResult) return pluginResult
 
     // handle string variants directly
     const variantRegistry = this.variantRules[prefix]
@@ -329,9 +346,32 @@ export class TenoxUI {
 
     if (!parsedClassNames || parsedClassNames.length === 0) return null
 
-    const result: Result[] = []
+    let result: Result[] = []
 
     parsedClassNames.forEach((className, index) => {
+      if (this.plugins.length > 0) {
+        let pluginResult
+        this.plugins.forEach((plugin) => {
+          if (plugin.processClassName) {
+            const classNPrefix = (str: string) => {
+              const index = str.lastIndexOf(':')
+              if (index === -1) return ['', str]
+              return [str.slice(0, index), str.slice(index + 1)]
+            }
+
+            const [prefix, type] = classNPrefix(className)
+            const variant = this.generatePrefix(prefix)
+
+            try {
+              pluginResult = plugin.processClassName({ className: type, prefix, variant })
+            } catch (err) {
+              console.error(`${plugin.name}: Error occurred when processing class name`, err)
+            }
+          }
+        })
+        if (pluginResult) result.push(pluginResult)
+      }
+
       const parsed = this.main.parse(className, Object.keys(this.aliases))
       const isImportant = this.isImportantClass(className, index, importantMap)
       const aliasClass = parsed && parsed[0] ? className.slice(parsed[0].length + 1) : className
@@ -362,6 +402,24 @@ export class TenoxUI {
         })
       }
     })
+
+    if (this.plugins.length > 0) {
+      this.plugins.forEach((plugin) => {
+        if (plugin.transform) {
+          result = result.map((data) => {
+            try {
+              return { ...data, ...plugin.transform!(data) } as Result
+            } catch (err) {
+              console.error(
+                `${plugin.name}: Error occurred when trying to transform final result`,
+                err
+              )
+              return data
+            }
+          })
+        }
+      })
+    }
 
     return result
   }

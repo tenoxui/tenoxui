@@ -32,7 +32,7 @@ export type Property<T = PropertyValue> = {
 }
 
 export interface MoxieConfig {
-  property?: Property
+  utilities?: Property
   values?: Values
   classes?: Classes
   prefixChars?: string[]
@@ -79,7 +79,7 @@ export type Breakpoints = {
 }
 
 export interface Config {
-  property: Property
+  utilities: Property
   values: Values
   classes: Classes
   variants: Variants
@@ -89,6 +89,7 @@ export interface Config {
   tenoxuiOptions: MoxieConfig
   reservedVariantChars: string[]
   prefixLoaderOptions: MoxieConfig
+  plugins: Plugin[]
 }
 
 export type Result =
@@ -118,3 +119,14 @@ export type Result =
           }[]
       raw: null | (string | undefined)[]
     }
+
+export interface Plugin<ResultType = Result> {
+  name: string
+  transform?: (param: Partial<ResultType>) => Partial<ResultType>
+  processClassName?: (param: {
+    className: string
+    prefix?: string
+    variant?: string
+  }) => Partial<ResultType>
+  processVariant?: (variant: string) => string
+}

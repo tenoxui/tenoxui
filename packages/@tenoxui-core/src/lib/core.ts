@@ -4,13 +4,13 @@ import { toKebabCase, escapeCSSSelector, constructRaw } from '../utils'
 import { regexp, escapeRegex } from './regexp'
 
 export class Core {
-  private property: Property
+  private utilities: Property
   private values: Values
   private classes: Classes
   private prefixChars: string[]
 
-  constructor({ property = {}, values = {}, classes = {}, prefixChars = [] }: Config = {}) {
-    this.property = property
+  constructor({ utilities = {}, values = {}, classes = {}, prefixChars = [] }: Config = {}) {
+    this.utilities = utilities
     this.values = values
     this.classes = classes
     this.prefixChars = prefixChars.map(escapeRegex)
@@ -19,7 +19,7 @@ export class Core {
   public regexp(safelist?: string[]) {
     return regexp({
       safelist,
-      property: this.property,
+      property: this.utilities,
       classes: this.classes,
       inputPrefixChars: this.prefixChars
     })
@@ -109,7 +109,7 @@ export class Core {
     className: string = '',
     raw: Parsed
   ): ProcessedStyle | null {
-    const properties = this.property[type]
+    const properties = this.utilities[type]
 
     // return null when properties is an object, but doesn't have `property` field
     if (
