@@ -35,6 +35,7 @@ export interface MoxieConfig {
   utilities?: Property
   values?: Values
   classes?: Classes
+  plugins?: MoxiePlugin[]
   prefixChars?: string[]
 }
 
@@ -120,13 +121,18 @@ export type Result =
       raw: null | (string | undefined)[]
     }
 
-export interface Plugin<ResultType = Result> {
+export interface MoxiePlugin {
   name: string
-  transform?: (param: Partial<ResultType>) => Partial<ResultType>
+  parseClassName?: (param: { className: string; utilities?: Property }) => Parsed
+  processUtility?: (param: { className: string; utilities?: Property; values?: Values }) => Results
+}
+
+export interface Plugin<ResultType = Result> extends MoxiePlugin {
   processClassName?: (param: {
     className: string
     prefix?: string
-    variant?: string
+    variant?: string | null
   }) => Partial<ResultType>
   processVariant?: (variant: string) => string
+  transform?: (param: Partial<ResultType>) => Partial<ResultType>
 }

@@ -44,6 +44,7 @@ export class TenoxUI {
         utilities: this.utilities,
         values: this.values,
         classes: this.classes,
+        plugins: this.plugins,
         prefixChars: reservedVariantChars
       },
       tenoxuiOptions
@@ -373,6 +374,7 @@ export class TenoxUI {
       }
 
       const parsed = this.main.parse(className, Object.keys(this.aliases))
+
       const isImportant = this.isImportantClass(className, index, importantMap)
       const aliasClass = parsed && parsed[0] ? className.slice(parsed[0].length + 1) : className
       if (parsed && parsed[1] && this.aliases[aliasClass]) {
@@ -387,6 +389,8 @@ export class TenoxUI {
         const processed = this.main.process(className)
 
         processed.forEach((item) => {
+          if (!item) return
+
           const { className: itemClassName, cssRules, value, prefix, raw } = item
 
           if (prefix && !this.generatePrefix(prefix)) return

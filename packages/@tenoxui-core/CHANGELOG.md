@@ -1,5 +1,19 @@
 # Changelog
 
+## `v2.1.0` - `2025-06-17`
+
+### **Changed**
+
+- Renamed `property` field with `utilities`
+
+### Added
+
+- Plugin feature
+
+### Development
+
+- Merged `@tenoxui/moxie` source here
+
 ## `v2.0.3` - `2025-05-27`
 
 ### Changed

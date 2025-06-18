@@ -1,6 +1,6 @@
 {
   "name": "@tenoxui/core",
-  "version": "2.0.3",
+  "version": "2.1.0",
   "description": "Core component of tenoxui",
   "author": "NOuSantx <nousantx@gmail.com>",
   "license": "MIT",
@@ -43,7 +43,7 @@
     "test:watch": "vitest",
     "type:check": "tsc --noEmit",
     "type:build": "tsc --declaration --emitDeclarationOnly --outDir dist",
-    "build:prod": "pnpm type:check && pnpm build && pnpm type:build"
+    "build:prod": "pnpm type:check && pnpm build --minify && pnpm type:build"
   },
   "peerDependencies": {
     "@tenoxui/moxie": ">=0.7.0"

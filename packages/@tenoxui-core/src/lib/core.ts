@@ -1,5 +1,12 @@
 import type { Values, Classes, CSSPropertyOrVariable } from '@tenoxui/types'
-import type { Property, MoxieConfig as Config, Parsed, ProcessedStyle, Results } from '../types'
+import type {
+  Property,
+  MoxieConfig as Config,
+  Parsed,
+  ProcessedStyle,
+  Results,
+  MoxiePlugin
+} from '../types'
 import { toKebabCase, escapeCSSSelector, constructRaw } from '../utils'
 import { regexp, escapeRegex } from './regexp'
 
@@ -8,11 +15,19 @@ export class Core {
   private values: Values
   private classes: Classes
   private prefixChars: string[]
+  private plugins: MoxiePlugin[]
 
-  constructor({ utilities = {}, values = {}, classes = {}, prefixChars = [] }: Config = {}) {
+  constructor({
+    utilities = {},
+    values = {},
+    classes = {},
+    prefixChars = [],
+    plugins = []
+  }: Config = {}) {
     this.utilities = utilities
     this.values = values
     this.classes = classes
+    this.plugins = plugins
     this.prefixChars = prefixChars.map(escapeRegex)
   }
 
@@ -26,6 +41,20 @@ export class Core {
   }
 
   public parse(className: string, safelist?: string[]): Parsed {
+    for (const plugin of this.plugins) {
+      if (typeof plugin.parseClassName === 'function') {
+        try {
+          const result = plugin.parseClassName({ className, utilities: this.utilities })
+          if (result) return result
+        } catch (err) {
+          console.error(
+            `${plugin.name || 'UnknownPlugin'}: Error parsing class name "${className}":`,
+            err
+          )
+        }
+      }
+    }
+
     const patterns = this.regexp(safelist)
     // catch all possible class names with value defined
     const fullMatch = className.match(new RegExp(patterns.all))
@@ -537,6 +566,27 @@ export class Core {
       for (const className of classList) {
         try {
           if (!className) continue
+
+          if (this.plugins.length > 0) {
+            this.plugins.forEach((plugin) => {
+              if (plugin.processUtility) {
+                try {
+                  const data = plugin.processUtility({
+                    className,
+                    utilities: this.utilities,
+                    values: this.values
+                  })
+
+                  if (data) results.push(data)
+                } catch (err) {
+                  console.error(
+                    `${plugin.name}: Error occurred when processing class name ${className}`,
+                    err
+                  )
+                }
+              }
+            })
+          }
 
           const parsed = this.parse(className)
           if (!parsed) continue
