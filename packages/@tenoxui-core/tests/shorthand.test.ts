@@ -5,7 +5,7 @@ import { TenoxUI } from '../src/index.ts'
 
 describe('tenoxui/core shorthand test', () => {
   let css = new TenoxUI({
-    property: {
+    utilities: {
       bg: 'background'
     },
     variants: {
@@ -36,7 +36,7 @@ describe('Value Processor', () => {
 
   it('should process basic shorthand', () => {
     const ui = new Moxie({
-      property: {
+      utilities: {
         p: 'padding',
         size: ['width', 'height'],
         'my-color': '--my-color'
@@ -65,7 +65,7 @@ describe('Value Processor', () => {
 
   it('should process basic shorthand with custom value', () => {
     const ui = new Moxie({
-      property: {
+      utilities: {
         p: {
           property: 'padding'
           // value: '{0}'
@@ -139,7 +139,7 @@ describe('Value Processor', () => {
 
   it('should process basic shorthand with direct value', () => {
     const ui = new Moxie({
-      property: {
+      utilities: {
         ui: ({ key }) => key,
         p: ({ value, unit }) =>
           `value:padding: ${!unit ? 0.25 * Number(value) + 'rem' : value + unit}`,
@@ -239,7 +239,7 @@ describe('Value Processor', () => {
 
   it('should process custom value shorthand with direct value', () => {
     const ui = new Moxie({
-      property: {
+      utilities: {
         p: {
           property: 'padding',
           value: ({ value, unit, secondValue, secondUnit }) => {
@@ -263,9 +263,9 @@ describe('Value Processor', () => {
     expect(ui.processShorthand('p', '[40%]', '', '', '1', 'rem').value).toBe('40%') // ignored second value
   })
 
-  it('should process custom value shorthand with direct property and null value', () => {
+  it('should process custom value shorthand with direct utilities and null value', () => {
     const ui = new Moxie({
-      property: {
+      utilities: {
         p: {
           property: ({ value, unit, secondValue, secondUnit }) =>
             `padding: ${value}${unit}${secondValue ? ` ${secondValue + secondUnit}` : ''}`
@@ -280,9 +280,9 @@ describe('Value Processor', () => {
     ) // ignoring second value
   })
 
-  it('should return null on string property and value with key', () => {
+  it('should return null on string utilities and value with key', () => {
     const ui = new Moxie({
-      property: {
+      utilities: {
         bg1: 'background',
         bg2: { property: 'background' },
         bg3: ({ value, key, secondValue }) => (key || secondValue ? null : `background: ${value}`)
@@ -329,7 +329,7 @@ describe('Value Processor', () => {
   // disable secondValue
   it('should disable various way of secondValue', () => {
     const ui = new Moxie({
-      property: {
+      utilities: {
         p1: 'padding',
         p2: ['paddingLeft', 'paddingRight'],
         p3: ({ value, unit, secondValue, key }) =>
@@ -372,7 +372,7 @@ describe('Value Processor', () => {
 
   it('only get value from array of values', () => {
     const ui = new Moxie({
-      property: {
+      utilities: {
         'break-after': {
           property: 'breakAfter',
           value: ['all', 'auto', 'avoid']
@@ -387,7 +387,7 @@ describe('Value Processor', () => {
 
   it('should parse shorthand and apply value based on keys', () => {
     const ui = new Moxie({
-      property: {
+      utilities: {
         ui: ({ key }) => key,
         p: {
           property: ({ key }) => {

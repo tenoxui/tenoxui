@@ -6,7 +6,7 @@ describe('Parser', () => {
 
   it('should parse prefix correctly', () => {
     ui = new Moxie({
-      property: {
+      utilities: {
         h: '...'
       },
       prefixChars: ['@', '*']
@@ -29,7 +29,7 @@ describe('Parser', () => {
 
   it('should parse basic shorthand', () => {
     ui = new Moxie({
-      property: {
+      utilities: {
         m: '...'
       },
       classes: {

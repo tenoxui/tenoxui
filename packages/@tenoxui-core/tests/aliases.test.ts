@@ -3,7 +3,7 @@ import { describe, it, expect } from 'vitest'
 
 describe('tenoxui/core shorthand test', () => {
   let css = new TenoxUI({
-    property: {
+    utilities: {
       bg: 'background',
       m: 'margin',
       size: ['width', 'height']

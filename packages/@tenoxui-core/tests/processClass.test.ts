@@ -4,7 +4,7 @@ import Moxie from '../src/lib/core.ts'
 describe('Value Processor', () => {
   it('should process basic shorthand', () => {
     const ui = new Moxie({
-      property: {
+      utilities: {
         bg: 'background',
         size: ['width', 'height']
       },
@@ -26,7 +26,7 @@ describe('Value Processor', () => {
 
   it('should parse classes from `this.classes`', () => {
     const ui = new Moxie({
-      property: {
+      utilities: {
         h: '...'
       },
       classes: {
@@ -44,7 +44,7 @@ describe('Value Processor', () => {
 
   it('should parse classes from `this.classes`, but with custom value', () => {
     const ui = new Moxie({
-      property: {
+      utilities: {
         h: '...'
       },
       classes: {
@@ -92,7 +92,7 @@ describe('Value Processor', () => {
       // class name `items-center` is being matched as `ms-center` only, -
       // the `ite` is being ignored.
       // `ite{type:ms}-{value:center}`
-      property: {
+      utilities: {
         ms: '...'
       },
       classes: {

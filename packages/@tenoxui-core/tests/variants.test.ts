@@ -3,7 +3,7 @@ import { describe, it, expect } from 'vitest'
 
 describe('tenoxui/core variant test', () => {
   let css = new TenoxUI({
-    property: {
+    utilities: {
       bg: 'background'
     },
     variants: {
@@ -47,7 +47,7 @@ describe('tenoxui/core variant test', () => {
 
   it('should handle complex variant', () => {
     const css = new TenoxUI({
-      property: {
+      utilities: {
         bg: 'background'
       },
       variants: {
@@ -102,7 +102,7 @@ describe('Issues Fix', () => {
      * as value as direct variant, so it shouldn't have any value.
      */
     const css = new TenoxUI({
-      property: {
+      utilities: {
         bg: 'background'
       },
       variants: {
