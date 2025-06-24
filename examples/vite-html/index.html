@@ -11,56 +11,87 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AnyFrame App</title>
-    <meta name="description" content="An app built with AnyFrame and TenoxUI" />
+    <title>TenoxUI Vite Example</title>
+    <meta name="description" content="An app built with TenoxUI and Vite" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body
-    class="bg-neutral-50 text-neutral-950 tr-time-300ms tr-prop-[color,background-color,border-color]"
+    class="bg-gray-50 dark:bg-gray-950 text-gray-950 dark:text-gray-50 [&_p]:text-current/70 transition-colors"
   >
     <header
-      class="p-2rem d-flex ai-center jc-space-between pn-fixed w-mx-1280px mx-auto [t,l,r]-0 bg-neutral-50 tr-time-300ms tr-prop-[background-color] h-72px"
-      data-theme-header
+      class="h-72px flex items-center justify-between px-8 max-w-7xl mx-auto fixed top-0 left-0 right-0"
     >
-      <span class="fs-1.1rem fw-500 ls--0.015em">TenoxUI</span>
-      <nav>
-        <button
-          class="[outline]-none bs-solid bw-1px bdr-c-neutral-200 br-6px box-35px d-flex flex-parent-center bg-neutral-50 text-neutral-950 hover:bg-neutral-100 hover:tr-time-300ms"
-          data-af-theme-toggler
-        ></button>
-      </nav>
-    </header>
-    <main class="w-mx-1280px mx-auto">
-      <article
-        class="p-2rem pt-[calc(72px_+_1rem)] h-100vh d-flex flex-d-column flex-parent-center"
-      >
-        <span
-          class="d-flex flex-parent-center px-8px h-30px br-6px bg-neutral-950/5 bw-1px bs-solid border-neutral-200 gap-6px"
+      <h1 class="inline-flex items-center gap-4px">
+        <svg
+          class="size-24px"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 1920 1920"
+          fill="currentColor"
         >
-          <span class="fs-12px">🚀</span>
-          <div class="w-1px h-14px bg-neutral-200"></div>
-          <span class="text-neutral-800 fs-12px fw-500 ls--0.015em lh-1">
-            @tenoxui/static v0.5 just released!
-          </span>
-        </span>
+          <g>
+            <path
+              d="M 1363.5,325.5 C 1364.55,325.351 1365.55,325.517 1366.5,326C 1411.58,371.816 1457.08,417.316 1503,462.5C 1504.3,464.365 1504.63,466.365 1504,468.5C 1368.97,603.861 1233.64,738.861 1098,873.5C 1096.69,875.641 1095.19,877.641 1093.5,879.5C 1094,880.5 1094.5,881.5 1095,882.5C 1233.33,1020.5 1371.67,1158.5 1510,1296.5C 1512.07,1298.45 1512.74,1300.79 1512,1303.5C 1466.31,1349.53 1420.31,1395.19 1374,1440.5C 1284.69,1352.19 1195.69,1263.53 1107,1174.5C 969.833,1311.67 832.667,1448.83 695.5,1586C 693.833,1586.67 692.167,1586.67 690.5,1586C 645,1540.5 599.5,1495 554,1449.5C 553.333,1448.17 553.333,1446.83 554,1445.5C 691.179,1308.32 828.346,1171.15 965.5,1034C 961.698,1029.03 957.364,1024.53 952.5,1020.5C 950.641,1022.19 948.641,1023.69 946.5,1025C 905.027,1067.23 863.361,1109.23 821.5,1151C 818.967,1152.88 816.467,1154.71 814,1156.5C 813.167,1156.33 812.333,1156.17 811.5,1156C 766.516,1110.74 721.349,1065.57 676,1020.5C 674.699,1018.64 674.365,1016.64 675,1014.5C 720.347,969.32 765.514,923.986 810.5,878.5C 677.18,744.68 543.68,611.014 410,477.5C 409.333,476.5 409.333,475.5 410,474.5C 454.528,430.306 498.694,385.806 542.5,341C 544.455,340.047 546.122,338.713 547.5,337C 548.5,336.333 549.5,336.333 550.5,337C 683.886,470.93 817.386,604.763 951,738.5C 1088.7,600.965 1226.2,463.299 1363.5,325.5 Z M 1363.5,365.5 C 1397.92,398.415 1431.92,431.915 1465.5,466C 1334.33,597.167 1203.17,728.333 1072,859.5C 1038.65,826.081 1005.32,792.748 972,759.5C 971.508,758.451 971.674,757.451 972.5,756.5C 1103.21,626.452 1233.55,496.119 1363.5,365.5 Z M 829.5,899.5 C 863.916,932.415 897.916,965.915 931.5,1000C 892.374,1039.29 853.04,1078.46 813.5,1117.5C 779.68,1084.18 746.014,1050.68 712.5,1017C 751.701,977.965 790.701,938.799 829.5,899.5 Z M 985.5,1054.5 C 1019.42,1086.91 1052.92,1119.91 1086,1153.5C 1086.67,1154.17 1086.67,1154.83 1086,1155.5C 955,1286.5 824,1417.5 693,1548.5C 659.5,1515 626,1481.5 592.5,1448C 723.701,1316.97 854.701,1185.8 985.5,1054.5 Z"
+            />
+          </g>
+        </svg>
+        <span class="text-md font-medium tracking-tighter"> TenoxUI </span>
+      </h1>
+      <button
+        class="size-10 rounded-md flex items-center justify-center bg-transparent hover:bg-gray-500/20 [&_svg]:size-20px transition-colors"
+        data-af-theme-toggler
+      ></button>
+    </header>
+    <main
+      class="max-w-7xl mx-auto h-vh supports-(height:1dvh):h-dvh flex flex-col items-center justify-center"
+    >
+      <div
+        class="flex items-center bg-gray-500/10 rounded-md py-8px px-2 mb-4 border border-gray-500/50"
+      >
+        <span class="text-sm leading-1">🚀</span>
+        <div class="w-1px h-4 bg-gray-500/50 ml-2 mr-2.5 rounded-md"></div>
+        <span class="text-xs leading-1 font-medium tracking-tight text-current/70"
+          ><span class="font-mono">tenoxui@1.0</span> just released! Try it now!</span
+        >
+      </div>
+      <header class="max-w-600px text-center text-balance">
+        <h1 class="text-5xl tracking-tighter font-medium">
+          Build Your Own
+          <span
+            class="_color-(--color:{rose-500})/20 dark:_color-(--color:{primary})/20 inline-flex items-center before:bg-$color relative before:content-['CSS_Framework'] before:absolute before:rotate--1 before:text-transparent text-rose-500 dark:text-primary before:py-1 text-nowrap duration-300 before:rounded-sm"
+            >CSS Framework</span
+          >
+          in Second!
+        </h1>
 
-        <header class="mt-1.6rem tw-balance ta-center w-mx-400px mx-auto">
-          <h1 class="fs-2.5rem fw-500 ls--0.045em lh-1.03">
-            Built Your Own
-            <span class="pn-relative d-inline-flex lh-1 px-4px flex-parent-center">
-              <span
-                class="pn-absolute w-100% bg-primary-500/20 br-2px z--1 h-2.6rem [rotate]--0.5deg"
-              ></span>
-              <span class="text-primary-400">CSS Framework</span></span
-            >
-            in Second!
-          </h1>
-        </header>
-      </article>
+        <p class="mt-8 text-current/70">
+          TenoxUI is a CSS framework engine that allows you to create a highly customized CSS
+          framework with ease and breeze!
+        </p>
+
+        <div class="mt-8 flex items-center justify-center gap-4">
+          <a
+            href="https://tenoxui.web.app"
+            class="inline-flex items-center px-12px h-10 rounded-md bg-rose-500 dark:bg-primary hover:bg-rose-500/70 dark-hover:bg-primary/70 text-gray-50 dark:text-gray-950 transition-colors duration-300"
+            target="_blank"
+            >Docs</a
+          >
+          <a
+            href="https://tenoxui.web.app"
+            class="inline-flex items-center px-12px h-10 rounded-md bg-transparent hover:bg-gray-500/20 transition-colors font-medium duration-300"
+            target="_blank"
+            >GitHub</a
+          >
+        </div>
+      </header>
     </main>
-    <footer class="p-2rem d-flex flex-parent-center">
-      <p class="ls--0.015em fw-500 fs-0.875rem text-neutral-800">Built with TenoxUI</p>
+    <footer class="p-8">
+      <p class="text-center text-xs tracking-tight">&copy; 2025 TenoxUI. All Rights Reserved.</p>
     </footer>
-
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>

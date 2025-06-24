@@ -1,5 +1,5 @@
-import ViteAnyFrame from 'vite-plugin-anyframe/build'
+import tenoxui from 'vite-plugin-tenoxui-beta'
 
 export default {
-  plugins: [ViteAnyFrame()]
+  plugins: [tenoxui()]
 }

@@ -1,5 +1,5 @@
 {
-  "name": "@nousantx/anyframe-vite-html-template",
+  "name": "@tenoxui/vite-example",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -13,10 +13,14 @@
     "@nousantx/color-library": "^0.2.0",
     "@nousantx/someutils": "^0.6.1",
     "@nousantx/tenoxui-create-theme": "^1.0.0",
+    "@tenoxui/core": "^2.0.3",
+    "@tenoxui/preset-tailwind": "^1.0.0",
     "@tenoxui/property": "^1.4.5",
     "@tenoxui/static": "^0.5.1",
+    "tenoxui": "1.0.0",
     "vite": "^6.2.3",
-    "vite-plugin-anyframe": "0.2.1"
+    "vite-plugin-anyframe": "0.2.1",
+    "vite-plugin-tenoxui-beta": "0.1.0-alpha.2"
   },
   "packageManager": "pnpm@10.4.0"
 }
