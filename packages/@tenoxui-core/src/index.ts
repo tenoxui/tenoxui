@@ -1,435 +1,303 @@
-import type { Values, Classes, Aliases } from '@tenoxui/types'
-import type { Property, Variants, Breakpoints, MoxieConfig, Config, Result, Plugin } from './types'
-import { Core as Moxie } from './lib/core'
-import { escapeCSSSelector } from './utils/escapeSelector'
-import { merge } from '@nousantx/someutils'
+import type { Utilities, Variants, Plugin, ProcessResult, Config } from './types'
 
 export class TenoxUI {
-  private main: Moxie
-  private prefixLoader: Moxie
-  private engine: typeof Moxie
+  private utilities: Utilities
   private variants: Variants
-  private variantRules: Variants
-  private utilities: Property
-  private values: Values
-  private classes: Classes
-  private aliases: Aliases
-  private breakpoints: Breakpoints
-  private tuiConfig: MoxieConfig
   private plugins: Plugin[]
+  private _cachedRegexp: { patterns: any; matcher: RegExp } | null = null
+  public matcher: RegExp | null
 
-  constructor({
-    utilities = {},
-    values = {},
-    classes = {},
-    aliases = {},
-    breakpoints = {},
-    variants = {},
-    tenoxui = Moxie,
-    tenoxuiOptions = {},
-    reservedVariantChars = [],
-    prefixLoaderOptions = {},
-    plugins = []
-  }: Partial<Config> = {}) {
-    this.engine = tenoxui
-    this.variants = variants
+  constructor({ variants = {}, utilities = {}, plugins = [] }: Config = {}) {
     this.utilities = utilities
-    this.values = values
-    this.classes = classes
-    this.aliases = aliases
-    this.breakpoints = breakpoints
-    this.plugins = plugins
-    this.tuiConfig = merge(
-      {
-        utilities: this.utilities,
-        values: this.values,
-        classes: this.classes,
-        plugins: this.plugins,
-        prefixChars: reservedVariantChars
-      },
-      tenoxuiOptions
+    this.variants = variants
+    this.plugins = [...plugins].sort((a, b) => (b.priority || 0) - (a.priority || 0))
+    this.matcher = null
+    this.defaultPattern = '[\\w.-]+'
+    this._initializeMatcher()
+  }
+
+  private _initializeMatcher() {
+    const regexpResult = this.regexp()
+    this.matcher = regexpResult.matcher
+  }
+
+  public use(plugin: Plugin): this {
+    this.plugins.push(plugin)
+    this.plugins.sort((a, b) => (b.priority || 0) - (a.priority || 0))
+    this._cachedRegexp = null
+    this._initializeMatcher()
+    return this
+  }
+
+  private createMatcher(variant: string, property: string, value: string) {
+    return new RegExp(
+      `^(?:(?<variant>${variant}):)?(?<property>${property})(?:-(?<value>${value}?))?$`
     )
-    this.main = new this.engine(this.tuiConfig)
-
-    const { utilities: prefixProperty = {} } = prefixLoaderOptions
-    this.variantRules = { ...this.variants, ...(prefixProperty as Variants) }
-    this.prefixLoader = new this.engine(
-      merge(
-        {
-          utilities: this.variantRules as Property,
-          values: this.breakpoints,
-          prefixChars: reservedVariantChars
-        },
-        prefixLoaderOptions
-      )
-    )
-
-    this.initPlugin()
   }
 
-  public createEngine(inputConfig: Partial<MoxieConfig> = {}): Moxie {
-    return new this.engine(inputConfig)
-  }
-
-  public getConfig() {
-    return this.tuiConfig
-  }
-
-  private initPlugin() {
-    /*
-    if (this.plugins.length > 0) {
-      this.plugins.forEach((plugin) => {
-        if (plugin.addUtilities) plugin.addUtilities()
-      })
-    }
-    */
-  }
-
-  private getBreakpointQuery(prefix: string): string | null {
-    if (prefix.startsWith('min-')) {
-      const breakpointName = prefix.substring(4)
-      if (this.breakpoints[breakpointName]) {
-        return `@media (width >= ${this.breakpoints[breakpointName]})`
-      }
-    } else if (prefix.startsWith('max-')) {
-      const breakpointName = prefix.substring(4)
-      if (this.breakpoints[breakpointName]) {
-        return `@media (width < ${this.breakpoints[breakpointName]})`
-      }
-    } else if (this.breakpoints[prefix]) {
-      return `@media (width >= ${this.breakpoints[prefix]})`
-    }
-    return null
-  }
-
-  private processCustomPrefix(prefix: string): string | string[] | null {
-    try {
-      const processedItems = this.prefixLoader.process(prefix)
-
-      if (processedItems?.length > 0) {
-        return processedItems[0].cssRules
-      }
-    } catch (error) {
-      console.error(`Failed to process prefix ${prefix}:`, error)
-    }
-    return null
-  }
-
-  public generatePrefix(prefix: string): null | string {
-    if (this.plugins.length > 0) {
-      let pluginResult
-      this.plugins.forEach((plugin) => {
-        if (plugin.processVariant) {
-          try {
-            pluginResult = plugin.processVariant(prefix)
-          } catch (err) {
-            console.error(`${plugin.name}: Error occurred when processing variant`, err)
-          }
-        }
-      })
-      if (pluginResult) return pluginResult
+  public regexp() {
+    if (this._cachedRegexp) {
+      return this._cachedRegexp
     }
 
-    // handle string variants directly
-    const variantRegistry = this.variantRules[prefix]
-    if (variantRegistry && typeof variantRegistry === 'string') {
-      return variantRegistry.startsWith('value:') // tenoxui direct value `type`
-        ? variantRegistry.substring(6)
-        : variantRegistry
+    let patterns = {
+      variant: Object.keys(this.variants).join('|') || this.defaultPattern,
+      property: Object.keys(this.utilities).join('|') || this.defaultPattern,
+      value: this.defaultPattern
     }
+    let matcher = this.createMatcher(patterns.variant, patterns.property, patterns.value)
 
-    // handle dynamic variants/variant function with hooks using prefixLoader
-    const parsed = this.prefixLoader.parse(prefix)
-    if (parsed) {
-      if (typeof this.variantRules[(parsed as string[])[1]] === 'string' && parsed[2]) return null
+    const regexpPlugins = this.plugins
+      .filter((p) => p.regexp)
+      .sort((a, b) => (b.priority || 0) - (a.priority || 0))
 
-      const moxieRule = this.processCustomPrefix(prefix)
+    for (const plugin of regexpPlugins) {
+      if (plugin.regexp) {
+        try {
+          const result = plugin.regexp({
+            patterns,
+            matcher,
+            utilities: this.utilities,
+            variants: this.variants
+          })
 
-      if (moxieRule && typeof moxieRule === 'string') {
-        if (moxieRule.startsWith('value:')) return moxieRule.substring(6)
-        return moxieRule
-      }
-    }
+          if (result) {
+            if (result.patterns) {
+              patterns = { ...patterns, ...result.patterns }
+            }
 
-    // handle direct prefix
-    if (
-      (prefix.startsWith('[') && prefix.endsWith(']')) ||
-      (prefix.startsWith('(') && prefix.endsWith(')'))
-    ) {
-      return this.prefixLoader.processValue(prefix, '', '')
-    }
-
-    // handle breakpoints
-    const breakpointQuery = this.getBreakpointQuery(prefix)
-    if (breakpointQuery) return breakpointQuery
-
-    return null
-  }
-
-  private isImportantClass(
-    className: string,
-    index: number,
-    importantMap: Record<string, boolean>
-  ): boolean {
-    const uniqueKey = `${className}:${index}`
-    return importantMap[uniqueKey] || false
-  }
-
-  private parseImportantClassNames(classNames: string | string[]): {
-    parsedClassNames: string[]
-    importantMap: Record<string, boolean>
-  } {
-    const parsedClassNames: string[] = []
-    const importantMap: Record<string, boolean> = {}
-
-    const classArray = Array.isArray(classNames)
-      ? classNames
-      : classNames.split(/\s+/).filter(Boolean)
-
-    // collect all class names with their important status
-    const processedClasses: { name: string; isImportant: boolean; originalIndex: number }[] = []
-
-    classArray.forEach((className, index) => {
-      if (className.startsWith('!')) {
-        // remove the `!` prefix
-        const originalName = className.slice(1)
-        processedClasses.push({
-          name: originalName,
-          isImportant: true,
-          originalIndex: index
-        })
-      } else {
-        processedClasses.push({
-          name: className,
-          isImportant: false,
-          originalIndex: index
-        })
-      }
-    })
-
-    // create unique keys for the importantMap
-    processedClasses.forEach(({ name, isImportant, originalIndex }) => {
-      parsedClassNames.push(name)
-
-      // create a unique key using both the class name and its position
-      const uniqueKey = `${name}:${originalIndex}`
-      importantMap[uniqueKey] = isImportant
-    })
-
-    return { parsedClassNames, importantMap }
-  }
-
-  public processAlias(
-    className?: string,
-    prefix?: string,
-    raw?: null | (string | undefined)[],
-    isImportant: boolean = false
-  ): {
-    className: string
-    rules: { cssRules: string | string[] | null; value: string | null; isImportant: boolean }[]
-    isImportant: boolean
-    prefix: null | { name: string; data: string | null }
-    variants:
-      | null
-      | {
-          className: string
-          rules: {
-            cssRules: string | string[] | null
-            value: string | null
-            isImportant: boolean
-          }[]
-          variant: string
-        }[]
-    raw: null | (string | undefined)[]
-  } | null {
-    if (!className || !this.aliases[className]) return null
-
-    let finalClass = escapeCSSSelector(prefix ? `${prefix}:${className}` : className)
-
-    const allRules: {
-      cssRules: string | string[] | null
-      value: string | null
-      isImportant: boolean
-    }[] = []
-    const prefixRules: {
-      className: string
-      cssRules: string | string[] | null
-      value: string | null
-      isImportant: boolean
-      variant: string
-    }[] = []
-
-    const { parsedClassNames, importantMap } = this.parseImportantClassNames(
-      this.aliases[className]
-    )
-
-    this.main.process(parsedClassNames).map((item, index) => {
-      const { cssRules, value, prefix: itemPrefix, raw } = item
-      const isImportant = this.isImportantClass((raw as string[])[6], index, importantMap)
-
-      const variants = itemPrefix
-        ? { prefix: itemPrefix, data: this.generatePrefix(itemPrefix) }
-        : null
-
-      if (!variants) {
-        allRules.push({
-          cssRules,
-          value,
-          isImportant
-        })
-      } else if ((variants && variants.prefix === prefix) || !variants.data) return
-      else {
-        prefixRules.push({
-          className: variants.data.includes('&')
-            ? variants.data.replace('&', finalClass)
-            : finalClass,
-          cssRules,
-          value,
-          isImportant,
-          variant: variants.data
-        })
-      }
-
-      return
-    })
-
-    const mergedVariants = Object.values(
-      prefixRules.reduce(
-        (acc, curr) => {
-          const key = `${curr.className}|${curr.variant}`
-          if (!acc[key]) {
-            acc[key] = {
-              className: curr.className,
-              rules: [],
-              variant: curr.variant
+            if (result.matcher) {
+              matcher = result.matcher
+            } else {
+              matcher = this.createMatcher(patterns.variant, patterns.property, patterns.value)
             }
           }
-          acc[key].rules.push({
-            cssRules: curr.cssRules,
-            value: curr.value,
-            isImportant: curr.isImportant
+        } catch (err) {
+          console.error(`Plugin "${plugin.name}" regexp failed:`, err)
+        }
+      }
+    }
+
+    this._cachedRegexp = { patterns, matcher }
+    return this._cachedRegexp
+  }
+
+  public parse(className: string, safelist?: string[]): any[] | null {
+    let { patterns, matcher } = this.regexp()
+
+    // Process class names with plugins (sorted by priority)
+    const parsePlugins = this.plugins
+      .filter((p) => p.parse)
+      .sort((a, b) => (b.priority || 0) - (a.priority || 0))
+
+    for (const plugin of parsePlugins) {
+      if (plugin.parse) {
+        try {
+          const result = plugin.parse(className, {
+            patterns,
+            matcher,
+            utilities: this.utilities,
+            variants: this.variants
           })
-          return acc
-        },
-        {} as Record<
-          string,
-          {
-            className: string
-            rules: {
-              cssRules: string | string[] | null
-              value: string | null
-              isImportant: boolean
-            }[]
-            variant: string
-          }
-        >
-      )
-    )
+          if (result) return result
+        } catch (err) {
+          console.error(`Plugin "${plugin.name}" parse failed:`, err)
+        }
+      }
+    }
+
+    // Default parser
+    const match = className.match(matcher)
+    if (!match) return null
+    return match.groups
+      ? [match[0], match.groups.variant, match.groups.property, match.groups.value]
+      : match
+  }
+
+  private processValue(value: string): string | null {
+    if (!value) return null
+
+    // Process with plugins (sorted by priority)
+    const valuePlugins = this.plugins
+      .filter((p) => p.processValue)
+      .sort((a, b) => (b.priority || 0) - (a.priority || 0))
+
+    for (const plugin of valuePlugins) {
+      if (plugin.processValue) {
+        try {
+          const result = plugin.processValue(value, this.utilities)
+          if (result !== null && result !== undefined) return result
+        } catch (err) {
+          console.error(`Plugin "${plugin.name}" processValue failed:`, err)
+        }
+      }
+    }
+
+    return value
+  }
+
+  private processVariant(variant: string): string | null {
+    if (!variant) return null
+
+    // Process with plugins (sorted by priority)
+    const variantPlugins = this.plugins
+      .filter((p) => p.processVariant)
+      .sort((a, b) => (b.priority || 0) - (a.priority || 0))
+
+    for (const plugin of variantPlugins) {
+      if (plugin.processVariant) {
+        try {
+          const result = plugin.processVariant(variant, this.variants)
+          if (result !== null && result !== undefined) return result
+        } catch (err) {
+          console.error(`Plugin "${plugin.name}" processVariant failed:`, err)
+        }
+      }
+    }
+
+    return this.variants[variant] || null
+  }
+
+  public processUtilities({
+    variant = null,
+    property = '',
+    value = '',
+    className = ''
+  }: {
+    variant?: string | null
+    property?: string
+    value?: string
+    className?: string
+  } = {}): ProcessResult | null {
+    // Process with plugins (sorted by priority)
+    const utilityPlugins = this.plugins
+      .filter((p) => p.processUtilities)
+      .sort((a, b) => (b.priority || 0) - (a.priority || 0))
+
+    for (const plugin of utilityPlugins) {
+      if (plugin.processUtilities) {
+        try {
+          const result = plugin.processUtilities({
+            variant: variant
+              ? {
+                  raw: variant,
+                  data: this.variants[variant] || null
+                }
+              : null,
+            property: {
+              name: property,
+              data: this.utilities[property]
+            },
+            value: {
+              raw: value,
+              data: this.processValue(value)
+            },
+            className,
+            utilities: this.utilities,
+            variants: this.variants,
+            parser: (className: string) => this.parse(className),
+            regexp: () => this.regexp()
+          })
+          if (result) return result
+        } catch (err) {
+          console.error(`Plugin "${plugin.name}" processUtilities failed:`, err)
+        }
+      }
+    }
+
+    const finalValue = this.processValue(value || '')
+    const variantData = variant ? this.processVariant(variant) : null
+
+    // More robust validation
+    if (value && !finalValue) return null
+    // if (variant && !variantData) return null
+    if (!this.utilities[property]) return null
 
     return {
-      className: (isImportant ? '\\!' : '') + finalClass,
-      rules: allRules,
-      isImportant,
-      prefix: prefix ? { name: prefix, data: this.generatePrefix(prefix) } : null,
-      variants: mergedVariants.length > 0 ? mergedVariants : null,
-      raw: raw || []
+      className,
+      variant: variant
+        ? {
+            name: variant,
+            data: variantData!
+          }
+        : null,
+      rules: {
+        type: property,
+        property: this.utilities[property]
+      },
+      value: finalValue
     }
   }
 
-  public process(classNames: string | string[]): Result[] | null {
-    const classes = classNames
-      ? Array.isArray(classNames)
-        ? classNames
-        : classNames.split(/\s+/).filter(Boolean)
-      : []
+  public process(classNames: string | string[]): ProcessResult[] | null {
+    const classList = Array.isArray(classNames) ? classNames : classNames.split(/\s+/)
+    const results: ProcessResult[] = []
 
-    const { parsedClassNames, importantMap } = this.parseImportantClassNames(classes)
+    for (const className of classList) {
+      if (!className.trim()) continue
 
-    if (!parsedClassNames || parsedClassNames.length === 0) return null
+      let pluginHandled = false
 
-    let result: Result[] = []
+      // Process with plugins (sorted by priority)
+      const processPlugins = this.plugins
+        .filter((p) => p.process)
+        .sort((a, b) => (b.priority || 0) - (a.priority || 0))
 
-    parsedClassNames.forEach((className, index) => {
-      if (this.plugins.length > 0) {
-        let pluginResult
-        this.plugins.forEach((plugin) => {
-          if (plugin.processClassName) {
-            const classNPrefix = (str: string) => {
-              const index = str.lastIndexOf(':')
-              if (index === -1) return ['', str]
-              return [str.slice(0, index), str.slice(index + 1)]
+      for (const plugin of processPlugins) {
+        if (plugin.process) {
+          try {
+            const result = plugin.process(className, {
+              regexp: () => this.regexp(),
+              parser: (cls: string) => this.parse(cls),
+              processor: (
+                data: Partial<{
+                  variant: string | null
+                  property: string
+                  value: string
+                  className: string
+                }>
+              ) => this.processUtilities(data),
+              utilities: this.utilities,
+              variants: this.variants
+            })
+            if (result) {
+              results.push(result)
+              pluginHandled = true
+              break
             }
-
-            const [prefix, type] = classNPrefix(className)
-            const variant = this.generatePrefix(prefix)
-
-            try {
-              pluginResult = plugin.processClassName({ className: type, prefix, variant })
-            } catch (err) {
-              console.error(`${plugin.name}: Error occurred when processing class name`, err)
-            }
+          } catch (err) {
+            console.error(`Plugin "${plugin.name}" process failed:`, err)
           }
-        })
-        if (pluginResult) result.push(pluginResult)
+        }
       }
 
-      const parsed = this.main.parse(className, Object.keys(this.aliases))
-
-      const isImportant = this.isImportantClass(className, index, importantMap)
-      const aliasClass = parsed && parsed[0] ? className.slice(parsed[0].length + 1) : className
-      if (parsed && parsed[1] && this.aliases[aliasClass]) {
-        const [prefix] = parsed
-        if (prefix && !this.generatePrefix(prefix)) return null
-
-        const aliasResult = this.processAlias(aliasClass, prefix, parsed, isImportant)
-        if (aliasResult) {
-          result.push(aliasResult)
+      // Only run default parser if no plugin handled the className
+      if (!pluginHandled) {
+        const parsed = this.parse(className)
+        if (!parsed) {
+          continue
         }
-      } else {
-        const processed = this.main.process(className)
 
-        processed.forEach((item) => {
-          if (!item) return
+        const [, variant, property, value] = parsed
+        const processed = this.processUtilities({ variant, property, value, className })
 
-          const { className: itemClassName, cssRules, value, prefix, raw } = item
-
-          if (prefix && !this.generatePrefix(prefix)) return
-
-          result.push({
-            className: (isImportant ? '\\!' : '') + itemClassName,
-            isImportant,
-            cssRules,
-            value,
-            variants: prefix ? { name: prefix, data: this.generatePrefix(prefix) } : null,
-            raw: raw || null
-          })
-        })
+        if (processed) {
+          results.push(processed)
+        }
       }
-    })
-
-    if (this.plugins.length > 0) {
-      this.plugins.forEach((plugin) => {
-        if (plugin.transform) {
-          result = result.map((data) => {
-            try {
-              return { ...data, ...plugin.transform!(data) } as Result
-            } catch (err) {
-              console.error(
-                `${plugin.name}: Error occurred when trying to transform final result`,
-                err
-              )
-              return data
-            }
-          })
-        }
-      })
     }
 
-    return result
+    return results.length > 0 ? results : null
+  }
+
+  // Utility methods for debugging
+  public getPluginsByPriority(): Plugin[] {
+    return [...this.plugins].sort((a, b) => (b.priority || 0) - (a.priority || 0))
+  }
+
+  public clearCache(): this {
+    this._cachedRegexp = null
+    this._initializeMatcher()
+    return this
   }
 }
-
-export { Core as Moxie } from './lib/core'
-export * from './utils'
-export * from './types'
-export default TenoxUI

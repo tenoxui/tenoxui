@@ -1,79 +1,69 @@
-import { describe, it, expect } from 'vitest'
-import Moxie from '../src/lib/core.ts'
+import { TenoxUI } from '../src/index.ts'
+import { describe, expect, it } from 'vitest'
 
-describe('Parser', () => {
-  let ui: Moxie = new Moxie()
-
-  it('should parse prefix correctly', () => {
-    ui = new Moxie({
-      utilities: {
-        h: '...'
-      },
-      prefixChars: ['@', '*']
-    })
-
-    expect(ui.parse('hover:h')[0]).toBe('hover')
-    expect(ui.parse('tx-[hehehe]:h')[0]).toBe('tx-[hehehe]')
-    expect(ui.parse('tx-(hehehe):h')[0]).toBe('tx-(hehehe)')
-    expect(ui.parse('tx-{hehehe}:h')[0]).toBe('tx-{hehehe}')
-    expect(ui.parse('[hehehe]:h')[0]).toBe('[hehehe]')
-    expect(ui.parse('(hehehe):h')[0]).toBe('(hehehe)')
-    expect(ui.parse('{hehehe}:h')[0]).toBe('{hehehe}')
-    expect(ui.parse('max-(50%):h')[0]).toBe('max-(50%)')
-    expect(ui.parse('max-50px:h')[0]).toBe('max-50px')
-    expect(ui.parse('(&:hover):h')[0]).toBe('(&:hover)')
-    expect(ui.parse('first-second/third:h')[0]).toBe('first-second/third')
-    expect(ui.parse('@max-md:h')[0]).toBe('@max-md')
-    expect(ui.parse('*:h')[0]).toBe('*')
+describe('parser', () => {
+  let ui = new TenoxUI({
+    utilities: {
+      bg: '...',
+      m: '...'
+    }
   })
 
-  it('should parse basic shorthand', () => {
-    ui = new Moxie({
-      utilities: {
-        m: '...'
-      },
-      classes: {
-        display: {
-          flex: '...'
+  it('should parse something', () => {
+    expect(ui.parse('bg-red')).toStrictEqual(['bg-red', undefined, 'bg', 'red'])
+    expect(ui.parse('hover:bg-red')).toStrictEqual(['hover:bg-red', 'hover', 'bg', 'red'])
+    expect(ui.parse('m-4')).toStrictEqual(['m-4', undefined, 'm', '4'])
+    expect(ui.parse('m-4/5')).toBeNull()
+  })
+  it('should parse with plugin', () => {
+    ui = new TenoxUI({
+      plugins: [
+        {
+          name: 'use-regexp-plugin',
+          regexp() {
+            return {
+              patterns: {
+                property: 'bg|flex|m'
+              }
+            }
+          }
         }
-      }
+      ]
     })
-    expect(ui.parse('[background]')[1]).toBe('[background]')
-    expect(ui.parse('[color,--my-color]')[1]).toBe('[color,--my-color]')
-    expect(ui.parse('[padding]-1rem')[1]).toBe('[padding]')
-    expect(ui.parse('[padding]-1rem')[2]).toBe('1')
-    expect(ui.parse('[padding]-1rem')[3]).toBe('rem')
-    expect(ui.parse('m-20px')[1]).toBe('m')
-    expect(ui.parse('m-20px')[2]).toBe('20')
-    expect(ui.parse('m-20px')[3]).toBe('px')
-    expect(ui.parse('md:flex')[0]).toBe('md')
-    expect(ui.parse('md:flex')[1]).toBe('flex')
-    expect(ui.process('md:flex')[0].raw[6]).toBe('md:flex')
-  })
 
-  it('should parse value and second value', () => {
-    const safelist = ['m']
+    expect(ui.parse('bg-red')).toStrictEqual(['bg-red', undefined, 'bg', 'red'])
+    expect(ui.parse('hover:bg-red')).toStrictEqual(['hover:bg-red', 'hover', 'bg', 'red'])
+    expect(ui.parse('m-4')).toStrictEqual(['m-4', undefined, 'm', '4'])
+    expect(ui.parse('m-4/5')).toBeNull()
 
-    let className = 'm-20px'
-    expect(ui.parse(className, safelist)[1]).toBe('m')
-    expect(ui.parse(className, safelist)[2]).toBe('20')
-    expect(ui.parse(className, safelist)[3]).toBe('px')
-    className = 'm-(everything-here-is-fine)px'
-    expect(ui.parse(className, safelist)[2]).toBe('(everything-here-is-fine)')
-    expect(ui.parse(className, safelist)[3]).toBe('px')
-    className = 'm-20px/1rem'
-    expect(ui.parse(className, safelist)[2]).toBe('20')
-    expect(ui.parse(className, safelist)[3]).toBe('px')
-    expect(ui.parse(className, safelist)[4]).toBe('1')
-    expect(ui.parse(className, safelist)[5]).toBe('rem')
-    expect(ui.parse('hover:**-10px/30rem', ['**'])[5]).toBe('rem')
-    expect(ui.parse('mad-567px/40rem:.*+?^${}()|[]/--10px/30rem', ['.*+?^${}()|[]/-'])[5]).toBe(
-      'rem'
-    )
-    expect(
-      new Moxie({ prefixChars: ['@'] }).parse('@max-567px/40rem:.*+?^${}()|[]/--10px/30rem', [
-        '.*+?^${}()|[]/-'
-      ])[5]
-    ).toBe('rem')
+    ui = new TenoxUI({
+      plugins: [
+        {
+          name: 'infer-pattern',
+          parse(className) {
+            const regex =
+              /^(?:(?<variant>[\w.-]+):)?(?<property>bg|flex|m)(?:-(?<value>[\w.-]+?))?$/
+
+            const match = className.match(regex)
+            console.log(match)
+            if (match) {
+              const [, a, b, c] = match
+              return [className, a, b, c, match.groups]
+            }
+          }
+        }
+      ]
+    })
+    expect(ui.parse('bg-red')).toEqual([
+      'bg-red',
+      undefined,
+      'bg',
+      'red',
+      {
+        variant: undefined,
+        property: 'bg',
+        value: 'red'
+      }
+    ])
   })
 })

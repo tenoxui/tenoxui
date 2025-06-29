@@ -1,138 +1,100 @@
-import { Core as Moxie } from '../lib/core'
-import type { GetCSSProperty, Values, Classes, Aliases } from '@tenoxui/types'
+export type CSSProperty = Extract<keyof CSSStyleDeclaration, string>
+export type CSSVariable = `--${string}`
+export type CSSPropertyOrVariable = CSSProperty | CSSVariable
 
-export type PropertyParams = {
-  key?: string | null
+export type Utilities<T = CSSPropertyOrVariable> = Record<string, T>
+export type Variants<T = string> = Record<string, T>
+
+export type RegexPatterns = {
+  variant?: string
+  property?: string
   value?: string
-  unit?: string
-  secondValue?: string
-  secondUnit?: string
-  raw?: Parsed
 }
 
-export type DirectValue = `value:${string}`
-
-export type PropertyParamValue =
-  | GetCSSProperty
-  | DirectValue
-  | ((params: PropertyParams) => null | GetCSSProperty | DirectValue | Partial<ProcessedStyle>)
-
-export type ValuePropType = string | string[] | ((params: PropertyParams) => string | null) | null
-
-export type PropertyValue =
-  | PropertyParamValue
-  | {
-      property?: PropertyParamValue
-      value?: ValuePropType
-      group?: string
+export type ProcessResult<
+  Data = Partial<{
+    variant: {
+      name: string
+      data: string | null
+    } | null
+    rules: {
+      type: string
+      property: CSSPropertyOrVariable
     }
-
-export type Property<T = PropertyValue> = {
-  [type: string]: T
-}
-
-export interface MoxieConfig {
-  utilities?: Property
-  values?: Values
-  classes?: Classes
-  plugins?: MoxiePlugin[]
-  prefixChars?: string[]
-}
-
-export type Parsed = null | (string | undefined)[]
-
-export type ProcessedStyle = {
+    value: string | null
+  }>
+> = {
   className: string
-  cssRules: string | string[] | null
-  value: string | null
-  prefix?: string | null
-  isCustom?: boolean | null
-}
-
-export type Results = ProcessedStyle & {
-  raw?: Parsed
-}
-
-export type VariantParamValue =
-  | string
-  | DirectValue
-  | ((params: PropertyParams) => null | string | DirectValue)
-
-export type ValueVariantType =
-  | string
-  | string[]
-  | ((params: PropertyParams) => string | null)
-  | null
-
-export type VariantValue =
-  | VariantParamValue
-  | {
-      property?: VariantParamValue
-      value?: ValueVariantType
-    }
-
-export type Variants = {
-  [variantName: string]: VariantValue
-}
-
-export type Breakpoints = {
-  [bpName: string]: string
-}
+} & Data
 
 export interface Config {
-  utilities: Property
-  values: Values
-  classes: Classes
-  variants: Variants
-  breakpoints: Breakpoints
-  aliases: Aliases
-  tenoxui: typeof Moxie
-  tenoxuiOptions: MoxieConfig
-  reservedVariantChars: string[]
-  prefixLoaderOptions: MoxieConfig
-  plugins: Plugin[]
+  utilities?: Utilities
+  variants?: Variants
+  plugins?: Plugin[]
 }
 
-export type Result =
-  | {
-      className: string
-      cssRules: string | string[] | null
-      value: string | null
-      isImportant: boolean
-      variants: null | { name: string; data: string | null }
-      raw: null | (string | undefined)[]
-    }
-  | {
-      className: string
-      rules: { cssRules: string | string[] | null; value: string | null; isImportant: boolean }[]
-      isImportant: boolean
-      prefix: null | { name: string; data: string | null }
-      variants:
-        | null
-        | {
-            className: string
-            rules: {
-              cssRules: string | string[] | null
-              value: string | null
-              isImportant: boolean
-            }[]
-            variant: string
-          }[]
-      raw: null | (string | undefined)[]
-    }
-
-export interface MoxiePlugin {
+export interface Plugin {
   name: string
-  parseClassName?: (param: { className: string; utilities?: Property }) => Parsed
-  processUtility?: (param: { className: string; utilities?: Property; values?: Values }) => Results
-}
-
-export interface Plugin<ResultType = Result> extends MoxiePlugin {
-  processClassName?: (param: {
-    className: string
-    prefix?: string
-    variant?: string | null
-  }) => Partial<ResultType>
-  processVariant?: (variant: string) => string
-  transform?: (param: Partial<ResultType>) => Partial<ResultType>
+  priority?: number
+  parse?: (
+    className: string,
+    context: {
+      patterns: RegexPatterns
+      matcher: RegExp
+      utilities: Utilities
+      variants: Variants
+    }
+  ) => any
+  regexp?: (context: {
+    patterns?: RegexPatterns
+    matcher?: RegExp
+    utilities?: Utilities
+    variants?: Variants
+  }) => {
+    patterns?: RegexPatterns
+    matcher?: RegExp
+  } | null
+  processUtilities?: (
+    context: Partial<{
+      className: string
+      variant: {
+        raw: string
+        data: string | null
+      } | null
+      property: {
+        name: string
+        data: string | undefined
+      }
+      value: { raw: string; data: string | null }
+      utilities: Utilities
+      variants: Variants
+      parser: (className: string) => any
+      regexp: () => {
+        patterns?: RegexPatterns
+        matcher?: RegExp
+      } | null
+    }>
+  ) => ProcessResult
+  processValue?: (value: string, utilities: Utilities) => string | null
+  processVariant?: (variant: string, variants: Variants) => string | null
+  process?: (
+    className: string,
+    context?: {
+      regexp?: () => {
+        patterns?: RegexPatterns
+        matcher?: RegExp
+      } | null
+      parser?: (className: string) => any
+      processor?: (
+        context: Partial<{
+          variant: string | null
+          property: string
+          value: string
+          className: string
+        }>
+      ) => ProcessResult | null
+      utilities?: Utilities
+      variants?: Variants
+    }
+  ) => any
 }

@@ -1,5 +1,15 @@
 # Changelog
 
+## `v3.0.0` - `Unreleased`
+
+### **Changed**
+
+- **Refactor the entire API**
+
+### Development
+
+- Dropped `@tenoxui/moxie` engine, and recreate it (plan for later) as plugin for new Core API.
+
 ## `v2.1.0` - `2025-06-17`
 
 ### **Changed**
