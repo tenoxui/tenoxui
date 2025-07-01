@@ -1,5 +1,5 @@
 import { TenoxUI } from '@tenoxui/core'
-import type { Plugin } from '@tenoxui/core'
+import type { Plugin } from '@/packages/core/src/types'
 
 export const x: Plugin = {
   name: 'b',

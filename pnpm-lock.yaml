@@ -83,19 +83,19 @@ importers:
       '@tenoxui/types':
         specifier: ^0.1.2
         version: 0.1.2
-      tenoxui:
-        specifier: ^1.0.0
-        version: 1.0.0(@tenoxui/core@2.1.0(@tenoxui/moxie@0.7.1))(@tenoxui/moxie@0.7.1)
     devDependencies:
       '@tenoxui/core':
-        specifier: ^2.0.3
-        version: 2.1.0(@tenoxui/moxie@0.7.1)
+        specifier: ^2.0.0
+        version: 2.0.0(@tenoxui/moxie@0.7.1)
       '@tenoxui/moxie':
         specifier: ^0.7.1
         version: 0.7.1
       '@types/node':
         specifier: 'catalog:'
         version: 24.0.8
+      tenoxui:
+        specifier: ^1.0.0
+        version: 1.0.0(@tenoxui/core@2.0.0(@tenoxui/moxie@0.7.1))(@tenoxui/moxie@0.7.1)
       typescript:
         specifier: 'catalog:'
         version: 5.8.2
@@ -153,8 +153,8 @@ importers:
         specifier: ^0.3.0
         version: 0.3.0
       tenoxui:
-        specifier: 1.0.0-pre.0
-        version: 1.0.0-pre.0(@tenoxui/core@2.1.0(@tenoxui/moxie@0.7.1))(@tenoxui/moxie@0.7.1)
+        specifier: 1.0.0
+        version: 1.0.0(@tenoxui/core@2.1.0(@tenoxui/moxie@0.7.1))(@tenoxui/moxie@0.7.1)
       typescript:
         specifier: 'catalog:'
         version: 5.8.2
@@ -193,10 +193,6 @@ importers:
   packages/types: {}
 
   plugins/moxie:
-    dependencies:
-      '@tenoxui/types':
-        specifier: ^0.1.2
-        version: 0.1.2
     devDependencies:
       '@nousantx/someutils':
         specifier: 0.7.1
@@ -541,6 +537,11 @@ packages:
     resolution: {integrity: sha512-J8o22LuF0kTe7m+8PvW9wk3/bRq5+mRo5Dqo6+vXb7otCm3TPhYOJqOaQtGU9YMWQSL3krMnoOxMr0+9E6F3Ug==}
     cpu: [x64]
     os: [win32]
+
+  '@tenoxui/core@2.0.0':
+    resolution: {integrity: sha512-5j5TSxHvyGCuEMY12y/D9uH7vCILx6LVsUctJ79Wn8POeC+XvwjrOTh8NzLcLEWWhqsXSpa+SbirQtIIW+uS0Q==}
+    peerDependencies:
+      '@tenoxui/moxie': '>=0.7.0'
 
   '@tenoxui/core@2.0.2':
     resolution: {integrity: sha512-iabfWCoOCuaxHC2KgBZ4D2rjf5KLntWCMgm0OtMNAXvGU5Eg4zGFqODbtTKc0b+adPS5NkBmCTDynMBizMW5jQ==}
@@ -1093,12 +1094,6 @@ packages:
       '@tenoxui/core': '>=2.0.0'
       '@tenoxui/moxie': '>=0.7.0'
 
-  tenoxui@1.0.0-pre.0:
-    resolution: {integrity: sha512-0vBMRXHA9XXUm8Cy6Qre9TRlPTdidUhyZ4+FEjr6oOoA0b20fLvzj3sCv0gINzlyGMpLhrB0fbvoxh5PRXcoaA==}
-    peerDependencies:
-      '@tenoxui/core': '>=2.0.0'
-      '@tenoxui/moxie': '>=0.7.0'
-
   tinybench@2.9.0:
     resolution: {integrity: sha512-0+DUvqWMValLmha6lr4kD8iAMK1HzV0/aKnCtWb9v9641TnP/MFb7Pc2bxoxQjTXAErryXVgUOfv2YqNllqGeg==}
 
@@ -1587,6 +1582,11 @@ snapshots:
 
   '@rollup/rollup-win32-x64-msvc@4.44.1':
     optional: true
+
+  '@tenoxui/core@2.0.0(@tenoxui/moxie@0.7.1)':
+    dependencies:
+      '@tenoxui/moxie': 0.7.1
+      '@tenoxui/types': 0.1.2
 
   '@tenoxui/core@2.0.2(@tenoxui/moxie@0.7.1)':
     dependencies:
@@ -2205,13 +2205,13 @@ snapshots:
   symbol-tree@3.2.4:
     optional: true
 
-  tenoxui@1.0.0(@tenoxui/core@2.1.0(@tenoxui/moxie@0.7.1))(@tenoxui/moxie@0.7.1):
+  tenoxui@1.0.0(@tenoxui/core@2.0.0(@tenoxui/moxie@0.7.1))(@tenoxui/moxie@0.7.1):
     dependencies:
-      '@tenoxui/core': 2.1.0(@tenoxui/moxie@0.7.1)
+      '@tenoxui/core': 2.0.0(@tenoxui/moxie@0.7.1)
       '@tenoxui/moxie': 0.7.1
       '@tenoxui/types': 0.1.2
 
-  tenoxui@1.0.0-pre.0(@tenoxui/core@2.1.0(@tenoxui/moxie@0.7.1))(@tenoxui/moxie@0.7.1):
+  tenoxui@1.0.0(@tenoxui/core@2.1.0(@tenoxui/moxie@0.7.1))(@tenoxui/moxie@0.7.1):
     dependencies:
       '@tenoxui/core': 2.1.0(@tenoxui/moxie@0.7.1)
       '@tenoxui/moxie': 0.7.1
