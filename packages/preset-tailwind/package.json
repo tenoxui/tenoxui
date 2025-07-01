@@ -1,7 +1,7 @@
 {
-  "name": "tenoxui",
-  "version": "1.0.0",
-  "description": "Core component of tenoxui",
+  "name": "@tenoxui/preset-tailwind",
+  "version": "1.0.2",
+  "description": "Minimal tailwindcss preset for tenoxui",
   "author": "NOuSantx <nousantx@gmail.com>",
   "license": "MIT",
   "keywords": [
@@ -15,7 +15,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tenoxui/tenoxui.git",
-    "directory": "packages/tenoxui"
+    "directory": "packages/@tenoxui-preset-tailwind"
   },
   "bugs": {
     "url": "https://github.com/tenoxui/tenoxui/issues"
@@ -29,7 +29,7 @@
   "types": "./dist/index.d.ts",
   "main": "./dist/index.cjs.js",
   "module": "./dist/index.es.js",
-  "browser": "./dist/bundle.iife.js",
+  "browser": "./dist/index.iife.js",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -39,23 +39,20 @@
   },
   "scripts": {
     "dev": "vite build --watch",
-    "build:main": "vite build",
-    "build:bundle": "vite build --config vite.config-bundle.ts",
-    "build": "pnpm build:main && pnpm build:bundle && cp ./.temp/* ./dist && rm temp -fr",
+    "build": "vite build",
     "test": "vitest run",
     "test:watch": "vitest",
     "type:check": "tsc --noEmit",
     "type:build": "tsc --declaration --emitDeclarationOnly --outDir dist",
     "build:prod": "pnpm type:check && pnpm build && pnpm type:build"
   },
-  "peerDependencies": {
-    "@tenoxui/core": ">=2.0.0",
-    "@tenoxui/moxie": ">=0.7.0"
-  },
   "devDependencies": {
-    "@tenoxui/core": "2.0.2",
-    "@tenoxui/moxie": "^0.7.1",
+    "@nousantx/someutils": "0.7.1",
+    "@tenoxui/core": "^2.0.0",
+    "@tenoxui/moxie": "^0.7.0",
     "@types/node": "catalog:",
+    "cssrxp": "^0.3.0",
+    "tenoxui": "1.0.0-pre.0",
     "typescript": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:"

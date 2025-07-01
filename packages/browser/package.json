@@ -1,27 +1,33 @@
 {
-  "name": "tenoxui",
+  "name": "@tenoxui/browser",
   "version": "1.0.0",
-  "description": "Core component of tenoxui",
+  "description": "A JavaScript library for creating highly customized, flexible, and extensible utility-first CSS framework",
   "author": "NOuSantx <nousantx@gmail.com>",
   "license": "MIT",
+  "homepage": "https://github.com/tenoxui/tenoxui#readme",
   "keywords": [
+    "css",
     "css-framework",
-    "tenoxui",
-    "ui-library",
+    "css-engine",
+    "css-parser",
     "utility-first",
-    "frontend"
+    "atomic-css",
+    "frontend",
+    "library",
+    "javascript-library",
+    "browser-tool",
+    "dom"
   ],
-  "homepage": "https://tenoxui.web.app",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tenoxui/tenoxui.git",
-    "directory": "packages/tenoxui"
+    "directory": "packages/@tenoxui-browser"
   },
   "bugs": {
     "url": "https://github.com/tenoxui/tenoxui/issues"
   },
   "files": [
-    "dist/*",
+    "dist",
     "package.json",
     "README.md",
     "LICENSE"
@@ -29,7 +35,7 @@
   "types": "./dist/index.d.ts",
   "main": "./dist/index.cjs.js",
   "module": "./dist/index.es.js",
-  "browser": "./dist/bundle.iife.js",
+  "browser": "./dist/index.iife.js",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -39,6 +45,7 @@
   },
   "scripts": {
     "dev": "vite build --watch",
+    "dev:bundle": "vite build --watch -c vite.config-bundle.ts",
     "build:main": "vite build",
     "build:bundle": "vite build --config vite.config-bundle.ts",
     "build": "pnpm build:main && pnpm build:bundle && cp ./.temp/* ./dist && rm temp -fr",
@@ -48,12 +55,8 @@
     "type:build": "tsc --declaration --emitDeclarationOnly --outDir dist",
     "build:prod": "pnpm type:check && pnpm build && pnpm type:build"
   },
-  "peerDependencies": {
-    "@tenoxui/core": ">=2.0.0",
-    "@tenoxui/moxie": ">=0.7.0"
-  },
   "devDependencies": {
-    "@tenoxui/core": "2.0.2",
+    "@tenoxui/core": "^2.0.3",
     "@tenoxui/moxie": "^0.7.1",
     "@types/node": "catalog:",
     "typescript": "catalog:",
@@ -61,6 +64,7 @@
     "vitest": "catalog:"
   },
   "dependencies": {
-    "@tenoxui/types": "^0.1.2"
+    "@tenoxui/types": "^0.1.2",
+    "tenoxui": "^1.0.0"
   }
 }

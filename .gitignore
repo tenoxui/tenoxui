@@ -16,6 +16,8 @@ yarn-error.log*
 **/.temp
 **/*.temp.*
 **/.cache
+**/src/*.d.ts
+**/src/*.js
 # vitest istanbul coverage
 **/coverage
 # wst pre-pack

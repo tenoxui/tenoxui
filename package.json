@@ -17,10 +17,15 @@
     "url": "https://github.com/tenoxui/tenoxui/issues"
   },
   "scripts": {
-    "format": "prettier -w ."
+    "format": "prettier -w .",
+    "prepare": "tsc -b"
   },
   "packageManager": "pnpm@10.4.0",
   "dependencies": {
-    "prettier": "^3.5.3"
+    "@types/node": "catalog:",
+    "prettier": "^3.5.3",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vitest": "catalog:"
   }
 }

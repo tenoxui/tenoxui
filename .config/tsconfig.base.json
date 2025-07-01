@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "target": "es2017",
+    "module": "esnext",
+    "declaration": true,
+    "strict": true,
+    "esModuleInterop": true,
+    "noUnusedLocals": true,
+    "moduleResolution": "bundler",
+    "skipLibCheck": true,
+    "composite": true,
+    "baseUrl": "../",
+    "paths": {
+      "@tenoxui/types": ["./packages/types"],
+      "@tenoxui/types/*": ["./packages/types/*"],
+      "@tenoxui/core": ["./packages/core/src"],
+      "@tenoxui/core/*": ["./packages/core/src/*"],
+      "@tenoxui/browser": ["./packages/browser/src"],
+      "@tenoxui/browser/*": ["./packages/browser/src/*"],
+      "@tenoxui/moxie": ["./packages/moxie/src"],
+      "@tenoxui/moxie/*": ["./packages/moxie/src/*"],
+      "@tenoxui/preset-tailwind": ["./packages/preset-tailwind/src"],
+      "@tenoxui/preset-tailwind/*": ["./packages/preset-tailwind/src/*"],
+      "@tenoxui/tenoxui": ["./packages/tenoxui/src"],
+      "@tenoxui/tenoxui/*": ["./packages/tenoxui/src/*"]
+    }
+  },
+  "exclude": ["node_modules", "dist", "build", "coverage"]
+}
