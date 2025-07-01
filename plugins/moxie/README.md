@@ -1,62 +1,26 @@
-# `@tenoxui/core`
+# `@tenoxui/plugin-moxie`
 
-`@tenoxui/core` is a core components of TenoxUI that responsible for class name parsing, creating utility shorthands, skeleton data of CSS rules, variants processing and many more.
+This package is the former `@tenoxui/moxie` that used as main TenoxUI (v1) engine. It responsible for class name parsing, data processing (including values, utilities, and variants).
+
+Now, since `@tenoxui/core@3`, we refactor all `core` APIs and separating `moxie` engine code from it, and rebuild `moxie` as one of its plugin you can use.
 
 ## Installation
 
 ```bash
-npm i @tenoxui/core
+npm i @tenoxui/core@3 @tenoxui/plugin-moxie
 ```
 
-## Usage Example
+## Usage
 
 ```javascript
-import { TenoxUI } from '@tenoxui/core'
+import TenoxUI from '@tenoxui/core'
+import Moxie from '@tenoxui/plugin-moxie'
 
-const css = new TenoxUI({
-  property: {
-    bg: 'background',
-    m: ({ value }) => `margin: ${value * 0.25 + 'rem'}`
-  },
-  variants: {
-    hover: '&:hover'
-  }
+const ui = new TenoxUI({
+  plugins: [Moxie()]
 })
-
-console.log(css.process(['bg-red', 'm-4', '!hover:bg-[rgb(255_0_0)]']))
 ```
 
-Output :
+## LICENSE
 
-```javascript
-;[
-  {
-    className: 'bg-red',
-    isImportant: false,
-    cssRules: 'background',
-    value: 'red',
-    variants: null,
-    raw: [undefined, 'bg', 'red', '', undefined, undefined, 'bg-red']
-  },
-  {
-    className: 'm-4',
-    isImportant: false,
-    cssRules: 'margin: 1rem',
-    value: null,
-    variants: null,
-    raw: [undefined, 'm', '4', '', undefined, undefined, 'm-4']
-  },
-  {
-    className: '\\!hover\\:bg-\\[rgb\\(255_0_0\\)\\]',
-    isImportant: true,
-    cssRules: 'background',
-    value: 'rgb(255 0 0)',
-    variants: { name: 'hover', data: '&:hover' },
-    raw: ['hover', 'bg', '[rgb(255_0_0)]', '', undefined, undefined, 'hover:bg-[rgb(255_0_0)]']
-  }
-]
-```
-
-## License
-
-MIT © 2024-present
+MIT 2025-present TenoxUI

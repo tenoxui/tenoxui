@@ -1,100 +1,50 @@
-export type CSSProperty = Extract<keyof CSSStyleDeclaration, string>
-export type CSSVariable = `--${string}`
-export type CSSPropertyOrVariable = CSSProperty | CSSVariable
+import type { CSSPropertyOrVariable } from '@tenoxui/core/types'
 
-export type Utilities<T = CSSPropertyOrVariable> = Record<string, T>
-export type Variants<T = string> = Record<string, T>
-
-export type RegexPatterns = {
-  variant?: string
-  property?: string
-  value?: string
+export interface CreatePatternsConfig {
+  variants?: Record<string, any>
+  utilities?: Record<string, any>
+  safelist?: string[]
+  inputPrefixChars?: string[]
 }
 
-export type ProcessResult<
-  Data = Partial<{
-    variant: {
-      name: string
-      data: string | null
-    } | null
-    rules: {
-      type: string
-      property: CSSPropertyOrVariable
-    }
-    value: string | null
-  }>
-> = {
-  className: string
-} & Data
+export interface Patterns {
+  variant: string
+  property: string
+  value: string
+}
+
+export interface CreateRegexpResult {
+  patterns: Patterns
+  matcher: RegExp
+  debug: {
+    variantPattern: string
+    propertyPattern: string
+    valuePattern: string
+    fullPattern: string
+  }
+}
 
 export interface Config {
-  utilities?: Utilities
-  variants?: Variants
-  plugins?: Plugin[]
+  values?: Record<string, string>
 }
 
-export interface Plugin {
-  name: string
-  priority?: number
-  parse?: (
-    className: string,
-    context: {
-      patterns: RegexPatterns
-      matcher: RegExp
-      utilities: Utilities
-      variants: Variants
-    }
-  ) => any
-  regexp?: (context: {
-    patterns?: RegexPatterns
-    matcher?: RegExp
-    utilities?: Utilities
-    variants?: Variants
-  }) => {
-    patterns?: RegexPatterns
-    matcher?: RegExp
+export interface ProcessResult {
+  className: string
+  rules: {
+    property: CSSPropertyOrVariable | FnResult[]
+    value: Value
+  }
+  prefix?: {
+    raw: string
+    data: string | null
   } | null
-  processUtilities?: (
-    context: Partial<{
-      className: string
-      variant: {
-        raw: string
-        data: string | null
-      } | null
-      property: {
-        name: string
-        data: string | undefined
-      }
-      value: { raw: string; data: string | null }
-      utilities: Utilities
-      variants: Variants
-      parser: (className: string) => any
-      regexp: () => {
-        patterns?: RegexPatterns
-        matcher?: RegExp
-      } | null
-    }>
-  ) => ProcessResult
-  processValue?: (value: string, utilities: Utilities) => string | null
-  processVariant?: (variant: string, variants: Variants) => string | null
-  process?: (
-    className: string,
-    context?: {
-      regexp?: () => {
-        patterns?: RegexPatterns
-        matcher?: RegExp
-      } | null
-      parser?: (className: string) => any
-      processor?: (
-        context: Partial<{
-          variant: string | null
-          property: string
-          value: string
-          className: string
-        }>
-      ) => ProcessResult | null
-      utilities?: Utilities
-      variants?: Variants
-    }
-  ) => any
 }
+
+export type Value = { raw: string; data: string | null } | null
+
+export type FnResult = {
+  property: CSSPropertyOrVariable
+  value: Value
+}
+
+export type UtilityFunctionResult = FnResult | FnResult[]
