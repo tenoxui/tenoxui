@@ -1,29 +1,12 @@
 {
   "files": [],
-  "references": [
-    { "path": "./packages/types" },
-    { "path": "./packages/core" },
-    { "path": "./packages/browser" },
-    { "path": "./packages/moxie" },
-    { "path": "./packages/preset-tailwind" },
-    { "path": "./packages/tenoxui" },
-    { "path": "./plugins/moxie" }
-  ],
+  "references": [{ "path": "./packages/core" }],
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@tenoxui/types": ["./packages/types"],
-      "@tenoxui/types/*": ["./packages/types/*"],
+      "@/*": ["./*"],
       "@tenoxui/core": ["./packages/core/src"],
-      "@tenoxui/core/*": ["./packages/core/src/*"],
-      "@tenoxui/browser": ["./packages/browser/src"],
-      "@tenoxui/browser/*": ["./packages/browser/src/*"],
-      "@tenoxui/moxie": ["./packages/moxie/src"],
-      "@tenoxui/moxie/*": ["./packages/moxie/src/*"],
-      "@tenoxui/preset-tailwind": ["./packages/preset-tailwind/src"],
-      "@tenoxui/preset-tailwind/*": ["./packages/preset-tailwind/src/*"],
-      "@tenoxui/tenoxui": ["./packages/tenoxui/src"],
-      "@tenoxui/tenoxui/*": ["./packages/tenoxui/src/*"]
+      "@tenoxui/core/*": ["./packages/core/src/*"]
     }
   }
 }

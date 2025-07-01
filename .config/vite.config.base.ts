@@ -31,12 +31,8 @@ export function createConfig({
     },
     resolve: {
       alias: {
-        '@tenoxui/types': resolve(__dirname, '../packages/types'),
-        '@tenoxui/core': resolve(__dirname, '../packages/core/src'),
-        '@tenoxui/browser': resolve(__dirname, '../packages/browser/src'),
-        '@tenoxui/moxie': resolve(__dirname, '../packages/moxie/src'),
-        '@tenoxui/preset-tailwind': resolve(__dirname, '../packages/preset-tailwind/src'),
-        '@tenoxui/tenoxui': resolve(__dirname, '../packages/tenoxui/src')
+        '@': resolve(__dirname, '../'),
+        '@tenoxui/core': resolve(__dirname, '../packages/core/src')
       }
     }
   }
