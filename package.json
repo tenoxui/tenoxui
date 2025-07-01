@@ -18,7 +18,7 @@
   },
   "scripts": {
     "format": "prettier -w .",
-    "prepare": "tsc -b"
+    "prepare:type": "tsc -b"
   },
   "packageManager": "pnpm@10.4.0",
   "dependencies": {
