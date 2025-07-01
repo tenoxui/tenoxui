@@ -52,7 +52,7 @@
     "@tenoxui/moxie": "^0.7.0",
     "@types/node": "catalog:",
     "cssrxp": "^0.3.0",
-    "tenoxui": "1.0.0-pre.0",
+    "tenoxui": "1.0.0",
     "typescript": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:"

@@ -83,7 +83,7 @@ export const breakpoints: { [bp: string]: string } = {
 
 export const preset = ({ sizing = 0.25, order = true } = {}): Partial<Config> => ({
   variants,
-  property: property(sizing),
+  utilities: property(sizing),
   values,
   classes,
   breakpoints,
