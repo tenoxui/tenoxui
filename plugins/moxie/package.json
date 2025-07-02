@@ -1,21 +1,20 @@
 {
-  "name": "tenoxui",
-  "version": "1.0.0",
-  "description": "Core component of tenoxui",
+  "name": "@tenoxui/plugin-moxie",
+  "version": "1.0.0-alpha.0",
+  "description": "Default processor for tenoxui",
   "author": "NOuSantx <nousantx@gmail.com>",
   "license": "MIT",
   "keywords": [
-    "css-framework",
-    "tenoxui",
-    "ui-library",
-    "utility-first",
-    "frontend"
+    "framework",
+    "css",
+    "css-in-js",
+    "utility-first"
   ],
   "homepage": "https://tenoxui.web.app",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tenoxui/tenoxui.git",
-    "directory": "packages/tenoxui"
+    "directory": "plugins/moxie"
   },
   "bugs": {
     "url": "https://github.com/tenoxui/tenoxui/issues"
@@ -29,7 +28,7 @@
   "types": "./dist/index.d.ts",
   "main": "./dist/index.cjs.js",
   "module": "./dist/index.es.js",
-  "browser": "./dist/bundle.iife.js",
+  "browser": "./dist/index.iife.js",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -39,28 +38,18 @@
   },
   "scripts": {
     "dev": "vite build --watch",
-    "build:main": "vite build",
-    "build:bundle": "vite build --config vite.config-bundle.ts",
-    "build": "pnpm build:main && pnpm build:bundle && cp ./.temp/* ./dist && rm temp -fr",
+    "build": "vite build",
     "test": "vitest run",
     "test:watch": "vitest",
     "type:check": "tsc --noEmit",
     "type:build": "tsc --declaration --emitDeclarationOnly --outDir dist",
-    "build:prod": "pnpm type:check && pnpm build && pnpm type:build"
-  },
-  "peerDependencies": {
-    "@tenoxui/core": ">=2.0.0",
-    "@tenoxui/moxie": ">=0.7.0"
+    "build:prod": "pnpm type:check && pnpm build --minify && pnpm type:build"
   },
   "devDependencies": {
-    "@tenoxui/core": "2.0.2",
-    "@tenoxui/moxie": "^0.7.1",
+    "@nousantx/someutils": "0.7.1",
     "@types/node": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:"
-  },
-  "dependencies": {
-    "@tenoxui/types": "^0.1.2"
   }
 }

@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "target": "es2017",
+    "module": "esnext",
+    "declaration": true,
+    "strict": true,
+    "esModuleInterop": true,
+    "noUnusedLocals": true,
+    "moduleResolution": "bundler",
+    "skipLibCheck": true,
+    "composite": true,
+    "baseUrl": "../",
+    "paths": {
+      "@/*": ["./*"],
+      "@tenoxui/core": ["./packages/core/src"],
+      "@tenoxui/core/*": ["./packages/core/src/*"]
+    }
+  },
+  "exclude": ["node_modules", "dist", "build", "coverage"]
+}

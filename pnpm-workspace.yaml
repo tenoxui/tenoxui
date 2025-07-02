@@ -1,3 +1,10 @@
 packages:
-  - "packages/*"
-  - "examples/*"
+  - 'packages/*'
+  - 'plugins/*'
+  - 'examples/*'
+
+catalog:
+  '@types/node': "^24.0.8"
+  typescript: "^5.8.3"
+  vite: "^7.0.0"
+  vitest: "^3.2.4"

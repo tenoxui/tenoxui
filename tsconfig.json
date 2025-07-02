@@ -1,0 +1,12 @@
+{
+  "files": [],
+  "references": [{ "path": "./packages/core" }],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./*"],
+      "@tenoxui/core": ["./packages/core/src"],
+      "@tenoxui/core/*": ["./packages/core/src/*"]
+    }
+  }
+}
