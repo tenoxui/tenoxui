@@ -11,19 +11,14 @@ npm i @tenoxui/core
 ## Usage Example
 
 ```javascript
-import { TenoxUI } from '@tenoxui/core'
-
-const css = new TenoxUI({
-  property: {
-    bg: 'background',
-    m: ({ value }) => `margin: ${value * 0.25 + 'rem'}`
-  },
-  variants: {
-    hover: '&:hover'
+const ui = new TenoxUI({
+  utilities: {
+    m: 'margin',
+    bg: 'background'
   }
 })
 
-console.log(css.process(['bg-red', 'm-4', '!hover:bg-[rgb(255_0_0)]']))
+console.log(ui.process('m-10px m-1rem bg-red hover:bg-blue'))
 ```
 
 Output :
@@ -31,32 +26,32 @@ Output :
 ```javascript
 ;[
   {
+    className: 'm-10px',
+    variant: null,
+    rules: { type: 'm', property: 'margin' },
+    value: { raw: '10px', data: '10px' }
+  },
+  {
+    className: 'm-1rem',
+    variant: null,
+    rules: { type: 'm', property: 'margin' },
+    value: { raw: '1rem', data: '1rem' }
+  },
+  {
     className: 'bg-red',
-    isImportant: false,
-    cssRules: 'background',
-    value: 'red',
-    variants: null,
-    raw: [undefined, 'bg', 'red', '', undefined, undefined, 'bg-red']
+    variant: null,
+    rules: { type: 'bg', property: 'background' },
+    value: { raw: 'red', data: 'red' }
   },
   {
-    className: 'm-4',
-    isImportant: false,
-    cssRules: 'margin: 1rem',
-    value: null,
-    variants: null,
-    raw: [undefined, 'm', '4', '', undefined, undefined, 'm-4']
-  },
-  {
-    className: '\\!hover\\:bg-\\[rgb\\(255_0_0\\)\\]',
-    isImportant: true,
-    cssRules: 'background',
-    value: 'rgb(255 0 0)',
-    variants: { name: 'hover', data: '&:hover' },
-    raw: ['hover', 'bg', '[rgb(255_0_0)]', '', undefined, undefined, 'hover:bg-[rgb(255_0_0)]']
+    className: 'hover:bg-blue',
+    variant: { name: 'hover', data: null },
+    rules: { type: 'bg', property: 'background' },
+    value: { raw: 'blue', data: 'blue' }
   }
 ]
 ```
 
 ## License
 
-MIT © 2024-present
+MIT © 2025-present
