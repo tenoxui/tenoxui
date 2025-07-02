@@ -1,5 +1,15 @@
 # Changelog
 
+## `v3.0.0-alpha.2` - `2025-07-02`
+
+## **Changed**
+
+- New default value output, `raw` and `data` is a separate
+
+## Development
+
+- Update types
+
 ## `v3.0.0-alpha.1` - `2025-06-30`
 
 ### **Changed**

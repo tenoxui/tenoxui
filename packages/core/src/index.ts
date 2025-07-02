@@ -195,7 +195,7 @@ export class TenoxUI<
     const utilityPlugins = this.plugins
       .filter((p) => p.processUtilities)
       .sort((a, b) => (b.priority || 0) - (a.priority || 0))
-    console.log(property)
+
     for (const plugin of utilityPlugins) {
       if (plugin.processUtilities) {
         try {
