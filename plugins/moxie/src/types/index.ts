@@ -26,6 +26,9 @@ export interface CreateRegexpResult {
 
 export interface Config {
   values?: Record<string, string>
+  priority?: number
+  typeSafelist?: string[]
+  prefixChars?: string[]
 }
 
 export interface ProcessResult {
@@ -48,3 +51,9 @@ export type FnResult = {
 }
 
 export type UtilityFunctionResult = FnResult | FnResult[]
+
+export type UtilitiesType =
+  | ((value: { raw: string; data: string | null } | null) => UtilityFunctionResult)
+  | CSSPropertyOrVariable
+
+export type Utilities = Record<string, UtilitiesType>
