@@ -1,6 +1,5 @@
 import { Config } from 'vite'
 import { resolve } from 'node:path'
-console.log(resolve(__dirname, '../'))
 export function createConfig({
   name = 'tenoxui',
   entry = './src/index.ts',
