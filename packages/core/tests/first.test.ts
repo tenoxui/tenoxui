@@ -319,7 +319,7 @@ describe('TenoxUI', () => {
           type: 'm',
           property: 'margin'
         },
-        value: '4'
+        value: { raw: '4', data: '4' }
       })
     })
 
@@ -341,7 +341,7 @@ describe('TenoxUI', () => {
           type: 'bg',
           property: 'background-color'
         },
-        value: 'red'
+        value: { raw: 'red', data: 'red' }
       })
     })
 
@@ -412,7 +412,7 @@ describe('TenoxUI', () => {
           type: 'm',
           property: 'margin'
         },
-        value: '4'
+        value: { raw: '4', data: '4' }
       })
     })
 
