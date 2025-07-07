@@ -1,15 +1,15 @@
 import type {
-  Utilities,
-  Variants,
-  Plugin,
-  ProcessResult,
   Config,
-  RegexPatterns,
-  BaseProcessResult,
+  Plugin,
+  Variants,
+  Utilities,
   ParseContext,
   RegexpContext,
+  RegexPatterns,
+  ProcessContext,
+  BaseProcessResult,
   ProcessUtilitiesContext,
-  ProcessContext
+  DefaultProcessUtilityResult
 } from './types'
 
 export class TenoxUI<
@@ -191,7 +191,7 @@ export class TenoxUI<
     property?: string
     value?: string
     className?: string
-  } = {}): BaseProcessResult | null {
+  } = {}): (BaseProcessResult & unknown) | unknown {
     const utilityPlugins = this.plugins
       .filter((p) => p.processUtilities)
       .sort((a, b) => (b.priority || 0) - (a.priority || 0))
@@ -237,23 +237,39 @@ export class TenoxUI<
 
     return {
       className,
+      rules: {
+        type: property,
+        property: this.utilities[property],
+        value:
+          value === finalValue
+            ? finalValue
+            : {
+                raw: value,
+                data: finalValue
+              }
+      },
+      /*
       variant: variant
         ? {
             name: variant,
             data: variantData!
           }
-        : null,
-      rules: {
-        type: property,
-        property: this.utilities[property]
-      },
-      value: { raw: value, data: finalValue }
-    } as ProcessResult
+        : null
+        */
+      variant: !variant
+        ? null
+        : variant && variantData && variantData !== variant
+          ? {
+              raw: variant,
+              data: variantData
+            }
+          : variant
+    } satisfies BaseProcessResult & DefaultProcessUtilityResult
   }
 
-  public process(classNames: string | string[]): BaseProcessResult[] | null {
+  public process(classNames: string | string[]): unknown | null {
     const classList = Array.isArray(classNames) ? classNames : classNames.split(/\s+/)
-    const results: BaseProcessResult[] = []
+    const results = []
 
     for (const className of classList) {
       if (!className.trim()) continue
@@ -305,6 +321,21 @@ export class TenoxUI<
 
         if (processed) {
           results.push(processed)
+        }
+      }
+    }
+
+    const transformPlugins = this.plugins
+      .filter((p) => p.transform)
+      .sort((a, b) => (b.priority || 0) - (a.priority || 0))
+
+    for (const plugin of transformPlugins) {
+      if (plugin.transform) {
+        try {
+          const result = plugin.transform(results)
+          if (result) return result
+        } catch (err) {
+          console.error(`Plugin "${plugin.name}" transform failed:`, err)
         }
       }
     }

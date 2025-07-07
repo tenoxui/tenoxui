@@ -45,7 +45,7 @@ describe('parser', () => {
               /^(?:(?<variant>[\w.-]+):)?(?<property>bg|flex|m)(?:-(?<value>[\w.-]+?))?$/
 
             const match = className.match(regex)
-            console.log(match)
+
             if (match) {
               const [, a, b, c] = match
               return [className, a, b, c, match.groups]

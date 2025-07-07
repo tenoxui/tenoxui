@@ -317,9 +317,9 @@ describe('TenoxUI', () => {
         variant: null,
         rules: {
           type: 'm',
-          property: 'margin'
-        },
-        value: { raw: '4', data: '4' }
+          property: 'margin',
+          value: '4'
+        }
       })
     })
 
@@ -330,18 +330,33 @@ describe('TenoxUI', () => {
         value: 'red',
         className: 'hover:bg-red'
       })
+      const result2 = tx.processUtilities({
+        variant: 'hover2',
+        property: 'bg',
+        value: 'red',
+        className: 'hover2:bg-red'
+      })
 
       expect(result).toEqual({
         className: 'hover:bg-red',
         variant: {
-          name: 'hover',
+          raw: 'hover',
           data: ':hover'
         },
         rules: {
           type: 'bg',
-          property: 'background-color'
-        },
-        value: { raw: 'red', data: 'red' }
+          property: 'background-color',
+          value: 'red'
+        }
+      })
+      expect(result2).toEqual({
+        className: 'hover2:bg-red',
+        variant: 'hover2',
+        rules: {
+          type: 'bg',
+          property: 'background-color',
+          value: 'red'
+        }
       })
     })
 
@@ -410,9 +425,9 @@ describe('TenoxUI', () => {
         variant: null,
         rules: {
           type: 'm',
-          property: 'margin'
-        },
-        value: { raw: '4', data: '4' }
+          property: 'margin',
+          value: '4'
+        }
       })
     })
 
