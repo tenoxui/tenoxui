@@ -200,21 +200,11 @@ export class TenoxUI<
       if (plugin.processUtilities) {
         try {
           const context: ProcessUtilitiesContext = {
-            variant: variant
-              ? {
-                  raw: variant,
-                  data: this.variants[variant] || null
-                }
-              : null,
-            property: {
-              name: property,
-              data: this.utilities[property]
-            },
-            value: {
-              raw: value,
-              data: this.processValue(value)
-            },
             className,
+            property: this.utilities[property],
+            value: this.processValue(value),
+            variant: variant ? this.variants[variant] : null,
+            raw: this.parse(className),
             utilities: this.utilities,
             variants: this.variants,
             parser: (className: string) => this.parse(className),
@@ -237,33 +227,10 @@ export class TenoxUI<
 
     return {
       className,
-      rules: {
-        type: property,
-        property: this.utilities[property],
-        value:
-          value === finalValue
-            ? finalValue
-            : {
-                raw: value,
-                data: finalValue
-              }
-      },
-      /*
-      variant: variant
-        ? {
-            name: variant,
-            data: variantData!
-          }
-        : null
-        */
-      variant: !variant
-        ? null
-        : variant && variantData && variantData !== variant
-          ? {
-              raw: variant,
-              data: variantData
-            }
-          : variant
+      property: this.utilities[property],
+      value: finalValue,
+      variant: variantData,
+      raw: this.parse(className)
     } satisfies BaseProcessResult & DefaultProcessUtilityResult
   }
 

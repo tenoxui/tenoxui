@@ -10,24 +10,10 @@ export type BaseProcessResult = {
   className: string
 }
 export type DefaultProcessUtilityResult = {
-  variant:
-    | null
-    | {
-        raw: string
-        data: string | null
-      }
-    | string
-  rules: {
-    type: string
-    property: CSSPropertyOrVariable
-    value:
-      | string
-      | {
-          raw: string | null
-          data: string | null
-        }
-      | null
-  }
+  variant: string | null
+  property: CSSPropertyOrVariable | string
+  value: string | null
+  raw: (undefined | string)[]
 }
 export type ProcessResult<Data = Partial<DefaultProcessUtilityResult>> = BaseProcessResult & Data
 export type ParseContext = {
@@ -44,15 +30,10 @@ export type RegexpContext = {
 }
 export type ProcessUtilitiesContext = Partial<{
   className: string
-  variant: {
-    raw: string
-    data: string | null
-  } | null
-  property: {
-    name: string
-    data: string | undefined
-  }
-  value: { raw: string; data: string | null }
+  property: string
+  variant: string | null
+  value: string | null
+  raw: (string | undefined)[]
   utilities: Utilities
   variants: Variants
   parser: (className: string) => unknown
