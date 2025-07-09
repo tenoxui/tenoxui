@@ -1,10 +1,10 @@
 import { CreatePatternsConfig, Patterns, CreateRegexpResult } from '../types'
 
-function escapeRegex(str: string): string {
+export function escapeRegex(str: string): string {
   return str.replace(/[.*+?^${}()|[\]\\/\\-]/g, '\\$&')
 }
 
-function createPatterns({
+export function createPatterns({
   variants = {},
   utilities = {},
   safelist = [],

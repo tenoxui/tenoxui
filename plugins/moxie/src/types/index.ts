@@ -1,4 +1,4 @@
-import type { CSSPropertyOrVariable } from '@tenoxui/core/types'
+import type { CSSPropertyOrVariable } from '@tenoxui/core'
 
 export interface CreatePatternsConfig {
   variants?: Record<string, any>
@@ -43,17 +43,23 @@ export interface ProcessResult {
   } | null
 }
 
-export type Value = { raw: string; data: string | null } | null
+export type Value = { raw: string; data: string | null } | string | null
 
 export type FnResult = {
   property: CSSPropertyOrVariable
   value: Value
 }
 
-export type UtilityFunctionResult = FnResult | FnResult[]
+export type UtilityFunctionResult = { className?: string } & (FnResult | { rules: FnResult[] })
 
-export type UtilitiesType =
-  | ((value: { raw: string; data: string | null } | null) => UtilityFunctionResult)
-  | CSSPropertyOrVariable
+export type FnUtilityContext = (
+  ctx?: Partial<{
+    value: { raw: string; data: string | null } | string | null
+    raw: (undefined | string)[]
+    className: string
+  }>
+) => UtilityFunctionResult
+
+export type UtilitiesType = FnUtilityContext | CSSPropertyOrVariable
 
 export type Utilities = Record<string, UtilitiesType>
