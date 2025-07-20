@@ -112,7 +112,16 @@ export function Moxie(config: Config = {}): Plugin<ProcessResult> {
     processVariant(variant: string): string {
       const match = variant.match(createRegexp({ utilities: ALL_VARIANTS }).matcher)
       const fn = match && ALL_VARIANTS[match[2]]
-      return typeof fn === 'function' ? fn(match[3]) : undefined
+
+      let key = null
+      let value = match?.[3]
+      const x = processValue(match?.[3])
+      if (typeof x === 'object') {
+        key = x.key
+        value = x.value
+      }
+
+      return typeof fn === 'function' ? fn({ key, value }) : undefined
     },
 
     processUtilities(context: ProcessUtilitiesContext) {
@@ -213,13 +222,15 @@ export function Moxie(config: Config = {}): Plugin<ProcessResult> {
           const variant = item.prefix || ''
 
           const rules = `{ ${
-            Array.isArray(item.rules.property)
-              ? item.rules.property
-                  .map((prop) => `${toKebabCase(prop)}: ${item.rules.value}`)
-                  .join('; ')
-              : typeof item.rules === 'object' && 'property' in item.rules
-                ? `${toKebabCase(item.rules.property)}: ${item.rules.value}`
-                : item.rules
+            Array.isArray(item.rules)
+              ? item.rules.map((item) => `${toKebabCase(item.property)}: ${item.value}`).join('; ')
+              : Array.isArray(item.rules.property)
+                ? item.rules.property
+                    .map((prop) => `${toKebabCase(prop)}: ${item.rules.value}`)
+                    .join('; ')
+                : typeof item.rules === 'object' && 'property' in item.rules
+                  ? `${toKebabCase(item.rules.property)}: ${item.rules.value}`
+                  : item.rules
           } }`
 
           if (variant.includes('&')) {
@@ -236,6 +247,17 @@ export function Moxie(config: Config = {}): Plugin<ProcessResult> {
                 : '.' + escapeSelector(item.className)
 
             results.moxie.push(variant.replace('@slot', className + ' ' + rules))
+          } else if (variant.includes('@class')) {
+            if (!variant.includes('@rules')) return null
+
+            const className =
+              typeof item.className === 'object'
+                ? `${prefix || ''}.${escapeSelector(raw)}${suffix}`
+                : '.' + escapeSelector(item.className)
+
+            results.moxie.push(
+              variant.replace('@class', className).replace('@rules', rules.slice(1, -1))
+            )
           } else {
             const className =
               typeof item.className === 'object'
