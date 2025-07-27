@@ -96,4 +96,5 @@ export { properties as defaultProperties } from './styles/properties'
 export { values } from './lib/values'
 export { variants } from './lib/variants'
 export { typeOrder } from './lib/typeOrder'
+export * from './utils/createValue'
 export default preset

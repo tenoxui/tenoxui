@@ -46,9 +46,9 @@ export const effect: {
       }
 
       const values: Record<string, string> = {
-        '2xs': '0 1px var(--tw-inset-ring-shadow, rgb(0 0 0 / 0.05))',
-        xs: '0 1px 1px var(--tw-inset-ring-shadow, rgb(0 0 0 / 0.05))',
-        sm: '0 2px 4px var(--tw-inset-ring-shadow, rgb(0 0 0 / 0.05))',
+        '2xs': '0 1px var(--tw-inset-shadow-color, rgb(0 0 0 / 0.05))',
+        xs: '0 1px 1px var(--tw-inset-shadow-color, rgb(0 0 0 / 0.05))',
+        sm: '0 2px 4px var(--tw-inset-shadow-color, rgb(0 0 0 / 0.05))',
         none: '0 0 #0000'
       }
 
