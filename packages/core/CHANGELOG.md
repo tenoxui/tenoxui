@@ -1,15 +1,16 @@
 # Changelog
 
-## `v3.0.0-alpha.3` - `unreleased`
+## `v3.0.0-alpha.3` - `2025-08-04`
 
 ## **Changed**
 
-- If raw and processed `value` are similar, return raw value (default `processUtilities` return)
-- Same as variant/prefix, if the raw variant is available but the processed variant is null, just return the variant.
+- Simplified data structure from `processUtilities`
+- Plugin ecosystem enhancements
 
 ## Added
 
 - New `transform` plugin for final data processing, higher than `process` plugin. Useful when generating final data from the framework.
+- `raw` field on returned data from `processUtilities`
 
 ## `v3.0.0-alpha.2` - `2025-07-02`
 

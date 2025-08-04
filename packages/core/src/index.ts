@@ -3,7 +3,9 @@ import type {
   Plugin,
   Variants,
   Utilities,
+  PluginLike,
   ParseContext,
+  PluginFactory,
   RegexpContext,
   RegexPatterns,
   ProcessContext,
@@ -13,8 +15,8 @@ import type {
 } from './types'
 
 export class TenoxUI<
-  TUtilities extends { [key: string]: any } = Utilities,
-  TVariants extends { [key: string]: any } = Variants
+  TUtilities extends { [type: string]: any } = Utilities,
+  TVariants extends { [variant: string]: any } = Variants
 > {
   private utilities: TUtilities
   private variants: TVariants
@@ -27,10 +29,29 @@ export class TenoxUI<
     const { variants, utilities, plugins = [] } = config
     this.utilities = (utilities || {}) as TUtilities
     this.variants = (variants || {}) as TVariants
-    this.plugins = [...plugins].sort((a, b) => (b.priority || 0) - (a.priority || 0))
+    this.plugins = this.flattenPlugins(plugins).sort(
+      (a, b) => (b.priority || 0) - (a.priority || 0)
+    )
     this.matcher = null
     this.defaultPattern = '[\\w.-]+'
     this._initializeMatcher()
+  }
+
+  private flattenPlugins(plugins: (Plugin | PluginFactory | PluginLike)[]): Plugin[] {
+    const flattened: Plugin[] = []
+
+    for (const plugin of plugins) {
+      if (typeof plugin === 'function') {
+        const pluginArray = plugin()
+        flattened.push(...pluginArray)
+      } else if (Array.isArray(plugin)) {
+        flattened.push(...plugin)
+      } else {
+        flattened.push(plugin as Plugin)
+      }
+    }
+
+    return flattened
   }
 
   private _initializeMatcher() {
@@ -38,8 +59,9 @@ export class TenoxUI<
     this.matcher = regexpResult.matcher
   }
 
-  public use<T extends Plugin>(plugin: T): this {
-    this.plugins.push(plugin as Plugin)
+  public use(...plugin: (Plugin | PluginFactory | PluginLike)[]): this {
+    const newPlugins = this.flattenPlugins(plugin)
+    this.plugins.push(...newPlugins)
     this.plugins.sort((a, b) => (b.priority || 0) - (a.priority || 0))
     this._cachedRegexp = null
     this._initializeMatcher()
@@ -133,10 +155,11 @@ export class TenoxUI<
     }
 
     const match = className.match(matcher)
-    if (!match) return null
-    return match.groups
-      ? [match[0], match.groups.variant, match.groups.property, match.groups.value]
-      : match
+    return !match
+      ? null
+      : match.groups
+        ? [match[0], match.groups.variant, match.groups.property, match.groups.value]
+        : match
   }
 
   private processValue(value: string): string | null {
@@ -181,7 +204,7 @@ export class TenoxUI<
     return this.variants[variant] || null
   }
 
-  public processUtilities({
+  public processUtilities<T = BaseProcessResult>({
     variant = null,
     property = '',
     value = '',
@@ -191,7 +214,7 @@ export class TenoxUI<
     property?: string
     value?: string
     className?: string
-  } = {}): (BaseProcessResult & unknown) | unknown {
+  } = {}): T | (BaseProcessResult & DefaultProcessUtilityResult) | unknown {
     const utilityPlugins = this.plugins
       .filter((p) => p.processUtilities)
       .sort((a, b) => (b.priority || 0) - (a.priority || 0))
@@ -203,7 +226,7 @@ export class TenoxUI<
             className,
             property: this.utilities[property],
             value: this.processValue(value),
-            variant: variant ? this.variants[variant] : null,
+            variant: variant ? this.processVariant(variant) : null,
             raw: this.parse(className),
             utilities: this.utilities,
             variants: this.variants,
@@ -213,7 +236,7 @@ export class TenoxUI<
 
           const result = plugin.processUtilities(context)
 
-          if (result !== null && result !== undefined) return result
+          if (result !== null && result !== undefined) return result as T
         } catch (err) {
           console.error(`Plugin "${plugin.name}" processUtilities failed:`, err)
         }
@@ -234,9 +257,9 @@ export class TenoxUI<
     } satisfies BaseProcessResult & DefaultProcessUtilityResult
   }
 
-  public process(classNames: string | string[]): unknown | null {
+  public process<T = unknown>(classNames: string | string[]): T[] | T | null {
     const classList = Array.isArray(classNames) ? classNames : classNames.split(/\s+/)
-    const results = []
+    const results: T[] = []
 
     for (const className of classList) {
       if (!className.trim()) continue
@@ -267,7 +290,7 @@ export class TenoxUI<
 
             const result = plugin.process(className, context)
             if (result !== null && result !== undefined) {
-              results.push(result)
+              results.push(result as T)
               pluginHandled = true
               break
             }
@@ -287,7 +310,7 @@ export class TenoxUI<
         const processed = this.processUtilities({ variant, property, value, className })
 
         if (processed) {
-          results.push(processed)
+          results.push(processed as T)
         }
       }
     }
@@ -300,7 +323,7 @@ export class TenoxUI<
       if (plugin.transform) {
         try {
           const result = plugin.transform(results)
-          if (result) return result
+          if (result) return result as T[] | T
         } catch (err) {
           console.error(`Plugin "${plugin.name}" transform failed:`, err)
         }
@@ -314,10 +337,47 @@ export class TenoxUI<
     return [...this.plugins].sort((a, b) => (b.priority || 0) - (a.priority || 0))
   }
 
+  public getPluginsByName(namePattern: string | RegExp): Plugin[] {
+    const pattern = typeof namePattern === 'string' ? new RegExp(namePattern) : namePattern
+
+    return this.plugins.filter((plugin) => plugin.name && pattern.test(plugin.name))
+  }
+
+  public removePlugins(namePattern: string | RegExp): this {
+    const pattern = typeof namePattern === 'string' ? new RegExp(namePattern) : namePattern
+
+    this.plugins = this.plugins.filter((plugin) => !plugin.name || !pattern.test(plugin.name))
+
+    this._cachedRegexp = null
+    this._initializeMatcher()
+    return this
+  }
+
   public clearCache(): this {
     this._cachedRegexp = null
     this._initializeMatcher()
     return this
+  }
+
+  public processWithPlugin<T>(className: string, pluginName: string): T | null {
+    const plugin = this.plugins.find((p) => p.name === pluginName)
+    if (!plugin?.process) return null
+
+    try {
+      const context: ProcessContext = {
+        regexp: () => this.regexp(),
+        parser: (cls: string) => this.parse(cls),
+        processor: (data) => this.processUtilities(data),
+        utilities: this.utilities,
+        variants: this.variants
+      }
+
+      const result = plugin.process(className, context)
+      return result as T | null
+    } catch (err) {
+      console.error(`Plugin "${pluginName}" process failed:`, err)
+      return null
+    }
   }
 }
 

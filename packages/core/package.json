@@ -42,7 +42,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "type:check": "tsc --noEmit",
-    "type:build": "tsc --declaration --emitDeclarationOnly --outDir dist",
+    "type:build": "tsc -b",
     "build:prod": "pnpm type:check && pnpm build --minify && pnpm type:build"
   },
   "peerDependencies": {

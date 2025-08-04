@@ -61,7 +61,7 @@ describe('TenoxUI', () => {
     })
   })
 
-  describe('Plugin System', () => {
+  describe('Plugin', () => {
     it('should add plugin with use() method', () => {
       const plugin: Plugin = { name: 'test-plugin', priority: 5 }
       const result = tx.use(plugin)
@@ -75,7 +75,7 @@ describe('TenoxUI', () => {
       const plugin2: Plugin = { name: 'plugin2', priority: 5 }
       const plugin3: Plugin = { name: 'plugin3', priority: 3 }
 
-      tx.use(plugin1).use(plugin2).use(plugin3)
+      tx.use(plugin1, plugin2, plugin3)
 
       const plugins = tx.getPluginsByPriority()
       expect(plugins[0].name).toBe('plugin2') // priority 5
@@ -100,7 +100,7 @@ describe('TenoxUI', () => {
     })
   })
 
-  describe('RegExp Generation', () => {
+  describe('RegExp', () => {
     it('should generate regex with default patterns', () => {
       const result = tx.regexp()
 
@@ -135,6 +135,35 @@ describe('TenoxUI', () => {
       expect(regexpSpy).toHaveBeenCalled()
     })
 
+    it('should use plugin to set new matcher', () => {
+      const regexPlugin = {
+        name: 'regexp-plugin',
+        priority: 1,
+        regexp({ patterns }) {
+          return {
+            patterns: {
+              property: patterns.property + '|tenox'
+            }
+          }
+        }
+      }
+      const regexPlugin2 = {
+        name: 'regexp-plugi2n',
+        priority: 2,
+        regexp({ patterns }) {
+          return {
+            patterns: {
+              property: patterns.property + '|tenox2'
+            }
+          }
+        }
+      }
+
+      tx.use(regexPlugin, regexPlugin2)
+
+      expect(tx.matcher.source).toContain('m|p|bg|text|w|h|tenox2|tenox')
+    })
+
     it('should handle plugin regexp errors gracefully', () => {
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
       const plugin: Plugin = {
@@ -157,7 +186,7 @@ describe('TenoxUI', () => {
     })
   })
 
-  describe('Parse Method', () => {
+  describe('Parse', () => {
     it('should parse simple class names correctly', () => {
       const result = tx.parse('m-4')
       expect(result).toEqual(['m-4', undefined, 'm', '4'])
@@ -315,11 +344,9 @@ describe('TenoxUI', () => {
       expect(result).toEqual({
         className: 'm-4',
         variant: null,
-        rules: {
-          type: 'm',
-          property: 'margin',
-          value: '4'
-        }
+        property: 'margin',
+        value: '4',
+        raw: ['m-4', undefined, 'm', '4']
       })
     })
 
@@ -339,24 +366,17 @@ describe('TenoxUI', () => {
 
       expect(result).toEqual({
         className: 'hover:bg-red',
-        variant: {
-          raw: 'hover',
-          data: ':hover'
-        },
-        rules: {
-          type: 'bg',
-          property: 'background-color',
-          value: 'red'
-        }
+        variant: ':hover',
+        property: 'background-color',
+        value: 'red',
+        raw: ['hover:bg-red', 'hover', 'bg', 'red']
       })
       expect(result2).toEqual({
         className: 'hover2:bg-red',
-        variant: 'hover2',
-        rules: {
-          type: 'bg',
-          property: 'background-color',
-          value: 'red'
-        }
+        variant: null,
+        property: 'background-color',
+        value: 'red',
+        raw: null
       })
     })
 
@@ -423,11 +443,9 @@ describe('TenoxUI', () => {
       expect(result![0]).toEqual({
         className: 'm-4',
         variant: null,
-        rules: {
-          type: 'm',
-          property: 'margin',
-          value: '4'
-        }
+        property: 'margin',
+        value: '4',
+        raw: ['m-4', undefined, 'm', '4']
       })
     })
 

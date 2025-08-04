@@ -15,6 +15,9 @@ const ui = new TenoxUI({
   utilities: {
     m: 'margin',
     bg: 'background'
+  },
+  variants: {
+    hover: '&:hover'
   }
 })
 
@@ -27,27 +30,31 @@ Output :
 ;[
   {
     className: 'm-10px',
+    property: 'margin',
+    value: '10px',
     variant: null,
-    rules: { type: 'm', property: 'margin' },
-    value: { raw: '10px', data: '10px' }
+    raw: ['m-10px', undefined, 'm', '10px']
   },
   {
     className: 'm-1rem',
+    property: 'margin',
+    value: '1rem',
     variant: null,
-    rules: { type: 'm', property: 'margin' },
-    value: { raw: '1rem', data: '1rem' }
+    raw: ['m-1rem', undefined, 'm', '1rem']
   },
   {
     className: 'bg-red',
+    property: 'background',
+    value: 'red',
     variant: null,
-    rules: { type: 'bg', property: 'background' },
-    value: { raw: 'red', data: 'red' }
+    raw: ['bg-red', undefined, 'bg', 'red']
   },
   {
     className: 'hover:bg-blue',
-    variant: { name: 'hover', data: null },
-    rules: { type: 'bg', property: 'background' },
-    value: { raw: 'blue', data: 'blue' }
+    property: 'background',
+    value: 'blue',
+    variant: '&:hover',
+    raw: ['hover:bg-blue', 'hover', 'bg', 'blue']
   }
 ]
 ```
