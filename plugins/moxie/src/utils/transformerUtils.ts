@@ -1,5 +1,13 @@
-import { toKebabCase, escapeSelector } from './'
+import type { CSSPropertyOrVariable } from '@tenoxui/core'
 import type { CSSRule, ClassNameObject } from '../types'
+import { toKebabCase, escapeSelector } from './'
+
+/**
+ * Helper to check if css ptoperty or variable
+ */
+export function transformProps(prop: CSSPropertyOrVariable) {
+  return ((prop as string).startsWith('--') ? prop : toKebabCase(prop)) as string
+}
 
 /*
  * Helper for generating rules from variables
@@ -14,10 +22,10 @@ export function generateCSSRule(
 
   // check if property is an array
   if (Array.isArray(property)) {
-    return property.map((prop) => `${toKebabCase(prop)}: ${value}${important}`).join('; ')
+    return property.map((prop) => `${transformProps(prop)}: ${value}${important}`).join('; ')
   }
 
-  return `${toKebabCase(property)}: ${value}${important}`
+  return `${transformProps(property)}: ${value}${important}`
 }
 
 /**
