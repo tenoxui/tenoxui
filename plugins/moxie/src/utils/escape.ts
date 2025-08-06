@@ -12,3 +12,6 @@ export function unescapeSelector(str: string): string {
       .replace(/^\\3(\d) /, '$1')
   )
 }
+export function escapeRegex(str: string): string {
+  return str.replace(/[.*+?^${}()|[\]\\/\\-]/g, '\\$&')
+}

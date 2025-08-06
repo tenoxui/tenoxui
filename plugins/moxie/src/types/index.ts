@@ -1,8 +1,110 @@
-import type { CSSPropertyOrVariable } from '@tenoxui/core'
+import type { BaseProcessResult, CSSPropertyOrVariable } from '@tenoxui/core'
+
+export interface ProcessedValue {
+  key: string
+  value: string
+}
+
+export interface CSSRule {
+  property: CSSPropertyOrVariable | CSSPropertyOrVariable[]
+  value: string
+  isImportant?: boolean
+}
+
+export interface ProcessResult extends BaseProcessResult<string | ClassNameObject> {
+  use: string
+  rules: CSSRule | CSSRule[] | string | null
+  variant?: string | null
+  isImportant?: boolean
+  raw?: RegExpMatchArray
+}
+
+export interface InvalidResult extends ProcessResult {
+  reason?: string
+}
+
+export interface ClassNameObject {
+  full?: string
+  raw?: string
+  prefix?: string
+  suffix?: string
+}
+
+export interface TransformResult {
+  rules: string[]
+  invalid: {
+    moxie: ProcessResult[]
+    rest: unknown[]
+  }
+}
+
+export interface UtilityFunction {
+  (context: UtilityContext): UtilityResult | null
+}
+
+export interface UtilityContext {
+  className: string
+  value: string | ProcessedValue
+  raw: RegExpMatchArray
+  key?: string | null
+}
+
+export interface UtilityResult {
+  className?: string | ClassNameObject
+  property?: CSSPropertyOrVariable | CSSPropertyOrVariable[]
+  value?: string
+  rules?:
+    | CSSRule
+    | CSSRule[]
+    | string
+    | [CSSPropertyOrVariable | CSSPropertyOrVariable[], string, boolean?]
+    | { [key: CSSPropertyOrVariable | string]: string | [string, boolean?] }
+
+  isImportant?: boolean
+}
+
+export interface UtilityConfig {
+  property?: CSSPropertyOrVariable | CSSPropertyOrVariable[] | UtilityFunction
+  value?: (string | RegExp)[]
+}
+
+type AcceptedUtility =
+  | CSSPropertyOrVariable
+  | CSSPropertyOrVariable[]
+  | UtilityConfig
+  | UtilityFunction
+
+export interface Utilities {
+  [key: string]: AcceptedUtility | [RegExp, AcceptedUtility]
+}
+
+export type VariantContext = {
+  key?: string | null
+  value?: string
+}
+export type VariantResult = string | null
+export type VariantFunction = (context?: VariantContext) => VariantResult
+
+export interface Variants {
+  [key: string]: string | VariantFunction
+}
+
+export interface Values {
+  [key: string]: string
+}
+
+export interface Config {
+  values?: Values
+  priority?: number
+  prefixChars?: string[]
+  utilitiesName?: string
+  typeSafelist?: string[]
+  onMatcherCreated?: ((matcher: RegExp) => void) | null
+}
 
 export interface CreatePatternsConfig {
-  variants?: Record<string, any>
-  utilities?: Record<string, any>
+  variants?: string[]
+  utilities?: string[]
   safelist?: string[]
   inputPrefixChars?: string[]
 }
@@ -24,42 +126,15 @@ export interface CreateRegexpResult {
   }
 }
 
-export interface Config {
-  values?: Record<string, string>
-  priority?: number
-  typeSafelist?: string[]
-  prefixChars?: string[]
+export interface Plugin {
+  name: string
+  priority: number
+  process(className: string, ctx: PluginContext): ProcessResult | void
 }
 
-export interface ProcessResult {
-  className: string
-  rules: {
-    property: CSSPropertyOrVariable | FnResult[]
-    value: Value
+export interface PluginContext {
+  variants?: Variants
+  utilities?: {
+    [utilitiesName: string]: Utilities
   }
-  prefix?: {
-    raw: string
-    data: string | null
-  } | null
 }
-
-export type Value = { raw: string; data: string | null } | string | null
-
-export type FnResult = {
-  property: CSSPropertyOrVariable
-  value: Value
-}
-
-export type UtilityFunctionResult = { className?: string } & (FnResult | { rules: FnResult[] })
-
-export type FnUtilityContext = (
-  ctx?: Partial<{
-    value: { raw: string; data: string | null } | string | null
-    raw: (undefined | string)[]
-    className: string
-  }>
-) => UtilityFunctionResult
-
-export type UtilitiesType = FnUtilityContext | CSSPropertyOrVariable
-
-export type Utilities = Record<string, UtilitiesType>
