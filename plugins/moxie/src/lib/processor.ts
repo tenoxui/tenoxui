@@ -243,15 +243,23 @@ export class Processor {
       }
 
       const utilityResult = result as UtilityResult
-      return this.createResult(
-        utilityResult.className || className,
-        variant,
-        utilityResult.property || property,
-        utilityResult.value || value || '',
-        raw,
-        utilityResult.isImportant || isImportant,
-        utilityResult.rules
-      )
+
+      if (
+        typeof utilityResult === 'object' &&
+        ('property' in utilityResult || 'rules' in utilityResult)
+      ) {
+        return this.createResult(
+          utilityResult.className || className,
+          variant,
+          utilityResult.property || property,
+          utilityResult.value || value || '',
+          raw,
+          utilityResult.isImportant || isImportant,
+          utilityResult.rules
+        )
+      } else {
+        return this.createResult(className, variant, '', '', raw, isImportant, utilityResult)
+      }
     }
 
     return null
