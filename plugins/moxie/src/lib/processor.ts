@@ -68,6 +68,14 @@ export class Processor {
   public processVariant(variant: string): string | null {
     if (!this.variants || !variant) return null
 
+    if (
+      variant &&
+      ((variant.startsWith('[') && variant.endsWith(']')) ||
+        (variant.startsWith('(') && variant.endsWith(')')))
+    ) {
+      return this.escapeArbitrary(variant)
+    }
+
     const match = variant.match(createRegexp({ utilities: Object.keys(this.variants) }).matcher)
     const variantHandler = match && this.variants[match[2]]
 
@@ -90,6 +98,14 @@ export class Processor {
       const val = this.values[key]
       return typeof val === 'string' ? val : match
     })
+  }
+
+  private escapeArbitrary(str: string): string {
+    return str
+      .slice(1, -1)
+      .replace(/\\_/g, 'M0X13C55')
+      .replace(/_/g, ' ')
+      .replace(/M0X13C55/g, '_')
   }
 
   public processValue(rawValue: string): string | ProcessedValue {
@@ -125,11 +141,7 @@ export class Processor {
       (value.startsWith('[') && value.endsWith(']')) ||
       (value.startsWith('(') && value.endsWith(')'))
     ) {
-      const cleanValue = value
-        .slice(1, -1)
-        .replace(/\\_/g, 'M0X13C55')
-        .replace(/_/g, ' ')
-        .replace(/M0X13C55/g, '_')
+      const cleanValue = this.escapeArbitrary(value)
 
       if (cleanValue.includes('{')) {
         return createReturn(this.replaceWithValueRegistry(cleanValue))
