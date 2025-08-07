@@ -59,14 +59,19 @@ export class Processor {
       values?: Values
     } = {}
   ) {
-    this.parser = config.parser || createRegexp()
+    this.parser =
+      config.parser ||
+      createRegexp({
+        utilities: config.utilities ? Object.keys(config.utilities) : [],
+        variants: config.variants ? Object.keys(config.variants) : []
+      })
     this.utilities = config.utilities || {}
     this.variants = config.variants || {}
     this.values = config.values || {}
   }
 
   public processVariant(variant: string): string | null {
-    if (!this.variants || !variant) return null
+    if (!variant) return null
 
     if (
       variant &&
@@ -232,11 +237,11 @@ export class Processor {
           raw,
           isImportant
         )
-      } else if (
-        typeof properties === 'string' &&
-        (properties.includes(':') || properties.startsWith('rules'))
-      ) {
-        return this.createResult(className, variant, '', '', raw, isImportant, properties)
+      } else if (typeof properties === 'string' && properties.includes(':')) {
+        return value
+          ? // direct string properties shouldn't have value
+            null
+          : this.createResult(className, variant, '', '', raw, isImportant, properties)
       } else {
         return this.createResult(className, variant, properties, value, raw, isImportant)
       }

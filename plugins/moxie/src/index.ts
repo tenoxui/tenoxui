@@ -43,5 +43,4 @@ export * from './types'
 export * from './utils'
 export { transform } from './lib/transformer'
 export { Processor } from './lib/processor'
-export { Renderer } from './lib/renderer'
 export default Moxie

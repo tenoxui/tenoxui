@@ -84,12 +84,13 @@ export function processRulesArray(
 ): string {
   return rules
     .map((rule) => {
+      if (!rule) return
       // handle array format: [property, value, isImportant?]
       if (Array.isArray(rule)) {
         return generateCSSRule(rule[0], rule[1], isImportant, rule[2])
       }
 
-      if (typeof rule === 'object') {
+      if (typeof rule === 'object' && !Array.isArray(rule)) {
         // handle object format: { property, value, isImportant? }
         if ('property' in rule) {
           return generateCSSRule(rule.property, rule.value, isImportant, rule.isImportant)
@@ -115,6 +116,7 @@ export function generateRuleBlock(
   isImportant: boolean,
   rulesOnly: boolean = false
 ): string {
+  if (!rules) return null
   const createReturn = (rules: string) => (!rulesOnly ? `{ ${rules} }` : rules)
 
   if (Array.isArray(rules)) {
@@ -126,8 +128,10 @@ export function generateRuleBlock(
       return createReturn(
         generateCSSRule(rules.property, rules.value, isImportant, rules.isImportant)
       )
+
+      return result
     } else {
-      return processObjectRules(rules, isImportant)
+      return createReturn(processObjectRules(rules, isImportant))
     }
   }
 
@@ -153,7 +157,11 @@ export function processVariantSelector(variant: string, selector: string, rules:
   if (variant.includes('@class')) {
     if (!variant.includes('@rules')) return ''
 
-    return variant.replace('@class', selector).replace('@rules', rules.slice(1, -1)) // Remove { }
+    return variant.replace('@class', selector).replace(
+      '@rules',
+      // Remove { }
+      rules.startsWith('{') && rules.endsWith('}') ? rules.slice(1, -1) : rules
+    )
   }
 
   return selector + ' ' + rules
