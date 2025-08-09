@@ -115,7 +115,7 @@ export function generateRuleBlock(
   rules: any,
   isImportant: boolean,
   rulesOnly: boolean = false
-): string {
+): string | null {
   if (!rules) return null
   const createReturn = (rules: string) => (!rulesOnly ? `{ ${rules} }` : rules)
 
@@ -128,8 +128,6 @@ export function generateRuleBlock(
       return createReturn(
         generateCSSRule(rules.property, rules.value, isImportant, rules.isImportant)
       )
-
-      return result
     } else {
       return createReturn(processObjectRules(rules, isImportant))
     }

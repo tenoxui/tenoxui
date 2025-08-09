@@ -27,6 +27,8 @@ export function transform(data: ProcessResult[]): TransformResult {
 
       const rulesBlock = generateRuleBlock(item.rules, isImportant)
 
+      if (!rulesBlock) return
+
       const selector = generateSelector(item.className, className, true)
 
       if (variant) {
