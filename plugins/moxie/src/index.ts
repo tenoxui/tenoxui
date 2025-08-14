@@ -41,6 +41,7 @@ export function Moxie(config: Config = {}): Plugin<ProcessResult | InvalidResult
 
 export * from './types'
 export * from './utils'
+export * from './lib/regexp'
 export { transform } from './lib/transformer'
 export { Processor } from './lib/processor'
 export default Moxie

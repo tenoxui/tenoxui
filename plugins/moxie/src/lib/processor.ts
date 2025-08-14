@@ -214,7 +214,7 @@ export class Processor {
       }
 
       if (typeof props === 'string' || Array.isArray(props)) {
-        if (typeof props === 'string' && (props.includes(':') || props.startsWith('rules'))) {
+        if (typeof props === 'string' && props.includes(':')) {
           return this.createResult(className, variant, '', '', raw, isImportant, props)
         } else {
           return this.createResult(className, variant, props, value, raw, isImportant)
@@ -256,7 +256,10 @@ export class Processor {
       }
 
       if (typeof result === 'string') {
-        return this.createResult(className, variant, '', '', raw, isImportant, result)
+        if (result.includes(':')) {
+          return this.createResult(className, variant, '', '', raw, isImportant, result)
+        }
+        return this.createResult(className, variant, result, value, raw, isImportant)
       }
 
       const utilityResult = result as UtilityResult
