@@ -10,6 +10,7 @@ export function Moxie(config: Config = {}): Plugin<ProcessResult | InvalidResult
     prefixChars = [],
     utilitiesName = 'moxie',
     typeSafelist = [],
+    plugins = [],
     onMatcherCreated = null
   } = config
   return {
@@ -31,6 +32,7 @@ export function Moxie(config: Config = {}): Plugin<ProcessResult | InvalidResult
           values,
           parser: pattern,
           variants,
+          plugins,
           utilities: utilities?.[utilitiesName] as any
         })
         return processor.process(className)

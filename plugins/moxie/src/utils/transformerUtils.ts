@@ -158,7 +158,7 @@ export function processVariantSelector(variant: string, selector: string, rules:
     return variant.replace('@class', selector).replace(
       '@rules',
       // Remove { }
-      rules.startsWith('{') && rules.endsWith('}') ? rules.slice(1, -1) : rules
+      rules.startsWith('{') && rules.endsWith('}') ? rules.slice(1, -1).trim() : rules.trim()
     )
   }
 

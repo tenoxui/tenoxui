@@ -5,6 +5,7 @@ import type {
   Utilities,
   Variants,
   Values,
+  Plugin,
   UtilityContext,
   UtilityResult,
   CreateRegexpResult,
@@ -49,14 +50,15 @@ export class Processor {
   private utilities: Utilities
   private variants: Variants
   private values: Values
+  private plugins: Plugin[]
 
   constructor(
     config: {
       parser?: CreateRegexpResult | null
-
       utilities?: Utilities
       variants?: Variants
       values?: Values
+      plugins?: Plugin[]
     } = {}
   ) {
     this.parser =
@@ -68,10 +70,56 @@ export class Processor {
     this.utilities = config.utilities || {}
     this.variants = config.variants || {}
     this.values = config.values || {}
+    this.plugins = this.flattenPlugins(config.plugins || []).sort(
+      (a, b) => (b.priority || 0) - (a.priority || 0)
+    )
+  }
+
+  private flattenPlugins(plugins: (Plugin[] | (() => Plugin | Plugin[]) | Plugin)[]): Plugin[] {
+    const flattened: Plugin[] = []
+
+    for (const plugin of plugins) {
+      if (typeof plugin === 'function') {
+        const pluginArray = plugin()
+        if (Array.isArray(pluginArray)) {
+          flattened.push(...pluginArray)
+        } else {
+          flattened.push(pluginArray)
+        }
+      } else if (Array.isArray(plugin)) {
+        flattened.push(...plugin)
+      } else {
+        flattened.push(plugin)
+      }
+    }
+
+    return flattened
+  }
+
+  public use(...plugin: Plugin[]): this {
+    const newPlugins = this.flattenPlugins(plugin)
+    this.plugins.push(...newPlugins)
+    this.plugins.sort((a, b) => (b.priority || 0) - (a.priority || 0))
+    return this
   }
 
   public processVariant(variant: string): string | null {
     if (!variant) return null
+
+    const processVariantPlugins = this.plugins
+      .filter((p) => p.processVariant)
+      .sort((a, b) => (b.priority || 0) - (a.priority || 0))
+
+    for (const plugin of processVariantPlugins) {
+      if (plugin.processVariant) {
+        try {
+          const result = plugin.processVariant(variant, this.variants)
+          if (result) return result
+        } catch (err) {
+          console.error(`Moxie plugin "${plugin.name}" process variant failed:`, err)
+        }
+      }
+    }
 
     if (
       variant &&
@@ -89,7 +137,7 @@ export class Processor {
     let key: string | null = null
     let value: string | null = match?.[3]
 
-    const processedValue = this.processValue(match?.[3] || '')
+    const processedValue = this.processValue(match?.[3] || '', match[2])
     if (isProcessedValue(processedValue)) {
       key = processedValue.key
       value = processedValue.value
@@ -113,7 +161,9 @@ export class Processor {
       .replace(/M0X13C55/g, '_')
   }
 
-  public processValue(rawValue: string): string | ProcessedValue {
+  public processValue(rawValue: string, type?: string): string | ProcessedValue | null {
+    if (!rawValue) return null
+
     const pattern = /^(?:\(|\[)([^:]+):(.+)(?:\)|\])$/
     let extractedFor: string | null = null
     let value = rawValue || ''
@@ -133,6 +183,27 @@ export class Processor {
 
     const createReturn = (processedValue: string): string | ProcessedValue =>
       extractedFor ? { key: extractedFor, value: processedValue } : processedValue
+
+    const processValuePlugins = this.plugins
+      .filter((p) => p.processValue)
+      .sort((a, b) => (b.priority || 0) - (a.priority || 0))
+
+    for (const plugin of processValuePlugins) {
+      if (plugin.processValue) {
+        try {
+          const result = plugin.processValue({
+            value,
+            raw: rawValue,
+            key: extractedFor,
+            property: type,
+            createReturn
+          })
+          if (result) return result
+        } catch (err) {
+          console.error(`Moxie plugin "${plugin.name}" process value failed:`, err)
+        }
+      }
+    }
 
     if (this.values[value]) {
       return createReturn(this.values[value])
@@ -159,11 +230,10 @@ export class Processor {
   }
 
   public processUtilities(context: {
-    className: string
+    className: string | ClassNameObject
     value: string | ProcessedValue | null
     property: any
     variant: string | null
-    utilities: Utilities
     raw: RegExpMatchArray
     isImportant: boolean
   }): ProcessResult | InvalidResult | null {
@@ -177,6 +247,35 @@ export class Processor {
       key = finalValue.key
     } else {
       value = finalValue as string
+    }
+
+    const processUtilityPlugin = this.plugins
+      .filter((p) => p.processUtilities)
+      .sort((a, b) => (b.priority || 0) - (a.priority || 0))
+
+    for (const plugin of processUtilityPlugin) {
+      if (plugin.processUtilities) {
+        try {
+          const result = plugin.processUtilities({
+            className,
+            value,
+            key,
+            property,
+            variant,
+            raw,
+            isImportant,
+            createResult: this.createResult,
+            createErrorResult: this.createErrorResult
+          })
+          if (result) return result
+        } catch (err) {
+          console.error(`Moxie plugin "${plugin.name}" process utility failed:`, err)
+          return this.createErrorResult(
+            className,
+            'Moxie plugin error when trying to process utility ' + className
+          )
+        }
+      }
     }
 
     if (typeof property === 'string' && key) {
@@ -214,8 +313,16 @@ export class Processor {
       }
 
       if (typeof props === 'string' || Array.isArray(props)) {
-        if (typeof props === 'string' && props.includes(':')) {
-          return this.createResult(className, variant, '', '', raw, isImportant, props)
+        if (typeof props === 'string' && (props.includes(':') || props.startsWith('rules:'))) {
+          return this.createResult(
+            className,
+            variant,
+            '',
+            '',
+            raw,
+            isImportant,
+            props.startsWith('rules:') ? props.slice(6) : props
+          )
         } else {
           return this.createResult(className, variant, props, value, raw, isImportant)
         }
@@ -237,11 +344,22 @@ export class Processor {
           raw,
           isImportant
         )
-      } else if (typeof properties === 'string' && properties.includes(':')) {
+      } else if (
+        typeof properties === 'string' &&
+        (properties.includes(':') || properties.startsWith('rules:'))
+      ) {
         return value
           ? // direct string properties shouldn't have value
             null
-          : this.createResult(className, variant, '', '', raw, isImportant, properties)
+          : this.createResult(
+              className,
+              variant,
+              '',
+              '',
+              raw,
+              isImportant,
+              properties.startsWith('rules:') ? properties.slice(6) : properties
+            )
       } else {
         return this.createResult(className, variant, properties, value, raw, isImportant)
       }
@@ -256,8 +374,16 @@ export class Processor {
       }
 
       if (typeof result === 'string') {
-        if (result.includes(':')) {
-          return this.createResult(className, variant, '', '', raw, isImportant, result)
+        if (result.includes(':') || result.startsWith('rules:')) {
+          return this.createResult(
+            className,
+            variant,
+            '',
+            '',
+            raw,
+            isImportant,
+            result.startsWith('rules:') ? result.slice(6) : result
+          )
         }
         return this.createResult(className, variant, result, value, raw, isImportant)
       }
@@ -285,7 +411,10 @@ export class Processor {
     return null
   }
 
-  private createErrorResult(className: string, reason = 'undefined'): InvalidResult {
+  private createErrorResult(
+    className: string | ClassNameObject,
+    reason = 'undefined'
+  ): InvalidResult {
     return {
       use: 'moxie',
       className,
@@ -313,7 +442,7 @@ export class Processor {
     }
   }
 
-  process(inputClass: string): ProcessResult | InvalidResult | null {
+  public process(inputClass: string): ProcessResult | InvalidResult | null {
     let className = inputClass
     const isImportant = className.startsWith('!') || className.endsWith('!')
 
@@ -322,6 +451,7 @@ export class Processor {
     }
 
     const match = className.match(this.parser.matcher)
+
     if (!match) return null
 
     const { variant, property, value } = extractMatchGroups(match)
@@ -334,14 +464,38 @@ export class Processor {
       finalProp = prop[1]
     }
 
-    return this.processUtilities({
+    const data = {
       className: inputClass,
       property: finalProp,
-      value: this.processValue(value || ''),
+      value: this.processValue(value || '', property),
       variant: finalVariant,
-      utilities: this.utilities,
       raw: match,
       isImportant
-    })
+    }
+
+    const processPlugins = this.plugins
+      .filter((p) => p.process)
+      .sort((a, b) => (b.priority || 0) - (a.priority || 0))
+
+    for (const plugin of processPlugins) {
+      if (plugin.process) {
+        try {
+          const result = plugin.process(className, {
+            ...data,
+            processUtilities: this.processUtilities,
+            processValue: this.processValue,
+            processVariant: this.processVariant,
+            createResult: this.createResult,
+            createErrorResult: this.createErrorResult,
+            parser: this.parser
+          })
+          if (result) return result
+        } catch (err) {
+          console.error(`Moxie plugin "${plugin.name}" process failed:`, err)
+        }
+      }
+    }
+
+    return this.processUtilities(data)
   }
 }

@@ -43,7 +43,7 @@ export interface UtilityFunction {
 }
 
 export interface UtilityContext {
-  className: string
+  className: string | ClassNameObject
   value: string | ProcessedValue
   raw: RegExpMatchArray
   key?: string | null
@@ -95,6 +95,7 @@ export interface Values {
 
 export interface Config {
   values?: Values
+  plugins?: Plugin[]
   priority?: number
   prefixChars?: string[]
   utilitiesName?: string
@@ -126,10 +127,69 @@ export interface CreateRegexpResult {
   }
 }
 
+type CreateResultContext = (
+  className: string | ClassNameObject,
+  variant: string | null,
+  property: string | string[],
+  value: string,
+  raw: RegExpMatchArray,
+  isImportant: boolean,
+  fullRules?: any
+) => ProcessResult
+
+type CreateErrorResultContext = (className: string, reason: string) => InvalidResult
+
+export interface ProcessValueContext {
+  value: string
+  raw: string
+  key: string | null
+  property: string
+  createReturn: (value: string) => string | null | ProcessedValue
+}
+
+export interface ProcessUtilitiesContext {
+  variant: string | null
+  property: string | string[]
+  value: string
+  key: string | null
+  raw: RegExpMatchArray
+  isImportant: boolean
+  createResult: CreateResultContext
+  createErrorResult: CreateErrorResultContext
+}
+
+export type ProcessResultFn = ProcessResult | InvalidResult | null
+
+export type ProcessVariantFn = (variant: string, variants?: any) => string | null
+export type ProcessValueFn = (ctx: Partial<ProcessValueContext>) => string | null | ProcessedValue
+export type ProcessUtilitiesFn = (
+  ctx: { className: string | ClassNameObject } & Partial<ProcessUtilitiesContext>
+) => ProcessResultFn
+export type ProcessFn = (ctx: Partial<ProcessContext>) => ProcessResultFn
+
+export interface ProcessContext {
+  parser: CreateRegexpResult
+  processVariant: ProcessVariantFn
+  processValue: (value: string, type?: string) => string | null | ProcessedValue
+  processUtilities: (context: {
+    className: string | ClassNameObject
+    value: string | ProcessedValue | null
+    property: any
+    variant: string | null
+    raw: RegExpMatchArray
+    isImportant: boolean
+  }) => ProcessResultFn
+  createResult: CreateResultContext
+  createErrorResult: CreateErrorResultContext
+}
+
 export interface Plugin {
   name: string
   priority: number
-  process(className: string, ctx: PluginContext): ProcessResult | void
+  processVariant: ProcessVariantFn
+  processValue: ProcessValueFn
+  processUtilities: ProcessUtilitiesFn
+  process: ProcessFn
 }
 
 export interface PluginContext {
