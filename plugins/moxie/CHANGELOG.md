@@ -1,5 +1,11 @@
 # Changelog
 
+## `v1.0.0-alpha.3` - `Unreleased`
+
+### Fixed
+
+- The unmatched value with its RegExp should return data from `createErrorResult` instead of just `null`
+
 ## `v1.0.0-alpha.2` - `2025-08-22`
 
 ### Added

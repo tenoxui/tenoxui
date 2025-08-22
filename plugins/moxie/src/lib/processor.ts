@@ -394,7 +394,8 @@ export class Processor {
     const prop = this.utilities[property]
     let finalProp = prop
     if (Array.isArray(prop) && prop[0] instanceof RegExp) {
-      if (value && !value.match(prop[0])) return null
+      if (value && !value.match(prop[0]))
+        return this.createErrorResult(className, `Value ${value} doesn't match the input RegExp.`)
       finalProp = prop[1]
     }
 
