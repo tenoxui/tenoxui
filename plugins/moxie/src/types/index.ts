@@ -1,4 +1,5 @@
 import type { BaseProcessResult, CSSPropertyOrVariable } from '@tenoxui/core'
+import type { Plugin } from '@nousantx/plugify'
 
 export interface ProcessedValue {
   key: string
@@ -95,7 +96,7 @@ export interface Values {
 
 export interface Config {
   values?: Values
-  plugins?: Plugin[]
+  plugins?: Plugin<PluginTypes>[]
   priority?: number
   prefixChars?: string[]
   utilitiesName?: string
@@ -183,9 +184,7 @@ export interface ProcessContext {
   createErrorResult: CreateErrorResultContext
 }
 
-export interface Plugin {
-  name: string
-  priority: number
+export interface PluginTypes {
   processVariant: ProcessVariantFn
   processValue: ProcessValueFn
   processUtilities: ProcessUtilitiesFn

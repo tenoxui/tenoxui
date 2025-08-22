@@ -5,13 +5,14 @@ import type {
   Utilities,
   Variants,
   Values,
-  Plugin,
+  PluginTypes,
   UtilityContext,
   UtilityResult,
   CreateRegexpResult,
   ClassNameObject
 } from '../types'
 import { createRegexp } from './regexp'
+import { SyncPluginSystem as PluginSystem, type Plugin } from '@nousantx/plugify'
 
 export function isProcessedValue(value: any): value is { key: string; value: string } {
   return (
@@ -50,7 +51,7 @@ export class Processor {
   private utilities: Utilities
   private variants: Variants
   private values: Values
-  private plugins: Plugin[]
+  private plugins: PluginSystem<PluginTypes>
 
   constructor(
     config: {
@@ -58,7 +59,7 @@ export class Processor {
       utilities?: Utilities
       variants?: Variants
       values?: Values
-      plugins?: Plugin[]
+      plugins?: Plugin<PluginTypes>[]
     } = {}
   ) {
     this.parser =
@@ -70,56 +71,15 @@ export class Processor {
     this.utilities = config.utilities || {}
     this.variants = config.variants || {}
     this.values = config.values || {}
-    this.plugins = this.flattenPlugins(config.plugins || []).sort(
-      (a, b) => (b.priority || 0) - (a.priority || 0)
-    )
-  }
-
-  private flattenPlugins(plugins: (Plugin[] | (() => Plugin | Plugin[]) | Plugin)[]): Plugin[] {
-    const flattened: Plugin[] = []
-
-    for (const plugin of plugins) {
-      if (typeof plugin === 'function') {
-        const pluginArray = plugin()
-        if (Array.isArray(pluginArray)) {
-          flattened.push(...pluginArray)
-        } else {
-          flattened.push(pluginArray)
-        }
-      } else if (Array.isArray(plugin)) {
-        flattened.push(...plugin)
-      } else {
-        flattened.push(plugin)
-      }
-    }
-
-    return flattened
-  }
-
-  public use(...plugin: Plugin[]): this {
-    const newPlugins = this.flattenPlugins(plugin)
-    this.plugins.push(...newPlugins)
-    this.plugins.sort((a, b) => (b.priority || 0) - (a.priority || 0))
-    return this
+    this.plugins = new PluginSystem<PluginTypes>(config.plugins)
   }
 
   public processVariant(variant: string): string | null {
     if (!variant) return null
 
-    const processVariantPlugins = this.plugins
-      .filter((p) => p.processVariant)
-      .sort((a, b) => (b.priority || 0) - (a.priority || 0))
+    const pluginResult = this.plugins.exec('processVariant', variant, this.variants)
 
-    for (const plugin of processVariantPlugins) {
-      if (plugin.processVariant) {
-        try {
-          const result = plugin.processVariant(variant, this.variants)
-          if (result) return result
-        } catch (err) {
-          console.error(`Moxie plugin "${plugin.name}" process variant failed:`, err)
-        }
-      }
-    }
+    if (pluginResult) return pluginResult
 
     if (
       variant &&
@@ -184,26 +144,15 @@ export class Processor {
     const createReturn = (processedValue: string): string | ProcessedValue =>
       extractedFor ? { key: extractedFor, value: processedValue } : processedValue
 
-    const processValuePlugins = this.plugins
-      .filter((p) => p.processValue)
-      .sort((a, b) => (b.priority || 0) - (a.priority || 0))
+    const pluginResult = this.plugins.exec('processValue', {
+      value,
+      raw: rawValue,
+      key: extractedFor,
+      property: type,
+      createReturn
+    })
 
-    for (const plugin of processValuePlugins) {
-      if (plugin.processValue) {
-        try {
-          const result = plugin.processValue({
-            value,
-            raw: rawValue,
-            key: extractedFor,
-            property: type,
-            createReturn
-          })
-          if (result) return result
-        } catch (err) {
-          console.error(`Moxie plugin "${plugin.name}" process value failed:`, err)
-        }
-      }
-    }
+    if (pluginResult) return pluginResult
 
     if (this.values[value]) {
       return createReturn(this.values[value])
@@ -249,34 +198,19 @@ export class Processor {
       value = finalValue as string
     }
 
-    const processUtilityPlugin = this.plugins
-      .filter((p) => p.processUtilities)
-      .sort((a, b) => (b.priority || 0) - (a.priority || 0))
+    const pluginResult = this.plugins.exec('processUtilities', {
+      className,
+      value,
+      key,
+      property,
+      variant,
+      raw,
+      isImportant,
+      createResult: this.createResult,
+      createErrorResult: this.createErrorResult
+    })
 
-    for (const plugin of processUtilityPlugin) {
-      if (plugin.processUtilities) {
-        try {
-          const result = plugin.processUtilities({
-            className,
-            value,
-            key,
-            property,
-            variant,
-            raw,
-            isImportant,
-            createResult: this.createResult,
-            createErrorResult: this.createErrorResult
-          })
-          if (result) return result
-        } catch (err) {
-          console.error(`Moxie plugin "${plugin.name}" process utility failed:`, err)
-          return this.createErrorResult(
-            className,
-            'Moxie plugin error when trying to process utility ' + className
-          )
-        }
-      }
-    }
+    if (pluginResult) return pluginResult
 
     if (typeof property === 'string' && key) {
       return this.createErrorResult(
@@ -473,28 +407,17 @@ export class Processor {
       isImportant
     }
 
-    const processPlugins = this.plugins
-      .filter((p) => p.process)
-      .sort((a, b) => (b.priority || 0) - (a.priority || 0))
+    const pluginResult = this.plugins.exec('process', className, {
+      ...data,
+      processUtilities: this.processUtilities,
+      processValue: this.processValue,
+      processVariant: this.processVariant,
+      createResult: this.createResult,
+      createErrorResult: this.createErrorResult,
+      parser: this.parser
+    })
 
-    for (const plugin of processPlugins) {
-      if (plugin.process) {
-        try {
-          const result = plugin.process(className, {
-            ...data,
-            processUtilities: this.processUtilities,
-            processValue: this.processValue,
-            processVariant: this.processVariant,
-            createResult: this.createResult,
-            createErrorResult: this.createErrorResult,
-            parser: this.parser
-          })
-          if (result) return result
-        } catch (err) {
-          console.error(`Moxie plugin "${plugin.name}" process failed:`, err)
-        }
-      }
-    }
+    if (pluginResult) return pluginResult
 
     return this.processUtilities(data)
   }

@@ -109,4 +109,124 @@ describe('Integration Test', () => {
       '@supports (background: red) { .supports-\\(background\\:red\\)\\:r3 { --my-rules: red } }'
     )
   })
+
+  it('should process moxie plugin correctly', () => {
+    const ui = new TenoxUI({
+      utilities: {
+        __moxie: {
+          bg: 'background',
+          m: [
+            /^red|center|[-+]?(?:\d*\.\d+|\d+)$/,
+            ({ value, raw }) =>
+              value === 'red'
+                ? 'background'
+                : raw[3] === 'center'
+                  ? { property: ['alignItems', 'justifyContent'] }
+                  : {
+                      rules: [{ 'margin,--my-size': value * 0.25 + 'rem' }, 'display: flex']
+                    }
+          ],
+          w: 'width',
+          h: 'height',
+          xxx: 'this-is-my-holy-prop'
+        }
+      },
+      variants: {
+        hover: ':hover',
+        focus: ':focus',
+        md: '@media (width: 768px)',
+        lg: '@media (width: 1024px)',
+        max: ({ value }) => `@media (max-width: ${value})`,
+        min: ({ value }) => `@media (min-width: ${value})`,
+        dark: '@media (prefers-color-scheme: dark)'
+      },
+      plugins: [
+        Moxie({
+          utilitiesName: '__moxie',
+          priority: 2,
+          prefixChars: [':'],
+          typeSafelist: ['my-cat'],
+          plugins: [
+            {
+              name: 'process-variants',
+              // basic variant plugin implementation
+              processVariant(variant) {
+                if (variant === 'vx') return '&:hover'
+                if (variant === 'dark') return '.dark &'
+                if (variant === 'dark:hover') return '.dark &:hover'
+                if (variant === 'md:dark:hover')
+                  return '@media (max-width: 768px) { .dark @class:hover { @rules } }'
+              },
+              // custom value processing
+              processValue({ value }) {
+                if (value && value === 'center') {
+                  return 'calc(50%, -50%)'
+                }
+              },
+              // custom utility processing plugin
+              processUtilities({
+                property,
+                value,
+                variant,
+                className,
+                isImportant,
+                raw,
+                createResult,
+                createErrorResult
+              }) {
+                if (raw[2] === 'xxx') {
+                  if (value)
+                    return createErrorResult(className, raw[2] + " Utility shouldn't have value")
+
+                  return createResult(className, variant, 'background', 'red', raw, isImportant)
+                }
+              },
+              // custom className processing
+              process(className, { createResult }) {
+                if (className === 'my-cat') {
+                  return createResult(
+                    className,
+                    null,
+                    '',
+                    '',
+                    [],
+                    false,
+                    'background: red; display: flex'
+                  )
+                }
+              }
+            }
+          ]
+        }),
+        {
+          name: 'transform-moxie',
+          priority: 1,
+          transform: (data) => transform(data).rules.join('\n')
+        }
+      ]
+    })
+
+    expect(
+      ui.process([
+        'max-768px:bg-red',
+        'md:m-red',
+        'vx:m-10',
+        'dark:bg-red',
+        'dark:hover:bg-yellow',
+        'md:dark:hover:bg-green',
+        'm-center',
+        'xxx',
+        'xxx-center', // have value, shouldn't do a thing
+        'my-cat'
+      ])
+    ).toBe(`.max-768px\\:bg-red { background: red }
+.md\\:m-red { background: red }
+.vx\\:m-10:hover { margin: 2.5rem; --my-size: 2.5rem; display: flex }
+.dark .dark\\:bg-red { background: red }
+.dark .dark\\:hover\\:bg-yellow:hover { background: yellow }
+@media (max-width: 768px) { .dark .md\\:dark\\:hover\\:bg-green:hover { background: green } }
+.m-center { align-items: calc(50%, -50%); justify-content: calc(50%, -50%) }
+.xxx { background: red }
+.my-cat { background: red; display: flex }`)
+  })
 })
