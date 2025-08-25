@@ -251,7 +251,12 @@ describe('Processor', () => {
       expect(result).not.toBe(null)
 
       const invalidResult = processor.process('custom-notallowed')
-      expect(invalidResult).toBe(null)
+      expect(invalidResult).toEqual({
+        className: 'custom-notallowed',
+        reason: "Value is present, but doesn't match the given patterns.",
+        rules: null,
+        use: 'moxie'
+      })
     })
 
     it('should handle regex-validated utilities', () => {
@@ -260,7 +265,8 @@ describe('Processor', () => {
           w: [/^\d+$/, 'width'],
           h: [/^\d+$/, ({ value }) => `height: ${value * 0.25 + 'rem'}`],
           size: ({ value }) => {
-            if (!value.match(/^\d+$/)) return null
+            if (!value.match(/^\d+$/))
+              return { fail: true, reason: "Value invalid doesn't match the input RegExp." }
             const v = value * 0.25 + 'rem'
             return { width: v, height: v }
           }
@@ -281,9 +287,24 @@ describe('Processor', () => {
           height: '25rem'
         }
       })
-      expect(processorWithRegex.process('w-invalid')).toBe(null)
-      expect(processorWithRegex.process('h-invalid')).toBe(null)
-      expect(processorWithRegex.process('size-invalid').rules).toBe(null)
+      expect(processorWithRegex.process('w-invalid')).toEqual({
+        className: 'w-invalid',
+        reason: "Value invalid doesn't match the input RegExp.",
+        rules: null,
+        use: 'moxie'
+      })
+      expect(processorWithRegex.process('h-invalid')).toEqual({
+        className: 'h-invalid',
+        reason: "Value invalid doesn't match the input RegExp.",
+        rules: null,
+        use: 'moxie'
+      })
+      expect(processorWithRegex.process('size-invalid')).toEqual({
+        className: 'size-invalid',
+        reason: "Value invalid doesn't match the input RegExp.",
+        rules: null,
+        use: 'moxie'
+      })
     })
   })
 

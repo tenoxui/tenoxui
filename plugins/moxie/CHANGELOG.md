@@ -1,10 +1,19 @@
 # Changelog
 
-## `v1.0.0-alpha.3` - `Unreleased`
+## `v1.0.0-alpha.3` - `2025-08-25`
 
-### Fixed
+### Added
+
+- Better and clearer error utility returns
+- New `props:` mark for allowing multiple properties or variables separated by comas (`,`)
+
+### **Fixed**
 
 - The unmatched value with its RegExp should return data from `createErrorResult` instead of just `null`
+
+### Development
+
+- Update types & unit tests
 
 ## `v1.0.0-alpha.2` - `2025-08-22`
 

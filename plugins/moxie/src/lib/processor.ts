@@ -229,20 +229,22 @@ export class Processor {
       properties = raw[2]
     }
 
-    if (!className || !properties) {
-      return null
-    }
+    if (!className || !properties) return null
 
     if (isUtilityConfig(properties) && properties.property) {
       const props = properties.property
 
       if (properties.value && Array.isArray(properties.value) && value) {
+        console.log(properties.value, value)
         const isValueAllowed = properties.value.some((item) =>
           typeof item === 'string' ? item === value : item instanceof RegExp && item.test(value)
         )
 
         if (!isValueAllowed) {
-          return null
+          return this.createErrorResult(
+            className,
+            "Value is present, but doesn't match the given patterns."
+          )
         }
       }
 
@@ -303,8 +305,18 @@ export class Processor {
       const utilityContext: UtilityContext = { className, value: value || '', raw, key }
       const result = properties(utilityContext)
 
-      if (!result) {
-        return this.createErrorResult(className)
+      if (
+        !result ||
+        (typeof result === 'object' && ('reason' in result || 'fail' in result)) ||
+        (Array.isArray(result) &&
+          result.length === 2 &&
+          !result[0] &&
+          typeof result[1] === 'string')
+      ) {
+        return this.createErrorResult(
+          className,
+          result ? (Array.isArray(result) ? result[1] : result.reason) : 'undefined'
+        )
       }
 
       if (typeof result === 'string') {

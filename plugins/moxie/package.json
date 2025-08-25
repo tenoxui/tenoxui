@@ -1,6 +1,6 @@
 {
   "name": "@tenoxui/plugin-moxie",
-  "version": "1.0.0-alpha.2",
+  "version": "1.0.0-alpha.3",
   "description": "A starter plugin for TenoxUI with features you ever need.",
   "author": "NOuSantx <nousantx@gmail.com>",
   "license": "MIT",
@@ -8,7 +8,8 @@
     "framework",
     "css",
     "css-in-js",
-    "utility-first"
+    "utility-first",
+    "plugin"
   ],
   "homepage": "https://tenoxui.web.app",
   "repository": {

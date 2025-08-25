@@ -22,10 +22,12 @@ export function generateCSSRule(
 
   // check if property is an array
   if (Array.isArray(property)) {
-    return property.map((prop) => `${transformProps(prop)}: ${value}${important}`).join('; ')
+    return property
+      .map((prop) => `${transformProps(prop as CSSPropertyOrVariable)}: ${value}${important}`)
+      .join('; ')
   }
 
-  return `${transformProps(property)}: ${value}${important}`
+  return `${transformProps(property as CSSPropertyOrVariable)}: ${value}${important}`
 }
 
 /**
@@ -61,7 +63,9 @@ export function processObjectRules(
     ([property, value]) => {
       let props: string | string[] = property
       if (property.includes(',')) {
-        props = property.split(',').map((x) => x.trim())
+        props = (property.startsWith('props:') ? property.slice(6) : property)
+          .split(',')
+          .map((x) => x.trim())
       }
 
       if (Array.isArray(value)) {
