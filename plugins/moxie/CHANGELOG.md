@@ -1,5 +1,15 @@
 # Changelog
 
+## `v1.0.0-alpha.4` - `2025-08-26`
+
+### **Changed**
+
+- Moved some helper functions from `lib/processor.ts` to `utils/processorUtils.ts`
+
+### **Fixed**
+
+- Forgot to remove remaining `console.log`
+
 ## `v1.0.0-alpha.3` - `2025-08-25`
 
 ### Added

@@ -1,3 +1,6 @@
+import { SyncPluginSystem as PluginSystem, type Plugin } from '@nousantx/plugify'
+import { createRegexp } from './regexp'
+import { isProcessedValue, isUtilityConfig, isUtilityFunction, extractMatchGroups } from '../utils'
 import type {
   ProcessResult,
   InvalidResult,
@@ -11,40 +14,6 @@ import type {
   CreateRegexpResult,
   ClassNameObject
 } from '../types'
-import { createRegexp } from './regexp'
-import { SyncPluginSystem as PluginSystem, type Plugin } from '@nousantx/plugify'
-
-export function isProcessedValue(value: any): value is { key: string; value: string } {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    typeof value.key === 'string' &&
-    typeof value.value === 'string'
-  )
-}
-
-export function isUtilityFunction(utility: any): utility is Function {
-  return typeof utility === 'function'
-}
-
-export function isUtilityConfig(utility: any): utility is { property?: any; value?: any } {
-  return (
-    typeof utility === 'object' && utility !== null && ('property' in utility || 'value' in utility)
-  )
-}
-
-export function extractMatchGroups(match: RegExpMatchArray): {
-  variant?: string
-  property: string
-  value?: string
-} {
-  const groups = match.groups || {}
-  return {
-    variant: groups.variant,
-    property: groups.property || '',
-    value: groups.value
-  }
-}
 
 export class Processor {
   private parser: CreateRegexpResult
@@ -235,7 +204,6 @@ export class Processor {
       const props = properties.property
 
       if (properties.value && Array.isArray(properties.value) && value) {
-        console.log(properties.value, value)
         const isValueAllowed = properties.value.some((item) =>
           typeof item === 'string' ? item === value : item instanceof RegExp && item.test(value)
         )
@@ -435,3 +403,5 @@ export class Processor {
     return this.processUtilities(data)
   }
 }
+
+export * from '../utils/processorUtils'
