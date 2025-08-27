@@ -3,6 +3,7 @@ export interface CreatePatternsConfig {
   utilities?: string[]
   safelist?: string[]
   inputPrefixChars?: string[]
+  valuePatterns?: string[]
 }
 
 export interface Patterns {

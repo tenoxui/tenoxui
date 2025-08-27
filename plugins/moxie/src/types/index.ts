@@ -98,17 +98,13 @@ export interface Variants {
   [key: string]: string | VariantFunction
 }
 
-export interface Values {
-  [key: string]: string
-}
-
 export interface Config {
-  values?: Values
   plugins?: Plugin<PluginTypes>[]
   priority?: number
   prefixChars?: string[]
   utilitiesName?: string
   typeSafelist?: string[]
+  valuePatterns?: string[]
   onMatcherCreated?: ((matcher: RegExp) => void) | null
 }
 

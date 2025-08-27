@@ -5,12 +5,12 @@ import { Processor } from './lib/processor'
 
 export function Moxie(config: Config = {}): Plugin<ProcessResult | InvalidResult> {
   const {
-    values = {},
     priority = 0,
     prefixChars = [],
     utilitiesName = 'moxie',
     typeSafelist = [],
     plugins = [],
+    valuePatterns = [],
     onMatcherCreated = null
   } = config
   return {
@@ -21,7 +21,8 @@ export function Moxie(config: Config = {}): Plugin<ProcessResult | InvalidResult
       const pattern = createRegexp({
         utilities: Object.keys(utilities?.[utilitiesName] as any),
         inputPrefixChars: prefixChars,
-        safelist: typeSafelist
+        safelist: typeSafelist,
+        valuePatterns
       })
       const matcher = new RegExp('^!?' + pattern.matcher.source.slice(1, -1) + '!?$')
       if (onMatcherCreated) {
@@ -29,7 +30,6 @@ export function Moxie(config: Config = {}): Plugin<ProcessResult | InvalidResult
       }
       if (className.match(matcher)) {
         const processor = new Processor({
-          values,
           parser: pattern,
           variants,
           plugins,

@@ -87,6 +87,27 @@ describe('RegExp Module', () => {
       expect(match?.groups?.property).toBe('block')
       expect(match?.groups?.value).toBeUndefined()
     })
+
+    it('should add custom value patterns', () => {
+      const patterns = createPatterns({ valuePatterns: ['@moxie'] })
+      const matcher = createMatcher(patterns)
+
+      const match = '[hello]-@moxie'.match(matcher)
+      expect(match).not.toBe(null)
+      expect(match?.groups?.value).toBe('@moxie')
+    })
+
+    it('should be null if value patterns is not added', () => {
+      expect('[hello]-@moxie'.match(createMatcher(createPatterns()))).toBe(null)
+    })
+
+    it('should be match custom pattern', () => {
+      const patterns = createPatterns({ valuePatterns: ['\\@[^\\s\\/]+'] })
+      const matcher = createMatcher(patterns)
+
+      
+      expect('[hello]-@moxie'.match(matcher).groups.value).toBe('@moxie')
+    })
   })
 
   describe('createRegexp', () => {
@@ -129,7 +150,8 @@ describe('RegExp Module', () => {
 
     it('should match CSS custom properties', () => {
       const { matcher } = createRegexp({
-        utilities: ['bg', 'text']
+        utilities: ['bg', 'text'],
+        valuePatterns: ['\\$[^\\s\\/]+']
       })
 
       expect('bg-$primary'.match(matcher)).not.toBe(null)

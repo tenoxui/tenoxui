@@ -1,8 +1,24 @@
 # Changelog
 
+## `v1.0.0-alpha.5` - `2025-08-27`
+
+### Added
+
+- Static utilities feature
+- New `valuePatterns` config to set custom patterns for `value` matcher
+
+### Changed
+
+- Update some `reason` on error utility outputs
+
+### **Removed**
+
+- Value mapping feature from `values` config, can be added through a plugin.
+- Default value patterns for CSS variable (`$value`) and hex color value (`#value`)
+
 ## `v1.0.0-alpha.4` - `2025-08-26`
 
-### **Changed**
+### Changed
 
 - Moved some helper functions from `lib/processor.ts` to `utils/processorUtils.ts`
 

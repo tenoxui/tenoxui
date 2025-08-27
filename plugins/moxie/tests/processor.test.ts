@@ -132,6 +132,10 @@ describe('Processor', () => {
           }
 
           return rules
+        },
+        r5: {
+          '--my-rules1': '3',
+          '--my-rules2': '1'
         }
       },
       variants: {
@@ -140,10 +144,6 @@ describe('Processor', () => {
         // functional variants
         max: ({ value }) => (!value ? null : `@media (max-width: ${value}) { @slot }`),
         supports: ({ value, key }) => (!key ? null : `@supports (${key}: ${value}) { @slot }`)
-      },
-      values: {
-        primary: '#3b82f6',
-        'custom-spacing': '1.5rem'
       }
     })
   })
@@ -186,13 +186,7 @@ describe('Processor', () => {
       expect(processor.processValue('red')).toBe('red')
     })
 
-    it('should process values from registry', () => {
-      expect(processor.processValue('primary')).toBe('#3b82f6')
-    })
-
-    it('should process CSS variables', () => {
-      expect(processor.processValue('$custom')).toBe('var(--custom)')
-    })
+    
 
     it('should process arbitrary values', () => {
       expect(processor.processValue('[10px]')).toBe('10px')
@@ -202,10 +196,6 @@ describe('Processor', () => {
     it('should handle key-value pairs', () => {
       const result = processor.processValue('[color:red]')
       expect(result).toEqual({ key: 'color', value: 'red' })
-    })
-
-    it('should replace value registry in arbitrary values', () => {
-      expect(processor.processValue('[{custom-spacing}]')).toBe('1.5rem')
     })
 
     it('should escape underscores in arbitrary values', () => {
@@ -253,7 +243,7 @@ describe('Processor', () => {
       const invalidResult = processor.process('custom-notallowed')
       expect(invalidResult).toEqual({
         className: 'custom-notallowed',
-        reason: "Value is present, but doesn't match the given patterns.",
+        reason: "Value `notallowed` doesn't match the given patterns.",
         rules: null,
         use: 'moxie'
       })
@@ -264,9 +254,18 @@ describe('Processor', () => {
         utilities: {
           w: [/^\d+$/, 'width'],
           h: [/^\d+$/, ({ value }) => `height: ${value * 0.25 + 'rem'}`],
+          h2: [
+            [/^\d+$/, '10px'],
+            ({ value }) => `height: ${value === '10px' ? 'red' : value * 0.25 + 'rem'}`
+          ],
+          h3: {
+            property: 'height',
+            value: [/^\d+$/, '10px']
+          },
+
           size: ({ value }) => {
             if (!value.match(/^\d+$/))
-              return { fail: true, reason: "Value invalid doesn't match the input RegExp." }
+              return { fail: true, reason: "Value `invalid` doesn't match the input RegExp." }
             const v = value * 0.25 + 'rem'
             return { width: v, height: v }
           }
@@ -279,6 +278,32 @@ describe('Processor', () => {
         className: 'h-100',
         rules: `height: ${100 * 0.25 + 'rem'}`
       })
+      expect(processorWithRegex.process('h2-100')).toMatchObject({
+        use: 'moxie',
+        className: 'h2-100',
+        rules: `height: ${100 * 0.25 + 'rem'}`
+      })
+      expect(processorWithRegex.process('h2-10px')).toMatchObject({
+        use: 'moxie',
+        className: 'h2-10px',
+        rules: `height: red`
+      })
+      expect(processorWithRegex.process('h3-10px')).toMatchObject({
+        use: 'moxie',
+        className: 'h3-10px',
+        rules: {
+          property: 'height',
+          value: '10px'
+        }
+      })
+      expect(processorWithRegex.process('h3-100')).toMatchObject({
+        use: 'moxie',
+        className: 'h3-100',
+        rules: {
+          property: 'height',
+          value: '100'
+        }
+      })
       expect(processorWithRegex.process('size-100')).toMatchObject({
         use: 'moxie',
         className: 'size-100',
@@ -289,19 +314,31 @@ describe('Processor', () => {
       })
       expect(processorWithRegex.process('w-invalid')).toEqual({
         className: 'w-invalid',
-        reason: "Value invalid doesn't match the input RegExp.",
+        reason: "Value `invalid` doesn't match the given patterns.",
         rules: null,
         use: 'moxie'
       })
       expect(processorWithRegex.process('h-invalid')).toEqual({
         className: 'h-invalid',
-        reason: "Value invalid doesn't match the input RegExp.",
+        reason: "Value `invalid` doesn't match the given patterns.",
+        rules: null,
+        use: 'moxie'
+      })
+      expect(processorWithRegex.process('h2-invalid')).toEqual({
+        className: 'h2-invalid',
+        reason: "Value `invalid` doesn't match the given patterns.",
+        rules: null,
+        use: 'moxie'
+      })
+      expect(processorWithRegex.process('h3-invalid')).toEqual({
+        className: 'h3-invalid',
+        reason: "Value `invalid` doesn't match the given patterns.",
         rules: null,
         use: 'moxie'
       })
       expect(processorWithRegex.process('size-invalid')).toEqual({
         className: 'size-invalid',
-        reason: "Value invalid doesn't match the input RegExp.",
+        reason: "Value `invalid` doesn't match the input RegExp.",
         rules: null,
         use: 'moxie'
       })
@@ -415,6 +452,9 @@ describe('Processor', () => {
 
       expect(processor.process('r4-8')).toMatchObject({
         rules: [{ '--my-rules1': '8' }, { '--my-rules2': '8' }]
+      })
+      expect(processor.process('r5')).toMatchObject({
+        rules: { '--my-rules1': '3', '--my-rules2': '1' }
       })
     })
   })

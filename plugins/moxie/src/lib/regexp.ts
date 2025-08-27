@@ -5,7 +5,13 @@ import { escapeRegex } from '../utils'
  * Creates regex patterns for matching utilities, variants, and values
  */
 export function createPatterns(config: CreatePatternsConfig = {}): Patterns {
-  const { variants = [], utilities = [], safelist = [], inputPrefixChars = [] } = config
+  const {
+    variants = [],
+    utilities = [],
+    safelist = [],
+    inputPrefixChars = [],
+    valuePatterns = []
+  } = config
 
   // Extract and escape property names
   const propertyTypes = utilities
@@ -30,37 +36,19 @@ export function createPatterns(config: CreatePatternsConfig = {}): Patterns {
   const prefixChars = `[${['a-zA-Z0-9_\\-', ...inputPrefixChars].join('')}]`
   const wordChars = '[a-zA-Z0-9_]'
 
+  const variantPatternsDefault = [
+    prefixChars + '+(?:-(?:' + nestedBrackets + '|' + nestedParens + '|' + nestedBraces + '))?',
+    nestedBrackets,
+    nestedParens,
+    nestedBraces
+  ]
+
   const patterns: Patterns = {
     // Variant pattern: matches known variants or custom patterns
     variant:
       allVariants.length > 0
-        ? [
-            allVariants.join('|'),
-            prefixChars +
-              '+(?:-(?:' +
-              nestedBrackets +
-              '|' +
-              nestedParens +
-              '|' +
-              nestedBraces +
-              '))?',
-            nestedBrackets,
-            nestedParens,
-            nestedBraces
-          ].join('|')
-        : [
-            prefixChars +
-              '+(?:-(?:' +
-              nestedBrackets +
-              '|' +
-              nestedParens +
-              '|' +
-              nestedBraces +
-              '))?',
-            nestedBrackets,
-            nestedParens,
-            nestedBraces
-          ].join('|'),
+        ? [allVariants.join('|'), ...variantPatternsDefault].join('|')
+        : variantPatternsDefault.join('|'),
 
     // Property pattern: matches known properties or bracketed custom properties
     property:
@@ -70,14 +58,12 @@ export function createPatterns(config: CreatePatternsConfig = {}): Patterns {
 
     // Value pattern: matches various value formats
     value: [
+      valuePatterns.join('|'),
       '-?\\d+(?:\\.\\d+)?', // Numbers (including decimals and negatives)
       wordChars + '+(?:-' + wordChars + '+)*', // Word chains
-      '#[0-9a-fA-F]+', // Hex colors
       nestedBrackets, // Bracketed values
       nestedBraces, // Braced values
       nestedParens, // Parenthesized values
-      '\\$[^\\s\\/]+', // CSS custom properties
-      // Fraction pattern (value/value)
       '(?:' +
         [
           '-?\\d+(?:\\.\\d+)?',

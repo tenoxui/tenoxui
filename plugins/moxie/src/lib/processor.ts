@@ -7,7 +7,6 @@ import type {
   ProcessedValue,
   Utilities,
   Variants,
-  Values,
   PluginTypes,
   UtilityContext,
   UtilityResult,
@@ -19,7 +18,6 @@ export class Processor {
   private parser: CreateRegexpResult
   private utilities: Utilities
   private variants: Variants
-  private values: Values
   private plugins: PluginSystem<PluginTypes>
 
   constructor(
@@ -27,7 +25,6 @@ export class Processor {
       parser?: CreateRegexpResult | null
       utilities?: Utilities
       variants?: Variants
-      values?: Values
       plugins?: Plugin<PluginTypes>[]
     } = {}
   ) {
@@ -39,7 +36,6 @@ export class Processor {
       })
     this.utilities = config.utilities || {}
     this.variants = config.variants || {}
-    this.values = config.values || {}
     this.plugins = new PluginSystem<PluginTypes>(config.plugins)
   }
 
@@ -73,13 +69,6 @@ export class Processor {
     }
 
     return isUtilityFunction(variantHandler) ? variantHandler({ key, value }) : variantHandler
-  }
-
-  private replaceWithValueRegistry(text: string): string {
-    return text.replace(/\{([^}]+)\}/g, (match, key) => {
-      const val = this.values[key]
-      return typeof val === 'string' ? val : match
-    })
   }
 
   private escapeArbitrary(str: string): string {
@@ -123,28 +112,35 @@ export class Processor {
 
     if (pluginResult) return pluginResult
 
-    if (this.values[value]) {
-      return createReturn(this.values[value])
-    }
-
-    if (value.startsWith('$')) {
-      return createReturn(`var(--${value.slice(1)})`)
-    }
-
     if (
       (value.startsWith('[') && value.endsWith(']')) ||
       (value.startsWith('(') && value.endsWith(')'))
     ) {
       const cleanValue = this.escapeArbitrary(value)
 
-      if (cleanValue.includes('{')) {
-        return createReturn(this.replaceWithValueRegistry(cleanValue))
-      }
-
       return createReturn(cleanValue.startsWith('--') ? `var(${cleanValue})` : cleanValue)
     }
 
     return createReturn(value)
+  }
+
+  public processStrictPatterns(
+    value: string,
+    patterns: string | RegExp | (string | RegExp | (string | RegExp)[])[]
+  ): void | boolean {
+    if (value && patterns) {
+      if (typeof patterns === 'string') return value === patterns
+      if (patterns instanceof RegExp) return patterns.test(value)
+      if (Array.isArray(patterns)) {
+        return patterns.some((item) =>
+          Array.isArray(item)
+            ? this.processStrictPatterns(value, item)
+            : typeof item === 'string'
+              ? item === value
+              : item instanceof RegExp && item.test(value)
+        )
+      }
+    }
   }
 
   public processUtilities(context: {
@@ -200,36 +196,42 @@ export class Processor {
 
     if (!className || !properties) return null
 
-    if (isUtilityConfig(properties) && properties.property) {
-      const props = properties.property
+    if (typeof properties === 'object' && !Array.isArray(properties)) {
+      if (isUtilityConfig(properties)) {
+        const props = properties.property
 
-      if (properties.value && Array.isArray(properties.value) && value) {
-        const isValueAllowed = properties.value.some((item) =>
-          typeof item === 'string' ? item === value : item instanceof RegExp && item.test(value)
-        )
+        if (properties.value && Array.isArray(properties.value) && value) {
+          if (!this.processStrictPatterns(value, properties.value)) {
+            return this.createErrorResult(
+              className,
+              `Value \`${value}\` doesn't match the given patterns.`
+            )
+          }
+        }
 
-        if (!isValueAllowed) {
+        if (typeof props === 'string' || Array.isArray(props)) {
+          if (typeof props === 'string' && (props.includes(':') || props.startsWith('rules:'))) {
+            return this.createResult(
+              className,
+              variant,
+              '',
+              '',
+              raw,
+              isImportant,
+              props.startsWith('rules:') ? props.slice(6) : props
+            )
+          } else {
+            return this.createResult(className, variant, props, value, raw, isImportant)
+          }
+        }
+      } else {
+        if (value) {
           return this.createErrorResult(
             className,
-            "Value is present, but doesn't match the given patterns."
+            "Value is present, but the utility shouldn't accept any value."
           )
         }
-      }
-
-      if (typeof props === 'string' || Array.isArray(props)) {
-        if (typeof props === 'string' && (props.includes(':') || props.startsWith('rules:'))) {
-          return this.createResult(
-            className,
-            variant,
-            '',
-            '',
-            raw,
-            isImportant,
-            props.startsWith('rules:') ? props.slice(6) : props
-          )
-        } else {
-          return this.createResult(className, variant, props, value, raw, isImportant)
-        }
+        return this.createResult(className, variant, '', '', raw, isImportant, properties)
       }
     }
 
@@ -373,9 +375,18 @@ export class Processor {
 
     const prop = this.utilities[property]
     let finalProp = prop
-    if (Array.isArray(prop) && prop[0] instanceof RegExp) {
-      if (value && !value.match(prop[0]))
-        return this.createErrorResult(className, `Value ${value} doesn't match the input RegExp.`)
+    if (
+      value &&
+      Array.isArray(prop) &&
+      typeof prop[0] !== 'string' &&
+      (prop[0] instanceof RegExp || Array.isArray(prop[0]))
+    ) {
+      if (!this.processStrictPatterns(value, prop[0])) {
+        return this.createErrorResult(
+          className,
+          `Value \`${value}\` doesn't match the given patterns.`
+        )
+      }
       finalProp = prop[1]
     }
 
