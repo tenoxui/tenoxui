@@ -59,7 +59,7 @@ export type ProcessContext = {
     matcher?: RegExp
   } | null
   parser?: (className: string) => unknown
-  processor?: (
+  processUtility?: (
     context: Partial<{
       variant: string | null
       property: string
@@ -67,6 +67,8 @@ export type ProcessContext = {
       className: string
     }>
   ) => unknown
+  processValue?: (value: string, utilities: Utilities) => string | null
+  processVariant?: (variant: string, variants: Variants) => string | null
   utilities?: Utilities
   variants?: Variants
 }
@@ -106,11 +108,13 @@ export type Variants<T = string> = Record<string, T>
 
 export interface Config<
   TUtilities extends object = Utilities,
-  TVariants extends object = Variants
+  TVariants extends object = Variants,
+  TProcessResult = BaseProcessResult,
+  TProcessUtilitiesResult = BaseProcessResult
 > {
   utilities?: TUtilities
   variants?: TVariants
-  plugins?: Plugin[]
+  plugins?: Plugin<TProcessResult, TProcessUtilitiesResult>[]
 }
 
 export type PluginFactory<

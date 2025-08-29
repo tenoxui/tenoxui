@@ -16,7 +16,9 @@ import type {
 
 export class TenoxUI<
   TUtilities extends { [type: string]: any } = Utilities,
-  TVariants extends { [variant: string]: any } = Variants
+  TVariants extends { [variant: string]: any } = Variants,
+  TProcessResult extends BaseProcessResult<any> = BaseProcessResult<string>,
+  TProcessUtilitiesResult extends BaseProcessResult<any> = BaseProcessResult<string>
 > {
   private utilities: TUtilities
   private variants: TVariants
@@ -25,7 +27,7 @@ export class TenoxUI<
   public matcher: RegExp | null
   private defaultPattern: string
 
-  constructor(config: Config<TUtilities, TVariants> = {}) {
+  constructor(config: Config<TUtilities, TVariants, TProcessResult, TProcessUtilitiesResult> = {}) {
     const { variants, utilities, plugins = [] } = config
     this.utilities = (utilities || {}) as TUtilities
     this.variants = (variants || {}) as TVariants
@@ -261,6 +263,8 @@ export class TenoxUI<
     const classList = Array.isArray(classNames) ? classNames : classNames.split(/\s+/)
     const results: T[] = []
 
+    if (classList.length < 0) return null
+
     for (const className of classList) {
       if (!className.trim()) continue
 
@@ -276,14 +280,16 @@ export class TenoxUI<
             const context: ProcessContext = {
               regexp: () => this.regexp(),
               parser: (cls: string) => this.parse(cls),
-              processor: (
-                data: Partial<{
+              processUtility: (
+                ctx: Partial<{
                   variant: string | null
                   property: string
                   value: string
                   className: string
                 }>
-              ) => this.processUtilities(data),
+              ) => this.processUtilities(ctx),
+              processValue: (value: string) => this.processValue(value),
+              processVariant: (variant: string) => this.processVariant(variant),
               utilities: this.utilities,
               variants: this.variants
             }
@@ -367,7 +373,16 @@ export class TenoxUI<
       const context: ProcessContext = {
         regexp: () => this.regexp(),
         parser: (cls: string) => this.parse(cls),
-        processor: (data) => this.processUtilities(data),
+        processUtility: (
+          ctx: Partial<{
+            variant: string | null
+            property: string
+            value: string
+            className: string
+          }>
+        ) => this.processUtilities(ctx),
+        processValue: (value: string) => this.processValue(value),
+        processVariant: (variant: string) => this.processVariant(variant),
         utilities: this.utilities,
         variants: this.variants
       }
