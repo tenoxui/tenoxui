@@ -1,5 +1,20 @@
 # Changelog
 
+## `v3.0.0-alpha.4` - `2025-08-30`
+
+### Changed
+
+- `processor` parameter in `process` plugin to `processUtility`.
+
+### Added
+
+- `processValue` and `processVariant` parameters for `process` plugin.
+- Add generic types of `ProcessResult` for main class `TenoxUI` and `Config` type to add more typescript support.
+
+### Development
+
+- Remove `@nousantx/someutils`
+
 ## `v3.0.0-alpha.3` - `2025-08-04`
 
 ## **Changed**
