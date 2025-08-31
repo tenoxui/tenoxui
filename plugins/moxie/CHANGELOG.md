@@ -1,5 +1,22 @@
 # Changelog
 
+## `v1.0.0-alpha.7` - `2025-08-31`
+
+### Fixed
+
+- Mismatched types for `Utilities`
+- Should remove `props:` in transformer even the `key` only have single property on `ObjectRules` transformer
+
+### Development
+
+- Add new tests for `ObjectRules` transformer
+
+## `v1.0.0-alpha.6` - `2025-08-29`
+
+### Fixed
+
+- `.d.ts` files isn't generated on production
+
 ## `v1.0.0-alpha.5` - `2025-08-27`
 
 ### Added

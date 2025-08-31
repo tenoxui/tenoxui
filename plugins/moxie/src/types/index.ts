@@ -43,7 +43,7 @@ export interface TransformResult {
 
 export interface UtilityContext {
   className: string | ClassNameObject
-  value: string | ProcessedValue
+  value: string | null
   raw: RegExpMatchArray
   key?: string | null
 }
@@ -66,9 +66,9 @@ export interface UtilityResult {
 
 export type UtilityErrorResult = null | { fail?: true; reason?: string } | [null, string]
 
-export interface UtilityFunction {
-  (context: UtilityContext): UtilityResult | UtilityErrorResult
-}
+export type UtilityFunction = (
+  context: UtilityContext
+) => AllowedUtilityRules | UtilityResult | UtilityErrorResult
 
 export interface UtilityConfig {
   property?: CSSPropertyOrVariable | CSSPropertyOrVariable[] | UtilityFunction

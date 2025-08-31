@@ -105,7 +105,6 @@ describe('RegExp Module', () => {
       const patterns = createPatterns({ valuePatterns: ['\\@[^\\s\\/]+'] })
       const matcher = createMatcher(patterns)
 
-      
       expect('[hello]-@moxie'.match(matcher).groups.value).toBe('@moxie')
     })
   })

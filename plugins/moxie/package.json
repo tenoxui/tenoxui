@@ -1,6 +1,6 @@
 {
   "name": "@tenoxui/plugin-moxie",
-  "version": "1.0.0-alpha.5",
+  "version": "1.0.0-alpha.7",
   "description": "A starter plugin for TenoxUI with features you ever need.",
   "author": "NOuSantx <nousantx@gmail.com>",
   "license": "MIT",
@@ -43,7 +43,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "type:check": "tsc --noEmit",
-    "type:build": "tsc --declaration --emitDeclarationOnly --outDir dist",
+    "type:build": "tsc --emitDeclarationOnly",
     "build:prod": "pnpm type:check && pnpm build --minify && pnpm type:build"
   },
   "devDependencies": {

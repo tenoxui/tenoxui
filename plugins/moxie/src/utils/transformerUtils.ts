@@ -61,11 +61,10 @@ export function processObjectRules(
 ) {
   const result: [string | string[], string, boolean?][] = Object.entries(rules).map(
     ([property, value]) => {
-      let props: string | string[] = property
-      if (property.includes(',')) {
-        props = (property.startsWith('props:') ? property.slice(6) : property)
-          .split(',')
-          .map((x) => x.trim())
+      const pureProps = property.startsWith('props:') ? property.slice(6) : property
+      let props: string | string[] = pureProps
+      if (pureProps.includes(',')) {
+        props = pureProps.split(',').map((x) => x.trim())
       }
 
       if (Array.isArray(value)) {

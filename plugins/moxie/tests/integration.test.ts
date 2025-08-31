@@ -10,9 +10,12 @@ describe('Integration Test', () => {
         r2: ['--my-rules1', '--my-rules2'],
         r3: '--my-rules: red',
         r4: ({ value }) => {
+          if (!value) return { '--tenox': '100%' }
           let rules = `--my-rules: ${value}`
 
           if (value === '1') return { '--my-rules': value }
+          if (value === '1a') return { 'props:--my-rules': value }
+          if (value === '1b') return { 'props:--my-rules1,--my-rules2': value }
           if (value === '2') {
             return {
               property: '--my-rules',
@@ -29,13 +32,51 @@ describe('Integration Test', () => {
               rules: { '--my-rules': value }
             }
           }
+          if (value === '4a') {
+            return {
+              rules: { 'props:--my-rules': value }
+            }
+          }
+          if (value === '4b') {
+            return {
+              rules: { 'props:--my-rules1,--my-rules2': value }
+            }
+          }
           if (value === '5') {
             return [{ '--my-rules1': 'red' }, '--my-rules2: blue', ['--my-rules3', 'yellow']]
+          }
+          if (value === '5a') {
+            return [{ 'props:--my-rules1': 'red' }, '--my-rules2: blue', ['--my-rules3', 'yellow']]
+          }
+          if (value === '5b') {
+            return [
+              { 'props:--my-rules1,--my-rules1a': 'red' },
+              '--my-rules2: blue',
+              ['--my-rules3', 'yellow']
+            ]
           }
           if (value === '6') {
             return {
               rules: [
                 { '--my-rules1': 'red' },
+                '--my-rules2: blue',
+                [['--my-rules3', '--my-rules4'], 'yellow']
+              ]
+            }
+          }
+          if (value === '6a') {
+            return {
+              rules: [
+                { 'props:--my-rules1': 'red' },
+                '--my-rules2: blue',
+                [['--my-rules3', '--my-rules4'], 'yellow']
+              ]
+            }
+          }
+          if (value === '6b') {
+            return {
+              rules: [
+                { 'props:--my-rules1,--my-rules1a': 'red' },
                 '--my-rules2: blue',
                 [['--my-rules3', '--my-rules4'], 'yellow']
               ]
@@ -49,6 +90,12 @@ describe('Integration Test', () => {
           }
           if (value === '8') {
             return [{ '--my-rules1': value }, { '--my-rules2': value }]
+          }
+          if (value === '8a') {
+            return [{ 'props:--my-rules1': value }, { '--my-rules2': value }]
+          }
+          if (value === '8b') {
+            return [{ 'props:--my-rules1,--my-rules1a': value }, { '--my-rules2': value }]
           }
 
           return rules
@@ -86,15 +133,35 @@ describe('Integration Test', () => {
     expect(ui.process('r3-1')).toBeNull() // direct string rules can't have value
 
     expect(ui.process('r4-10')).toBe('.r4-10 { --my-rules: 10 }')
+    expect(ui.process('r4')).toBe('.r4 { --tenox: 100% }')
     expect(ui.process('r4-1')).toBe('.r4-1 { --my-rules: 1 }')
+    expect(ui.process('r4-1a')).toBe('.r4-1a { --my-rules: 1a }')
+    expect(ui.process('r4-1b')).toBe('.r4-1b { --my-rules1: 1b; --my-rules2: 1b }')
     expect(ui.process('r4-2')).toBe('.r4-2 { --my-rules: 2 }')
     expect(ui.process('r4-3')).toBe('.r4-3 { --my-rules: 3 }')
     expect(ui.process('r4-4')).toBe('.r4-4 { --my-rules: 4 }')
+    expect(ui.process('r4-4a')).toBe('.r4-4a { --my-rules: 4a }')
+    expect(ui.process('r4-4b')).toBe('.r4-4b { --my-rules1: 4b; --my-rules2: 4b }')
     expect(ui.process('r4-5')).toBe(
       '.r4-5 { --my-rules1: red; --my-rules2: blue; --my-rules3: yellow }'
     )
+    expect(ui.process('r4-5a')).toBe(
+      '.r4-5a { --my-rules1: red; --my-rules2: blue; --my-rules3: yellow }'
+    )
+    expect(ui.process('r4-5b')).toBe(
+      '.r4-5b { --my-rules1: red; --my-rules1a: red; --my-rules2: blue; --my-rules3: yellow }'
+    )
     expect(ui.process('r4-6')).toBe(
       '.r4-6 { --my-rules1: red; --my-rules2: blue; --my-rules3: yellow; --my-rules4: yellow }'
+    )
+    expect(ui.process('r4-6a')).toBe(
+      '.r4-6a { --my-rules1: red; --my-rules2: blue; --my-rules3: yellow; --my-rules4: yellow }'
+    )
+    expect(ui.process('r4-6b')).toBe(
+      '.r4-6b { --my-rules1: red; --my-rules1a: red; --my-rules2: blue; --my-rules3: yellow; --my-rules4: yellow }'
+    )
+    expect(ui.process('r4-7 r4-8 r4-8a r4-8b')).toBe(
+      `.r4-7 { --my-rules1: 7; --my-rules2: 7 }\n.r4-8 { --my-rules1: 8; --my-rules2: 8 }\n.r4-8a { --my-rules1: 8a; --my-rules2: 8a }\n.r4-8b { --my-rules1: 8b; --my-rules1a: 8b; --my-rules2: 8b }`
     )
   })
 

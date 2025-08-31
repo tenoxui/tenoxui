@@ -93,6 +93,7 @@ describe('Processor', () => {
           let rules = `--my-rules: ${value}`
 
           if (value === '1') return { '--my-rules': value }
+          if (value === '1a') return { 'props:--my-rules': value }
           if (value === '2') {
             return {
               property: '--my-rules',
@@ -185,8 +186,6 @@ describe('Processor', () => {
     it('should return raw value when no processing needed', () => {
       expect(processor.processValue('red')).toBe('red')
     })
-
-    
 
     it('should process arbitrary values', () => {
       expect(processor.processValue('[10px]')).toBe('10px')
@@ -412,6 +411,11 @@ describe('Processor', () => {
       expect(processor.process('r4-1')).toMatchObject({
         rules: {
           '--my-rules': '1'
+        }
+      })
+      expect(processor.process('r4-1a')).toMatchObject({
+        rules: {
+          'props:--my-rules': '1a'
         }
       })
       expect(processor.process('r4-4')).toMatchObject({
