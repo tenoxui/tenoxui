@@ -1,5 +1,11 @@
 # Changelog
 
+## `v1.0.0-alpha.9` - `2025-09-06`
+
+### Fixed
+
+- Should escape the selector first before splitting on `Object` class name, and the split result must have more than one item
+
 ## `v1.0.0-alpha.8` - `2025-09-06`
 
 ### Changed

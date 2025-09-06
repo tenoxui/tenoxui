@@ -132,8 +132,10 @@ export function processVariantSelector(
   // Handle & replacement syntax
   if (variant.includes('&')) {
     if (classNameObject) {
-      const rawS = generateSelector(classNameObject, selector).split(selector)
-      return rawS.length > 0 ? `${rawS.join(variant.replace(/&/g, selector))} ${rules}` : null
+      const rawS = generateSelector(classNameObject, selector).split(escapeSelector(selector))
+      return rawS.length > 1
+        ? `${rawS.join(variant.replace(/&/g, escapeSelector(selector)))} ${rules}`
+        : null
     }
     return `${variant.replace(/&/g, selector)} ${rules}`
   }

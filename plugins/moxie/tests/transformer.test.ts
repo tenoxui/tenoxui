@@ -47,17 +47,35 @@ describe('Transformer', () => {
         variant: '&:hover',
         isImportant: false,
         raw: ['bg-red', '', 'bg', 'red'] as RegExpMatchArray
+      },
+      {
+        use: 'moxie',
+        className: { suffix: ' + *' },
+        rules: { property: 'background-color', value: 'red' },
+        variant: '&:hover',
+        isImportant: false,
+        raw: ['hover:bg-red', '', 'bg', 'red'] as RegExpMatchArray
+      },
+      {
+        use: 'moxie',
+        className: { suffix: ' + *', prefix: '.moxie ' },
+        rules: { property: 'background-color', value: 'red' },
+        variant: '&:hover',
+        isImportant: false,
+        raw: ['hover:bg-red', '', 'bg', 'red'] as RegExpMatchArray
       }
     ]
 
     const result = transform(input)
 
-    expect(result.rules).toHaveLength(4)
+    expect(result.rules).toHaveLength(6)
     expect(result.rules[0]).toContain('.bg-red')
     expect(result.rules[0]).toContain('background-color: red')
     expect(result.rules[1]).toContain('.bg-red:hover + *')
     expect(result.rules[2]).toContain('body .bg-red:hover + *')
     expect(result.rules[3]).toContain('body .bg-red:hover + *.bg-red:hover')
+    expect(result.rules[4]).toContain('.hover\\:bg-red:hover + *')
+    expect(result.rules[5]).toContain('.moxie .hover\\:bg-red:hover + *')
     expect(result.invalid.moxie).toHaveLength(0)
   })
 
