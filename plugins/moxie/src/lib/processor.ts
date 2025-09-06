@@ -177,10 +177,10 @@ export class Processor {
 
     if (pluginResult) return pluginResult
 
-    if (typeof property === 'string' && key) {
+    if (typeof property !== 'function' && key) {
       return this.createErrorResult(
         className,
-        `String utility can't have key, and ${key} is parsed as key!`
+        `'${raw?.[2] || className}' utility shouldn't have keys, and '${key}' is defined`
       )
     }
 
@@ -204,13 +204,21 @@ export class Processor {
           if (!this.processStrictPatterns(value, properties.value)) {
             return this.createErrorResult(
               className,
-              `Value \`${value}\` doesn't match the given patterns.`
+              `'${raw?.[2] || className}' utility doesn't accept '${value}' as value`
             )
           }
         }
 
         if (typeof props === 'string' || Array.isArray(props)) {
           if (typeof props === 'string' && (props.includes(':') || props.startsWith('rules:'))) {
+            if (value) {
+              return this.createErrorResult(
+                className,
+                `'${
+                  raw?.[2] || className
+                }' utility shouldn't have values, and '${value}' is defined`
+              )
+            }
             return this.createResult(
               className,
               variant,
@@ -221,6 +229,12 @@ export class Processor {
               props.startsWith('rules:') ? props.slice(6) : props
             )
           } else {
+            if (!value) {
+              return this.createErrorResult(
+                className,
+                `'${raw[2] || className}' utility should have a value`
+              )
+            }
             return this.createResult(className, variant, props, value, raw, isImportant)
           }
         }
@@ -228,7 +242,7 @@ export class Processor {
         if (value) {
           return this.createErrorResult(
             className,
-            "Value is present, but the utility shouldn't accept any value."
+            `'${raw?.[2] || className}' utility shouldn't have values, and '${value}' is defined`
           )
         }
         return this.createResult(className, variant, '', '', raw, isImportant, properties)
@@ -384,7 +398,7 @@ export class Processor {
       if (!this.processStrictPatterns(value, prop[0])) {
         return this.createErrorResult(
           className,
-          `Value \`${value}\` doesn't match the given patterns.`
+          `'${match?.[2] || className}' utility doesn't accept '${value}' as value`
         )
       }
       finalProp = prop[1]
@@ -414,5 +428,3 @@ export class Processor {
     return this.processUtilities(data)
   }
 }
-
-export * from '../utils/processorUtils'

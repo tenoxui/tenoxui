@@ -1,11 +1,11 @@
 import { describe, it, expect, beforeEach } from 'vitest'
+import { Processor } from '../src/lib/processor'
 import {
-  Processor,
   isProcessedValue,
   isUtilityFunction,
   isUtilityConfig,
   extractMatchGroups
-} from '../src/lib/processor'
+} from '../src/utils/processorUtils'
 import { createRegexp } from '../src/lib/regexp'
 
 describe('Processor Helper Functions', () => {
@@ -242,7 +242,15 @@ describe('Processor', () => {
       const invalidResult = processor.process('custom-notallowed')
       expect(invalidResult).toEqual({
         className: 'custom-notallowed',
-        reason: "Value `notallowed` doesn't match the given patterns.",
+        reason: "'custom' utility doesn't accept 'notallowed' as value",
+        rules: null,
+        use: 'moxie'
+      })
+
+      const emptyValue = processor.process('custom')
+      expect(emptyValue).toEqual({
+        className: 'custom',
+        reason: "'custom' utility should have a value",
         rules: null,
         use: 'moxie'
       })
@@ -313,25 +321,25 @@ describe('Processor', () => {
       })
       expect(processorWithRegex.process('w-invalid')).toEqual({
         className: 'w-invalid',
-        reason: "Value `invalid` doesn't match the given patterns.",
+        reason: "'w' utility doesn't accept 'invalid' as value",
         rules: null,
         use: 'moxie'
       })
       expect(processorWithRegex.process('h-invalid')).toEqual({
         className: 'h-invalid',
-        reason: "Value `invalid` doesn't match the given patterns.",
+        reason: "'h' utility doesn't accept 'invalid' as value",
         rules: null,
         use: 'moxie'
       })
       expect(processorWithRegex.process('h2-invalid')).toEqual({
         className: 'h2-invalid',
-        reason: "Value `invalid` doesn't match the given patterns.",
+        reason: "'h2' utility doesn't accept 'invalid' as value",
         rules: null,
         use: 'moxie'
       })
       expect(processorWithRegex.process('h3-invalid')).toEqual({
         className: 'h3-invalid',
-        reason: "Value `invalid` doesn't match the given patterns.",
+        reason: "'h3' utility doesn't accept 'invalid' as value",
         rules: null,
         use: 'moxie'
       })
@@ -357,9 +365,11 @@ describe('Processor', () => {
       }
 
       const result = processor.processUtilities(context)
+
       expect(result).toMatchObject({
-        use: 'moxie',
-        reason: "String utility can't have key, and color is parsed as key!"
+        className: 'test',
+        rules: null,
+        reason: "'test' utility shouldn't have keys, and 'color' is defined"
       })
     })
 

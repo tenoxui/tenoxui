@@ -1,54 +1,57 @@
-import type { ProcessResult, TransformResult } from '../types'
+import type { ProcessResult, TransformResult, ClassNameObject } from '../types'
 import { generateSelector, generateRuleBlock, processVariantSelector } from '../utils'
 
 export function transform(data: ProcessResult[]): TransformResult {
   const results: TransformResult = {
     rules: [],
-    invalid: {
-      moxie: [],
-      rest: []
-    }
+    invalid: { moxie: [], rest: [] }
   }
+
+  const addInvalid = (item: ProcessResult) => results.invalid.moxie.push(item)
 
   const processItem = (item: ProcessResult): void => {
     try {
-      // if ...
-      // rules isn't defined,
-      // className has prefix but the variant is null,
-      // return null
-      if ((!item.variant && item.raw?.[1]) || !item.rules) {
-        results.invalid.moxie.push(item)
+      // Early validation
+      if (!item.rules || (!item.variant && item.raw?.[1])) {
+        addInvalid(item)
         return
       }
 
       const variant = item.variant || ''
       const className = typeof item.className === 'string' ? item.className : item.raw?.[0] || ''
-      const isImportant = item.isImportant || false
 
-      const rulesBlock = generateRuleBlock(item.rules, isImportant)
-
+      const rulesBlock = generateRuleBlock(item.rules, item.isImportant || false)
       if (!rulesBlock) return
 
-      const selector = generateSelector(item.className, className, true)
-
       if (variant) {
-        results.rules.push(processVariantSelector(variant, selector, rulesBlock))
+        const isObjectClassName = item.className && typeof item.className === 'object'
+        const result = isObjectClassName
+          ? processVariantSelector(
+              variant,
+              ((item.className as ClassNameObject)?.raw as string) || className,
+              rulesBlock,
+              item.className as ClassNameObject
+            )
+          : processVariantSelector(
+              variant,
+              generateSelector(item.className, className, true),
+              rulesBlock
+            )
+
+        result ? results.rules.push(result) : addInvalid(item)
       } else {
-        results.rules.push(selector + ' ' + rulesBlock)
+        const selector = generateSelector(item.className, className, true)
+        results.rules.push(`${selector} ${rulesBlock}`)
       }
     } catch (err) {
       console.error(`Error transforming ${item.className}:`, err)
-      results.invalid.moxie.push(item)
+      addInvalid(item)
     }
   }
 
+  // Process items
   data.forEach((item) => {
-    // only process moxie-like rules
-    if (item.use === 'moxie') {
-      processItem(item)
-    } else {
-      results.invalid.rest.push(item)
-    }
+    item.use === 'moxie' ? processItem(item) : results.invalid.rest.push(item)
   })
 
   return results

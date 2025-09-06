@@ -377,7 +377,7 @@ describe('processVariantSelector', () => {
 
   it('should return empty string for @class without @rules', () => {
     const result = processVariantSelector('@media print { @class }', '.test', '{ color: red }')
-    expect(result).toBe('')
+    expect(result).toBeNull()
   })
 
   it('should default to simple concatenation', () => {

@@ -1,5 +1,14 @@
 # Changelog
 
+## `v1.0.0-alpha.8` - `2025-09-06`
+
+### Changed
+
+- Only utility function that can accept value with `key`s
+- Normalize error output's `reason`
+- Shouldn't replace `&` with raw or full `className` if it was an object, only replace the actual class name and separate `prefix` or `suffix`
+- Other improvements
+
 ## `v1.0.0-alpha.7` - `2025-08-31`
 
 ### Fixed
