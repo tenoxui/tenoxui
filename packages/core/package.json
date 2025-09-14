@@ -1,6 +1,6 @@
 {
   "name": "@tenoxui/core",
-  "version": "3.0.0-alpha.4",
+  "version": "3.0.0-alpha.5",
   "description": "Core component of tenoxui",
   "author": "NOuSantx <nousantx@gmail.com>",
   "license": "MIT",
@@ -41,8 +41,8 @@
     "build": "vite build",
     "test": "vitest run",
     "test:watch": "vitest",
-    "type:check": "tsc --noEmit",
-    "type:build": "tsc --emitDeclarationOnly",
+    "type:check": "tsc -b --noEmit",
+    "type:build": "tsc -b",
     "build:prod": "pnpm type:check && pnpm build --minify && pnpm type:build"
   },
   "peerDependencies": {

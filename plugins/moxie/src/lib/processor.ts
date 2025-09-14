@@ -255,6 +255,11 @@ export class Processor {
         properties.startsWith('[') &&
         properties.endsWith(']')
       ) {
+        if (!value)
+          return this.createErrorResult(
+            className,
+            `'${raw?.[2] || className}' utility should have a value`
+          )
         const props = properties.slice(1, -1).split(',')
         return this.createResult(
           className,
@@ -281,7 +286,12 @@ export class Processor {
               properties.startsWith('rules:') ? properties.slice(6) : properties
             )
       } else {
-        return this.createResult(className, variant, properties, value, raw, isImportant)
+        return !value
+          ? this.createErrorResult(
+              className,
+              `'${raw?.[2] || className}' utility should have a value`
+            )
+          : this.createResult(className, variant, properties, value, raw, isImportant)
       }
     }
 

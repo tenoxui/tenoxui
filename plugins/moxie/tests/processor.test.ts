@@ -396,6 +396,20 @@ describe('Processor', () => {
     })
 
     it('should handle different return formats', () => {
+      expect(processor.process('[--my-rules]')).toMatchObject({
+        rules: null,
+        reason: "'[--my-rules]' utility should have a value"
+      })
+      expect(processor.process('[--my-rules]-1')).toMatchObject({
+        rules: { property: '--my-rules', value: '1' }
+      })
+      expect(processor.process('[--my-rules1,--my-rules2]-1')).toMatchObject({
+        rules: { property: ['--my-rules1', '--my-rules2'], value: '1' }
+      })
+      expect(processor.process('r1')).toMatchObject({
+        rules: null,
+        reason: "'r1' utility should have a value"
+      })
       expect(processor.process('r1-1')).toMatchObject({
         rules: {
           property: '--my-rules',

@@ -1,5 +1,15 @@
 # Changelog
 
+## `v3.0.0-alpha.5` - `2025-09-14`
+
+### Fixed
+
+- The `utilities` and `variants`'s keys should be escaped before given to the final `matcher`
+
+### Development
+
+- Add more unit tests
+
 ## `v3.0.0-alpha.4` - `2025-08-30`
 
 ### Changed

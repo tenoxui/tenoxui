@@ -1,7 +1,7 @@
 import type { BaseProcessResult, CSSPropertyOrVariable } from '@tenoxui/core'
 import type { Plugin } from '@nousantx/plugify'
 import type { StringRules, ArrayRules, ObjectRules } from './utilityRulesResult'
-import type { CreateRegexpResult } from './regexp'
+import type { CreateRegexpResult, MatcherOptions } from './regexp'
 
 export interface ProcessedValue {
   key: string
@@ -103,9 +103,11 @@ export interface Config {
   priority?: number
   prefixChars?: string[]
   utilitiesName?: string
-  typeSafelist?: string[]
-  valuePatterns?: string[]
-  onMatcherCreated?: ((matcher: RegExp) => void) | null
+  typeSafelist?: (string | RegExp)[]
+  valuePatterns?: (string | RegExp)[]
+  variantPatterns?: (string | RegExp)[]
+  matcherOptions?: MatcherOptions
+  onMatcherCreated?: ((matcher: { matcher: CreateRegexpResult; regexp: RegExp }) => void) | null
 }
 
 export type CreateResultContext = (

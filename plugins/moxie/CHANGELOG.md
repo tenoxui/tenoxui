@@ -1,10 +1,28 @@
 # Changelog
 
-## `v1.0.0-alpha.9` - `2025-09-06`
+## `v1.0.0-alpha.11` - `2025-09-14`
+
+### Added
+
+- New given arguments to `onMatcherCreated` callback option
+- New `matcherOptions` option for new `createMatcher` and `createRegexp` functions
+- `valuePatterns` option can accept `RegExp` directly
+
+### Fixed
+
+- Should create `Processor` for once for re-use
+- String utility should have a value (not direct string utility, e.g. `{ flex: 'display: flex' }`, but something like `{ bg: 'background' }`)
+
+## `v1.0.0-alpha.{9,10}` - `2025-09-06`
 
 ### Fixed
 
 - Should escape the selector first before splitting on `Object` class name, and the split result must have more than one item
+- Should return `null` on invalid variants
+
+### Development
+
+- Add new unit tests
 
 ## `v1.0.0-alpha.8` - `2025-09-06`
 

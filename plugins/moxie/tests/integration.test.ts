@@ -199,13 +199,13 @@ describe('Integration Test', () => {
         }
       },
       variants: {
-        hover: ':hover',
-        focus: ':focus',
-        md: '@media (width: 768px)',
-        lg: '@media (width: 1024px)',
-        max: ({ value }) => `@media (max-width: ${value})`,
-        min: ({ value }) => `@media (min-width: ${value})`,
-        dark: '@media (prefers-color-scheme: dark)'
+        hover: '&:hover',
+        focus: '&:focus',
+        md: '@media (width: 768px) { @slot }',
+        lg: '@media (width: 1024px) { @slot }',
+        max: ({ value }) => `@media (max-width: ${value}) { @slot }`,
+        min: ({ value }) => `@media (min-width: ${value}) { @slot }`,
+        dark: '@media (prefers-color-scheme: dark) { @slot }'
       },
       plugins: [
         Moxie({
@@ -286,8 +286,8 @@ describe('Integration Test', () => {
         'xxx-center', // have value, shouldn't do a thing
         'my-cat'
       ])
-    ).toBe(`.max-768px\\:bg-red { background: red }
-.md\\:m-red { background: red }
+    ).toBe(`@media (max-width: 768px) { .max-768px\\:bg-red { background: red } }
+@media (width: 768px) { .md\\:m-red { background: red } }
 .vx\\:m-10:hover { margin: 2.5rem; --my-size: 2.5rem; display: flex }
 .dark .dark\\:bg-red { background: red }
 .dark .dark\\:hover\\:bg-yellow:hover { background: yellow }

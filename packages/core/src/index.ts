@@ -44,8 +44,12 @@ export class TenoxUI<
 
     for (const plugin of plugins) {
       if (typeof plugin === 'function') {
-        const pluginArray = plugin()
-        flattened.push(...pluginArray)
+        const result = plugin()
+        if (Array.isArray(result)) {
+          flattened.push(...result)
+        } else {
+          flattened.push(result)
+        }
       } else if (Array.isArray(plugin)) {
         flattened.push(...plugin)
       } else {
@@ -78,14 +82,18 @@ export class TenoxUI<
     )
   }
 
+  private escapeRegex(str: string): string {
+    return str.replace(/[.*+?^${}()|[\]\\/\\-]/g, '\\$&')
+  }
+
   public regexp() {
     if (this._cachedRegexp) {
       return this._cachedRegexp
     }
 
     let patterns: RegexPatterns = {
-      variant: Object.keys(this.variants).join('|') || this.defaultPattern,
-      property: Object.keys(this.utilities).join('|') || this.defaultPattern,
+      variant: Object.keys(this.variants).map(this.escapeRegex).join('|') || this.defaultPattern,
+      property: Object.keys(this.utilities).map(this.escapeRegex).join('|') || this.defaultPattern,
       value: this.defaultPattern
     }
     let matcher = this.createMatcher(patterns.variant, patterns.property, patterns.value)

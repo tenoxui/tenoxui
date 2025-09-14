@@ -21,10 +21,10 @@ describe('RegExp Module', () => {
 
     it('should include variants in variant pattern', () => {
       const patterns = createPatterns({
-        variants: ['hover', 'focus', 'active']
+        variants: ['hover', 'focus', 'active', '*']
       })
 
-      expect(patterns.variant).toContain('active|hover|focus')
+      expect(patterns.variant).toContain('active|hover|focus|\\*')
     })
 
     it('should sort patterns by length for better matching', () => {
@@ -41,7 +41,7 @@ describe('RegExp Module', () => {
 
     it('should include safelist items', () => {
       const patterns = createPatterns({
-        safelist: ['custom-class', 'another']
+        utilities: ['custom-class', 'another']
       })
 
       expect(patterns.property).toContain('custom\\-class')

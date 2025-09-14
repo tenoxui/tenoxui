@@ -1,9 +1,8 @@
 export interface CreatePatternsConfig {
   variants?: string[]
   utilities?: string[]
-  safelist?: string[]
   inputPrefixChars?: string[]
-  valuePatterns?: string[]
+  valuePatterns?: (string | RegExp)[]
 }
 
 export interface Patterns {
@@ -21,4 +20,11 @@ export interface CreateRegexpResult {
     valuePattern: string
     fullPattern: string
   }
+}
+
+export type MatcherOptions = {
+  strict?: boolean
+  withValue?: boolean
+  strictValue?: boolean
+  valueMode?: 1 | 2
 }

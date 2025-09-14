@@ -348,8 +348,15 @@ describe('generateRuleBlock', () => {
 
 describe('processVariantSelector', () => {
   it('should replace & with selector', () => {
-    const result = processVariantSelector('&:hover', '.btn', '{ color: red }')
-    expect(result).toBe('.btn:hover { color: red }')
+    expect(processVariantSelector('&:hover', '.btn', '{ color: red }')).toBe(
+      '.btn:hover { color: red }'
+    )
+    expect(processVariantSelector('&:hover', '.btn', '{ color: blue }')).toBe(
+      '.btn:hover { color: blue }'
+    )
+    expect(processVariantSelector('.dark &', '.btn', '{ color: blue }')).toBe(
+      '.dark .btn { color: blue }'
+    )
   })
 
   it('should handle multiple & replacements', () => {
@@ -380,18 +387,24 @@ describe('processVariantSelector', () => {
     expect(result).toBeNull()
   })
 
-  it('should default to simple concatenation', () => {
-    const result = processVariantSelector(':hover', '.btn', '{ color: blue }')
-    expect(result).toBe('.btn { color: blue }')
+  it('should return null for invalid variants', () => {
+    expect(processVariantSelector(':hover', '.btn', '{ color: red }')).toBeNull()
+    expect(processVariantSelector('hahaha', '.btn', '{ color: red }')).toBeNull()
+    expect(
+      processVariantSelector('@media (width: 768px) { @rules }', '.btn', '{ color: red }')
+    ).toBeNull()
+    expect(
+      processVariantSelector('@media (width: 768px) { @class { rules } }', '.btn', '{ color: red }')
+    ).toBeNull()
   })
 
   it('should handle complex media queries with &', () => {
-    const result = processVariantSelector(
-      '@media (min-width: 640px) { & }',
-      '.sm-class',
-      '{ width: 100% }'
-    )
-    expect(result).toBe('@media (min-width: 640px) { .sm-class } { width: 100% }')
+    expect(
+      processVariantSelector('@media (min-width: 640px) { & }', '.sm-class', '{ width: 100% }')
+    ).toBe('@media (min-width: 640px) { .sm-class } { width: 100% }')
+    expect(
+      processVariantSelector('@media (min-width: 640px) { @slot }', '.sm-class', '{ width: 100% }')
+    ).toBe('@media (min-width: 640px) { .sm-class { width: 100% } }')
   })
 
   it('should handle nested selectors with &', () => {

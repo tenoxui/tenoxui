@@ -129,12 +129,15 @@ export function processVariantSelector(
   rules: string,
   classNameObject?: ClassNameObject
 ): string | null {
-  // Handle & replacement syntax
-  if (variant.includes('&')) {
+  const getSelector = () =>
+    classNameObject ? generateSelector(classNameObject, selector) : selector
+
+  // Handle & replacement syntax (excluding @class variants)
+  if (variant.includes('&') && !variant.includes('@class')) {
     if (classNameObject) {
-      const rawS = generateSelector(classNameObject, selector).split(escapeSelector(selector))
-      return rawS.length > 1
-        ? `${rawS.join(variant.replace(/&/g, escapeSelector(selector)))} ${rules}`
+      const parts = generateSelector(classNameObject, selector).split(escapeSelector(selector))
+      return parts.length > 1
+        ? `${parts.join(variant.replace(/&/g, escapeSelector(selector)))} ${rules}`
         : null
     }
     return `${variant.replace(/&/g, selector)} ${rules}`
@@ -142,7 +145,7 @@ export function processVariantSelector(
 
   // Handle @slot syntax
   if (variant.includes('@slot')) {
-    return variant.replace('@slot', `${selector} ${rules}`)
+    return variant.replace('@slot', `${getSelector()} ${rules}`)
   }
 
   // Handle @class and @rules syntax
@@ -152,8 +155,8 @@ export function processVariantSelector(
     const cleanRules =
       rules.startsWith('{') && rules.endsWith('}') ? rules.slice(1, -1).trim() : rules.trim()
 
-    return variant.replace('@class', selector).replace('@rules', cleanRules)
+    return variant.replace('@class', getSelector()).replace('@rules', cleanRules)
   }
 
-  return `${selector} ${rules}`
+  return null
 }
