@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { transform, Moxie } from '../src'
+import { transform, Moxie, createTenoxUI } from '../src'
 import { TenoxUI } from '@tenoxui/core'
 
 describe('Integration Test', () => {
@@ -177,93 +177,119 @@ describe('Integration Test', () => {
     )
   })
 
+  let defConf = {
+    plugins: [
+      {
+        name: 'process-variants',
+        // basic variant plugin implementation
+        processVariant(variant) {
+          if (variant === 'vx') return '&:hover'
+          if (variant === 'dark') return '.dark &'
+          if (variant === 'dark:hover') return '.dark &:hover'
+          if (variant === 'md:dark:hover')
+            return '@media (max-width: 768px) { .dark @class:hover { @rules } }'
+        },
+        // custom value processing
+        processValue({ value }) {
+          if (value && value === 'center') {
+            return 'calc(50%, -50%)'
+          }
+        },
+        // custom utility processing plugin
+        processUtilities({
+          property,
+          value,
+          variant,
+          className,
+          isImportant,
+          raw,
+          createResult,
+          createErrorResult
+        }) {
+          if (raw[2] === 'xxx') {
+            if (value) return createErrorResult(className, raw[2] + " Utility shouldn't have value")
+
+            return createResult(className, variant, 'background', 'red', raw, isImportant)
+          }
+        },
+        // custom className processing
+        process(className, { createResult }) {
+          if (className === 'my-cat') {
+            return createResult(
+              className,
+              null,
+              '',
+              '',
+              [],
+              false,
+              'background: red; display: flex'
+            )
+          }
+        }
+      }
+    ],
+
+    utilities: {
+      bg: 'background',
+      m: [
+        /^red|center|[-+]?(?:\d*\.\d+|\d+)$/,
+        ({ value, raw }) =>
+          value === 'red'
+            ? 'background'
+            : raw[3] === 'center'
+              ? { property: ['alignItems', 'justifyContent'] }
+              : {
+                  rules: [{ 'margin,--my-size': value * 0.25 + 'rem' }, 'display: flex']
+                }
+      ],
+      w: 'width',
+      h: 'height',
+      xxx: 'this-is-my-holy-prop'
+    },
+    variants: {
+      hover: '&:hover',
+      focus: '&:focus',
+      md: '@media (width: 768px) { @slot }',
+      lg: '@media (width: 1024px) { @slot }',
+      max: ({ value }) => `@media (max-width: ${value}) { @slot }`,
+      min: ({ value }) => `@media (min-width: ${value}) { @slot }`,
+      dark: '@media (prefers-color-scheme: dark) { @slot }'
+    },
+    cn: [
+      'max-768px:bg-red',
+      'md:m-red',
+      'vx:m-10',
+      'dark:bg-red',
+      'dark:hover:bg-yellow',
+      'md:dark:hover:bg-green',
+      'm-center',
+      'xxx',
+      'xxx-center', // have value, shouldn't do a thing
+      'my-cat'
+    ],
+    res: `@media (max-width: 768px) { .max-768px\\:bg-red { background: red } }
+@media (width: 768px) { .md\\:m-red { background: red } }
+.vx\\:m-10:hover { margin: 2.5rem; --my-size: 2.5rem; display: flex }
+.dark .dark\\:bg-red { background: red }
+.dark .dark\\:hover\\:bg-yellow:hover { background: yellow }
+@media (max-width: 768px) { .dark .md\\:dark\\:hover\\:bg-green:hover { background: green } }
+.m-center { align-items: calc(50%, -50%); justify-content: calc(50%, -50%) }
+.xxx { background: red }
+.my-cat { background: red; display: flex }`
+  }
   it('should process moxie plugin correctly', () => {
     const ui = new TenoxUI({
       utilities: {
-        __moxie: {
-          bg: 'background',
-          m: [
-            /^red|center|[-+]?(?:\d*\.\d+|\d+)$/,
-            ({ value, raw }) =>
-              value === 'red'
-                ? 'background'
-                : raw[3] === 'center'
-                  ? { property: ['alignItems', 'justifyContent'] }
-                  : {
-                      rules: [{ 'margin,--my-size': value * 0.25 + 'rem' }, 'display: flex']
-                    }
-          ],
-          w: 'width',
-          h: 'height',
-          xxx: 'this-is-my-holy-prop'
-        }
+        __moxie: defConf.utilities
       },
-      variants: {
-        hover: '&:hover',
-        focus: '&:focus',
-        md: '@media (width: 768px) { @slot }',
-        lg: '@media (width: 1024px) { @slot }',
-        max: ({ value }) => `@media (max-width: ${value}) { @slot }`,
-        min: ({ value }) => `@media (min-width: ${value}) { @slot }`,
-        dark: '@media (prefers-color-scheme: dark) { @slot }'
-      },
+      variants: defConf.variants,
       plugins: [
         Moxie({
           utilitiesName: '__moxie',
           priority: 2,
           prefixChars: [':'],
           typeSafelist: ['my-cat'],
-          plugins: [
-            {
-              name: 'process-variants',
-              // basic variant plugin implementation
-              processVariant(variant) {
-                if (variant === 'vx') return '&:hover'
-                if (variant === 'dark') return '.dark &'
-                if (variant === 'dark:hover') return '.dark &:hover'
-                if (variant === 'md:dark:hover')
-                  return '@media (max-width: 768px) { .dark @class:hover { @rules } }'
-              },
-              // custom value processing
-              processValue({ value }) {
-                if (value && value === 'center') {
-                  return 'calc(50%, -50%)'
-                }
-              },
-              // custom utility processing plugin
-              processUtilities({
-                property,
-                value,
-                variant,
-                className,
-                isImportant,
-                raw,
-                createResult,
-                createErrorResult
-              }) {
-                if (raw[2] === 'xxx') {
-                  if (value)
-                    return createErrorResult(className, raw[2] + " Utility shouldn't have value")
-
-                  return createResult(className, variant, 'background', 'red', raw, isImportant)
-                }
-              },
-              // custom className processing
-              process(className, { createResult }) {
-                if (className === 'my-cat') {
-                  return createResult(
-                    className,
-                    null,
-                    '',
-                    '',
-                    [],
-                    false,
-                    'background: red; display: flex'
-                  )
-                }
-              }
-            }
-          ]
+          plugins: defConf.plugins
         }),
         {
           name: 'transform-moxie',
@@ -273,27 +299,19 @@ describe('Integration Test', () => {
       ]
     })
 
-    expect(
-      ui.process([
-        'max-768px:bg-red',
-        'md:m-red',
-        'vx:m-10',
-        'dark:bg-red',
-        'dark:hover:bg-yellow',
-        'md:dark:hover:bg-green',
-        'm-center',
-        'xxx',
-        'xxx-center', // have value, shouldn't do a thing
-        'my-cat'
-      ])
-    ).toBe(`@media (max-width: 768px) { .max-768px\\:bg-red { background: red } }
-@media (width: 768px) { .md\\:m-red { background: red } }
-.vx\\:m-10:hover { margin: 2.5rem; --my-size: 2.5rem; display: flex }
-.dark .dark\\:bg-red { background: red }
-.dark .dark\\:hover\\:bg-yellow:hover { background: yellow }
-@media (max-width: 768px) { .dark .md\\:dark\\:hover\\:bg-green:hover { background: green } }
-.m-center { align-items: calc(50%, -50%); justify-content: calc(50%, -50%) }
-.xxx { background: red }
-.my-cat { background: red; display: flex }`)
+    expect(ui.process(defConf.cn)).toBe(defConf.res)
+  })
+
+  it('should process with default initializator', () => {
+    const ui = createTenoxUI({
+      quickTransform: true,
+      utilities: defConf.utilities,
+      variants: defConf.variants,
+      typeSafelist: ['my-cat'],
+      prefixChars: [':'],
+      plugins: defConf.plugins
+    })
+
+    expect(ui.process(defConf.cn)).toBe(defConf.res)
   })
 })

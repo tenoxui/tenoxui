@@ -1,17 +1,18 @@
-import { SyncPluginSystem as PluginSystem, type Plugin } from '@nousantx/plugify'
+import { SyncPluginSystem as PluginSystem } from '@nousantx/plugify'
 import { createRegexp } from './regexp'
 import { isProcessedValue, isUtilityConfig, isUtilityFunction, extractMatchGroups } from '../utils'
 import type {
+  Variants,
+  Utilities,
+  PluginTypes,
+  UtilityResult,
   ProcessResult,
   InvalidResult,
   ProcessedValue,
-  Utilities,
-  Variants,
-  PluginTypes,
   UtilityContext,
-  UtilityResult,
+  ClassNameObject,
   CreateRegexpResult,
-  ClassNameObject
+  Plugin as MoxiePlugin
 } from '../types'
 
 export class Processor {
@@ -25,7 +26,7 @@ export class Processor {
       parser?: CreateRegexpResult | null
       utilities?: Utilities
       variants?: Variants
-      plugins?: Plugin<PluginTypes>[]
+      plugins?: MoxiePlugin[]
     } = {}
   ) {
     this.parser =

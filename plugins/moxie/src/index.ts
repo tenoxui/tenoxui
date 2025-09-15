@@ -1,19 +1,28 @@
+import { TenoxUI } from '@tenoxui/core'
 import type { Plugin, ProcessContext } from '@tenoxui/core'
-import type { Config, ProcessResult, InvalidResult } from './types'
+import type {
+  Config,
+  Variants,
+  Utilities,
+  CreatorConfig,
+  InvalidResult,
+  ProcessResult
+} from './types'
+import { transform } from './lib/transformer'
 import { createRegexp } from './lib/regexp'
 import { Processor } from './lib/processor'
 
 export function Moxie(config: Config = {}): Plugin<ProcessResult | InvalidResult> {
   const {
+    plugins = [],
     priority = 0,
     prefixChars = [],
-    utilitiesName = 'moxie',
     typeSafelist = [],
-    plugins = [],
+    utilitiesName = 'moxie',
     valuePatterns = [],
+    matcherOptions = {},
     variantPatterns = [],
-    onMatcherCreated = null,
-    matcherOptions = {}
+    onMatcherCreated = null
   } = config
 
   let cachedProcessor: Processor | null = null
@@ -76,9 +85,48 @@ export function Moxie(config: Config = {}): Plugin<ProcessResult | InvalidResult
   }
 }
 
+export function createTenoxUI(config: CreatorConfig = {}) {
+  const {
+    plugins = [],
+    priority = 0,
+    variants = {},
+    utilities = {},
+    prefixChars = [],
+    typeSafelist = [],
+    valuePatterns = [],
+    matcherOptions = {},
+    quickTransform = false,
+    onMatcherCreated = null
+  } = config
+
+  const utilitiesName = '__MOXIE_UTILITIES__'
+
+  return new TenoxUI<Utilities, Variants, ProcessResult>({
+    utilities: { [utilitiesName]: utilities },
+    variants,
+    plugins: [
+      Moxie({
+        plugins,
+        priority,
+        prefixChars,
+        typeSafelist,
+        utilitiesName,
+        valuePatterns,
+        matcherOptions,
+        onMatcherCreated
+      }),
+      (quickTransform && {
+        name: 'transformer',
+        transform: (data: ProcessResult[]) => transform(data).rules.join('\n')
+      }) as Plugin<ProcessResult | InvalidResult>
+    ]
+  })
+}
+
 export * from './types'
 export * from './utils'
 export * from './lib/regexp'
 export { transform } from './lib/transformer'
 export { Processor } from './lib/processor'
+export { Renderer } from './lib/renderer'
 export default Moxie

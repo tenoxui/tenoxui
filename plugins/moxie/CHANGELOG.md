@@ -1,5 +1,11 @@
 # Changelog
 
+## `v1.0.0-alpha.12` - `2025-09-15`
+
+### Added
+
+- Add default `renderer` and quick ready-to-use TenoxUI initializer
+
 ## `v1.0.0-alpha.11` - `2025-09-14`
 
 ### Added

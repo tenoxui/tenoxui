@@ -1,5 +1,9 @@
 import type { ProcessResult, TransformResult, ClassNameObject } from '../types'
-import { generateSelector, generateRuleBlock, processVariantSelector } from '../utils'
+import {
+  generateSelector,
+  generateRuleBlock,
+  processVariantSelector
+} from '../utils/transformerUtils'
 
 export function transform(data: ProcessResult[]): TransformResult {
   const results: TransformResult = {

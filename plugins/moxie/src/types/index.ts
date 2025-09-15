@@ -1,5 +1,5 @@
 import type { BaseProcessResult, CSSPropertyOrVariable } from '@tenoxui/core'
-import type { Plugin } from '@nousantx/plugify'
+import type { Plugin as Plugify } from '@nousantx/plugify'
 import type { StringRules, ArrayRules, ObjectRules } from './utilityRulesResult'
 import type { CreateRegexpResult, MatcherOptions } from './regexp'
 
@@ -99,7 +99,7 @@ export interface Variants {
 }
 
 export interface Config {
-  plugins?: Plugin<PluginTypes>[]
+  plugins?: Plugin[]
   priority?: number
   prefixChars?: string[]
   utilitiesName?: string
@@ -107,6 +107,19 @@ export interface Config {
   valuePatterns?: (string | RegExp)[]
   variantPatterns?: (string | RegExp)[]
   matcherOptions?: MatcherOptions
+  onMatcherCreated?: ((matcher: { matcher: CreateRegexpResult; regexp: RegExp }) => void) | null
+}
+
+export interface CreatorConfig {
+  plugins?: Plugin[]
+  priority?: number
+  variants?: Variants
+  utilities?: Utilities
+  prefixChars?: string[]
+  typeSafelist?: (string | RegExp)[]
+  valuePatterns?: (string | RegExp)[]
+  matcherOptions?: MatcherOptions
+  quickTransform?: boolean
   onMatcherCreated?: ((matcher: { matcher: CreateRegexpResult; regexp: RegExp }) => void) | null
 }
 
@@ -175,6 +188,8 @@ export interface PluginTypes {
   processUtilities: ProcessUtilitiesFn
   process: ProcessFn
 }
+
+export type Plugin = Plugify<PluginTypes>
 
 export interface PluginContext {
   variants?: Variants
