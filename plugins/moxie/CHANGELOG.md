@@ -1,5 +1,24 @@
 # Changelog
 
+## `v1.0.0-alpha.13` - `2025-09-16`
+
+### Changed
+
+- Moved the `PluginSystem` from `lib/processor` directly to main `Moxie` function
+
+### Added
+
+- New plugin for dynamically add patterns to the matcher
+
+### Fixed
+
+- Should return `results` even when data is empty on `lib/transformer`
+- Sanitized rules, shouldn't add color (`;`) to nested rules on string rules
+
+### **Removed**
+
+- `debug` field on `createRegexp` function, unnecessary.
+
 ## `v1.0.0-alpha.12` - `2025-09-15`
 
 ### Added

@@ -118,12 +118,6 @@ describe('RegExp Module', () => {
 
       expect(config).toHaveProperty('patterns')
       expect(config).toHaveProperty('matcher')
-      expect(config).toHaveProperty('debug')
-
-      expect(config.debug).toHaveProperty('variantPattern')
-      expect(config.debug).toHaveProperty('propertyPattern')
-      expect(config.debug).toHaveProperty('valuePattern')
-      expect(config.debug).toHaveProperty('fullPattern')
     })
 
     it('should create functional matcher', () => {

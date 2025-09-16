@@ -67,32 +67,36 @@ export function processObjectRules(
     .join('; ')
 }
 
+export const removeColonFromBracket = (item: string) => item.replaceAll('}; ', '} ')
+
 export function processRulesArray(
   rules: (CSSRule | string | [string | string[], string, boolean?])[],
   isImportant: boolean
 ): string {
-  return rules
-    .map((rule) => {
-      if (!rule) return ''
+  return removeColonFromBracket(
+    rules
+      .map((rule) => {
+        if (!rule) return ''
 
-      if (Array.isArray(rule)) {
-        return generateCSSRule(rule[0], rule[1], isImportant, rule[2])
-      }
+        if (Array.isArray(rule)) {
+          return generateCSSRule(rule[0], rule[1], isImportant, rule[2])
+        }
 
-      if (typeof rule === 'object') {
-        return 'property' in rule
-          ? generateCSSRule(rule.property, rule.value, isImportant, rule.isImportant)
-          : processObjectRules(rule, isImportant)
-      }
+        if (typeof rule === 'object') {
+          return 'property' in rule
+            ? generateCSSRule(rule.property, rule.value, isImportant, rule.isImportant)
+            : processObjectRules(rule, isImportant)
+        }
 
-      if (typeof rule === 'string' && rule.includes(':')) {
-        return processStringRules(rule, isImportant)
-      }
+        if (typeof rule === 'string' && rule.includes(':')) {
+          return processStringRules(rule, isImportant)
+        }
 
-      return String(rule)
-    })
-    .filter(Boolean)
-    .join('; ')
+        return String(rule)
+      })
+      .filter(Boolean)
+      .join('; ')
+  )
 }
 
 export function generateRuleBlock(

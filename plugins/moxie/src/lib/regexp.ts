@@ -126,12 +126,6 @@ export function createRegexp(
 
   return {
     patterns,
-    matcher,
-    debug: {
-      variantPattern: patterns.variant,
-      propertyPattern: patterns.property,
-      valuePattern: patterns.value,
-      fullPattern: matcher.source
-    }
+    matcher
   }
 }

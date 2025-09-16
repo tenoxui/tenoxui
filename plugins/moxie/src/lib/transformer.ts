@@ -11,6 +11,8 @@ export function transform(data: ProcessResult[]): TransformResult {
     invalid: { moxie: [], rest: [] }
   }
 
+  if (!data) return results
+
   const addInvalid = (item: ProcessResult) => results.invalid.moxie.push(item)
 
   const processItem = (item: ProcessResult): void => {

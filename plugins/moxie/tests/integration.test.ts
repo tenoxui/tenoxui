@@ -97,6 +97,12 @@ describe('Integration Test', () => {
           if (value === '8b') {
             return [{ 'props:--my-rules1,--my-rules1a': value }, { '--my-rules2': value }]
           }
+          if (value === '9') {
+            return 'display: flex; &:after { display: block } position: absolute'
+          }
+          if (value === '9a') {
+            return ['display: flex', '&:after { display: block }', 'position: absolute']
+          }
 
           return rules
         }
@@ -131,7 +137,9 @@ describe('Integration Test', () => {
     expect(ui.process('r2-1')).toBe('.r2-1 { --my-rules1: 1; --my-rules2: 1 }')
     expect(ui.process('r3')).toBe('.r3 { --my-rules: red }')
     expect(ui.process('r3-1')).toBeNull() // direct string rules can't have value
-
+    expect(ui.process('r4-9 r4-9a')).toBe(
+      '.r4-9 { display: flex; &:after { display: block } position: absolute }\n.r4-9a { display: flex; &:after { display: block } position: absolute }'
+    )
     expect(ui.process('r4-10')).toBe('.r4-10 { --my-rules: 10 }')
     expect(ui.process('r4')).toBe('.r4 { --tenox: 100% }')
     expect(ui.process('r4-1')).toBe('.r4-1 { --my-rules: 1 }')

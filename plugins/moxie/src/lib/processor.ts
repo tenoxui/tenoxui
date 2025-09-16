@@ -11,22 +11,19 @@ import type {
   ProcessedValue,
   UtilityContext,
   ClassNameObject,
-  CreateRegexpResult,
-  Plugin as MoxiePlugin
+  CreateRegexpResult
 } from '../types'
 
 export class Processor {
   private parser: CreateRegexpResult
   private utilities: Utilities
   private variants: Variants
-  private plugins: PluginSystem<PluginTypes>
 
   constructor(
     config: {
       parser?: CreateRegexpResult | null
       utilities?: Utilities
       variants?: Variants
-      plugins?: MoxiePlugin[]
     } = {}
   ) {
     this.parser =
@@ -37,15 +34,15 @@ export class Processor {
       })
     this.utilities = config.utilities || {}
     this.variants = config.variants || {}
-    this.plugins = new PluginSystem<PluginTypes>(config.plugins)
   }
 
-  public processVariant(variant: string): string | null {
+  public processVariant(variant: string, pluginSystem?: PluginSystem<PluginTypes>): string | null {
     if (!variant) return null
 
-    const pluginResult = this.plugins.exec('processVariant', variant, this.variants)
-
-    if (pluginResult) return pluginResult
+    if (pluginSystem) {
+      const pluginResult = pluginSystem.exec('processVariant', variant, this.variants)
+      if (pluginResult) return pluginResult
+    }
 
     if (
       variant &&
@@ -63,7 +60,7 @@ export class Processor {
     let key: string | null = null
     let value: string | null = match?.[3]
 
-    const processedValue = this.processValue(match?.[3] || '', match[2])
+    const processedValue = this.processValue(match?.[3] || '', match[2], pluginSystem)
     if (isProcessedValue(processedValue)) {
       key = processedValue.key
       value = processedValue.value
@@ -80,7 +77,11 @@ export class Processor {
       .replace(/M0X13C55/g, '_')
   }
 
-  public processValue(rawValue: string, type?: string): string | ProcessedValue | null {
+  public processValue(
+    rawValue: string,
+    type?: string,
+    pluginSystem?: PluginSystem<PluginTypes>
+  ): string | ProcessedValue | null {
     if (!rawValue) return null
 
     const pattern = /^(?:\(|\[)([^:]+):(.+)(?:\)|\])$/
@@ -103,15 +104,16 @@ export class Processor {
     const createReturn = (processedValue: string): string | ProcessedValue =>
       extractedFor ? { key: extractedFor, value: processedValue } : processedValue
 
-    const pluginResult = this.plugins.exec('processValue', {
-      value,
-      raw: rawValue,
-      key: extractedFor,
-      property: type,
-      createReturn
-    })
-
-    if (pluginResult) return pluginResult
+    if (pluginSystem) {
+      const pluginResult = pluginSystem.exec('processValue', {
+        value,
+        raw: rawValue,
+        key: extractedFor,
+        property: type,
+        createReturn
+      })
+      if (pluginResult) return pluginResult
+    }
 
     if (
       (value.startsWith('[') && value.endsWith(']')) ||
@@ -144,14 +146,17 @@ export class Processor {
     }
   }
 
-  public processUtilities(context: {
-    className: string | ClassNameObject
-    value: string | ProcessedValue | null
-    property: any
-    variant: string | null
-    raw: RegExpMatchArray
-    isImportant: boolean
-  }): ProcessResult | InvalidResult | null {
+  public processUtilities(
+    context: {
+      className: string | ClassNameObject
+      value: string | ProcessedValue | null
+      property: any
+      variant: string | null
+      raw: RegExpMatchArray
+      isImportant: boolean
+    },
+    pluginSystem?: PluginSystem<PluginTypes>
+  ): ProcessResult | InvalidResult | null {
     const { className, value: finalValue, property, variant, raw, isImportant } = context
 
     let value: string | null
@@ -164,19 +169,20 @@ export class Processor {
       value = finalValue as string
     }
 
-    const pluginResult = this.plugins.exec('processUtilities', {
-      className,
-      value,
-      key,
-      property,
-      variant,
-      raw,
-      isImportant,
-      createResult: this.createResult,
-      createErrorResult: this.createErrorResult
-    })
-
-    if (pluginResult) return pluginResult
+    if (pluginSystem) {
+      const pluginResult = pluginSystem.exec('processUtilities', {
+        className,
+        value,
+        key,
+        property,
+        variant,
+        raw,
+        isImportant,
+        createResult: this.createResult.bind(this),
+        createErrorResult: this.createErrorResult.bind(this)
+      })
+      if (pluginResult) return pluginResult
+    }
 
     if (typeof property !== 'function' && key) {
       return this.createErrorResult(
@@ -383,7 +389,10 @@ export class Processor {
     }
   }
 
-  public process(inputClass: string): ProcessResult | InvalidResult | null {
+  public processWithPlugins(
+    inputClass: string,
+    pluginSystem: PluginSystem<PluginTypes>
+  ): ProcessResult | InvalidResult | null {
     let className = inputClass
     const isImportant = className.startsWith('!') || className.endsWith('!')
 
@@ -396,7 +405,7 @@ export class Processor {
     if (!match) return null
 
     const { variant, property, value } = extractMatchGroups(match)
-    const finalVariant = variant ? this.processVariant(variant) : null
+    const finalVariant = variant ? this.processVariant(variant, pluginSystem) : null
 
     const prop = this.utilities[property]
     let finalProp = prop
@@ -418,24 +427,29 @@ export class Processor {
     const data = {
       className: inputClass,
       property: finalProp,
-      value: this.processValue(value || '', property),
+      value: this.processValue(value || '', property, pluginSystem),
       variant: finalVariant,
       raw: match,
       isImportant
     }
 
-    const pluginResult = this.plugins.exec('process', className, {
+    const pluginResult = pluginSystem.exec('process', className, {
       ...data,
-      processUtilities: this.processUtilities,
-      processValue: this.processValue,
-      processVariant: this.processVariant,
-      createResult: this.createResult,
-      createErrorResult: this.createErrorResult,
+      processUtilities: (ctx: any) => this.processUtilities(ctx, pluginSystem),
+      processValue: (rawValue: string, type?: string) =>
+        this.processValue(rawValue, type, pluginSystem),
+      processVariant: (variant: string) => this.processVariant(variant, pluginSystem),
+      createResult: this.createResult.bind(this),
+      createErrorResult: this.createErrorResult.bind(this),
       parser: this.parser
     })
 
     if (pluginResult) return pluginResult
 
-    return this.processUtilities(data)
+    return this.processUtilities(data, pluginSystem)
+  }
+
+  public process(inputClass: string): ProcessResult | InvalidResult | null {
+    return this.processWithPlugins(inputClass, new PluginSystem<PluginTypes>([]))
   }
 }

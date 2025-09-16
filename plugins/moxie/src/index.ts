@@ -1,4 +1,5 @@
 import { TenoxUI } from '@tenoxui/core'
+import { SyncPluginSystem as PluginSystem } from '@nousantx/plugify'
 import type { Plugin, ProcessContext } from '@tenoxui/core'
 import type {
   Config,
@@ -6,7 +7,8 @@ import type {
   Utilities,
   CreatorConfig,
   InvalidResult,
-  ProcessResult
+  ProcessResult,
+  PluginTypes
 } from './types'
 import { transform } from './lib/transformer'
 import { createRegexp } from './lib/regexp'
@@ -25,9 +27,13 @@ export function Moxie(config: Config = {}): Plugin<ProcessResult | InvalidResult
     onMatcherCreated = null
   } = config
 
+  const mainPluginSystem = new PluginSystem<PluginTypes>(plugins)
+
   let cachedProcessor: Processor | null = null
   let cachedContext: ProcessContext | undefined | null = null
   let cachedMatcher: RegExp | null = null
+  let processedValuePatterns = [...valuePatterns]
+  let processedVariantPatterns = [...variantPatterns]
 
   return {
     name: 'tenoxui-moxie',
@@ -44,17 +50,45 @@ export function Moxie(config: Config = {}): Plugin<ProcessResult | InvalidResult
         JSON.stringify(cachedContext.variants) !== JSON.stringify(variants)
 
       if (shouldCreateNew) {
-        const sanitizePattetn = (patterns: (string | RegExp)[]): string[] =>
+        processedValuePatterns = [...valuePatterns]
+        processedVariantPatterns = [...variantPatterns]
+        const addValuePatterns = (values: (string | RegExp)[] = []) => {
+          processedValuePatterns.push(...values)
+        }
+
+        const addVariantPatterns = (patterns: (string | RegExp)[] = []) => {
+          processedVariantPatterns.push(...patterns)
+        }
+
+        const addTypeSafelist = (types: string[] = []) => {
+          typeSafelist.push(...types)
+        }
+
+        mainPluginSystem.exec('regexp', {
+          addValuePatterns,
+          addVariantPatterns,
+          addTypeSafelist,
+          valuePatterns: processedValuePatterns,
+          variantPatterns: processedVariantPatterns,
+          typeSafelist,
+          utilities: utilities?.[utilitiesName],
+          variants,
+          prefixChars,
+          matcherOptions
+        })
+
+        const sanitizePattern = (patterns: (string | RegExp)[]): string[] =>
           patterns.map((pattern) => (pattern instanceof RegExp ? pattern.source : pattern))
+
         const pattern = createRegexp(
           {
             utilities: [
-              ...Object.keys(utilities?.[utilitiesName] as any),
-              ...sanitizePattetn(typeSafelist)
+              ...Object.keys(utilities?.[utilitiesName]),
+              ...sanitizePattern(typeSafelist)
             ],
-            variants: [...Object.keys(variants as any), ...sanitizePattetn(variantPatterns)],
+            variants: [...Object.keys(variants), ...sanitizePattern(processedVariantPatterns)],
             inputPrefixChars: prefixChars,
-            valuePatterns
+            valuePatterns: processedValuePatterns
           },
           matcherOptions
         )
@@ -71,7 +105,6 @@ export function Moxie(config: Config = {}): Plugin<ProcessResult | InvalidResult
         cachedProcessor = new Processor({
           parser: pattern,
           variants,
-          plugins,
           utilities: utilities?.[utilitiesName] as any
         })
 
@@ -79,7 +112,7 @@ export function Moxie(config: Config = {}): Plugin<ProcessResult | InvalidResult
       }
 
       if (className.match(cachedMatcher!)) {
-        return cachedProcessor!.process(className)
+        return cachedProcessor!.processWithPlugins(className, mainPluginSystem)
       }
     }
   }
@@ -95,6 +128,7 @@ export function createTenoxUI(config: CreatorConfig = {}) {
     typeSafelist = [],
     valuePatterns = [],
     matcherOptions = {},
+    variantPatterns = [],
     quickTransform = false,
     onMatcherCreated = null
   } = config
@@ -113,6 +147,7 @@ export function createTenoxUI(config: CreatorConfig = {}) {
         utilitiesName,
         valuePatterns,
         matcherOptions,
+        variantPatterns,
         onMatcherCreated
       }),
       (quickTransform && {

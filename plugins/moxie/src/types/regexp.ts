@@ -14,12 +14,6 @@ export interface Patterns {
 export interface CreateRegexpResult {
   patterns: Patterns
   matcher: RegExp
-  debug: {
-    variantPattern: string
-    propertyPattern: string
-    valuePattern: string
-    fullPattern: string
-  }
 }
 
 export type MatcherOptions = {

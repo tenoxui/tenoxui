@@ -72,7 +72,7 @@ export type UtilityFunction = (
 
 export interface UtilityConfig {
   property?: CSSPropertyOrVariable | CSSPropertyOrVariable[] | UtilityFunction
-  value?: (string | RegExp)[]
+  value?: StringOrRegex
 }
 
 type AcceptedUtility =
@@ -98,14 +98,16 @@ export interface Variants {
   [key: string]: string | VariantFunction
 }
 
+type StringOrRegex = (string | RegExp)[]
+
 export interface Config {
   plugins?: Plugin[]
   priority?: number
   prefixChars?: string[]
   utilitiesName?: string
-  typeSafelist?: (string | RegExp)[]
-  valuePatterns?: (string | RegExp)[]
-  variantPatterns?: (string | RegExp)[]
+  typeSafelist?: StringOrRegex
+  valuePatterns?: StringOrRegex
+  variantPatterns?: StringOrRegex
   matcherOptions?: MatcherOptions
   onMatcherCreated?: ((matcher: { matcher: CreateRegexpResult; regexp: RegExp }) => void) | null
 }
@@ -116,8 +118,9 @@ export interface CreatorConfig {
   variants?: Variants
   utilities?: Utilities
   prefixChars?: string[]
-  typeSafelist?: (string | RegExp)[]
-  valuePatterns?: (string | RegExp)[]
+  typeSafelist?: StringOrRegex
+  valuePatterns?: StringOrRegex
+  variantPatterns?: StringOrRegex
   matcherOptions?: MatcherOptions
   quickTransform?: boolean
   onMatcherCreated?: ((matcher: { matcher: CreateRegexpResult; regexp: RegExp }) => void) | null
@@ -182,7 +185,14 @@ export interface ProcessContext {
   createErrorResult: CreateErrorResultContext
 }
 
+type AddRegexTypeFn = (ctx?: StringOrRegex) => void
+
 export interface PluginTypes {
+  regexp: (ctx: {
+    addValuePatterns: AddRegexTypeFn
+    addVariantPatterns: AddRegexTypeFn
+    addTypeSafelist: AddRegexTypeFn
+  }) => void
   processVariant: ProcessVariantFn
   processValue: ProcessValueFn
   processUtilities: ProcessUtilitiesFn

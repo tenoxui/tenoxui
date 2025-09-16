@@ -1,15 +1,19 @@
 {
   "name": "@tenoxui/plugin-moxie",
-  "version": "1.0.0-alpha.12",
+  "version": "1.0.0-alpha.13",
   "description": "A starter plugin for TenoxUI with features you ever need.",
   "author": "NOuSantx <nousantx@gmail.com>",
   "license": "MIT",
   "keywords": [
-    "framework",
     "css",
+    "plugin",
+    "tenoxui",
+    "framework",
     "css-in-js",
+    "atomic-css",
     "utility-first",
-    "plugin"
+    "css-framework",
+    "atomic-css-engine"
   ],
   "homepage": "https://tenoxui.web.app",
   "repository": {
@@ -45,6 +49,9 @@
     "type:check": "tsc --noEmit",
     "type:build": "tsc --emitDeclarationOnly",
     "build:prod": "pnpm type:check && pnpm build --minify --sourcemap && pnpm type:build"
+  },
+  "peerDependencies": {
+    "@tenoxui/core": "3.0.0-alpha.5"
   },
   "devDependencies": {
     "@nousantx/plugify": "1.0.0-alpha.1",
