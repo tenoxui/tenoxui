@@ -13,6 +13,7 @@ import type {
 import { transform } from './lib/transformer'
 import { createRegexp } from './lib/regexp'
 import { Processor } from './lib/processor'
+import { escapeRegex } from './utils/escape'
 
 export function Moxie(config: Config = {}): Plugin<ProcessResult | InvalidResult> {
   const {
@@ -30,10 +31,12 @@ export function Moxie(config: Config = {}): Plugin<ProcessResult | InvalidResult
   const mainPluginSystem = new PluginSystem<PluginTypes>(plugins)
 
   let cachedProcessor: Processor | null = null
-  let cachedContext: ProcessContext | undefined | null = null
   let cachedMatcher: RegExp | null = null
   let processedValuePatterns = [...valuePatterns]
   let processedVariantPatterns = [...variantPatterns]
+
+  let cachedUtilitiesHash: string | null = null
+  let cachedVariantsHash: string | null = null
 
   return {
     name: 'tenoxui-moxie',
@@ -41,17 +44,21 @@ export function Moxie(config: Config = {}): Plugin<ProcessResult | InvalidResult
     process(className: string, context?: ProcessContext) {
       const { variants = {}, utilities = {} } = context as ProcessContext
 
+      const currentUtilitiesHash = JSON.stringify(utilities?.[utilitiesName])
+      const currentVariantsHash = JSON.stringify(variants)
+
       const shouldCreateNew =
         !cachedProcessor ||
-        !cachedContext ||
-        cachedContext !== context ||
-        JSON.stringify(cachedContext.utilities?.[utilitiesName]) !==
-          JSON.stringify(utilities?.[utilitiesName]) ||
-        JSON.stringify(cachedContext.variants) !== JSON.stringify(variants)
+        cachedUtilitiesHash !== currentUtilitiesHash ||
+        cachedVariantsHash !== currentVariantsHash
 
       if (shouldCreateNew) {
         processedValuePatterns = [...valuePatterns]
         processedVariantPatterns = [...variantPatterns]
+
+        const mutableUtilities = { ...(utilities?.[utilitiesName] as Object as Utilities) }
+        const mutableVariants = { ...variants }
+
         const addValuePatterns = (values: (string | RegExp)[] = []) => {
           processedValuePatterns.push(...values)
         }
@@ -64,15 +71,25 @@ export function Moxie(config: Config = {}): Plugin<ProcessResult | InvalidResult
           typeSafelist.push(...types)
         }
 
-        mainPluginSystem.exec('regexp', {
+        const addUtilities = (newUtilities: Utilities = {}) => {
+          Object.assign(mutableUtilities, newUtilities)
+        }
+
+        const addVariants = (newVariants: Variants = {}) => {
+          Object.assign(mutableVariants, newVariants)
+        }
+
+        mainPluginSystem.exec('onInit', {
           addValuePatterns,
           addVariantPatterns,
           addTypeSafelist,
+          addUtilities,
+          addVariants,
           valuePatterns: processedValuePatterns,
           variantPatterns: processedVariantPatterns,
           typeSafelist,
-          utilities: utilities?.[utilitiesName],
-          variants,
+          utilities: mutableUtilities,
+          variants: mutableVariants,
           prefixChars,
           matcherOptions
         })
@@ -82,11 +99,11 @@ export function Moxie(config: Config = {}): Plugin<ProcessResult | InvalidResult
 
         const pattern = createRegexp(
           {
-            utilities: [
-              ...Object.keys(utilities?.[utilitiesName]),
-              ...sanitizePattern(typeSafelist)
+            utilities: [...Object.keys(mutableUtilities), ...sanitizePattern(typeSafelist)],
+            variants: [
+              ...Object.keys(mutableVariants).map(escapeRegex),
+              ...sanitizePattern(processedVariantPatterns)
             ],
-            variants: [...Object.keys(variants), ...sanitizePattern(processedVariantPatterns)],
             inputPrefixChars: prefixChars,
             valuePatterns: processedValuePatterns
           },
@@ -97,18 +114,19 @@ export function Moxie(config: Config = {}): Plugin<ProcessResult | InvalidResult
 
         if (onMatcherCreated) {
           onMatcherCreated({
-            matcher: pattern,
-            regexp: cachedMatcher
+            patterns: pattern.patterns,
+            matcher: cachedMatcher
           })
         }
 
         cachedProcessor = new Processor({
           parser: pattern,
-          variants,
-          utilities: utilities?.[utilitiesName] as any
+          variants: mutableVariants,
+          utilities: mutableUtilities as any
         })
 
-        cachedContext = context
+        cachedUtilitiesHash = currentUtilitiesHash
+        cachedVariantsHash = currentVariantsHash
       }
 
       if (className.match(cachedMatcher!)) {

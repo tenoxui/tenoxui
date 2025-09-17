@@ -1,5 +1,4 @@
 import type { CreatePatternsConfig, Patterns, CreateRegexpResult, MatcherOptions } from '../types'
-import { escapeRegex } from '../utils'
 
 /**
  * Creates regex patterns for matching utilities, variants, and values
@@ -7,17 +6,9 @@ import { escapeRegex } from '../utils'
 export function createPatterns(config: CreatePatternsConfig = {}): Patterns {
   const { variants = [], utilities = [], inputPrefixChars = [], valuePatterns = [] } = config
 
-  // Extract and escape property names
-  const propertyTypes = utilities
-  const escapedProperties = propertyTypes.map(escapeRegex)
-
-  // Extract and escape variant names
-  const variantNames = variants
-  const escapedVariants = variantNames.map(escapeRegex)
-
   // Sort by length (longest first) for better matching
-  const allProperties = escapedProperties.sort((a, b) => b.length - a.length)
-  const allVariants = escapedVariants.sort((a, b) => b.length - a.length)
+  const allProperties = utilities.sort((a, b) => b.length - a.length)
+  const allVariants = variants.sort((a, b) => b.length - a.length)
 
   // Define nested pattern matchers
   const nestedBrackets = '\\[[^\\]]+\\]'

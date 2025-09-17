@@ -1,7 +1,7 @@
 import type { BaseProcessResult, CSSPropertyOrVariable } from '@tenoxui/core'
 import type { Plugin as Plugify } from '@nousantx/plugify'
 import type { StringRules, ArrayRules, ObjectRules } from './utilityRulesResult'
-import type { CreateRegexpResult, MatcherOptions } from './regexp'
+import type { CreateRegexpResult, Patterns, MatcherOptions } from './regexp'
 
 export interface ProcessedValue {
   key: string
@@ -100,6 +100,10 @@ export interface Variants {
 
 type StringOrRegex = (string | RegExp)[]
 
+export type MatcherCreationHooks =
+  | ((result: { patterns: Patterns; matcher: RegExp }) => void)
+  | null
+
 export interface Config {
   plugins?: Plugin[]
   priority?: number
@@ -109,7 +113,7 @@ export interface Config {
   valuePatterns?: StringOrRegex
   variantPatterns?: StringOrRegex
   matcherOptions?: MatcherOptions
-  onMatcherCreated?: ((matcher: { matcher: CreateRegexpResult; regexp: RegExp }) => void) | null
+  onMatcherCreated?: MatcherCreationHooks
 }
 
 export interface CreatorConfig {
@@ -123,7 +127,7 @@ export interface CreatorConfig {
   variantPatterns?: StringOrRegex
   matcherOptions?: MatcherOptions
   quickTransform?: boolean
-  onMatcherCreated?: ((matcher: { matcher: CreateRegexpResult; regexp: RegExp }) => void) | null
+  onMatcherCreated?: MatcherCreationHooks
 }
 
 export type CreateResultContext = (
@@ -186,13 +190,26 @@ export interface ProcessContext {
 }
 
 type AddRegexTypeFn = (ctx?: StringOrRegex) => void
+type AddUtilitiesFn = (utilities: Utilities) => void
+type AddVariantsFn = (variants: Variants) => void
+
+export interface RegexpPluginContext {
+  addValuePatterns: AddRegexTypeFn
+  addVariantPatterns: AddRegexTypeFn
+  addTypeSafelist: AddRegexTypeFn
+  addUtilities: AddUtilitiesFn
+  addVariants: AddVariantsFn
+  valuePatterns: StringOrRegex
+  variantPatterns: StringOrRegex
+  typeSafelist: StringOrRegex
+  utilities: Utilities
+  variants: Variants
+  prefixChars: string[]
+  matcherOptions: MatcherOptions
+}
 
 export interface PluginTypes {
-  regexp: (ctx: {
-    addValuePatterns: AddRegexTypeFn
-    addVariantPatterns: AddRegexTypeFn
-    addTypeSafelist: AddRegexTypeFn
-  }) => void
+  onInit: (ctx: RegexpPluginContext) => void
   processVariant: ProcessVariantFn
   processValue: ProcessValueFn
   processUtilities: ProcessUtilitiesFn

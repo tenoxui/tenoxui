@@ -1,5 +1,21 @@
 # Changelog
 
+## `v1.0.0-alpha.14` - `2025-09-17`
+
+### Changed
+
+- Clearer `onMatcherCreated` param
+- Rename `regexp` into `onInit`
+
+### Added
+
+- `addUtilities` and `addVariants` hooks to `regexp` plugin
+
+### Fixed
+
+- All patterns from `typeSafelist`, `valuePatterns`, and `variantPatterns` shouldn't automatically escaped, only keys of `utilities` and `variants` that needs to be escaped automatically
+- The `regexp` plugin runs multiple times for `addTypeSafelist`, `addValuePatterns`, and `addVariantPatterns` hooks, called on every class names, causing duplication for final `RegExp` pattern.
+
 ## `v1.0.0-alpha.13` - `2025-09-16`
 
 ### Changed

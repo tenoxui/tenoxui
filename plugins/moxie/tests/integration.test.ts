@@ -322,4 +322,76 @@ describe('Integration Test', () => {
 
     expect(ui.process(defConf.cn)).toBe(defConf.res)
   })
+
+  it('should run onMatcherCreated and create matcher correctly', () => {
+    let GLOBAL_MATCHER
+    const ui = createTenoxUI({
+      utilities: {
+        bg: '...'
+      },
+      valuePatterns: ['my-world'],
+      variantPatterns: ['my-hello'],
+      onMatcherCreated(x) {
+        GLOBAL_MATCHER = x
+      }
+    })
+
+    // trigger matcher creation
+    ui.process('[--is-init]-1')
+
+    expect(GLOBAL_MATCHER.patterns.property).toBe('bg|\\[[^\\]]+\\]+')
+    expect(GLOBAL_MATCHER.patterns.value.startsWith('my-world')).toBeTruthy()
+    expect(GLOBAL_MATCHER.patterns.variant.startsWith('my-hello')).toBeTruthy()
+  })
+
+  it('should update matcher options using regexp plugin and should runs once', () => {
+    let GLOBAL_MATCHER
+    const ui = createTenoxUI({
+      onMatcherCreated(x) {
+        GLOBAL_MATCHER = x
+      },
+      plugins: [
+        {
+          name: 'add-patterns',
+          onInit({
+            addTypeSafelist,
+            addValuePatterns,
+            addVariantPatterns,
+            addUtilities,
+            addVariants
+          }) {
+            addTypeSafelist(['bg'])
+            addTypeSafelist(['bg'])
+            addVariantPatterns([
+              'my-hello',
+              // manual escaping
+              '\\*'
+            ])
+            addValuePatterns(['my-world'])
+            addValuePatterns(['my-world', 'apakah-my'])
+            addUtilities({
+              bg1: 'background'
+            })
+            addVariants({
+              // variants from outside variantsPatterns should escaped
+              '*': '...'
+            })
+          }
+        }
+      ]
+    })
+
+    // trigger plugin on every class names call
+    ui.process('[--is-init]-1 [--is-init]-2 [--is-init]-3')
+
+    expect(GLOBAL_MATCHER.patterns.property).toBe('bg1|bg|bg|\\[[^\\]]+\\]+')
+    expect(GLOBAL_MATCHER.patterns.value.startsWith('my-world|my-world|apakah-my')).toBeTruthy()
+    expect(GLOBAL_MATCHER.patterns.variant.startsWith('my-hello|\\*|\\*')).toBeTruthy()
+    expect(ui.process('bg1-red')[0]).toMatchObject({
+      rules: {
+        property: 'background',
+        value: 'red'
+      }
+    })
+  })
 })
