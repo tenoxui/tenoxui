@@ -9,7 +9,8 @@ import {
   escapeArbitrary,
   processStrictPatterns,
   createResult,
-  createErrorResult
+  createErrorResult,
+  escapeRegex
 } from '../utils'
 import type {
   Variants,
@@ -58,7 +59,9 @@ export class Processor {
 
     if (variant && isArbitrary(variant)) return escapeArbitrary(variant)
 
-    const match = variant.match(createRegexp({ utilities: Object.keys(this.variants) }).matcher)
+    const match = variant.match(
+      createRegexp({ utilities: Object.keys(this.variants).map(escapeRegex) }).matcher
+    )
     const variantHandler = match && this.variants[match[2]]
 
     if (!variantHandler) return null

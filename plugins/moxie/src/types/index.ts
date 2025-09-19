@@ -75,14 +75,16 @@ export interface UtilityConfig {
   value?: StringOrRegex
 }
 
-type AcceptedUtility =
+export type AcceptedUtility =
   | CSSPropertyOrVariable
   | CSSPropertyOrVariable[]
   | UtilityConfig
   | UtilityFunction
 
+export type Utility = AcceptedUtility | [AcceptedPatterns | PatternConfig, AcceptedUtility]
+
 export interface Utilities {
-  [key: string]: AcceptedUtility | [AcceptedPatterns | PatternConfig, AcceptedUtility]
+  [key: string]: Utility
 }
 
 export type ArrayPattern = (string | RegExp | (string | RegExp)[])[]
@@ -109,7 +111,7 @@ export interface Variants {
   [key: string]: string | VariantFunction
 }
 
-type StringOrRegex = (string | RegExp)[]
+export type StringOrRegex = (string | RegExp)[]
 
 export type MatcherCreationHooks =
   | ((result: { patterns: Patterns; matcher: RegExp }) => void)

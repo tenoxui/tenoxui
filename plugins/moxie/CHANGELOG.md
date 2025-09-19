@@ -1,5 +1,12 @@
 # Changelog
 
+## `v1.0.0-alpha.16` - `2025-09-19`
+
+### Fixed
+
+- Not escape the variants' keys first, causing `Invalid regular expression` error from `lib/processor`
+- Some necessary types isn't exported
+
 ## `v1.0.0-alpha.15` - `2025-09-19`
 
 ### **Removed**

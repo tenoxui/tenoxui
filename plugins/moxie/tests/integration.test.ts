@@ -255,7 +255,8 @@ describe('Integration Test', () => {
       lg: '@media (width: 1024px) { @slot }',
       max: ({ value }) => `@media (max-width: ${value}) { @slot }`,
       min: ({ value }) => `@media (min-width: ${value}) { @slot }`,
-      dark: '@media (prefers-color-scheme: dark) { @slot }'
+      dark: '@media (prefers-color-scheme: dark) { @slot }',
+      '**': '& *'
     },
     cn: [
       'max-768px:bg-red',
@@ -267,7 +268,8 @@ describe('Integration Test', () => {
       'm-center',
       'xxx',
       'xxx-center', // have value, shouldn't do a thing
-      'my-cat'
+      'my-cat',
+      '**:bg-red'
     ],
     res: `@media (max-width: 768px) { .max-768px\\:bg-red { background: red } }
 @media (width: 768px) { .md\\:m-red { background: red } }
@@ -277,7 +279,8 @@ describe('Integration Test', () => {
 @media (max-width: 768px) { .dark .md\\:dark\\:hover\\:bg-green:hover { background: green } }
 .m-center { align-items: calc(50%, -50%); justify-content: calc(50%, -50%) }
 .xxx { background: red }
-.my-cat { background: red; display: flex }`
+.my-cat { background: red; display: flex }
+.\\*\\*\\:bg-red * { background: red }`
   }
   it('should process moxie plugin correctly', () => {
     const ui = new TenoxUI({

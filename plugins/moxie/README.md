@@ -12,11 +12,11 @@ To use this plugin, you also need to install `@tenoxui/core@3+` :
 npm i @tenoxui/core@3 @tenoxui/plugin-moxie
 ```
 
-## Usage Example
+## Quick Usage Example
 
 ```javascript
 import { TenoxUI } from '@tenoxui/core'
-import { Moxie } from '@tenoxui/plugin-moxie'
+import { Moxie, transform } from '@tenoxui/plugin-moxie'
 
 const ui = new TenoxUI({
   utilities: {
@@ -29,41 +29,20 @@ const ui = new TenoxUI({
     hover: '&:hover',
     max: ({ value }) => `@media (max-width: ${value}) { @slot }`
   },
-  plugins: [Moxie()]
+  plugins: [Moxie(), { name: 'transform-moxie', transform }]
 })
 
-console.log(ui.process('bg-red hover:bg-blue max-554px:m-10'))
+console.log(ui.process('bg-red hover:bg-blue m-10 m-10px max-554px:m-10').rules.join('\n'))
 ```
 
 Output :
 
-```javascript
-[
-  {
-    use: 'moxie',
-    className: 'bg-red',
-    rules: { property: 'background', value: 'red' },
-    variant: null,
-    isImportant: false,
-    raw: ...
-  },
-  {
-    use: 'moxie',
-    className: 'hover:bg-blue',
-    rules: { property: 'background', value: 'blue' },
-    variant: '&:hover',
-    isImportant: false,
-    raw: ...
-  },
-  {
-    use: 'moxie',
-    className: 'max-554px:m-10',
-    rules: { margin: '2.5rem' },
-    variant: '@media (max-width: 554px) { @slot }',
-    isImportant: false,
-    raw: ...
-  }
-]
+```
+.bg-red { background: red }
+.hover\:bg-blue:hover { background: blue }
+.m-10 { margin: 2.5rem }
+.m-10px { margin: 10px }
+@media (max-width: 554px) { .max-554px\:m-10 { margin: 2.5rem } }
 ```
 
 ## LICENSE
