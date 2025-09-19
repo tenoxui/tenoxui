@@ -13,17 +13,17 @@ export function createPatterns(config: CreatePatternsConfig = {}): Patterns {
   // Define nested pattern matchers
   const nestedBrackets = '\\[[^\\]]+\\]'
   const nestedParens = '\\([^()]*(?:\\([^()]*\\)[^()]*)*\\)'
-  const nestedBraces = '\\{[^{}]*(?:\\{[^{}]*\\}[^{}]*)*\\}'
+
+  // alphabetical characters
+  const alphabeticalChars = '[a-zA-Z0-9_\\-]'
 
   // Create character classes
-  const prefixChars = `[${['a-zA-Z0-9_\\-', ...inputPrefixChars].join('')}]`
-  const wordChars = '[a-zA-Z0-9_]'
+  const prefixChars = `[${[alphabeticalChars.slice(1, -1), ...inputPrefixChars].join('')}]`
 
   const variantPatternsDefault = [
-    prefixChars + '+(?:-(?:' + nestedBrackets + '|' + nestedParens + '|' + nestedBraces + '))?',
+    prefixChars + '+(?:-(?:' + nestedBrackets + '|' + nestedParens + '))?',
     nestedBrackets,
-    nestedParens,
-    nestedBraces
+    nestedParens
   ]
 
   const patterns: Patterns = {
@@ -45,29 +45,9 @@ export function createPatterns(config: CreatePatternsConfig = {}): Patterns {
         .map((pattern) => (pattern instanceof RegExp ? pattern.source : pattern))
         .join('|'),
       '-?\\d+(?:\\.\\d+)?', // Numbers (including decimals and negatives)
-      wordChars + '+(?:-' + wordChars + '+)*', // Word chains
+      alphabeticalChars + '+(?:-' + alphabeticalChars + '+)*', // Word chains
       nestedBrackets, // Bracketed values
-      nestedBraces, // Braced values
-      nestedParens, // Parenthesized values
-      '(?:' +
-        [
-          '-?\\d+(?:\\.\\d+)?',
-          wordChars + '+(?:-' + wordChars + '+)*',
-          '#[0-9a-fA-F]+',
-          nestedBrackets,
-          '\\$[^\\s\\/]+'
-        ].join('|') +
-        ')' +
-        '\\/' +
-        '(?:' +
-        [
-          '-?\\d+(?:\\.\\d+)?',
-          wordChars + '+(?:-' + wordChars + '+)*',
-          '#[0-9a-fA-F]+',
-          nestedBrackets,
-          '\\$[^\\s\\/]+'
-        ].join('|') +
-        ')'
+      nestedParens // Parenthesized values
     ].join('|')
   }
 
@@ -114,7 +94,6 @@ export function createRegexp(
 ): CreateRegexpResult {
   const patterns = createPatterns(config)
   const matcher = createMatcher(patterns, matcherOptions)
-
   return {
     patterns,
     matcher

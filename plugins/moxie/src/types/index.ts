@@ -82,7 +82,18 @@ type AcceptedUtility =
   | UtilityFunction
 
 export interface Utilities {
-  [key: string]: AcceptedUtility | [RegExp, AcceptedUtility]
+  [key: string]: AcceptedUtility | [AcceptedPatterns | PatternConfig, AcceptedUtility]
+}
+
+export type ArrayPattern = (string | RegExp | (string | RegExp)[])[]
+
+export type ArbitraryPattern = 'variable' | 'loose' | boolean | AcceptedPatterns
+
+export type AcceptedPatterns = string | RegExp | ArrayPattern
+
+export interface PatternConfig {
+  arbitrary?: ArbitraryPattern
+  patterns?: AcceptedPatterns
 }
 
 export type VariantContext = {

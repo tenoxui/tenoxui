@@ -152,10 +152,26 @@ describe('RegExp Module', () => {
     })
 
     it('should match fractions', () => {
-      const { matcher } = createRegexp({ utilities: ['w'] })
+      const { matcher } = createRegexp({
+        utilities: ['w'],
+        valuePatterns: [
+          '(?:' +
+            ['-?\\d+(?:\\.\\d+)?', '\\$[^\\s\\/]+'].join('|') +
+            ')' +
+            '\\/' +
+            '(?:' +
+            ['-?\\d+(?:\\.\\d+)?', '\\$[^\\s\\/]+'].join('|') +
+            ')'
+        ]
+      })
 
       expect('w-1/2'.match(matcher)).not.toBe(null)
+      expect('w--1/-2'.match(matcher)).not.toBe(null)
+      expect('w-1/-2'.match(matcher)).not.toBe(null)
+      expect('w--1/2'.match(matcher)).not.toBe(null)
       expect('w-$width/$height'.match(matcher)).not.toBe(null)
+      expect('w-$width/2'.match(matcher)).not.toBe(null)
+      expect('w--2/$6'.match(matcher)).not.toBe(null)
     })
   })
 })

@@ -9,7 +9,6 @@ import {
   generateRuleBlock,
   processVariantSelector,
   escapeSelector,
-  unescapeSelector,
   escapeRegex,
   toKebabCase
 } from '../src/utils'
@@ -458,57 +457,6 @@ describe('escapeSelector', () => {
     const escaped = escapeSelector(input)
     const doubleEscaped = escapeSelector(escaped)
     expect(doubleEscaped).not.toBe(escaped)
-  })
-})
-
-describe('unescapeSelector', () => {
-  it('should unescape special characters', () => {
-    expect(unescapeSelector('hover\\:bg-red')).toBe('hover:bg-red')
-    expect(unescapeSelector('bg-\\[\\#ff0000\\]')).toBe('bg-[#ff0000]')
-    expect(unescapeSelector('w-1\\/2')).toBe('w-1/2')
-  })
-
-  it('should unescape digits at the start', () => {
-    expect(unescapeSelector('\\32 xl')).toBe('2xl')
-    expect(unescapeSelector('\\33 xl')).toBe('3xl')
-    expect(unescapeSelector('\\31 /2')).toBe('1/2')
-  })
-
-  it('should handle complex escaped selectors', () => {
-    const escaped = '\\32 xl\\:hover\\:bg-\\[rgb\\(255\\,0\\,0\\)\\]'
-    const unescaped = unescapeSelector(escaped)
-    expect(unescaped).toBe('2xl:hover:bg-[rgb(255,0,0)]')
-  })
-
-  it('should be inverse of escapeSelector', () => {
-    const inputs = [
-      'hover:bg-red',
-      '2xl:text-lg',
-      'bg-[#ff0000]',
-      'w-1/2',
-      'sm:hover:bg-[rgb(255,0,0)]',
-      '3xl:focus:border-[2px_solid_#000]'
-    ]
-
-    inputs.forEach((input) => {
-      const escaped = escapeSelector(input)
-      const unescaped = unescapeSelector(escaped)
-      expect(unescaped).toBe(input)
-    })
-  })
-
-  it('should handle empty string', () => {
-    expect(unescapeSelector('')).toBe('')
-  })
-
-  it('should handle strings without escapes', () => {
-    expect(unescapeSelector('normal')).toBe('normal')
-    expect(unescapeSelector('bg-red-500')).toBe('bg-red-500')
-  })
-
-  it('should handle partial escapes', () => {
-    expect(unescapeSelector('test\\:value normal')).toBe('test:value normal')
-    expect(unescapeSelector('\\31 partial')).toBe('1partial')
   })
 })
 

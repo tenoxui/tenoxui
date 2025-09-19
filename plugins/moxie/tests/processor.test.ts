@@ -168,6 +168,9 @@ describe('Processor', () => {
       expect(processor.processVariant('max')).toBeNull()
       expect(processor.processVariant('supports')).toBeNull()
       expect(processor.processVariant('supports-10px')).toBeNull()
+      expect(processor.processVariant('supports-[height:1vh]')).toBe(
+        '@supports (height: 1vh) { @slot }'
+      )
       expect(processor.processVariant('supports-(height:1vh)')).toBe(
         '@supports (height: 1vh) { @slot }'
       )
@@ -260,6 +263,27 @@ describe('Processor', () => {
       const processorWithRegex = new Processor({
         utilities: {
           w: [/^\d+$/, 'width'],
+          w2: [
+            {
+              arbitrary: 'variable',
+              patterns: /^\d+$/
+            },
+            'width'
+          ],
+          w3: [
+            {
+              arbitrary: /^(\d+)(px|rem)$/,
+              patterns: /^\d+$/
+            },
+            'width'
+          ],
+          w4: [
+            {
+              arbitrary: false,
+              patterns: /^\d+$/
+            },
+            'width'
+          ],
           h: [/^\d+$/, ({ value }) => `height: ${value * 0.25 + 'rem'}`],
           h2: [
             [/^\d+$/, '10px'],
@@ -279,6 +303,48 @@ describe('Processor', () => {
         }
       })
 
+      expect(processorWithRegex.process('w2-5')).toMatchObject({
+        rules: {
+          property: 'width',
+          value: '5'
+        }
+      })
+      expect(processorWithRegex.process('w2-[5]')).toMatchObject({
+        reason: "'w2' utility doesn't accept '[5]' as value"
+      })
+      expect(processorWithRegex.process('w2-[--5]')).toMatchObject({
+        rules: {
+          property: 'width',
+          value: 'var(--5)'
+        }
+      })
+      expect(processorWithRegex.process('w3-[10]')).toMatchObject({
+        reason: "'w3' utility doesn't accept '[10]' as value"
+      })
+      expect(processorWithRegex.process('w3-10px')).toMatchObject({
+        reason: "'w3' utility doesn't accept '10px' as value"
+      })
+      expect(processorWithRegex.process('w3-[10px]')).toMatchObject({
+        rules: {
+          property: 'width',
+          value: '10px'
+        }
+      })
+      expect(processorWithRegex.process('w3-10')).toMatchObject({
+        rules: {
+          property: 'width',
+          value: '10'
+        }
+      })
+      expect(processorWithRegex.process('w4-10')).toMatchObject({
+        rules: {
+          property: 'width',
+          value: '10'
+        }
+      })
+      expect(processorWithRegex.process('w4-[--10]')).toMatchObject({
+        reason: "'w4' utility doesn't accept '[--10]' as value"
+      })
       expect(processorWithRegex.process('w-100')).not.toBe(null)
       expect(processorWithRegex.process('h-100')).toMatchObject({
         use: 'moxie',

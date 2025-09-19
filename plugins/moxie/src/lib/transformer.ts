@@ -17,7 +17,6 @@ export function transform(data: ProcessResult[]): TransformResult {
 
   const processItem = (item: ProcessResult): void => {
     try {
-      // Early validation
       if (!item.rules || (!item.variant && item.raw?.[1])) {
         addInvalid(item)
         return
@@ -55,7 +54,6 @@ export function transform(data: ProcessResult[]): TransformResult {
     }
   }
 
-  // Process items
   data.forEach((item) => {
     item.use === 'moxie' ? processItem(item) : results.invalid.rest.push(item)
   })

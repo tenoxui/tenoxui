@@ -1,5 +1,25 @@
 # Changelog
 
+## `v1.0.0-alpha.15` - `2025-09-19`
+
+### **Removed**
+
+- `unescapeSelector` function
+- Legacy `@tenoxui/moxie` `RegExp` enhanched ratio value support (`1/1`, `$var/$var` , `#hex/#hex`, or any ratio value. But can still configured through config or plugins)
+
+### Changed
+
+- Better `escapeSelector` function
+- Moved some methods from `lib/processor` to direct helper functions to `utils/processorUtils`
+
+### Added
+
+- New way to configure **strict value utility** patterns
+
+### Fixed
+
+- **Strict value utility** doesn't have proper types
+
 ## `v1.0.0-alpha.14` - `2025-09-17`
 
 ### Changed

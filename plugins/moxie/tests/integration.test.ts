@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { transform, Moxie, createTenoxUI } from '../src'
+import { transform, Moxie, createTenoxUI, createResult, createErrorResult } from '../src'
 import { TenoxUI } from '@tenoxui/core'
 
 describe('Integration Test', () => {
@@ -183,6 +183,9 @@ describe('Integration Test', () => {
     expect(ui.process('supports-(background:red):r3')).toBe(
       '@supports (background: red) { .supports-\\(background\\:red\\)\\:r3 { --my-rules: red } }'
     )
+    expect(ui.process('supports-[background:red]:r3')).toBe(
+      '@supports (background: red) { .supports-\\[background\\:red\\]\\:r3 { --my-rules: red } }'
+    )
   })
 
   let defConf = {
@@ -204,16 +207,7 @@ describe('Integration Test', () => {
           }
         },
         // custom utility processing plugin
-        processUtilities({
-          property,
-          value,
-          variant,
-          className,
-          isImportant,
-          raw,
-          createResult,
-          createErrorResult
-        }) {
+        processUtilities({ property, value, variant, className, isImportant, raw }) {
           if (raw[2] === 'xxx') {
             if (value) return createErrorResult(className, raw[2] + " Utility shouldn't have value")
 
@@ -221,7 +215,7 @@ describe('Integration Test', () => {
           }
         },
         // custom className processing
-        process(className, { createResult }) {
+        process(className) {
           if (className === 'my-cat') {
             return createResult(
               className,

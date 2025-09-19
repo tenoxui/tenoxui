@@ -1,9 +1,20 @@
 import { SyncPluginSystem as PluginSystem } from '@nousantx/plugify'
 import { createRegexp } from './regexp'
-import { isProcessedValue, isUtilityConfig, isUtilityFunction, extractMatchGroups } from '../utils'
+import {
+  isProcessedValue,
+  isUtilityConfig,
+  isUtilityFunction,
+  isArbitrary,
+  extractMatchGroups,
+  escapeArbitrary,
+  processStrictPatterns,
+  createResult,
+  createErrorResult
+} from '../utils'
 import type {
   Variants,
   Utilities,
+  StringRules,
   PluginTypes,
   UtilityResult,
   ProcessResult,
@@ -11,7 +22,8 @@ import type {
   ProcessedValue,
   UtilityContext,
   ClassNameObject,
-  CreateRegexpResult
+  CreateRegexpResult,
+  AllowedUtilityRules
 } from '../types'
 
 export class Processor {
@@ -44,13 +56,7 @@ export class Processor {
       if (pluginResult) return pluginResult
     }
 
-    if (
-      variant &&
-      ((variant.startsWith('[') && variant.endsWith(']')) ||
-        (variant.startsWith('(') && variant.endsWith(')')))
-    ) {
-      return this.escapeArbitrary(variant)
-    }
+    if (variant && isArbitrary(variant)) return escapeArbitrary(variant)
 
     const match = variant.match(createRegexp({ utilities: Object.keys(this.variants) }).matcher)
     const variantHandler = match && this.variants[match[2]]
@@ -69,14 +75,6 @@ export class Processor {
     return isUtilityFunction(variantHandler) ? variantHandler({ key, value }) : variantHandler
   }
 
-  private escapeArbitrary(str: string): string {
-    return str
-      .slice(1, -1)
-      .replace(/\\_/g, 'M0X13C55')
-      .replace(/_/g, ' ')
-      .replace(/M0X13C55/g, '_')
-  }
-
   public processValue(
     rawValue: string,
     type?: string,
@@ -92,13 +90,11 @@ export class Processor {
     if (matchValue) {
       const extractedValue = matchValue[2].trim()
       extractedFor = matchValue[1].trim()
-      value =
-        (rawValue.startsWith('[') && rawValue.endsWith(']')) ||
-        (rawValue.startsWith('(') && rawValue.endsWith(')'))
-          ? rawValue.startsWith('[')
-            ? `[${extractedValue}]`
-            : `(${extractedValue})`
-          : extractedValue
+      value = isArbitrary(rawValue)
+        ? rawValue.startsWith('[')
+          ? `[${extractedValue}]`
+          : `(${extractedValue})`
+        : extractedValue
     }
 
     const createReturn = (processedValue: string): string | ProcessedValue =>
@@ -115,35 +111,13 @@ export class Processor {
       if (pluginResult) return pluginResult
     }
 
-    if (
-      (value.startsWith('[') && value.endsWith(']')) ||
-      (value.startsWith('(') && value.endsWith(')'))
-    ) {
-      const cleanValue = this.escapeArbitrary(value)
+    if (isArbitrary(value)) {
+      const cleanValue = escapeArbitrary(value)
 
       return createReturn(cleanValue.startsWith('--') ? `var(${cleanValue})` : cleanValue)
     }
 
     return createReturn(value)
-  }
-
-  public processStrictPatterns(
-    value: string,
-    patterns: string | RegExp | (string | RegExp | (string | RegExp)[])[]
-  ): void | boolean {
-    if (value && patterns) {
-      if (typeof patterns === 'string') return value === patterns
-      if (patterns instanceof RegExp) return patterns.test(value)
-      if (Array.isArray(patterns)) {
-        return patterns.some((item) =>
-          Array.isArray(item)
-            ? this.processStrictPatterns(value, item)
-            : typeof item === 'string'
-              ? item === value
-              : item instanceof RegExp && item.test(value)
-        )
-      }
-    }
   }
 
   public processUtilities(
@@ -177,15 +151,13 @@ export class Processor {
         property,
         variant,
         raw,
-        isImportant,
-        createResult: this.createResult.bind(this),
-        createErrorResult: this.createErrorResult.bind(this)
+        isImportant
       })
       if (pluginResult) return pluginResult
     }
 
     if (typeof property !== 'function' && key) {
-      return this.createErrorResult(
+      return createErrorResult(
         className,
         `'${raw?.[2] || className}' utility shouldn't have keys, and '${key}' is defined`
       )
@@ -193,13 +165,7 @@ export class Processor {
 
     let properties = property
 
-    if (
-      raw?.[2] &&
-      ((raw[2].startsWith('[') && raw[2].endsWith(']')) ||
-        (raw[2].startsWith('(') && raw[2].endsWith(')')))
-    ) {
-      properties = raw[2]
-    }
+    if (raw?.[2] && isArbitrary(raw?.[2])) properties = raw[2]
 
     if (!className || !properties) return null
 
@@ -208,8 +174,8 @@ export class Processor {
         const props = properties.property
 
         if (properties.value && Array.isArray(properties.value) && value) {
-          if (!this.processStrictPatterns(value, properties.value)) {
-            return this.createErrorResult(
+          if (!processStrictPatterns(value, properties.value)) {
+            return createErrorResult(
               className,
               `'${raw?.[2] || className}' utility doesn't accept '${value}' as value`
             )
@@ -219,40 +185,40 @@ export class Processor {
         if (typeof props === 'string' || Array.isArray(props)) {
           if (typeof props === 'string' && (props.includes(':') || props.startsWith('rules:'))) {
             if (value) {
-              return this.createErrorResult(
+              return createErrorResult(
                 className,
                 `'${
                   raw?.[2] || className
                 }' utility shouldn't have values, and '${value}' is defined`
               )
             }
-            return this.createResult(
+            return createResult(
               className,
               variant,
               '',
               '',
               raw,
               isImportant,
-              props.startsWith('rules:') ? props.slice(6) : props
+              (props.startsWith('rules:') ? props.slice(6) : props) as StringRules
             )
           } else {
             if (!value) {
-              return this.createErrorResult(
+              return createErrorResult(
                 className,
                 `'${raw[2] || className}' utility should have a value`
               )
             }
-            return this.createResult(className, variant, props, value, raw, isImportant)
+            return createResult(className, variant, props, value, raw, isImportant)
           }
         }
       } else {
         if (value) {
-          return this.createErrorResult(
+          return createErrorResult(
             className,
             `'${raw?.[2] || className}' utility shouldn't have values, and '${value}' is defined`
           )
         }
-        return this.createResult(className, variant, '', '', raw, isImportant, properties)
+        return createResult(className, variant, '', '', raw, isImportant, properties)
       }
     }
 
@@ -263,12 +229,12 @@ export class Processor {
         properties.endsWith(']')
       ) {
         if (!value)
-          return this.createErrorResult(
+          return createErrorResult(
             className,
             `'${raw?.[2] || className}' utility should have a value`
           )
         const props = properties.slice(1, -1).split(',')
-        return this.createResult(
+        return createResult(
           className,
           variant,
           props.length > 1 ? props : properties.slice(1, -1),
@@ -281,24 +247,20 @@ export class Processor {
         (properties.includes(':') || properties.startsWith('rules:'))
       ) {
         return value
-          ? // direct string properties shouldn't have value
-            null
-          : this.createResult(
+          ? null
+          : createResult(
               className,
               variant,
               '',
               '',
               raw,
               isImportant,
-              properties.startsWith('rules:') ? properties.slice(6) : properties
+              (properties.startsWith('rules:') ? properties.slice(6) : properties) as StringRules
             )
       } else {
         return !value
-          ? this.createErrorResult(
-              className,
-              `'${raw?.[2] || className}' utility should have a value`
-            )
-          : this.createResult(className, variant, properties, value, raw, isImportant)
+          ? createErrorResult(className, `'${raw?.[2] || className}' utility should have a value`)
+          : createResult(className, variant, properties, value, raw, isImportant)
       }
     }
 
@@ -314,7 +276,7 @@ export class Processor {
           !result[0] &&
           typeof result[1] === 'string')
       ) {
-        return this.createErrorResult(
+        return createErrorResult(
           className,
           result ? (Array.isArray(result) ? result[1] : result.reason) : 'undefined'
         )
@@ -322,17 +284,17 @@ export class Processor {
 
       if (typeof result === 'string') {
         if (result.includes(':') || result.startsWith('rules:')) {
-          return this.createResult(
+          return createResult(
             className,
             variant,
             '',
             '',
             raw,
             isImportant,
-            result.startsWith('rules:') ? result.slice(6) : result
+            (result.startsWith('rules:') ? result.slice(6) : result) as StringRules
           )
         }
-        return this.createResult(className, variant, result, value, raw, isImportant)
+        return createResult(className, variant, result, value, raw, isImportant)
       }
 
       const utilityResult = result as UtilityResult
@@ -341,7 +303,7 @@ export class Processor {
         typeof utilityResult === 'object' &&
         ('property' in utilityResult || 'rules' in utilityResult)
       ) {
-        return this.createResult(
+        return createResult(
           utilityResult.className || className,
           variant,
           utilityResult.property || property,
@@ -351,42 +313,19 @@ export class Processor {
           utilityResult.rules
         )
       } else {
-        return this.createResult(className, variant, '', '', raw, isImportant, utilityResult)
+        return createResult(
+          className,
+          variant,
+          '',
+          '',
+          raw,
+          isImportant,
+          utilityResult as AllowedUtilityRules
+        )
       }
     }
 
     return null
-  }
-
-  private createErrorResult(
-    className: string | ClassNameObject,
-    reason = 'undefined'
-  ): InvalidResult {
-    return {
-      use: 'moxie',
-      className,
-      rules: null,
-      reason
-    }
-  }
-
-  private createResult(
-    className: string | ClassNameObject,
-    variant: string | null,
-    property: string | string[],
-    value: string,
-    raw: RegExpMatchArray,
-    isImportant: boolean,
-    fullRules?: any
-  ): ProcessResult {
-    return {
-      use: 'moxie',
-      className,
-      rules: fullRules || { property, value },
-      variant,
-      isImportant,
-      raw
-    }
   }
 
   public processWithPlugins(
@@ -412,11 +351,11 @@ export class Processor {
     if (
       value &&
       Array.isArray(prop) &&
-      typeof prop[0] !== 'string' &&
-      (prop[0] instanceof RegExp || Array.isArray(prop[0]))
+      ((typeof prop[0] !== 'string' && (prop[0] instanceof RegExp || Array.isArray(prop[0]))) ||
+        (typeof prop[0] === 'object' && 'patterns' in prop[0]))
     ) {
-      if (!this.processStrictPatterns(value, prop[0])) {
-        return this.createErrorResult(
+      if (!processStrictPatterns(value, prop[0])) {
+        return createErrorResult(
           className,
           `'${match?.[2] || className}' utility doesn't accept '${value}' as value`
         )
@@ -439,8 +378,6 @@ export class Processor {
       processValue: (rawValue: string, type?: string) =>
         this.processValue(rawValue, type, pluginSystem),
       processVariant: (variant: string) => this.processVariant(variant, pluginSystem),
-      createResult: this.createResult.bind(this),
-      createErrorResult: this.createErrorResult.bind(this),
       parser: this.parser
     })
 

@@ -1,6 +1,6 @@
 {
   "name": "@tenoxui/plugin-moxie",
-  "version": "1.0.0-alpha.14",
+  "version": "1.0.0-alpha.15",
   "description": "A starter plugin for TenoxUI with features you ever need.",
   "author": "NOuSantx <nousantx@gmail.com>",
   "license": "MIT",
@@ -54,7 +54,7 @@
     "@tenoxui/core": "3.0.0-alpha.5"
   },
   "devDependencies": {
-    "@nousantx/plugify": "1.0.0-alpha.1",
+    "@nousantx/plugify": "1.0.0",
     "@types/node": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:",

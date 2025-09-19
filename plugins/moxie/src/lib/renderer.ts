@@ -1,4 +1,4 @@
-import { generateRuleBlock, processVariantSelector } from '../utils/transformerUtils'
+import { generateRuleBlock, processVariantSelector } from '../utils'
 import { transform } from './transformer'
 import type { ProcessResult } from '../types'
 
@@ -50,6 +50,8 @@ export class Renderer {
     try {
       const dataRules = this.main.process(classNames) as ProcessResult[]
 
+      if (!dataRules || dataRules.length === 0) return []
+
       dataRules.forEach((rule) => {
         if (rule.use === 'moxie' && rule.rules) {
           const rules = generateRuleBlock(rule.rules, rule.isImportant || false, true)
@@ -80,6 +82,7 @@ export class Renderer {
   }
 
   public processObjectRules(data: ObjectRulesInput): string[] {
+    if (!data) return []
     const allResults: string[] = []
 
     Object.entries(data).forEach(([selector, classNames]) => {
@@ -149,6 +152,7 @@ export class Renderer {
   }
 
   private processStringOrArray(input: string | string[]): string[] {
+    if (!input) return []
     const results: string[] = []
 
     const sanitized = this.sanitize(input)
@@ -181,8 +185,8 @@ export class Renderer {
   }
 
   public render(...args: RenderInput[]): string {
+    if (!args) return ''
     const results: string[] = []
-
     args.forEach((arg) => {
       try {
         if (typeof arg === 'object' && !Array.isArray(arg)) {
