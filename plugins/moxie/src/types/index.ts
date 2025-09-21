@@ -64,7 +64,13 @@ export interface UtilityResult {
   isImportant?: boolean
 }
 
-export type UtilityErrorResult = null | { fail?: true; reason?: string } | [null, string]
+export type UtilityErrorResult =
+  | null
+  | void
+  | undefined
+  | ''
+  | { fail?: true; reason?: string }
+  | [null, string]
 
 export type UtilityFunction = (
   context: UtilityContext
@@ -80,6 +86,7 @@ export type AcceptedUtility =
   | CSSPropertyOrVariable[]
   | UtilityConfig
   | UtilityFunction
+  | AllowedUtilityRules
 
 export type Utility = AcceptedUtility | [AcceptedPatterns | PatternConfig, AcceptedUtility]
 

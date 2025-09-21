@@ -13,7 +13,7 @@ import type {
 import { transform } from './lib/transformer'
 import { createRegexp } from './lib/regexp'
 import { Processor } from './lib/processor'
-import { escapeRegex } from './utils/escape'
+import { escapeRegex, createErrorResult } from './utils'
 
 export function Moxie(config: Config = {}): Plugin<ProcessResult | InvalidResult> {
   const {
@@ -131,6 +131,11 @@ export function Moxie(config: Config = {}): Plugin<ProcessResult | InvalidResult
 
       if (className.match(cachedMatcher!)) {
         return cachedProcessor!.processWithPlugins(className, mainPluginSystem)
+      } else {
+        return createErrorResult(
+          className,
+          `Class name '${className}' doesn't match the regexp pattern`
+        )
       }
     }
   }

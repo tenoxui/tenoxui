@@ -322,6 +322,32 @@ describe('Integration Test', () => {
 
   it('should run onMatcherCreated and create matcher correctly', () => {
     let GLOBAL_MATCHER
+
+    const wordChars = '[a-zA-Z0-9_-]' + '+(?:-' + '[a-zA-Z0-9_-]' + '+)*'
+
+    const ui = createTenoxUI({
+      utilities: {
+        bg: '...'
+      },
+      valuePatterns: [
+        '(?:' +
+          ['-?\\d+(?:\\.\\d+)?', wordChars, '\\$[^\\s\\/]+'].join('|') +
+          ')' +
+          '\\/' +
+          '(?:' +
+          ['-?\\d+(?:\\.\\d+)?', wordChars, '\\$[^\\s\\/]+'].join('|') +
+          ')'
+      ],
+      onMatcherCreated(x) {
+        GLOBAL_MATCHER = x
+      }
+    })
+
+    expect(ui.process('bg-1/2')[0].rules).toBeDefined()
+  })
+
+  it('should run onMatcherCreated and create matcher correctly', () => {
+    let GLOBAL_MATCHER
     const ui = createTenoxUI({
       utilities: {
         bg: '...'

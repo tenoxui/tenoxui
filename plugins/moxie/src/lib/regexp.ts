@@ -57,7 +57,6 @@ export function createPatterns(config: CreatePatternsConfig = {}): Patterns {
 /**
  * Create RegExp patterns from patterns
  */
-
 export function createMatcher(patterns: Patterns, options: MatcherOptions = {}): RegExp {
   const { strict = true, withValue = true, strictValue = false, valueMode = 1 } = options
 

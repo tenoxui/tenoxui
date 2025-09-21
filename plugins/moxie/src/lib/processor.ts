@@ -24,7 +24,8 @@ import type {
   UtilityContext,
   ClassNameObject,
   CreateRegexpResult,
-  AllowedUtilityRules
+  AllowedUtilityRules,
+  AcceptedUtility
 } from '../types'
 
 export class Processor {
@@ -363,7 +364,7 @@ export class Processor {
           `'${match?.[2] || className}' utility doesn't accept '${value}' as value`
         )
       }
-      finalProp = prop[1]
+      finalProp = prop[1] as AcceptedUtility
     }
 
     const data = {

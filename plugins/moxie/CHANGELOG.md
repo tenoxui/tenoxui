@@ -1,5 +1,16 @@
 # Changelog
 
+## `v1.0.0-alpha.17` - `2025-09-21`
+
+### Added
+
+- Class names that doesn't match will prpcessed through `createErrorResult`
+
+### Fixed
+
+- Richer `nulish` return type on functional utility
+- Mismatched types
+
 ## `v1.0.0-alpha.16` - `2025-09-19`
 
 ### Fixed
