@@ -14,6 +14,8 @@ import type {
   DefaultProcessUtilityResult
 } from './types'
 
+import { escapeRegex, createMatcher, flattenPlugins, DEFAULT_GLOBAL_PATTERN } from './utils'
+
 export class TenoxUI<
   TUtilities extends { [type: string]: any } = Utilities,
   TVariants extends { [variant: string]: any } = Variants,
@@ -25,39 +27,14 @@ export class TenoxUI<
   private plugins: Plugin[]
   private _cachedRegexp: { patterns: RegexPatterns; matcher: RegExp } | null = null
   public matcher: RegExp | null
-  private defaultPattern: string
 
   constructor(config: Config<TUtilities, TVariants, TProcessResult, TProcessUtilitiesResult> = {}) {
     const { variants, utilities, plugins = [] } = config
     this.utilities = (utilities || {}) as TUtilities
     this.variants = (variants || {}) as TVariants
-    this.plugins = this.flattenPlugins(plugins).sort(
-      (a, b) => (b.priority || 0) - (a.priority || 0)
-    )
+    this.plugins = flattenPlugins(plugins).sort((a, b) => (b.priority || 0) - (a.priority || 0))
     this.matcher = null
-    this.defaultPattern = '[\\w.-]+'
     this._initializeMatcher()
-  }
-
-  private flattenPlugins(plugins: (Plugin | PluginFactory | PluginLike)[]): Plugin[] {
-    const flattened: Plugin[] = []
-
-    for (const plugin of plugins) {
-      if (typeof plugin === 'function') {
-        const result = plugin()
-        if (Array.isArray(result)) {
-          flattened.push(...result)
-        } else {
-          flattened.push(result)
-        }
-      } else if (Array.isArray(plugin)) {
-        flattened.push(...plugin)
-      } else {
-        flattened.push(plugin as Plugin)
-      }
-    }
-
-    return flattened
   }
 
   private _initializeMatcher() {
@@ -66,24 +43,12 @@ export class TenoxUI<
   }
 
   public use(...plugin: (Plugin | PluginFactory | PluginLike)[]): this {
-    const newPlugins = this.flattenPlugins(plugin)
+    const newPlugins = flattenPlugins(plugin)
     this.plugins.push(...newPlugins)
     this.plugins.sort((a, b) => (b.priority || 0) - (a.priority || 0))
     this._cachedRegexp = null
     this._initializeMatcher()
     return this
-  }
-
-  private createMatcher(variant?: string, property?: string, value?: string) {
-    return new RegExp(
-      `^(?:(?<variant>${variant || this.defaultPattern}):)?(?<property>${
-        property || this.defaultPattern
-      })(?:-(?<value>${value || this.defaultPattern}?))?$`
-    )
-  }
-
-  private escapeRegex(str: string): string {
-    return str.replace(/[.*+?^${}()|[\]\\/\\-]/g, '\\$&')
   }
 
   public regexp() {
@@ -92,11 +57,11 @@ export class TenoxUI<
     }
 
     let patterns: RegexPatterns = {
-      variant: Object.keys(this.variants).map(this.escapeRegex).join('|') || this.defaultPattern,
-      property: Object.keys(this.utilities).map(this.escapeRegex).join('|') || this.defaultPattern,
-      value: this.defaultPattern
+      variant: Object.keys(this.variants).map(escapeRegex).join('|') || DEFAULT_GLOBAL_PATTERN,
+      property: Object.keys(this.utilities).map(escapeRegex).join('|') || DEFAULT_GLOBAL_PATTERN,
+      value: DEFAULT_GLOBAL_PATTERN
     }
-    let matcher = this.createMatcher(patterns.variant, patterns.property, patterns.value)
+    let matcher = createMatcher(patterns.variant, patterns.property, patterns.value)
 
     const regexpPlugins = this.plugins
       .filter((p) => p.regexp)
@@ -122,11 +87,7 @@ export class TenoxUI<
             if (result.matcher) {
               matcher = result.matcher
             } else {
-              matcher = this.createMatcher(
-                patterns.variant || this.defaultPattern,
-                patterns.property || this.defaultPattern,
-                patterns.value || this.defaultPattern
-              )
+              matcher = createMatcher(patterns.variant, patterns.property, patterns.value)
             }
           }
         } catch (err) {
@@ -168,8 +129,8 @@ export class TenoxUI<
     return !match
       ? null
       : match.groups
-        ? [match[0], match.groups.variant, match.groups.property, match.groups.value]
-        : match
+      ? [match[0], match.groups.variant, match.groups.property, match.groups.value]
+      : match
   }
 
   private processValue(value: string): string | null {
@@ -347,27 +308,10 @@ export class TenoxUI<
     return results.length > 0 ? results : null
   }
 
-  public getPluginsByPriority(): Plugin[] {
-    return [...this.plugins].sort((a, b) => (b.priority || 0) - (a.priority || 0))
-  }
-
-  public getPluginsByName(namePattern: string | RegExp): Plugin[] {
-    const pattern = typeof namePattern === 'string' ? new RegExp(namePattern) : namePattern
-
-    return this.plugins.filter((plugin) => plugin.name && pattern.test(plugin.name))
-  }
-
   public removePlugins(namePattern: string | RegExp): this {
     const pattern = typeof namePattern === 'string' ? new RegExp(namePattern) : namePattern
-
     this.plugins = this.plugins.filter((plugin) => !plugin.name || !pattern.test(plugin.name))
 
-    this._cachedRegexp = null
-    this._initializeMatcher()
-    return this
-  }
-
-  public clearCache(): this {
     this._cachedRegexp = null
     this._initializeMatcher()
     return this
@@ -402,7 +346,14 @@ export class TenoxUI<
       return null
     }
   }
+
+  public clearCache() {
+    this._cachedRegexp = null
+    this._initializeMatcher()
+    return this
+  }
 }
 
 export * from './types'
+export * from './utils'
 export default TenoxUI

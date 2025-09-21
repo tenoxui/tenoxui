@@ -44,45 +44,9 @@ describe('TenoxUI', () => {
       expect(instance).toBeInstanceOf(TenoxUI)
       expect(instance.matcher).toBeInstanceOf(RegExp)
     })
-
-    it('should sort plugins by priority on initialization', () => {
-      const plugin1: Plugin = { name: 'plugin1', priority: 1 }
-      const plugin2: Plugin = { name: 'plugin2', priority: 3 }
-      const plugin3: Plugin = { name: 'plugin3', priority: 2 }
-
-      const instance = new TenoxUI({
-        plugins: [plugin1, plugin2, plugin3]
-      })
-
-      const sortedPlugins = instance.getPluginsByPriority()
-      expect(sortedPlugins[0].name).toBe('plugin2') // priority 3
-      expect(sortedPlugins[1].name).toBe('plugin3') // priority 2
-      expect(sortedPlugins[2].name).toBe('plugin1') // priority 1
-    })
   })
 
   describe('Plugin', () => {
-    it('should add plugin with use() method', () => {
-      const plugin: Plugin = { name: 'test-plugin', priority: 5 }
-      const result = tx.use(plugin)
-
-      expect(result).toBe(tx) // should return this for chaining
-      expect(tx.getPluginsByPriority()).toContain(plugin)
-    })
-
-    it('should maintain plugin priority order when adding new plugins', () => {
-      const plugin1: Plugin = { name: 'plugin1', priority: 1 }
-      const plugin2: Plugin = { name: 'plugin2', priority: 5 }
-      const plugin3: Plugin = { name: 'plugin3', priority: 3 }
-
-      tx.use(plugin1, plugin2, plugin3)
-
-      const plugins = tx.getPluginsByPriority()
-      expect(plugins[0].name).toBe('plugin2') // priority 5
-      expect(plugins[1].name).toBe('plugin3') // priority 3
-      expect(plugins[2].name).toBe('plugin1') // priority 1
-    })
-
     it('should invalidate cache when adding plugins', () => {
       const plugin: Plugin = { name: 'test-plugin' }
 
@@ -518,19 +482,6 @@ describe('TenoxUI', () => {
   })
 
   describe('Utility Methods', () => {
-    it('should return plugins sorted by priority', () => {
-      const plugin1: Plugin = { name: 'plugin1', priority: 1 }
-      const plugin2: Plugin = { name: 'plugin2', priority: 3 }
-      const plugin3: Plugin = { name: 'plugin3' } // no priority = 0
-
-      tx.use(plugin1).use(plugin2).use(plugin3)
-
-      const sorted = tx.getPluginsByPriority()
-      expect(sorted[0].name).toBe('plugin2') // priority 3
-      expect(sorted[1].name).toBe('plugin1') // priority 1
-      expect(sorted[2].name).toBe('plugin3') // priority 0 (default)
-    })
-
     it('should clear cache and reinitialize matcher', () => {
       // Get initial regexp result
       const initial = tx.regexp()
@@ -578,19 +529,6 @@ describe('TenoxUI', () => {
 
       const result = emptyTenox.process('m-4')
       expect(result).toBeNull()
-    })
-
-    it('should handle plugin priority edge cases', () => {
-      const plugin1: Plugin = { name: 'plugin1', priority: -1 }
-      const plugin2: Plugin = { name: 'plugin2', priority: 0 }
-      const plugin3: Plugin = { name: 'plugin3' } // undefined priority
-
-      tx.use(plugin1).use(plugin2).use(plugin3)
-
-      const sorted = tx.getPluginsByPriority()
-      expect(sorted[0].priority).toBe(0) // plugin2
-      expect(sorted[1].priority).toBeUndefined() // plugin3 (undefined priority)
-      expect(sorted[2].priority).toBe(-1) // plugin1
     })
   })
 })

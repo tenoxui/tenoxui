@@ -1,5 +1,20 @@
 # Changelog
 
+## `v3.0.0-alpha.6` - `2025-09-22`
+
+### **Removed**
+
+- Removed unnecessary methods: `getPluginsByPriority` and `getPluginsByName`
+
+### Changed
+
+- Moved some methods into singular helper functions
+- `package.json` keywords
+
+### Fixed
+
+- Removed old dependencies on `package.json`
+
 ## `v3.0.0-alpha.5` - `2025-09-14`
 
 ### Fixed

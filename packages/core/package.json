@@ -1,14 +1,18 @@
 {
   "name": "@tenoxui/core",
-  "version": "3.0.0-alpha.5",
+  "version": "3.0.0-alpha.6",
   "description": "Core component of tenoxui",
   "author": "NOuSantx <nousantx@gmail.com>",
   "license": "MIT",
   "keywords": [
-    "framework",
     "css",
+    "plugin",
+    "framework",
     "css-in-js",
-    "utility-first"
+    "atomic-css",
+    "utility-first",
+    "css-framework",
+    "atomic-css-engine"
   ],
   "homepage": "https://tenoxui.web.app",
   "repository": {
@@ -43,19 +47,12 @@
     "test:watch": "vitest",
     "type:check": "tsc -b --noEmit",
     "type:build": "tsc -b",
-    "build:prod": "pnpm type:check && pnpm build --minify && pnpm type:build"
-  },
-  "peerDependencies": {
-    "@tenoxui/moxie": ">=0.7.0"
+    "build:prod": "pnpm type:check && pnpm build --minify --sourcemap && pnpm type:build"
   },
   "devDependencies": {
     "@types/node": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:"
-  },
-  "dependencies": {
-    "@tenoxui/moxie": "^0.7.0",
-    "@tenoxui/types": "^0.1.2"
   }
 }
