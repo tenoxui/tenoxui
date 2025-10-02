@@ -27,15 +27,11 @@ export type ProcessResult<
 export type ParseContext = {
   patterns: RegexPatterns
   matcher: RegExp
-  utilities: Utilities
-  variants: Variants
 }
 
 export type RegexpContext = {
   patterns?: RegexPatterns
   matcher?: RegExp
-  utilities?: Utilities
-  variants?: Variants
 }
 
 export type ProcessUtilitiesContext = Partial<{
@@ -44,13 +40,6 @@ export type ProcessUtilitiesContext = Partial<{
   variant: string | null
   value: string | null
   raw: (string | undefined)[]
-  utilities: Utilities
-  variants: Variants
-  parser: (className: string) => unknown
-  regexp: () => {
-    patterns?: RegexPatterns
-    matcher?: RegExp
-  } | null
 }>
 
 export type ProcessContext = {
@@ -73,12 +62,37 @@ export type ProcessContext = {
   variants?: Variants
 }
 
+export type OnInitContext<
+  TUtilities extends object = Utilities,
+  TVariants extends object = Variants
+> = {
+  utilities: TUtilities
+  variants: TVariants
+  processValue: (value: string) => string | null
+  processVariant: (variant: string) => string | null
+  processUtilities: (ctx: any) => unknown
+  parser: (className: string) => unknown
+  regexp: () => {
+    patterns?: RegexPatterns
+    matcher?: RegExp
+  } | null
+  addUtility: (name: string, value: any) => void
+  addVariant: (name: string, value: any) => void
+  addUtilities: (utilities: Record<string, any>) => void
+  addVariants: (variants: Record<string, any>) => void
+  invalidateCache: () => void
+}
+
 export interface Plugin<
   TProcessResult = BaseProcessResult,
-  TProcessUtilitiesResult = BaseProcessResult
+  TProcessUtilitiesResult = BaseProcessResult,
+  TUtilities extends object = Utilities,
+  TVariants extends object = Variants
 > {
   name: string
   priority?: number
+
+  onInit?: (context: OnInitContext<TUtilities, TVariants>) => void
 
   parse?: (className: string, context: ParseContext) => unknown | null
 
@@ -91,16 +105,11 @@ export interface Plugin<
     context: ProcessUtilitiesContext
   ) => TProcessUtilitiesResult | null | undefined
 
-  processValue?: (value: string, utilities: Utilities) => string | null
+  processValue?: (value: string) => string | null
 
-  processVariant?: (variant: string, variants: Variants) => string | null
+  processVariant?: (variant: string) => string | null
 
-  process?: (
-    className: string,
-    context?: ProcessContext
-  ) => TProcessResult | null | undefined | void
-
-  transform?: (data?: unknown) => unknown
+  process?: (className: string) => TProcessResult | null | undefined | void
 }
 
 export type Utilities<T = CSSPropertyOrVariable> = Record<string, T>
@@ -114,14 +123,31 @@ export interface Config<
 > {
   utilities?: TUtilities
   variants?: TVariants
-  plugins?: Plugin<TProcessResult, TProcessUtilitiesResult>[]
+  plugins?: Plugin<TProcessResult, TProcessUtilitiesResult, TUtilities, TVariants>[]
 }
 
 export type PluginFactory<
   TProcessResult = BaseProcessResult,
-  TUtilityResult = BaseProcessResult
-> = () => Plugin<TProcessResult, TUtilityResult>[]
+  TUtilityResult = BaseProcessResult,
+  TUtilities extends object = Utilities,
+  TVariants extends object = Variants
+> = () => Plugin<TProcessResult, TUtilityResult, TUtilities, TVariants>[]
 
-export type PluginLike<TProcessResult = BaseProcessResult, TUtilityResult = BaseProcessResult> =
-  | Plugin<TProcessResult, TUtilityResult>
-  | PluginFactory<TProcessResult, TUtilityResult>
+export type PluginLike<
+  TProcessResult = BaseProcessResult,
+  TUtilityResult = BaseProcessResult,
+  TUtilities extends object = Utilities,
+  TVariants extends object = Variants
+> =
+  | Plugin<TProcessResult, TUtilityResult, TUtilities, TVariants>
+  | PluginFactory<TProcessResult, TUtilityResult, TUtilities, TVariants>
+
+/**
+ * Utility type for creating type-safe plugins
+ */
+export type CreatePlugin<
+  TUtilities extends object = Utilities,
+  TVariants extends object = Variants,
+  TProcessResult = BaseProcessResult,
+  TProcessUtilitiesResult = BaseProcessResult
+> = Plugin<TProcessResult, TProcessUtilitiesResult, TUtilities, TVariants>

@@ -260,55 +260,6 @@ describe('TenoxUI Plugin Ecosystem', () => {
     })
   })
 
-  describe('Plugin Transform Method', () => {
-    it('should call transform plugins after processing', () => {
-      const transformPlugin: Plugin = {
-        name: 'transform-plugin',
-        transform: (results) => {
-          // Add a prefix to all properties
-          return results.map((result) => ({
-            ...result,
-            property: `--tw-${result.property}`
-          }))
-        }
-      }
-
-      tx.use(transformPlugin)
-
-      const results = tx.process(['m-4', 'p-2'])
-
-      expect(results).toHaveLength(2)
-      expect(results![0].property).toBe('--tw-margin')
-      expect(results![1].property).toBe('--tw-padding')
-    })
-
-    it('should handle transform plugins that return single result', () => {
-      const combinerPlugin: Plugin = {
-        name: 'combiner-plugin',
-        transform: (results) => {
-          if (results.length > 1) {
-            return {
-              combined: true,
-              properties: results.map((r) => r.property),
-              values: results.map((r) => r.value)
-            }
-          }
-          return results
-        }
-      }
-
-      tx.use(combinerPlugin)
-
-      const result = tx.process(['m-4', 'p-2'])
-
-      expect(result).toEqual({
-        combined: true,
-        properties: ['margin', 'padding'],
-        values: ['4', '2']
-      })
-    })
-  })
-
   describe('processWithPlugin Method', () => {
     it('should process className with specific plugin', () => {
       const specialPlugin: Plugin = {
@@ -327,8 +278,8 @@ describe('TenoxUI Plugin Ecosystem', () => {
 
       tx.use(specialPlugin)
 
-      const result = tx.processWithPlugin('special-test', 'special-plugin')
-      expect(result).toEqual({
+      const result = tx.process('special-test')
+      expect(result[0]).toEqual({
         className: 'special-test',
         type: 'special',
         value: 'test'
@@ -336,7 +287,7 @@ describe('TenoxUI Plugin Ecosystem', () => {
     })
 
     it('should return null for non-existent plugin', () => {
-      const result = tx.processWithPlugin('test-class', 'non-existent')
+      const result = tx.process('test-class')
       expect(result).toBeNull()
     })
 
@@ -344,7 +295,7 @@ describe('TenoxUI Plugin Ecosystem', () => {
       const plugin: Plugin = { name: 'no-process' }
       tx.use(plugin)
 
-      const result = tx.processWithPlugin('test-class', 'no-process')
+      const result = tx.process('test-class')
       expect(result).toBeNull()
     })
 
@@ -359,7 +310,7 @@ describe('TenoxUI Plugin Ecosystem', () => {
 
       tx.use(errorPlugin)
 
-      const result = tx.processWithPlugin('test', 'error-plugin')
+      const result = tx.process('test')
       expect(result).toBeNull()
       expect(consoleSpy).toHaveBeenCalledWith(
         'Plugin "error-plugin" process failed:',
@@ -371,68 +322,13 @@ describe('TenoxUI Plugin Ecosystem', () => {
   })
 
   describe('Plugin Context Objects', () => {
-    it('should provide complete context to regexp plugins', () => {
+    it('should provide complete context to onInit plugins', () => {
       let receivedContext: any
 
       const contextPlugin: Plugin = {
         name: 'context-plugin',
-        regexp: (context) => {
+        onInit(context) {
           receivedContext = context
-          return null
-        }
-      }
-
-      tx.use(contextPlugin)
-      tx.regexp()
-
-      expect(receivedContext).toHaveProperty('patterns')
-      expect(receivedContext).toHaveProperty('matcher')
-      expect(receivedContext).toHaveProperty('utilities')
-      expect(receivedContext).toHaveProperty('variants')
-      expect(receivedContext.utilities).toBe(mockUtilities)
-      expect(receivedContext.variants).toBe(mockVariants)
-    })
-
-    it('should provide complete context to processUtilities plugins', () => {
-      let receivedContext: any
-
-      const contextPlugin: Plugin = {
-        name: 'context-plugin',
-        processUtilities: (context) => {
-          receivedContext = context
-          return null
-        }
-      }
-
-      tx.use(contextPlugin)
-      tx.processUtilities({
-        property: 'm',
-        value: '4',
-        className: 'm-4'
-      })
-
-      expect(receivedContext).toHaveProperty('className')
-      expect(receivedContext).toHaveProperty('property')
-      expect(receivedContext).toHaveProperty('value')
-      expect(receivedContext).toHaveProperty('variant')
-      expect(receivedContext).toHaveProperty('raw')
-      expect(receivedContext).toHaveProperty('utilities')
-      expect(receivedContext).toHaveProperty('variants')
-      expect(receivedContext).toHaveProperty('parser')
-      expect(receivedContext).toHaveProperty('regexp')
-
-      expect(typeof receivedContext.parser).toBe('function')
-      expect(typeof receivedContext.regexp).toBe('function')
-    })
-
-    it('should provide complete context to process plugins', () => {
-      let receivedContext: any
-
-      const contextPlugin: Plugin = {
-        name: 'context-plugin',
-        process: (className, context) => {
-          receivedContext = context
-          return null
         }
       }
 
@@ -441,7 +337,7 @@ describe('TenoxUI Plugin Ecosystem', () => {
 
       expect(receivedContext).toHaveProperty('regexp')
       expect(receivedContext).toHaveProperty('parser')
-      expect(receivedContext).toHaveProperty('processUtility')
+      expect(receivedContext).toHaveProperty('processUtilities')
       expect(receivedContext).toHaveProperty('processValue')
       expect(receivedContext).toHaveProperty('processVariant')
       expect(receivedContext).toHaveProperty('utilities')
@@ -449,7 +345,7 @@ describe('TenoxUI Plugin Ecosystem', () => {
 
       expect(typeof receivedContext.regexp).toBe('function')
       expect(typeof receivedContext.parser).toBe('function')
-      expect(typeof receivedContext.processUtility).toBe('function')
+      expect(typeof receivedContext.processUtilities).toBe('function')
       expect(typeof receivedContext.processValue).toBe('function')
       expect(typeof receivedContext.processVariant).toBe('function')
     })
@@ -587,9 +483,9 @@ describe('TenoxUI Plugin Ecosystem', () => {
 
       tx.use(typographyPlugin)
 
-      const result = tx.processWithPlugin('text-lg', 'typography-plugin')
+      const result = tx.process('text-lg')
 
-      expect(result).toEqual({
+      expect(result[0]).toEqual({
         className: 'text-lg',
         properties: { fontSize: '1.125rem', lineHeight: '1.75rem' },
         type: 'typography'

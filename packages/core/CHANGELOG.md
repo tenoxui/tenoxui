@@ -1,5 +1,30 @@
 # Changelog
 
+## `v3.0.0` - `2025-10-02`
+
+Major release `v3`
+
+### **Removed**
+
+- Removed barely used methods: `getPluginsByPriority`, `getPluginsByName`, `removePlugins`, `processWithPlugins` and `clearCache`
+- Excessive context duplication for most plugin hooks and moved into single hook, `onInit`
+- `transform` plugin hook
+
+### Added
+
+- New plugin hooks: `onInit`
+- New methods: `addUtility`, `addUtilities`, `addVariant`, `addVariants`, `removeUtility`, `removeVariant` and `invalidateCache`
+
+### Changed
+
+- Moved some methods into singular helper functions
+- `package.json` keywords
+- Simplified returned value from `parse` method
+
+### Fixed
+
+- Removed old dependencies on `package.json`
+
 ## `v3.0.0-alpha.6` - `2025-09-22`
 
 ### **Removed**

@@ -1,7 +1,7 @@
 {
   "name": "@tenoxui/core",
-  "version": "3.0.0-alpha.6",
-  "description": "Core component of tenoxui",
+  "version": "3.0.0",
+  "description": "A powerful and extensible utility-first css framework engine",
   "author": "NOuSantx <nousantx@gmail.com>",
   "license": "MIT",
   "keywords": [
