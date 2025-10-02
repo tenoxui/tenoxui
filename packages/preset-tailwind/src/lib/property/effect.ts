@@ -46,15 +46,15 @@ export const effect: {
       }
 
       const values: Record<string, string> = {
-        '2xs': 'inset 0 1px var(--tw-inset-ring-shadow, rgb(0 0 0 / 0.05))',
-        xs: 'inset 0 1px 1px var(--tw-inset-ring-shadow, rgb(0 0 0 / 0.05))',
-        sm: 'inset 0 2px 4px var(--tw-inset-ring-shadow, rgb(0 0 0 / 0.05))',
+        '2xs': '0 1px var(--tw-inset-shadow-color, rgb(0 0 0 / 0.05))',
+        xs: '0 1px 1px var(--tw-inset-shadow-color, rgb(0 0 0 / 0.05))',
+        sm: '0 2px 4px var(--tw-inset-shadow-color, rgb(0 0 0 / 0.05))',
         none: '0 0 #0000'
       }
 
       return secondValue || is.length.test(value + unit)
         ? null
-        : `value:--tw-inset-shadow: ${
+        : `value:--tw-inset-shadow: inset ${
             values[value + unit] || value + unit
           };box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);`
     },
@@ -80,7 +80,7 @@ export const effect: {
 
       return secondValue
         ? null
-        : `value:--tw-inset-ring-shadow: 0 0 0 ${
+        : `value:--tw-inset-ring-shadow: inset 0 0 0 ${
             !value ? '1px' : value + (unit || 'px')
           } var(--tw-inset-ring-color, currentcolor); box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);`
     },

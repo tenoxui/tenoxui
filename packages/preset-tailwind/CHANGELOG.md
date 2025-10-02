@@ -1,5 +1,21 @@
 Changelog
 
+## `v1.0.3` - `2025-07-21`
+
+### Added
+
+- Export all utility functions under `src/utils/createValue.ts`
+
+### Fixed
+
+- Inset shadow not shown anything because incorrect variable name for color
+
+## `v1.0.3` - `2025-07-21`
+
+### Fixed
+
+- Inset ring not shown anything
+
 ## `v1.0.2` - `2025-06-10`
 
 ### Fixed

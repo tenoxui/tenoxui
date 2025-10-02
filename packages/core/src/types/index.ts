@@ -8,59 +8,38 @@ export type RegexPatterns = {
   value?: string
 }
 
-// Base ProcessResult that all plugins must conform to
-export type BaseProcessResult = {
-  className: string
+export type BaseProcessResult<TClassName = string> = {
+  className: TClassName
 }
 
-// Extended ProcessResult with optional framework-specific data
-export type ProcessResult<
-  Data = Partial<{
-    variant: {
-      name: string
-      data: string | null
-    } | null
-    rules: {
-      type: string
-      property: CSSPropertyOrVariable
-    }
-    value: { raw: string | null; data: string | null }
-  }>
-> = BaseProcessResult & Data
+export type DefaultProcessUtilityResult = {
+  variant: string | null
+  property: CSSPropertyOrVariable | string
+  value: string | null
+  raw: (undefined | string)[]
+}
 
-// Plugin context types for better reusability
+export type ProcessResult<
+  TClassName = string,
+  Data = Partial<DefaultProcessUtilityResult>
+> = BaseProcessResult<TClassName> & Data
+
 export type ParseContext = {
   patterns: RegexPatterns
   matcher: RegExp
-  utilities: Utilities
-  variants: Variants
 }
 
 export type RegexpContext = {
   patterns?: RegexPatterns
   matcher?: RegExp
-  utilities?: Utilities
-  variants?: Variants
 }
 
 export type ProcessUtilitiesContext = Partial<{
   className: string
-  variant: {
-    raw: string
-    data: string | null
-  } | null
-  property: {
-    name: string
-    data: string | undefined
-  }
-  value: { raw: string; data: string | null }
-  utilities: Utilities
-  variants: Variants
-  parser: (className: string) => any
-  regexp: () => {
-    patterns?: RegexPatterns
-    matcher?: RegExp
-  } | null
+  property: string
+  variant: string | null
+  value: string | null
+  raw: (string | undefined)[]
 }>
 
 export type ProcessContext = {
@@ -68,49 +47,69 @@ export type ProcessContext = {
     patterns?: RegexPatterns
     matcher?: RegExp
   } | null
-  parser?: (className: string) => any
-  processor?: (
+  parser?: (className: string) => unknown
+  processUtility?: (
     context: Partial<{
       variant: string | null
       property: string
       value: string
       className: string
     }>
-  ) => BaseProcessResult | null
+  ) => unknown
+  processValue?: (value: string, utilities: Utilities) => string | null
+  processVariant?: (variant: string, variants: Variants) => string | null
   utilities?: Utilities
   variants?: Variants
 }
 
-// Generic plugin interface with better type constraints
+export type OnInitContext<
+  TUtilities extends object = Utilities,
+  TVariants extends object = Variants
+> = {
+  utilities: TUtilities
+  variants: TVariants
+  processValue: (value: string) => string | null
+  processVariant: (variant: string) => string | null
+  processUtilities: (ctx: any) => unknown
+  parser: (className: string) => unknown
+  regexp: () => {
+    patterns?: RegexPatterns
+    matcher?: RegExp
+  } | null
+  addUtility: (name: string, value: any) => void
+  addVariant: (name: string, value: any) => void
+  addUtilities: (utilities: Record<string, any>) => void
+  addVariants: (variants: Record<string, any>) => void
+  invalidateCache: () => void
+}
+
 export interface Plugin<
-  TProcessUtilitiesResult extends BaseProcessResult = BaseProcessResult,
-  TProcessResult extends BaseProcessResult = BaseProcessResult
+  TProcessResult = BaseProcessResult,
+  TProcessUtilitiesResult = BaseProcessResult,
+  TUtilities extends object = Utilities,
+  TVariants extends object = Variants
 > {
   name: string
   priority?: number
 
-  // Parse method - returns structured data or null
-  parse?: (className: string, context: ParseContext) => any | null
+  onInit?: (context: OnInitContext<TUtilities, TVariants>) => void
 
-  // Regexp method - modifies regex patterns/matcher
+  parse?: (className: string, context: ParseContext) => unknown | null
+
   regexp?: (context: RegexpContext) => {
     patterns?: RegexPatterns
     matcher?: RegExp
   } | null
 
-  // ProcessUtilities - returns ProcessResult or null/undefined
   processUtilities?: (
     context: ProcessUtilitiesContext
   ) => TProcessUtilitiesResult | null | undefined
 
-  // Value processing - transforms values
-  processValue?: (value: string, utilities: Utilities) => string | null
+  processValue?: (value: string) => string | null
 
-  // Variant processing - transforms variants
-  processVariant?: (variant: string, variants: Variants) => string | null
+  processVariant?: (variant: string) => string | null
 
-  // High-level process method - handles entire className
-  process?: (className: string, context?: ProcessContext) => TProcessResult | null | undefined
+  process?: (className: string) => TProcessResult | null | undefined | void
 }
 
 export type Utilities<T = CSSPropertyOrVariable> = Record<string, T>
@@ -118,9 +117,37 @@ export type Variants<T = string> = Record<string, T>
 
 export interface Config<
   TUtilities extends object = Utilities,
-  TVariants extends object = Variants
+  TVariants extends object = Variants,
+  TProcessResult = BaseProcessResult,
+  TProcessUtilitiesResult = BaseProcessResult
 > {
   utilities?: TUtilities
   variants?: TVariants
-  plugins?: Plugin[]
+  plugins?: Plugin<TProcessResult, TProcessUtilitiesResult, TUtilities, TVariants>[]
 }
+
+export type PluginFactory<
+  TProcessResult = BaseProcessResult,
+  TUtilityResult = BaseProcessResult,
+  TUtilities extends object = Utilities,
+  TVariants extends object = Variants
+> = () => Plugin<TProcessResult, TUtilityResult, TUtilities, TVariants>[]
+
+export type PluginLike<
+  TProcessResult = BaseProcessResult,
+  TUtilityResult = BaseProcessResult,
+  TUtilities extends object = Utilities,
+  TVariants extends object = Variants
+> =
+  | Plugin<TProcessResult, TUtilityResult, TUtilities, TVariants>
+  | PluginFactory<TProcessResult, TUtilityResult, TUtilities, TVariants>
+
+/**
+ * Utility type for creating type-safe plugins
+ */
+export type CreatePlugin<
+  TUtilities extends object = Utilities,
+  TVariants extends object = Variants,
+  TProcessResult = BaseProcessResult,
+  TProcessUtilitiesResult = BaseProcessResult
+> = Plugin<TProcessResult, TProcessUtilitiesResult, TUtilities, TVariants>

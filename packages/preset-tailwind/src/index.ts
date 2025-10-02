@@ -83,7 +83,7 @@ export const breakpoints: { [bp: string]: string } = {
 
 export const preset = ({ sizing = 0.25, order = true } = {}): Partial<Config> => ({
   variants,
-  utilities: property(sizing),
+  property: property(sizing),
   values,
   classes,
   breakpoints,
@@ -96,4 +96,5 @@ export { properties as defaultProperties } from './styles/properties'
 export { values } from './lib/values'
 export { variants } from './lib/variants'
 export { typeOrder } from './lib/typeOrder'
+export * from './utils/createValue'
 export default preset

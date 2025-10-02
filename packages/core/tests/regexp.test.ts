@@ -1,4 +1,4 @@
-import { TenoxUI } from '../src/index.ts'
+import { TenoxUI, createMatcher } from '../src/index.ts'
 import { describe, expect, it } from 'vitest'
 
 describe('regexp', () => {
@@ -7,9 +7,9 @@ describe('regexp', () => {
   it('should create matcher pattern', () => {
     let pattern = /^(?:(?<variant>[\w.-]+):)?(?<property>[\w.-]+)(?:-(?<value>[\w.-]+?))?$/
     expect(ui.matcher).toStrictEqual(pattern)
-    expect(ui.createMatcher(defaultPattern, defaultPattern, defaultPattern)).toStrictEqual(pattern)
+    expect(createMatcher(defaultPattern, defaultPattern, defaultPattern)).toStrictEqual(pattern)
     expect(ui.regexp().matcher).toStrictEqual(pattern)
-    expect(ui.createMatcher('bg|flex', defaultPattern, defaultPattern)).toStrictEqual(
+    expect(createMatcher('bg|flex', defaultPattern, defaultPattern)).toStrictEqual(
       /^(?:(?<variant>bg|flex):)?(?<property>[\w.-]+)(?:-(?<value>[\w.-]+?))?$/
     )
   })

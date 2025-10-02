@@ -1,563 +1,380 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { TenoxUI } from '../src/index'
-import type { Plugin, Utilities, Variants, ProcessResult } from '../src/types'
+import type { Plugin, PluginFactory } from '../src/types'
 
-describe('TenoxUI', () => {
-  let tx: TenoxUI
-
-  const mockUtilities: Utilities = {
-    m: 'margin',
-    p: 'padding',
-    bg: 'background-color',
-    text: 'color',
-    w: 'width',
-    h: 'height'
-  }
-
-  const mockVariants: Variants = {
-    hover: ':hover',
-    focus: ':focus',
-    sm: '@media (min-width: 640px)',
-    md: '@media (min-width: 768px)'
-  }
+describe('Core', () => {
+  let tenox: TenoxUI
 
   beforeEach(() => {
-    tx = new TenoxUI({
-      utilities: mockUtilities,
-      variants: mockVariants
-    })
-  })
-
-  describe('Constructor', () => {
-    it('should create instance with default empty config', () => {
-      const instance = new TenoxUI()
-      expect(instance).toBeInstanceOf(TenoxUI)
-      expect(instance.matcher).toBeInstanceOf(RegExp)
-    })
-
-    it('should create instance with provided config', () => {
-      const instance = new TenoxUI({
-        utilities: mockUtilities,
-        variants: mockVariants,
-        plugins: []
-      })
-      expect(instance).toBeInstanceOf(TenoxUI)
-      expect(instance.matcher).toBeInstanceOf(RegExp)
-    })
-
-    it('should sort plugins by priority on initialization', () => {
-      const plugin1: Plugin = { name: 'plugin1', priority: 1 }
-      const plugin2: Plugin = { name: 'plugin2', priority: 3 }
-      const plugin3: Plugin = { name: 'plugin3', priority: 2 }
-
-      const instance = new TenoxUI({
-        plugins: [plugin1, plugin2, plugin3]
-      })
-
-      const sortedPlugins = instance.getPluginsByPriority()
-      expect(sortedPlugins[0].name).toBe('plugin2') // priority 3
-      expect(sortedPlugins[1].name).toBe('plugin3') // priority 2
-      expect(sortedPlugins[2].name).toBe('plugin1') // priority 1
-    })
-  })
-
-  describe('Plugin System', () => {
-    it('should add plugin with use() method', () => {
-      const plugin: Plugin = { name: 'test-plugin', priority: 5 }
-      const result = tx.use(plugin)
-
-      expect(result).toBe(tx) // should return this for chaining
-      expect(tx.getPluginsByPriority()).toContain(plugin)
-    })
-
-    it('should maintain plugin priority order when adding new plugins', () => {
-      const plugin1: Plugin = { name: 'plugin1', priority: 1 }
-      const plugin2: Plugin = { name: 'plugin2', priority: 5 }
-      const plugin3: Plugin = { name: 'plugin3', priority: 3 }
-
-      tx.use(plugin1).use(plugin2).use(plugin3)
-
-      const plugins = tx.getPluginsByPriority()
-      expect(plugins[0].name).toBe('plugin2') // priority 5
-      expect(plugins[1].name).toBe('plugin3') // priority 3
-      expect(plugins[2].name).toBe('plugin1') // priority 1
-    })
-
-    it('should invalidate cache when adding plugins', () => {
-      const plugin: Plugin = { name: 'test-plugin' }
-
-      // Get initial cached result
-      const initialResult = tx.regexp()
-
-      // Add plugin (should invalidate cache)
-      tx.use(plugin)
-
-      // Get result after plugin addition
-      const afterPluginResult = tx.regexp()
-
-      // Should be different objects due to cache invalidation
-      expect(afterPluginResult).not.toBe(initialResult)
-    })
-  })
-
-  describe('RegExp Generation', () => {
-    it('should generate regex with default patterns', () => {
-      const result = tx.regexp()
-
-      expect(result).toHaveProperty('patterns')
-      expect(result).toHaveProperty('matcher')
-      expect(result.matcher).toBeInstanceOf(RegExp)
-      expect(result.patterns.variant).toContain('hover')
-      expect(result.patterns.property).toContain('bg')
-    })
-
-    it('should cache regex results', () => {
-      const result1 = tx.regexp()
-      const result2 = tx.regexp()
-
-      expect(result1).toBe(result2) // same reference due to caching
-    })
-
-    it('should call plugin regexp methods', () => {
-      const regexpSpy = vi.fn(() => ({
-        patterns: { custom: 'test' },
-        matcher: /test/
-      }))
-
-      const plugin: Plugin = {
-        name: 'regexp-plugin',
-        regexp: regexpSpy
+    tenox = new TenoxUI({
+      utilities: {
+        p: 'padding',
+        m: 'margin',
+        w: 'width',
+        h: 'height',
+        bg: 'background-color',
+        text: 'color',
+        flex: 'display'
+      },
+      variants: {
+        hover: '&:hover',
+        focus: '&:focus',
+        sm: '@media (min-width: 640px)',
+        md: '@media (min-width: 768px)',
+        lg: '@media (min-width: 1024px)'
       }
-
-      tx.use(plugin)
-      tx.regexp()
-
-      expect(regexpSpy).toHaveBeenCalled()
     })
+  })
 
-    it('should handle plugin regexp errors gracefully', () => {
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
-      const plugin: Plugin = {
-        name: 'error-plugin',
-        regexp: () => {
-          throw new Error('Test error')
-        }
-      }
-
-      tx.use(plugin)
-      const result = tx.regexp()
-
-      expect(result).toBeDefined()
-      expect(consoleSpy).toHaveBeenCalledWith(
-        'Plugin "error-plugin" regexp failed:',
-        expect.any(Error)
+  describe('Basic Parsing and Processing', () => {
+    it('should parse simple utility classes correctly', () => {
+      const result = tenox.parse('p-4')
+      expect(result).not.toBeNull()
+      expect(result).toEqual(
+        expect.arrayContaining([
+          expect.stringContaining('p-4'),
+          undefined, // variant
+          'p', // property
+          '4' // value
+        ])
       )
-
-      consoleSpy.mockRestore()
-    })
-  })
-
-  describe('Parse Method', () => {
-    it('should parse simple class names correctly', () => {
-      const result = tx.parse('m-4')
-      expect(result).toEqual(['m-4', undefined, 'm', '4'])
     })
 
-    it('should parse class names with variants', () => {
-      const result = tx.parse('hover:bg-red')
-      expect(result).toEqual(['hover:bg-red', 'hover', 'bg', 'red'])
+    it('should parse variant-prefixed utility classes', () => {
+      const result = tenox.parse('hover:bg-red')
+      expect(result).not.toBeNull()
+      expect(result).toEqual(
+        expect.arrayContaining([
+          expect.stringContaining('hover:bg-red'),
+          'hover', // variant
+          'bg', // property
+          'red' // value
+        ])
+      )
     })
 
     it('should return null for invalid class names', () => {
-      const result = tx.parse('invalid-class-name')
+      const result = tenox.parse('invalid-class-name-that-doesnt-match')
       expect(result).toBeNull()
     })
 
-    it('should call plugin parse methods first', () => {
-      const parseSpy = vi.fn(() => ['plugin-result'])
-      const plugin: Plugin = {
-        name: 'parse-plugin',
-        parse: parseSpy
-      }
-
-      tx.use(plugin)
-      const result = tx.parse('test-class')
-
-      expect(parseSpy).toHaveBeenCalledWith('test-class', expect.any(Object))
-      expect(result).toEqual(['plugin-result'])
-    })
-
-    it('should handle plugin parse errors gracefully', () => {
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
-      const plugin: Plugin = {
-        name: 'error-plugin',
-        parse: () => {
-          throw new Error('Parse error')
-        }
-      }
-
-      tx.use(plugin)
-      const result = tx.parse('m-4')
-
-      expect(consoleSpy).toHaveBeenCalledWith(
-        'Plugin "error-plugin" parse failed:',
-        expect.any(Error)
-      )
-      // Should still return default parse result
-      expect(result).toEqual(['m-4', undefined, 'm', '4'])
-
-      consoleSpy.mockRestore()
-    })
-  })
-
-  describe('Process Value', () => {
-    it('should return null for empty values', () => {
-      const result = tx['processValue']('')
-      expect(result).toBeNull()
-    })
-
-    it('should return value as-is when no plugins process it', () => {
-      const result = tx['processValue']('red')
-      expect(result).toBe('red')
-    })
-
-    it('should call plugin processValue methods', () => {
-      const processValueSpy = vi.fn(() => 'processed-value')
-      const plugin: Plugin = {
-        name: 'value-plugin',
-        processValue: processValueSpy
-      }
-
-      tx.use(plugin)
-      const result = tx['processValue']('test-value')
-
-      expect(processValueSpy).toHaveBeenCalledWith('test-value', mockUtilities)
-      expect(result).toBe('processed-value')
-    })
-
-    it('should handle plugin processValue errors gracefully', () => {
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
-      const plugin: Plugin = {
-        name: 'error-plugin',
-        processValue: () => {
-          throw new Error('ProcessValue error')
-        }
-      }
-
-      tx.use(plugin)
-      const result = tx['processValue']('test')
-
-      expect(consoleSpy).toHaveBeenCalledWith(
-        'Plugin "error-plugin" processValue failed:',
-        expect.any(Error)
-      )
-      expect(result).toBe('test') // fallback to original value
-
-      consoleSpy.mockRestore()
-    })
-  })
-
-  describe('Process Variant', () => {
-    it('should return null for empty variants', () => {
-      const result = tx['processVariant']('')
-      expect(result).toBeNull()
-    })
-
-    it('should return variant data from variants config', () => {
-      const result = tx['processVariant']('hover')
-      expect(result).toBe(':hover')
-    })
-
-    it('should call plugin processVariant methods first', () => {
-      const processVariantSpy = vi.fn(() => 'processed-variant')
-      const plugin: Plugin = {
-        name: 'variant-plugin',
-        processVariant: processVariantSpy
-      }
-
-      tx.use(plugin)
-      const result = tx['processVariant']('hover')
-
-      expect(processVariantSpy).toHaveBeenCalledWith('hover', mockVariants)
-      expect(result).toBe('processed-variant')
-    })
-
-    it('should handle plugin processVariant errors gracefully', () => {
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
-      const plugin: Plugin = {
-        name: 'error-plugin',
-        processVariant: () => {
-          throw new Error('ProcessVariant error')
-        }
-      }
-
-      tx.use(plugin)
-      const result = tx['processVariant']('hover')
-
-      expect(consoleSpy).toHaveBeenCalledWith(
-        'Plugin "error-plugin" processVariant failed:',
-        expect.any(Error)
-      )
-      expect(result).toBe(':hover') // fallback to default processing
-
-      consoleSpy.mockRestore()
-    })
-  })
-
-  describe('Process Utilities', () => {
-    it('should process simple utility correctly', () => {
-      const result = tx.processUtilities({
-        property: 'm',
+    it('should process utilities and return correct structure', () => {
+      const result = tenox.processUtilities({
+        property: 'p',
         value: '4',
-        className: 'm-4'
+        className: 'p-4'
       })
 
       expect(result).toEqual({
-        className: 'm-4',
+        className: 'p-4',
+        property: 'padding',
+        value: '4',
         variant: null,
-        rules: {
-          type: 'm',
-          property: 'margin'
-        },
-        value: { raw: '4', data: '4' }
+        raw: expect.any(Array)
       })
     })
 
-    it('should process utility with variant', () => {
-      const result = tx.processUtilities({
+    it('should process utilities with variants', () => {
+      const result = tenox.processUtilities({
+        variant: 'hover',
+        property: 'bg',
+        value: 'blue',
+        className: 'hover:bg-blue'
+      })
+
+      expect(result).toEqual({
+        className: 'hover:bg-blue',
+        property: 'background-color',
+        value: 'blue',
+        variant: '&:hover',
+        raw: expect.any(Array)
+      })
+    })
+  })
+
+  describe('Utility and Variant Management', () => {
+    it('should add new utilities dynamically', () => {
+      const initialParse = tenox.parse('border-2')
+      expect(initialParse).toBeNull()
+
+      tenox.addUtility('border', 'border-width')
+
+      const afterAdd = tenox.parse('border-2')
+      expect(afterAdd).not.toBeNull()
+      expect(afterAdd[2]).toBe('border') // property should be 'border'
+    })
+
+    it('should add multiple utilities at once', () => {
+      tenox.addUtilities({
+        'border-t': 'border-top-width',
+        'border-r': 'border-right-width',
+        'border-b': 'border-bottom-width',
+        'border-l': 'border-left-width'
+      })
+
+      expect(tenox.parse('border-t-1')).not.toBeNull()
+      expect(tenox.parse('border-r-2')).not.toBeNull()
+      expect(tenox.parse('border-b-3')).not.toBeNull()
+      expect(tenox.parse('border-l-4')).not.toBeNull()
+    })
+
+    it('should add new variants dynamically', () => {
+      tenox.addVariant('dark', '@media (prefers-color-scheme: dark)')
+
+      const result = tenox.processUtilities({
+        variant: 'dark',
+        property: 'bg',
+        value: 'black',
+        className: 'dark:bg-black'
+      })
+
+      expect(result?.variant).toBe('@media (prefers-color-scheme: dark)')
+    })
+
+    it('should remove utilities correctly', () => {
+      expect(tenox.parse('p-4')).not.toBeNull()
+
+      tenox.removeUtility('p')
+
+      expect(tenox.parse('p-4')).toBeNull()
+    })
+
+    it('should remove variants correctly', () => {
+      const beforeRemove = tenox.processUtilities({
         variant: 'hover',
         property: 'bg',
         value: 'red',
         className: 'hover:bg-red'
       })
+      expect(beforeRemove?.variant).toBe('&:hover')
 
-      expect(result).toEqual({
-        className: 'hover:bg-red',
-        variant: {
-          name: 'hover',
-          data: ':hover'
-        },
-        rules: {
-          type: 'bg',
-          property: 'background-color'
-        },
-        value: { raw: 'red', data: 'red' }
+      tenox.removeVariant('hover')
+
+      const afterRemove = tenox.processUtilities({
+        variant: 'hover',
+        property: 'bg',
+        value: 'red',
+        className: 'hover:bg-red'
       })
-    })
-
-    it('should return null for unknown properties', () => {
-      const result = tx.processUtilities({
-        property: 'unknown',
-        value: 'test',
-        className: 'unknown-test'
-      })
-
-      expect(result).toBeNull()
-    })
-
-    it('should call plugin processUtilities methods first', () => {
-      const processUtilitiesSpy = vi.fn(() => ({ test: 'result' }) as ProcessResult)
-      const plugin: Plugin = {
-        name: 'utilities-plugin',
-        processUtilities: processUtilitiesSpy
-      }
-
-      tx.use(plugin)
-      const result = tx.processUtilities({
-        property: 'm',
-        value: '4',
-        className: 'm-4'
-      })
-
-      expect(processUtilitiesSpy).toHaveBeenCalled()
-      expect(result).toEqual({ test: 'result' })
-    })
-
-    it('should handle plugin processUtilities errors gracefully', () => {
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
-      const plugin: Plugin = {
-        name: 'error-plugin',
-        processUtilities: () => {
-          throw new Error('ProcessUtilities error')
-        }
-      }
-
-      tx.use(plugin)
-      const result = tx.processUtilities({
-        property: 'm',
-        value: '4',
-        className: 'm-4'
-      })
-
-      expect(consoleSpy).toHaveBeenCalledWith(
-        'Plugin "error-plugin" processUtilities failed:',
-        expect.any(Error)
-      )
-      // Should still return default processing result
-      expect(result).toBeDefined()
-
-      consoleSpy.mockRestore()
+      expect(afterRemove?.variant).toBeNull()
     })
   })
 
-  describe('Process Method', () => {
-    it('should process single class name string', () => {
-      const result = tx.process('m-4')
-
-      expect(result).toHaveLength(1)
-      expect(result![0]).toEqual({
-        className: 'm-4',
-        variant: null,
-        rules: {
-          type: 'm',
-          property: 'margin'
-        },
-        value: { raw: '4', data: '4' }
-      })
-    })
-
-    it('should process multiple class names in string', () => {
-      const result = tx.process('m-4 p-2 hover:bg-red')
+  describe('Batch Processing', () => {
+    it('should process multiple class names as string', () => {
+      const result = tenox.process('p-4 m-2 hover:bg-red')
 
       expect(result).toHaveLength(3)
-      expect(result![0].className).toBe('m-4')
-      expect(result![1].className).toBe('p-2')
-      expect(result![2].className).toBe('hover:bg-red')
+      expect(result).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ className: 'p-4', property: 'padding' }),
+          expect.objectContaining({ className: 'm-2', property: 'margin' }),
+          expect.objectContaining({
+            className: 'hover:bg-red',
+            property: 'background-color',
+            variant: '&:hover'
+          })
+        ])
+      )
     })
 
-    it('should process array of class names', () => {
-      const result = tx.process(['m-4', 'p-2'])
+    it('should process multiple class names as array', () => {
+      const result = tenox.process(['w-full', 'h-screen', 'flex'])
+
+      expect(result).toHaveLength(3)
+      expect(result).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ property: 'width' }),
+          expect.objectContaining({ property: 'height' }),
+          expect.objectContaining({ property: 'display' })
+        ])
+      )
+    })
+
+    it('should filter out invalid class names in batch processing', () => {
+      const result = tenox.process('p-4 invalid-class m-2')
 
       expect(result).toHaveLength(2)
-      expect(result![0].className).toBe('m-4')
-      expect(result![1].className).toBe('p-2')
+      expect(result).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ className: 'p-4' }),
+          expect.objectContaining({ className: 'm-2' })
+        ])
+      )
     })
 
-    it('should skip empty class names', () => {
-      const result = tx.process(['m-4', '', '  ', 'p-2'])
-
+    it('should handle empty strings and whitespace', () => {
+      const result = tenox.process('  p-4   m-2  ')
       expect(result).toHaveLength(2)
-      expect(result![0].className).toBe('m-4')
-      expect(result![1].className).toBe('p-2')
+
+      const emptyResult = tenox.process('')
+      expect(emptyResult).toBeNull()
+
+      const whitespaceResult = tenox.process('   ')
+      expect(whitespaceResult).toBeNull()
     })
 
-    it('should return null for no valid class names', () => {
-      const result = tx.process('invalid-class unknown-prop')
+    it('should return null for empty class lists', () => {
+      const result = tenox.process([])
       expect(result).toBeNull()
     })
+  })
 
-    it('should call plugin process methods first', () => {
-      const processSpy = vi.fn(() => ({ test: 'plugin-result' }) as ProcessResult)
+  describe('Plugin System', () => {
+    it('should execute plugin onInit hooks during construction', () => {
+      const onInitSpy = vi.fn()
       const plugin: Plugin = {
-        name: 'process-plugin',
-        process: processSpy
+        name: 'test-plugin',
+        onInit: onInitSpy
       }
 
-      tx.use(plugin)
-      const result = tx.process('test-class')
+      new TenoxUI({
+        utilities: { p: 'padding' },
+        plugins: [plugin]
+      })
 
-      expect(processSpy).toHaveBeenCalledWith('test-class', expect.any(Object))
-      expect(result![0]).toEqual({ test: 'plugin-result' })
+      expect(onInitSpy).toHaveBeenCalledTimes(1)
+      expect(onInitSpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          utilities: expect.any(Object),
+          variants: expect.any(Object),
+          addUtility: expect.any(Function),
+          addVariant: expect.any(Function)
+        })
+      )
     })
 
-    it('should handle plugin process errors gracefully', () => {
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    it('should support plugin factories', () => {
+      const mockPlugin: Plugin = {
+        name: 'factory-plugin',
+        onInit: vi.fn()
+      }
+
+      const pluginFactory: PluginFactory = () => mockPlugin
+
+      const instance = new TenoxUI({
+        utilities: { p: 'padding' },
+        plugins: [pluginFactory]
+      })
+
+      expect(mockPlugin.onInit).toHaveBeenCalled()
+    })
+
+    it('should add plugins dynamically with use() method', () => {
+      const onInitSpy = vi.fn()
       const plugin: Plugin = {
-        name: 'error-plugin',
-        process: () => {
-          throw new Error('Process error')
+        name: 'dynamic-plugin',
+        onInit: onInitSpy
+      }
+
+      tenox.use(plugin)
+      expect(onInitSpy).toHaveBeenCalled()
+    })
+
+    it('should respect plugin priority ordering', () => {
+      const executionOrder: string[] = []
+
+      const lowPriorityPlugin: Plugin = {
+        name: 'low-priority',
+        priority: 1,
+        processValue: (value) => {
+          executionOrder.push('low')
+          return null // Let other plugins handle it
         }
       }
 
-      tx.use(plugin)
-      const result = tx.process('m-4')
-
-      expect(consoleSpy).toHaveBeenCalledWith(
-        'Plugin "error-plugin" process failed:',
-        expect.any(Error)
-      )
-      // Should still process with default parser
-      expect(result).toHaveLength(1)
-      expect(result![0].className).toBe('m-4')
-
-      consoleSpy.mockRestore()
-    })
-  })
-
-  describe('Utility Methods', () => {
-    it('should return plugins sorted by priority', () => {
-      const plugin1: Plugin = { name: 'plugin1', priority: 1 }
-      const plugin2: Plugin = { name: 'plugin2', priority: 3 }
-      const plugin3: Plugin = { name: 'plugin3' } // no priority = 0
-
-      tx.use(plugin1).use(plugin2).use(plugin3)
-
-      const sorted = tx.getPluginsByPriority()
-      expect(sorted[0].name).toBe('plugin2') // priority 3
-      expect(sorted[1].name).toBe('plugin1') // priority 1
-      expect(sorted[2].name).toBe('plugin3') // priority 0 (default)
-    })
-
-    it('should clear cache and reinitialize matcher', () => {
-      // Get initial regexp result
-      const initial = tx.regexp()
-
-      // Clear cache
-      const result = tx.clearCache()
-
-      expect(result).toBe(tx) // should return this for chaining
-
-      // Should generate new regexp (not cached)
-      const afterClear = tx.regexp()
-      expect(afterClear).not.toBe(initial) // different reference
-      expect(afterClear.matcher).toBeInstanceOf(RegExp)
-    })
-  })
-
-  describe('Edge Cases', () => {
-    it('should handle undefined/null values gracefully', () => {
-      expect(() => tx.parse('')).not.toThrow()
-      expect(() => tx.process('')).not.toThrow()
-      expect(() => tx.processUtilities({})).not.toThrow()
-    })
-
-    it('should handle plugins returning null/undefined', () => {
-      const plugin: Plugin = {
-        name: 'null-plugin',
-        parse: () => null,
-        processValue: () => null,
-        processVariant: () => null,
-        processUtilities: () => null,
-        process: () => null
+      const highPriorityPlugin: Plugin = {
+        name: 'high-priority',
+        priority: 10,
+        processValue: (value) => {
+          executionOrder.push('high')
+          return null // Let other plugins handle it
+        }
       }
 
-      tx.use(plugin)
+      const testInstance = new TenoxUI({
+        utilities: { p: 'padding' },
+        plugins: [lowPriorityPlugin, highPriorityPlugin]
+      })
 
-      expect(() => tx.parse('m-4')).not.toThrow()
-      expect(() => tx.process('m-4')).not.toThrow()
+      testInstance.processUtilities({ property: 'p', value: '4' })
+
+      expect(executionOrder[0]).toBe('high')
+      expect(executionOrder[1]).toBe('low')
     })
 
-    it('should handle empty utilities and variants', () => {
-      const emptyTenox = new TenoxUI({
+    it('should handle plugin errors gracefully', () => {
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+
+      const faultyPlugin: Plugin = {
+        name: 'faulty-plugin',
+        onInit: () => {
+          throw new Error('Plugin initialization failed')
+        }
+      }
+
+      expect(() => {
+        new TenoxUI({
+          utilities: { p: 'padding' },
+          plugins: [faultyPlugin]
+        })
+      }).not.toThrow()
+
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        'Plugin "faulty-plugin" onInit failed:',
+        expect.any(Error)
+      )
+
+      consoleErrorSpy.mockRestore()
+    })
+  })
+
+  describe('RegExp and Cache Management', () => {
+    it('should generate correct regex patterns', () => {
+      const regexpResult = tenox.regexp()
+
+      expect(regexpResult.patterns).toEqual({
+        variant: expect.stringContaining('hover'),
+        property: expect.stringContaining('p|m|w|h|bg'),
+        value: expect.any(String)
+      })
+      expect(regexpResult.matcher).toBeInstanceOf(RegExp)
+    })
+
+    it('should cache regex patterns for performance', () => {
+      const firstCall = tenox.regexp()
+      const secondCall = tenox.regexp()
+
+      expect(firstCall).toBe(secondCall) // Same object reference
+    })
+
+    it('should invalidate cache when utilities are modified', () => {
+      const initialRegexp = tenox.regexp()
+
+      tenox.addUtility('border', 'border-width')
+
+      const newRegexp = tenox.regexp()
+      expect(newRegexp).not.toBe(initialRegexp)
+      expect(newRegexp.patterns.property).toContain('border')
+    })
+
+    it('should update matcher when cache is invalidated', () => {
+      const initialMatcher = tenox.matcher
+
+      tenox.addUtility('new-util', 'new-property')
+
+      expect(tenox.matcher).not.toBe(initialMatcher)
+    })
+
+    it('should handle empty utilities and variants gracefully', () => {
+      const emptyInstance = new TenoxUI({
         utilities: {},
         variants: {}
       })
 
-      const result = emptyTenox.process('m-4')
-      expect(result).toBeNull()
-    })
-
-    it('should handle plugin priority edge cases', () => {
-      const plugin1: Plugin = { name: 'plugin1', priority: -1 }
-      const plugin2: Plugin = { name: 'plugin2', priority: 0 }
-      const plugin3: Plugin = { name: 'plugin3' } // undefined priority
-
-      tx.use(plugin1).use(plugin2).use(plugin3)
-
-      const sorted = tx.getPluginsByPriority()
-      expect(sorted[0].priority).toBe(0) // plugin2
-      expect(sorted[1].priority).toBeUndefined() // plugin3 (undefined priority)
-      expect(sorted[2].priority).toBe(-1) // plugin1
+      const regexpResult = emptyInstance.regexp()
+      expect(regexpResult.patterns.variant).toBe('[\\w.-]+') // DEFAULT_GLOBAL_PATTERN
+      expect(regexpResult.patterns.property).toBe('[\\w.-]+') // DEFAULT_GLOBAL_PATTERN
     })
   })
 })
