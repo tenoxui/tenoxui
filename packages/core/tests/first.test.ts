@@ -34,7 +34,7 @@ describe('Core', () => {
         expect.arrayContaining([
           expect.stringContaining('p-4'),
           undefined, // variant
-          'p', // property
+          'p', // utility
           '4' // value
         ])
       )
@@ -47,7 +47,7 @@ describe('Core', () => {
         expect.arrayContaining([
           expect.stringContaining('hover:bg-red'),
           'hover', // variant
-          'bg', // property
+          'bg', // utility
           'red' // value
         ])
       )
@@ -59,15 +59,15 @@ describe('Core', () => {
     })
 
     it('should process utilities and return correct structure', () => {
-      const result = tenox.processUtilities({
-        property: 'p',
+      const result = tenox.processUtility({
+        utility: 'p',
         value: '4',
         className: 'p-4'
       })
 
       expect(result).toEqual({
         className: 'p-4',
-        property: 'padding',
+        utility: 'padding',
         value: '4',
         variant: null,
         raw: expect.any(Array)
@@ -75,16 +75,16 @@ describe('Core', () => {
     })
 
     it('should process utilities with variants', () => {
-      const result = tenox.processUtilities({
+      const result = tenox.processUtility({
         variant: 'hover',
-        property: 'bg',
+        utility: 'bg',
         value: 'blue',
         className: 'hover:bg-blue'
       })
 
       expect(result).toEqual({
         className: 'hover:bg-blue',
-        property: 'background-color',
+        utility: 'background-color',
         value: 'blue',
         variant: '&:hover',
         raw: expect.any(Array)
@@ -101,7 +101,7 @@ describe('Core', () => {
 
       const afterAdd = tenox.parse('border-2')
       expect(afterAdd).not.toBeNull()
-      expect(afterAdd[2]).toBe('border') // property should be 'border'
+      expect(afterAdd[2]).toBe('border') // utility should be 'border'
     })
 
     it('should add multiple utilities at once', () => {
@@ -121,9 +121,9 @@ describe('Core', () => {
     it('should add new variants dynamically', () => {
       tenox.addVariant('dark', '@media (prefers-color-scheme: dark)')
 
-      const result = tenox.processUtilities({
+      const result = tenox.processUtility({
         variant: 'dark',
-        property: 'bg',
+        utility: 'bg',
         value: 'black',
         className: 'dark:bg-black'
       })
@@ -140,9 +140,9 @@ describe('Core', () => {
     })
 
     it('should remove variants correctly', () => {
-      const beforeRemove = tenox.processUtilities({
+      const beforeRemove = tenox.processUtility({
         variant: 'hover',
-        property: 'bg',
+        utility: 'bg',
         value: 'red',
         className: 'hover:bg-red'
       })
@@ -150,9 +150,9 @@ describe('Core', () => {
 
       tenox.removeVariant('hover')
 
-      const afterRemove = tenox.processUtilities({
+      const afterRemove = tenox.processUtility({
         variant: 'hover',
-        property: 'bg',
+        utility: 'bg',
         value: 'red',
         className: 'hover:bg-red'
       })
@@ -167,11 +167,11 @@ describe('Core', () => {
       expect(result).toHaveLength(3)
       expect(result).toEqual(
         expect.arrayContaining([
-          expect.objectContaining({ className: 'p-4', property: 'padding' }),
-          expect.objectContaining({ className: 'm-2', property: 'margin' }),
+          expect.objectContaining({ className: 'p-4', utility: 'padding' }),
+          expect.objectContaining({ className: 'm-2', utility: 'margin' }),
           expect.objectContaining({
             className: 'hover:bg-red',
-            property: 'background-color',
+            utility: 'background-color',
             variant: '&:hover'
           })
         ])
@@ -184,9 +184,9 @@ describe('Core', () => {
       expect(result).toHaveLength(3)
       expect(result).toEqual(
         expect.arrayContaining([
-          expect.objectContaining({ property: 'width' }),
-          expect.objectContaining({ property: 'height' }),
-          expect.objectContaining({ property: 'display' })
+          expect.objectContaining({ utility: 'width' }),
+          expect.objectContaining({ utility: 'height' }),
+          expect.objectContaining({ utility: 'display' })
         ])
       )
     })
@@ -221,11 +221,11 @@ describe('Core', () => {
   })
 
   describe('Plugin System', () => {
-    it('should execute plugin onInit hooks during construction', () => {
-      const onInitSpy = vi.fn()
+    it('should execute plugin init hooks during construction', () => {
+      const initSpy = vi.fn()
       const plugin: Plugin = {
         name: 'test-plugin',
-        onInit: onInitSpy
+        init: initSpy
       }
 
       new TenoxUI({
@@ -233,8 +233,8 @@ describe('Core', () => {
         plugins: [plugin]
       })
 
-      expect(onInitSpy).toHaveBeenCalledTimes(1)
-      expect(onInitSpy).toHaveBeenCalledWith(
+      expect(initSpy).toHaveBeenCalledTimes(1)
+      expect(initSpy).toHaveBeenCalledWith(
         expect.objectContaining({
           utilities: expect.any(Object),
           variants: expect.any(Object),
@@ -247,7 +247,7 @@ describe('Core', () => {
     it('should support plugin factories', () => {
       const mockPlugin: Plugin = {
         name: 'factory-plugin',
-        onInit: vi.fn()
+        init: vi.fn()
       }
 
       const pluginFactory: PluginFactory = () => mockPlugin
@@ -257,18 +257,18 @@ describe('Core', () => {
         plugins: [pluginFactory]
       })
 
-      expect(mockPlugin.onInit).toHaveBeenCalled()
+      expect(mockPlugin.init).toHaveBeenCalled()
     })
 
     it('should add plugins dynamically with use() method', () => {
-      const onInitSpy = vi.fn()
+      const initSpy = vi.fn()
       const plugin: Plugin = {
         name: 'dynamic-plugin',
-        onInit: onInitSpy
+        init: initSpy
       }
 
       tenox.use(plugin)
-      expect(onInitSpy).toHaveBeenCalled()
+      expect(initSpy).toHaveBeenCalled()
     })
 
     it('should respect plugin priority ordering', () => {
@@ -277,7 +277,7 @@ describe('Core', () => {
       const lowPriorityPlugin: Plugin = {
         name: 'low-priority',
         priority: 1,
-        processValue: (value) => {
+        value: (value) => {
           executionOrder.push('low')
           return null // Let other plugins handle it
         }
@@ -286,7 +286,7 @@ describe('Core', () => {
       const highPriorityPlugin: Plugin = {
         name: 'high-priority',
         priority: 10,
-        processValue: (value) => {
+        value: (value) => {
           executionOrder.push('high')
           return null // Let other plugins handle it
         }
@@ -297,7 +297,7 @@ describe('Core', () => {
         plugins: [lowPriorityPlugin, highPriorityPlugin]
       })
 
-      testInstance.processUtilities({ property: 'p', value: '4' })
+      testInstance.processUtility({ utility: 'p', value: '4' })
 
       expect(executionOrder[0]).toBe('high')
       expect(executionOrder[1]).toBe('low')
@@ -308,7 +308,7 @@ describe('Core', () => {
 
       const faultyPlugin: Plugin = {
         name: 'faulty-plugin',
-        onInit: () => {
+        init: () => {
           throw new Error('Plugin initialization failed')
         }
       }
@@ -321,7 +321,7 @@ describe('Core', () => {
       }).not.toThrow()
 
       expect(consoleErrorSpy).toHaveBeenCalledWith(
-        'Plugin "faulty-plugin" onInit failed:',
+        'Plugin "faulty-plugin" init failed:',
         expect.any(Error)
       )
 
@@ -335,7 +335,7 @@ describe('Core', () => {
 
       expect(regexpResult.patterns).toEqual({
         variant: expect.stringContaining('hover'),
-        property: expect.stringContaining('p|m|w|h|bg'),
+        utility: expect.stringContaining('p|m|w|h|bg'),
         value: expect.any(String)
       })
       expect(regexpResult.matcher).toBeInstanceOf(RegExp)
@@ -355,13 +355,13 @@ describe('Core', () => {
 
       const newRegexp = tenox.regexp()
       expect(newRegexp).not.toBe(initialRegexp)
-      expect(newRegexp.patterns.property).toContain('border')
+      expect(newRegexp.patterns.utility).toContain('border')
     })
 
     it('should update matcher when cache is invalidated', () => {
       const initialMatcher = tenox.matcher
 
-      tenox.addUtility('new-util', 'new-property')
+      tenox.addUtility('new-util', 'new-utility')
 
       expect(tenox.matcher).not.toBe(initialMatcher)
     })
@@ -374,7 +374,7 @@ describe('Core', () => {
 
       const regexpResult = emptyInstance.regexp()
       expect(regexpResult.patterns.variant).toBe('[\\w.-]+') // DEFAULT_GLOBAL_PATTERN
-      expect(regexpResult.patterns.property).toBe('[\\w.-]+') // DEFAULT_GLOBAL_PATTERN
+      expect(regexpResult.patterns.utility).toBe('[\\w.-]+') // DEFAULT_GLOBAL_PATTERN
     })
   })
 })

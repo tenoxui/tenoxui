@@ -1,3 +1,3 @@
 export * from './escape'
 export * from './createMatcher'
-export * from './flattenPlugins'
+export * from './pluginUtils'

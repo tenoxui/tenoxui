@@ -77,7 +77,7 @@ describe('TenoxUI Plugin Ecosystem', () => {
         name: 'plugin1',
         priority: 2,
         regexp: ({ patterns }) => ({
-          patterns: { property: patterns.property + '|custom1' }
+          patterns: { utility: patterns.utility + '|custom1' }
         })
       }
 
@@ -85,7 +85,7 @@ describe('TenoxUI Plugin Ecosystem', () => {
         name: 'plugin2',
         priority: 1,
         regexp: ({ patterns }) => ({
-          patterns: { property: patterns.property + '|custom2' }
+          patterns: { utility: patterns.utility + '|custom2' }
         })
       }
 
@@ -93,7 +93,7 @@ describe('TenoxUI Plugin Ecosystem', () => {
       const result = tx.regexp()
 
       // plugin1 runs first (higher priority), then plugin2
-      expect(result.patterns.property).toBe('m|p|bg|text|w|h|custom1|custom2')
+      expect(result.patterns.utility).toBe('m|p|bg|text|w|h|custom1|custom2')
     })
 
     it('should allow plugins to provide custom matchers', () => {
@@ -118,11 +118,11 @@ describe('TenoxUI Plugin Ecosystem', () => {
       const plugin: Plugin = {
         name: 'custom-matcher',
         regexp: ({ patterns }) => {
-          const { variant, property, value } = patterns
+          const { variant, utility, value } = patterns
 
           return {
             matcher: new RegExp(
-              `^(?:(?<variant>${variant}):)?(?<property>${property})(?:-)((?<value>${value}?))?$`
+              `^(?:(?<variant>${variant}):)?(?<utility>${utility})(?:-)((?<value>${value}?))?$`
             )
           }
         }
@@ -132,7 +132,7 @@ describe('TenoxUI Plugin Ecosystem', () => {
       const result = tx.regexp()
 
       expect(result.matcher).toStrictEqual(
-        /^(?:(?<variant>hover|focus|sm|md):)?(?<property>m|p|bg|text|w|h)(?:-)((?<value>[\w.-]+?))?$/
+        /^(?:(?<variant>hover|focus|sm|md):)?(?<utility>m|p|bg|text|w|h)(?:-)((?<value>[\w.-]+?))?$/
       )
     })
   })
@@ -144,16 +144,16 @@ describe('TenoxUI Plugin Ecosystem', () => {
         priority: 5,
         regexp: ({ patterns }) => ({
           patterns: {
-            property: patterns.property + '|flex|items|justify'
+            utility: patterns.utility + '|flex|items|justify'
           }
         }),
-        processUtilities: (context) => {
+        utility: (context) => {
           const { className } = context
 
           if (className.startsWith('flex-')) {
             return {
               className,
-              property: 'display',
+              utility: 'display',
               value: 'flex',
               variant: null,
               raw: null
@@ -164,7 +164,7 @@ describe('TenoxUI Plugin Ecosystem', () => {
             const value = className.replace('items-', '')
             return {
               className,
-              property: 'align-items',
+              utility: 'align-items',
               value,
               variant: null,
               raw: null
@@ -177,21 +177,21 @@ describe('TenoxUI Plugin Ecosystem', () => {
 
       tx.use(flexPlugin)
 
-      const flexResult = tx.processUtilities({
-        property: 'flex',
+      const flexResult = tx.processUtility({
+        utility: 'flex',
         value: 'row',
         className: 'flex-row'
       })
 
-      const itemsResult = tx.processUtilities({
-        property: 'items',
+      const itemsResult = tx.processUtility({
+        utility: 'items',
         value: 'center',
         className: 'items-center'
       })
 
       expect(flexResult).toEqual({
         className: 'flex-row',
-        property: 'display',
+        utility: 'display',
         value: 'flex',
         variant: null,
         raw: null
@@ -199,7 +199,7 @@ describe('TenoxUI Plugin Ecosystem', () => {
 
       expect(itemsResult).toEqual({
         className: 'items-center',
-        property: 'align-items',
+        utility: 'align-items',
         value: 'center',
         variant: null,
         raw: null
@@ -210,7 +210,7 @@ describe('TenoxUI Plugin Ecosystem', () => {
       const spacingPlugin: Plugin = {
         name: 'spacing-plugin',
         priority: 3,
-        processValue: (value, utilities) => {
+        value: (value, utilities) => {
           // Transform numeric values to rem units
           if (/^\d+$/.test(value)) {
             return `${parseInt(value) * 0.25}rem`
@@ -221,8 +221,8 @@ describe('TenoxUI Plugin Ecosystem', () => {
 
       tx.use(spacingPlugin)
 
-      const result = tx.processUtilities({
-        property: 'm',
+      const result = tx.processUtility({
+        utility: 'm',
         value: '4',
         className: 'm-4'
       })
@@ -239,7 +239,7 @@ describe('TenoxUI Plugin Ecosystem', () => {
             variant: patterns.variant + '|dark'
           }
         }),
-        processVariant: (variant, variants) => {
+        variant: (variant, variants) => {
           if (variant === 'dark') {
             return '@media (prefers-color-scheme: dark)'
           }
@@ -249,9 +249,9 @@ describe('TenoxUI Plugin Ecosystem', () => {
 
       tx.use(darkModePlugin)
 
-      const result = tx.processUtilities({
+      const result = tx.processUtility({
         variant: 'dark',
-        property: 'bg',
+        utility: 'bg',
         value: 'black',
         className: 'dark:bg-black'
       })
@@ -322,12 +322,12 @@ describe('TenoxUI Plugin Ecosystem', () => {
   })
 
   describe('Plugin Context Objects', () => {
-    it('should provide complete context to onInit plugins', () => {
+    it('should provide complete context to init plugins', () => {
       let receivedContext: any
 
       const contextPlugin: Plugin = {
         name: 'context-plugin',
-        onInit(context) {
+        init(context) {
           receivedContext = context
         }
       }
@@ -337,17 +337,17 @@ describe('TenoxUI Plugin Ecosystem', () => {
 
       expect(receivedContext).toHaveProperty('regexp')
       expect(receivedContext).toHaveProperty('parser')
-      expect(receivedContext).toHaveProperty('processUtilities')
-      expect(receivedContext).toHaveProperty('processValue')
-      expect(receivedContext).toHaveProperty('processVariant')
+      expect(receivedContext.process).toHaveProperty('utility')
+      expect(receivedContext.process).toHaveProperty('value')
+      expect(receivedContext.process).toHaveProperty('variant')
       expect(receivedContext).toHaveProperty('utilities')
       expect(receivedContext).toHaveProperty('variants')
 
       expect(typeof receivedContext.regexp).toBe('function')
       expect(typeof receivedContext.parser).toBe('function')
-      expect(typeof receivedContext.processUtilities).toBe('function')
-      expect(typeof receivedContext.processValue).toBe('function')
-      expect(typeof receivedContext.processVariant).toBe('function')
+      expect(typeof receivedContext.process.utility).toBe('function')
+      expect(typeof receivedContext.process.value).toBe('function')
+      expect(typeof receivedContext.process.variant).toBe('function')
     })
   })
 
@@ -407,7 +407,7 @@ describe('TenoxUI Plugin Ecosystem', () => {
             variant: patterns.variant + '|xs|xl|2xl'
           }
         }),
-        processVariant: (variant) => {
+        variant: (variant) => {
           const breakpoints = {
             xs: '@media (min-width: 475px)',
             xl: '@media (min-width: 1280px)',
@@ -419,9 +419,9 @@ describe('TenoxUI Plugin Ecosystem', () => {
 
       tx.use(responsivePlugin)
 
-      const result = tx.processUtilities({
+      const result = tx.processUtility({
         variant: 'xl',
-        property: 'w',
+        utility: 'w',
         value: 'full',
         className: 'xl:w-full'
       })
@@ -432,7 +432,7 @@ describe('TenoxUI Plugin Ecosystem', () => {
     it('should handle a color system plugin', () => {
       const colorPlugin: Plugin = {
         name: 'color-plugin',
-        processValue: (value) => {
+        value: (value) => {
           const colors = {
             primary: '#3b82f6',
             secondary: '#64748b',
@@ -444,8 +444,8 @@ describe('TenoxUI Plugin Ecosystem', () => {
 
       tx.use(colorPlugin)
 
-      const result = tx.processUtilities({
-        property: 'bg',
+      const result = tx.processUtility({
+        utility: 'bg',
         value: 'primary',
         className: 'bg-primary'
       })
@@ -458,7 +458,7 @@ describe('TenoxUI Plugin Ecosystem', () => {
         name: 'typography-plugin',
         regexp: ({ patterns }) => ({
           patterns: {
-            property: patterns.property + '|text-xs|text-sm|text-lg|text-xl'
+            utility: patterns.utility + '|text-xs|text-sm|text-lg|text-xl'
           }
         }),
         process: (className) => {

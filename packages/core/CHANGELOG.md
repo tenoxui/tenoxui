@@ -1,5 +1,12 @@
 # Changelog
 
+## `v3.1.0` - `2025-10-29`
+
+### **Changed**
+
+- Rename **ALL** value `property` with `utility` for consistency
+- Simplified plugin hooks names
+
 ## `v3.0.0` - `2025-10-02`
 
 Major release `v3`

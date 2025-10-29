@@ -5,16 +5,16 @@ describe('regexp', () => {
   let ui = new TenoxUI()
   let defaultPattern = '[\\w.-]+'
   it('should create matcher pattern', () => {
-    let pattern = /^(?:(?<variant>[\w.-]+):)?(?<property>[\w.-]+)(?:-(?<value>[\w.-]+?))?$/
+    let pattern = /^(?:(?<variant>[\w.-]+):)?(?<utility>[\w.-]+)(?:-(?<value>[\w.-]+?))?$/
     expect(ui.matcher).toStrictEqual(pattern)
     expect(createMatcher(defaultPattern, defaultPattern, defaultPattern)).toStrictEqual(pattern)
     expect(ui.regexp().matcher).toStrictEqual(pattern)
     expect(createMatcher('bg|flex', defaultPattern, defaultPattern)).toStrictEqual(
-      /^(?:(?<variant>bg|flex):)?(?<property>[\w.-]+)(?:-(?<value>[\w.-]+?))?$/
+      /^(?:(?<variant>bg|flex):)?(?<utility>[\w.-]+)(?:-(?<value>[\w.-]+?))?$/
     )
   })
   it('should process plugin', () => {
-    const regex = /^(?:(?<variant>bg|flex):)?(?<property>[\w.-]+)(?:-(?<value>[\w.-]+?))?$/
+    const regex = /^(?:(?<variant>bg|flex):)?(?<utility>[\w.-]+)(?:-(?<value>[\w.-]+?))?$/
     ui = new TenoxUI({
       plugins: [
         {
@@ -40,7 +40,7 @@ describe('regexp', () => {
       ]
     })
     expect(ui.matcher).toStrictEqual(
-      /^(?:(?<variant>4|5|bg|flex):)?(?<property>[\w.-]+)(?:-(?<value>[\w.-]+?))?$/
+      /^(?:(?<variant>4|5|bg|flex):)?(?<utility>[\w.-]+)(?:-(?<value>[\w.-]+?))?$/
     )
     expect(
       new TenoxUI({
