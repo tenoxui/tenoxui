@@ -4,7 +4,7 @@ export type CSSPropertyOrVariable = CSSProperty | CSSVariable
 
 export type RegexPatterns = {
   variant?: string
-  property?: string
+  utility?: string
   value?: string
 }
 
@@ -14,7 +14,7 @@ export type BaseProcessResult<TClassName = string> = {
 
 export type DefaultProcessUtilityResult = {
   variant: string | null
-  property: CSSPropertyOrVariable | string
+  utility: CSSPropertyOrVariable | string
   value: string | null
   raw: (undefined | string)[]
 }
@@ -36,31 +36,11 @@ export type RegexpContext = {
 
 export type ProcessUtilitiesContext = Partial<{
   className: string
-  property: string
+  utility: string
   variant: string | null
   value: string | null
   raw: (string | undefined)[]
 }>
-
-export type ProcessContext = {
-  regexp?: () => {
-    patterns?: RegexPatterns
-    matcher?: RegExp
-  } | null
-  parser?: (className: string) => unknown
-  processUtility?: (
-    context: Partial<{
-      variant: string | null
-      property: string
-      value: string
-      className: string
-    }>
-  ) => unknown
-  processValue?: (value: string, utilities: Utilities) => string | null
-  processVariant?: (variant: string, variants: Variants) => string | null
-  utilities?: Utilities
-  variants?: Variants
-}
 
 export type OnInitContext<
   TUtilities extends object = Utilities,
@@ -68,9 +48,11 @@ export type OnInitContext<
 > = {
   utilities: TUtilities
   variants: TVariants
-  processValue: (value: string) => string | null
-  processVariant: (variant: string) => string | null
-  processUtilities: (ctx: any) => unknown
+  process: {
+    value: (value: string) => string | null
+    variant: (variant: string) => string | null
+    utility: (ctx: any) => unknown
+  }
   parser: (className: string) => unknown
   regexp: () => {
     patterns?: RegexPatterns
@@ -92,7 +74,7 @@ export interface Plugin<
   name: string
   priority?: number
 
-  onInit?: (context: OnInitContext<TUtilities, TVariants>) => void
+  init?: (context: OnInitContext<TUtilities, TVariants>) => void
 
   parse?: (className: string, context: ParseContext) => unknown | null
 
@@ -101,13 +83,11 @@ export interface Plugin<
     matcher?: RegExp
   } | null
 
-  processUtilities?: (
-    context: ProcessUtilitiesContext
-  ) => TProcessUtilitiesResult | null | undefined
+  utility?: (context: ProcessUtilitiesContext) => TProcessUtilitiesResult | null | undefined
 
-  processValue?: (value: string) => string | null
+  value?: (value: string) => string | null
 
-  processVariant?: (variant: string) => string | null
+  variant?: (variant: string) => string | null
 
   process?: (className: string) => TProcessResult | null | undefined | void
 }
@@ -141,13 +121,3 @@ export type PluginLike<
 > =
   | Plugin<TProcessResult, TUtilityResult, TUtilities, TVariants>
   | PluginFactory<TProcessResult, TUtilityResult, TUtilities, TVariants>
-
-/**
- * Utility type for creating type-safe plugins
- */
-export type CreatePlugin<
-  TUtilities extends object = Utilities,
-  TVariants extends object = Variants,
-  TProcessResult = BaseProcessResult,
-  TProcessUtilitiesResult = BaseProcessResult
-> = Plugin<TProcessResult, TProcessUtilitiesResult, TUtilities, TVariants>

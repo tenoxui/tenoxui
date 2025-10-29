@@ -12,7 +12,13 @@ import type {
   ProcessUtilitiesContext,
   DefaultProcessUtilityResult
 } from './types'
-import { escapeRegex, createMatcher, flattenPlugins, DEFAULT_GLOBAL_PATTERN } from './utils'
+import {
+  escapeRegex,
+  createMatcher,
+  flattenPlugins,
+  createPluginError,
+  DEFAULT_GLOBAL_PATTERN
+} from './utils'
 
 export class TenoxUI<
   TUtilities extends { [type: string]: any } = Utilities,
@@ -31,7 +37,7 @@ export class TenoxUI<
   // 2. regexp (when matcher cache invalidated)
   // 3. parse (per className)
   // 4. processValue/processVariant (per component)
-  // 5. processUtilities/process (per className)
+  // 5. utility/process (per className)
   // 6. transform (per batch)
 
   constructor(config: Config<TUtilities, TVariants, TProcessResult, TProcessUtilitiesResult> = {}) {
@@ -50,9 +56,11 @@ export class TenoxUI<
     const context = {
       utilities: this.utilities,
       variants: this.variants,
-      processValue: (value: string) => this.processValue(value),
-      processVariant: (variant: string) => this.processVariant(variant),
-      processUtilities: (ctx: any) => this.processUtilities(ctx),
+      process: {
+        value: (value: string) => this.processValue(value),
+        variant: (variant: string) => this.processVariant(variant),
+        utility: (ctx: any) => this.processUtility(ctx)
+      },
       parser: (className: string) => this.parse(className),
       regexp: () => this.regexp(),
       addUtility: (name: string, value: any) => this.addUtility(name, value),
@@ -63,11 +71,11 @@ export class TenoxUI<
     }
 
     for (const plugin of this.plugins) {
-      if (plugin.onInit) {
+      if (plugin.init) {
         try {
-          plugin.onInit(context)
+          plugin.init(context)
         } catch (err) {
-          console.error(`Plugin "${plugin.name}" onInit failed:`, err)
+          createPluginError('init', plugin.name, err)
         }
       }
     }
@@ -138,10 +146,10 @@ export class TenoxUI<
 
     let patterns: RegexPatterns = {
       variant: Object.keys(this.variants).map(escapeRegex).join('|') || DEFAULT_GLOBAL_PATTERN,
-      property: Object.keys(this.utilities).map(escapeRegex).join('|') || DEFAULT_GLOBAL_PATTERN,
+      utility: Object.keys(this.utilities).map(escapeRegex).join('|') || DEFAULT_GLOBAL_PATTERN,
       value: DEFAULT_GLOBAL_PATTERN
     }
-    let matcher = createMatcher(patterns.variant, patterns.property, patterns.value)
+    let matcher = createMatcher(patterns.variant, patterns.utility, patterns.value)
 
     const regexpPlugins = this.plugins
       .filter((p) => p.regexp)
@@ -162,11 +170,11 @@ export class TenoxUI<
             if (result.matcher) {
               matcher = result.matcher
             } else {
-              matcher = createMatcher(patterns.variant, patterns.property, patterns.value)
+              matcher = createMatcher(patterns.variant, patterns.utility, patterns.value)
             }
           }
         } catch (err) {
-          console.error(`Plugin "${plugin.name}" regexp failed:`, err)
+          createPluginError('regexp', plugin.name, err)
         }
       }
     }
@@ -190,7 +198,7 @@ export class TenoxUI<
           const result = plugin.parse(className, context)
           if (result) return result
         } catch (err) {
-          console.error(`Plugin "${plugin.name}" parse failed:`, err)
+          createPluginError('parse', plugin.name, err)
         }
       }
     }
@@ -202,16 +210,16 @@ export class TenoxUI<
     if (!value) return null
 
     const valuePlugins = this.plugins
-      .filter((p) => p.processValue)
+      .filter((p) => p.value)
       .sort((a, b) => (b.priority || 0) - (a.priority || 0))
 
     for (const plugin of valuePlugins) {
-      if (plugin.processValue) {
+      if (plugin.value) {
         try {
-          const result = plugin.processValue(value)
+          const result = plugin.value(value)
           if (result !== null && result !== undefined) return result
         } catch (err) {
-          console.error(`Plugin "${plugin.name}" processValue failed:`, err)
+          createPluginError('value', plugin.name, err)
         }
       }
     }
@@ -223,16 +231,16 @@ export class TenoxUI<
     if (!variant) return null
 
     const variantPlugins = this.plugins
-      .filter((p) => p.processVariant)
+      .filter((p) => p.variant)
       .sort((a, b) => (b.priority || 0) - (a.priority || 0))
 
     for (const plugin of variantPlugins) {
-      if (plugin.processVariant) {
+      if (plugin.variant) {
         try {
-          const result = plugin.processVariant(variant)
+          const result = plugin.variant(variant)
           if (result !== null && result !== undefined) return result
         } catch (err) {
-          console.error(`Plugin "${plugin.name}" processVariant failed:`, err)
+          createPluginError('variant', plugin.name, err)
         }
       }
     }
@@ -240,37 +248,37 @@ export class TenoxUI<
     return this.variants[variant] || null
   }
 
-  public processUtilities<T = BaseProcessResult>({
+  public processUtility<T = BaseProcessResult>({
     variant = null,
-    property = '',
+    utility = '',
     value = '',
     className = ''
   }: {
     variant?: string | null
-    property?: string
+    utility?: string
     value?: string
     className?: string
   } = {}): T | (BaseProcessResult & DefaultProcessUtilityResult) | unknown {
     const utilityPlugins = this.plugins
-      .filter((p) => p.processUtilities)
+      .filter((p) => p.utility)
       .sort((a, b) => (b.priority || 0) - (a.priority || 0))
 
     for (const plugin of utilityPlugins) {
-      if (plugin.processUtilities) {
+      if (plugin.utility) {
         try {
           const context: ProcessUtilitiesContext = {
             className,
-            property: this.utilities[property],
+            utility: this.utilities[utility],
             value: this.processValue(value),
             variant: variant ? this.processVariant(variant) : null,
             raw: this.parse(className)
           }
 
-          const result = plugin.processUtilities(context)
+          const result = plugin.utility(context)
 
           if (result !== null && result !== undefined) return result as T
         } catch (err) {
-          console.error(`Plugin "${plugin.name}" processUtilities failed:`, err)
+          createPluginError('utility', plugin.name, err)
         }
       }
     }
@@ -278,11 +286,11 @@ export class TenoxUI<
     const finalValue = this.processValue(value || '')
     const variantData = variant ? this.processVariant(variant) : null
 
-    if (!this.utilities[property]) return null
+    if (!this.utilities[utility]) return null
 
     return {
       className,
-      property: this.utilities[property],
+      utility: this.utilities[utility],
       value: finalValue,
       variant: variantData,
       raw: this.parse(className)
@@ -314,7 +322,7 @@ export class TenoxUI<
               break
             }
           } catch (err) {
-            console.error(`Plugin "${plugin.name}" process failed:`, err)
+            createPluginError('process', plugin.name, err)
           }
         }
       }
@@ -325,8 +333,8 @@ export class TenoxUI<
           continue
         }
 
-        const [, variant, property, value] = parsed
-        const processed = this.processUtilities({ variant, property, value, className })
+        const [, variant, utility, value] = parsed
+        const processed = this.processUtility({ variant, utility, value, className })
 
         if (processed) {
           results.push(processed as T)

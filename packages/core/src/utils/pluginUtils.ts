@@ -20,3 +20,7 @@ export function flattenPlugins(plugins: (Plugin | PluginFactory | PluginLike)[])
 
   return flattened
 }
+
+export function createPluginError(pluginName: string, hooksName: string, err: any): void {
+  console.error(`Plugin "${hooksName}" ${pluginName} failed:`, err)
+}
