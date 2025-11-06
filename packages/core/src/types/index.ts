@@ -26,15 +26,10 @@ export type ProcessResult<
 
 export type ParseContext = {
   patterns: RegexPatterns
-  matcher: RegExp
+  regexp: RegExp
 }
 
-export type RegexpContext = {
-  patterns?: RegexPatterns
-  matcher?: RegExp
-}
-
-export type ProcessUtilitiesContext = Partial<{
+export type ProcessUtilityContext = Partial<{
   className: string
   utility: string
   variant: string | null
@@ -42,48 +37,47 @@ export type ProcessUtilitiesContext = Partial<{
   raw: (string | undefined)[]
 }>
 
-export type OnInitContext<
-  TUtilities extends object = Utilities,
-  TVariants extends object = Variants
+export type InitContext<
+  TUtilities extends { [type: string]: any } = Utilities,
+  TVariants extends { [variant: string]: any } = Variants
 > = {
-  utilities: TUtilities
-  variants: TVariants
+  getUtilities: () => TUtilities
+  getVariants: () => TVariants
   process: {
     value: (value: string) => string | null
     variant: (variant: string) => string | null
     utility: (ctx: any) => unknown
+    className: (cn: string) => unknown | null
+    classNames: (cns: string | string[]) => unknown | null
   }
   parser: (className: string) => unknown
   regexp: () => {
     patterns?: RegexPatterns
-    matcher?: RegExp
+    regexp?: RegExp
   } | null
-  addUtility: (name: string, value: any) => void
-  addVariant: (name: string, value: any) => void
-  addUtilities: (utilities: Record<string, any>) => void
-  addVariants: (variants: Record<string, any>) => void
+  addUtility: <K extends keyof TUtilities>(name: K, value: TUtilities[K]) => void
+  addVariant: <K extends keyof TVariants>(name: K, value: TVariants[K]) => void
+  addUtilities: (variants: Partial<TUtilities>) => void
+  addVariants: (variants: Partial<TVariants>) => void
   invalidateCache: () => void
 }
 
 export interface Plugin<
   TProcessResult = BaseProcessResult,
-  TProcessUtilitiesResult = BaseProcessResult,
-  TUtilities extends object = Utilities,
-  TVariants extends object = Variants
+  TProcessUtilityResult = BaseProcessResult,
+  TUtilities extends { [type: string]: any } = Utilities,
+  TVariants extends { [type: string]: any } = Variants
 > {
   name: string
   priority?: number
 
-  init?: (context: OnInitContext<TUtilities, TVariants>) => void
+  init?: (context: InitContext<TUtilities, TVariants>) => void
 
   parse?: (className: string, context: ParseContext) => unknown | null
 
-  regexp?: (context: RegexpContext) => {
-    patterns?: RegexPatterns
-    matcher?: RegExp
-  } | null
+  regexp?: (context: Partial<ParseContext>) => { patterns?: RegexPatterns; regexp?: RegExp } | null
 
-  utility?: (context: ProcessUtilitiesContext) => TProcessUtilitiesResult | null | undefined
+  utility?: (context: ProcessUtilityContext) => TProcessUtilityResult | null | undefined
 
   value?: (value: string) => string | null
 
@@ -92,32 +86,32 @@ export interface Plugin<
   process?: (className: string) => TProcessResult | null | undefined | void
 }
 
-export type Utilities<T = CSSPropertyOrVariable> = Record<string, T>
-export type Variants<T = string> = Record<string, T>
+export type Utilities<T = any> = Record<string, T>
+export type Variants<T = any> = Record<string, T>
 
 export interface Config<
-  TUtilities extends object = Utilities,
-  TVariants extends object = Variants,
+  TUtilities extends { [type: string]: any } = Utilities,
+  TVariants extends { [type: string]: any } = Variants,
   TProcessResult = BaseProcessResult,
-  TProcessUtilitiesResult = BaseProcessResult
+  TProcessUtilityResult = BaseProcessResult
 > {
   utilities?: TUtilities
   variants?: TVariants
-  plugins?: Plugin<TProcessResult, TProcessUtilitiesResult, TUtilities, TVariants>[]
+  plugins?: Plugin<TProcessResult, TProcessUtilityResult, TUtilities, TVariants>[]
 }
 
 export type PluginFactory<
   TProcessResult = BaseProcessResult,
   TUtilityResult = BaseProcessResult,
-  TUtilities extends object = Utilities,
-  TVariants extends object = Variants
+  TUtilities extends { [type: string]: any } = Utilities,
+  TVariants extends { [type: string]: any } = Variants
 > = () => Plugin<TProcessResult, TUtilityResult, TUtilities, TVariants>[]
 
 export type PluginLike<
   TProcessResult = BaseProcessResult,
   TUtilityResult = BaseProcessResult,
-  TUtilities extends object = Utilities,
-  TVariants extends object = Variants
+  TUtilities extends { [type: string]: any } = Utilities,
+  TVariants extends { [type: string]: any } = Variants
 > =
   | Plugin<TProcessResult, TUtilityResult, TUtilities, TVariants>
   | PluginFactory<TProcessResult, TUtilityResult, TUtilities, TVariants>

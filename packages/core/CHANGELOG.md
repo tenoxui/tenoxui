@@ -1,5 +1,27 @@
 # Changelog
 
+## `v3.2.0` - Unreleased
+
+### **Changed**
+
+- Better `TenoxUI.matcher` instance
+- Changed `matcher` to `regexp` on `TenoxUI.regexp()` method and related instances
+- Changed plugin `init` hook context : `utilities` => `getUtilities()`, `variants` => `getVariants`
+
+### Added
+
+- New `TenoxUI.processClassName()` method to process singular class name
+- New plugin `init` hook contexts: `process.className` and `process.classNames`
+
+### Fixed
+
+- `addUtility`, `addVariant`, `addUtilities`, and `addVariants` shouldn't return anything
+
+### Development
+
+- Update `README` file
+- Use `tsdown` for bundler
+
 ## `v3.1.0` - `2025-10-29`
 
 ### **Changed**

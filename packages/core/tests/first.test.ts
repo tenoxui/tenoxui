@@ -236,8 +236,8 @@ describe('Core', () => {
       expect(initSpy).toHaveBeenCalledTimes(1)
       expect(initSpy).toHaveBeenCalledWith(
         expect.objectContaining({
-          utilities: expect.any(Object),
-          variants: expect.any(Object),
+          getUtilities: expect.any(Function),
+          getVariants: expect.any(Function),
           addUtility: expect.any(Function),
           addVariant: expect.any(Function)
         })
@@ -338,7 +338,7 @@ describe('Core', () => {
         utility: expect.stringContaining('p|m|w|h|bg'),
         value: expect.any(String)
       })
-      expect(regexpResult.matcher).toBeInstanceOf(RegExp)
+      expect(regexpResult.regexp).toBeInstanceOf(RegExp)
     })
 
     it('should cache regex patterns for performance', () => {

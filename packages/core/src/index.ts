@@ -4,12 +4,13 @@ import type {
   Variants,
   Utilities,
   PluginLike,
+  InitContext,
   ParseContext,
   PluginFactory,
-  RegexpContext,
   RegexPatterns,
   BaseProcessResult,
-  ProcessUtilitiesContext,
+  CSSPropertyOrVariable,
+  ProcessUtilityContext,
   DefaultProcessUtilityResult
 } from './types'
 import {
@@ -21,7 +22,7 @@ import {
 } from './utils'
 
 export class TenoxUI<
-  TUtilities extends { [type: string]: any } = Utilities,
+  TUtilities extends { [type: string]: any } = Utilities<CSSPropertyOrVariable>,
   TVariants extends { [variant: string]: any } = Variants,
   TProcessResult extends BaseProcessResult<any> = BaseProcessResult<string>,
   TProcessUtilitiesResult extends BaseProcessResult<any> = BaseProcessResult<string>
@@ -29,16 +30,15 @@ export class TenoxUI<
   private utilities: TUtilities
   private variants: TVariants
   private plugins: Plugin[]
-  private _cachedRegexp: { patterns: RegexPatterns; matcher: RegExp } | null = null
-  public matcher: RegExp | null
+  private _cachedRegexp: ParseContext | null = null
+  public matcher: ParseContext | null
 
   // Plugin execution order:
-  // 1. onInit (once)
+  // 1. init (once)
   // 2. regexp (when matcher cache invalidated)
   // 3. parse (per className)
   // 4. processValue/processVariant (per component)
   // 5. utility/process (per className)
-  // 6. transform (per batch)
 
   constructor(config: Config<TUtilities, TVariants, TProcessResult, TProcessUtilitiesResult> = {}) {
     const { variants, utilities, plugins = [] } = config
@@ -53,27 +53,37 @@ export class TenoxUI<
   }
 
   private _initializePlugins() {
-    const context = {
-      utilities: this.utilities,
-      variants: this.variants,
+    const context: InitContext<TUtilities, TVariants> = {
+      getUtilities: () => this.utilities,
+      getVariants: () => this.variants,
       process: {
         value: (value: string) => this.processValue(value),
         variant: (variant: string) => this.processVariant(variant),
-        utility: (ctx: any) => this.processUtility(ctx)
+        utility: (ctx: any) => this.processUtility(ctx),
+        className: (cn: string) => this.processClassName(cn),
+        classNames: (cns: string | string[]) => this.process(cns)
       },
       parser: (className: string) => this.parse(className),
       regexp: () => this.regexp(),
-      addUtility: (name: string, value: any) => this.addUtility(name, value),
-      addVariant: (name: string, value: any) => this.addVariant(name, value),
-      addUtilities: (utilities: Record<string, any>) => this.addUtilities(utilities),
-      addVariants: (variants: Record<string, any>) => this.addVariants(variants),
+      addUtility<K extends keyof TUtilities>(name: K, value: TUtilities[K]) {
+        this.addUtility(name, value)
+      },
+      addVariant<K extends keyof TVariants>(name: K, value: TVariants[K]) {
+        this.addVariant(name, value)
+      },
+      addUtilities(utilities: Partial<TUtilities>) {
+        this.addUtilities(utilities)
+      },
+      addVariants(variants: Partial<TVariants>) {
+        this.addVariants(variants)
+      },
       invalidateCache: () => this.invalidateCache()
     }
 
-    for (const plugin of this.plugins) {
+    for (const plugin of this.sanitizePlugin('init')) {
       if (plugin.init) {
         try {
-          plugin.init(context)
+          plugin.init(context as any)
         } catch (err) {
           createPluginError('init', plugin.name, err)
         }
@@ -82,8 +92,7 @@ export class TenoxUI<
   }
 
   private _initializeMatcher() {
-    const regexpResult = this.regexp()
-    this.matcher = regexpResult.matcher
+    this.matcher = this.regexp()
   }
 
   public use(...plugin: (Plugin | PluginFactory | PluginLike)[]): this {
@@ -96,26 +105,26 @@ export class TenoxUI<
     return this
   }
 
-  public addUtility(name: string, value: any): this {
-    this.utilities = { ...this.utilities, [name]: value } as TUtilities
+  public addUtility<K extends keyof TUtilities>(name: K, value: TUtilities[K]): this {
+    this.utilities = { ...this.utilities, [name]: value }
     this.invalidateCache()
     return this
   }
 
-  public addVariant(name: string, value: any): this {
-    this.variants = { ...this.variants, [name]: value } as TVariants
+  public addVariant<K extends keyof TVariants>(name: K, value: TVariants[K]): this {
+    this.variants = { ...this.variants, [name]: value }
     this.invalidateCache()
     return this
   }
 
-  public addUtilities(utilities: Record<string, any>): this {
-    this.utilities = { ...this.utilities, ...utilities } as TUtilities
+  public addUtilities(utilities: Partial<TUtilities>): this {
+    this.utilities = { ...this.utilities, ...utilities }
     this.invalidateCache()
     return this
   }
 
-  public addVariants(variants: Record<string, any>): this {
-    this.variants = { ...this.variants, ...variants } as TVariants
+  public addVariants(variants: Partial<TVariants>): this {
+    this.variants = { ...this.variants, ...variants }
     this.invalidateCache()
     return this
   }
@@ -149,16 +158,12 @@ export class TenoxUI<
       utility: Object.keys(this.utilities).map(escapeRegex).join('|') || DEFAULT_GLOBAL_PATTERN,
       value: DEFAULT_GLOBAL_PATTERN
     }
-    let matcher = createMatcher(patterns.variant, patterns.utility, patterns.value)
+    let regexp = createMatcher(patterns.variant, patterns.utility, patterns.value)
 
-    const regexpPlugins = this.plugins
-      .filter((p) => p.regexp)
-      .sort((a, b) => (b.priority || 0) - (a.priority || 0))
-
-    for (const plugin of regexpPlugins) {
+    for (const plugin of this.sanitizePlugin('regexp')) {
       if (plugin.regexp) {
         try {
-          const context: RegexpContext = { patterns, matcher }
+          const context: ParseContext = { patterns, regexp }
 
           const result = plugin.regexp(context)
 
@@ -167,10 +172,11 @@ export class TenoxUI<
               patterns = { ...patterns, ...result.patterns }
             }
 
-            if (result.matcher) {
-              matcher = result.matcher
+            if (result.regexp) {
+              const regexResult = result.regexp
+              regexp = typeof regexResult === 'string' ? new RegExp(regexResult) : regexResult
             } else {
-              matcher = createMatcher(patterns.variant, patterns.utility, patterns.value)
+              regexp = createMatcher(patterns.variant, patterns.utility, patterns.value)
             }
           }
         } catch (err) {
@@ -179,21 +185,21 @@ export class TenoxUI<
       }
     }
 
-    this._cachedRegexp = { patterns, matcher }
+    this._cachedRegexp = { patterns, regexp }
     return this._cachedRegexp
   }
 
-  public parse(className: string, safelist?: string[]): (undefined | string)[] | any | null {
-    let { patterns, matcher } = this.regexp()
+  private sanitizePlugin(name: Exclude<keyof Plugin, 'name' | 'priority'>) {
+    return this.plugins.filter((p) => p[name]).sort((a, b) => (b.priority || 0) - (a.priority || 0))
+  }
 
-    const parsePlugins = this.plugins
-      .filter((p) => p.parse)
-      .sort((a, b) => (b.priority || 0) - (a.priority || 0))
+  public parse(className: string): (undefined | string)[] | any | null {
+    let { patterns, regexp } = this.regexp()
 
-    for (const plugin of parsePlugins) {
+    for (const plugin of this.sanitizePlugin('parse')) {
       if (plugin.parse) {
         try {
-          const context: ParseContext = { patterns, matcher }
+          const context: ParseContext = { patterns, regexp }
 
           const result = plugin.parse(className, context)
           if (result) return result
@@ -203,17 +209,13 @@ export class TenoxUI<
       }
     }
 
-    return className.match(matcher)
+    return className.match(regexp)
   }
 
-  private processValue(value: string): string | null {
+  public processValue(value: string): string | null {
     if (!value) return null
 
-    const valuePlugins = this.plugins
-      .filter((p) => p.value)
-      .sort((a, b) => (b.priority || 0) - (a.priority || 0))
-
-    for (const plugin of valuePlugins) {
+    for (const plugin of this.sanitizePlugin('value')) {
       if (plugin.value) {
         try {
           const result = plugin.value(value)
@@ -227,14 +229,10 @@ export class TenoxUI<
     return value
   }
 
-  private processVariant(variant: string): string | null {
+  public processVariant(variant: string): string | null {
     if (!variant) return null
 
-    const variantPlugins = this.plugins
-      .filter((p) => p.variant)
-      .sort((a, b) => (b.priority || 0) - (a.priority || 0))
-
-    for (const plugin of variantPlugins) {
+    for (const plugin of this.sanitizePlugin('variant')) {
       if (plugin.variant) {
         try {
           const result = plugin.variant(variant)
@@ -259,14 +257,10 @@ export class TenoxUI<
     value?: string
     className?: string
   } = {}): T | (BaseProcessResult & DefaultProcessUtilityResult) | unknown {
-    const utilityPlugins = this.plugins
-      .filter((p) => p.utility)
-      .sort((a, b) => (b.priority || 0) - (a.priority || 0))
-
-    for (const plugin of utilityPlugins) {
+    for (const plugin of this.sanitizePlugin('utility')) {
       if (plugin.utility) {
         try {
-          const context: ProcessUtilitiesContext = {
+          const context: ProcessUtilityContext = {
             className,
             utility: this.utilities[utility],
             value: this.processValue(value),
@@ -297,50 +291,38 @@ export class TenoxUI<
     } satisfies BaseProcessResult & DefaultProcessUtilityResult
   }
 
-  public process<T = unknown>(classNames: string | string[]): T[] | T | null {
-    const classList = Array.isArray(classNames) ? classNames : classNames.split(/\s+/)
-    const results: T[] = []
+  public processClassName<T>(className: string): T | null {
+    if (typeof className !== 'string' || !className.trim()) return null
 
-    if (classList.length < 0) return null
-
-    for (const className of classList) {
-      if (!className.trim()) continue
-
-      let pluginHandled = false
-
-      const processPlugins = this.plugins
-        .filter((p) => p.process)
-        .sort((a, b) => (b.priority || 0) - (a.priority || 0))
-
-      for (const plugin of processPlugins) {
-        if (plugin.process) {
-          try {
-            const result = plugin.process(className)
-            if (result !== null && result !== undefined) {
-              results.push(result as T)
-              pluginHandled = true
-              break
-            }
-          } catch (err) {
-            createPluginError('process', plugin.name, err)
+    for (const plugin of this.sanitizePlugin('process')) {
+      if (plugin.process) {
+        try {
+          const result = plugin.process(className)
+          if (result !== null && result !== undefined) {
+            return result as T
           }
-        }
-      }
-
-      if (!pluginHandled) {
-        const parsed = this.parse(className)
-        if (!parsed) {
-          continue
-        }
-
-        const [, variant, utility, value] = parsed
-        const processed = this.processUtility({ variant, utility, value, className })
-
-        if (processed) {
-          results.push(processed as T)
+        } catch (err) {
+          createPluginError('process', plugin.name, err)
         }
       }
     }
+
+    const parsed = this.parse(className)
+    if (!parsed) return null
+
+    const [, variant, utility, value] = parsed
+    const processed = this.processUtility({ variant, utility, value, className })
+
+    return processed ? (processed as T) : null
+  }
+
+  public process<T = unknown>(classNames: string | string[]): T[] | T | null {
+    const classList = Array.isArray(classNames) ? classNames : classNames.split(/\s+/)
+    if (classList.length === 0) return null
+
+    const results = classList
+      .map((className) => this.processClassName<T>(className))
+      .filter(Boolean) as T[]
 
     return results.length > 0 ? results : null
   }

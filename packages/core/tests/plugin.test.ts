@@ -90,10 +90,9 @@ describe('TenoxUI Plugin Ecosystem', () => {
       }
 
       tx.use(plugin1, plugin2)
-      const result = tx.regexp()
 
       // plugin1 runs first (higher priority), then plugin2
-      expect(result.patterns.utility).toBe('m|p|bg|text|w|h|custom1|custom2')
+      expect(tx.regexp().patterns.utility).toBe('m|p|bg|text|w|h|custom1|custom2')
     })
 
     it('should allow plugins to provide custom matchers', () => {
@@ -101,15 +100,12 @@ describe('TenoxUI Plugin Ecosystem', () => {
 
       const plugin: Plugin = {
         name: 'custom-matcher',
-        regexp: () => ({
-          matcher: customMatcher
-        })
+        regexp: () => ({ regexp: customMatcher })
       }
 
       tx.use(plugin)
-      const result = tx.regexp()
 
-      expect(result.matcher).toBe(customMatcher)
+      expect(tx.regexp().regexp).toBe(customMatcher)
     })
 
     it('should allow plugins to provide custom matchers 2', () => {
@@ -121,7 +117,7 @@ describe('TenoxUI Plugin Ecosystem', () => {
           const { variant, utility, value } = patterns
 
           return {
-            matcher: new RegExp(
+            regexp: new RegExp(
               `^(?:(?<variant>${variant}):)?(?<utility>${utility})(?:-)((?<value>${value}?))?$`
             )
           }
@@ -129,9 +125,8 @@ describe('TenoxUI Plugin Ecosystem', () => {
       }
 
       tx.use(plugin)
-      const result = tx.regexp()
 
-      expect(result.matcher).toStrictEqual(
+      expect(tx.regexp().regexp).toStrictEqual(
         /^(?:(?<variant>hover|focus|sm|md):)?(?<utility>m|p|bg|text|w|h)(?:-)((?<value>[\w.-]+?))?$/
       )
     })
@@ -221,13 +216,13 @@ describe('TenoxUI Plugin Ecosystem', () => {
 
       tx.use(spacingPlugin)
 
-      const result = tx.processUtility({
-        utility: 'm',
-        value: '4',
-        className: 'm-4'
-      })
-
-      expect(result?.value).toBe('1rem')
+      expect(
+        tx.processUtility({
+          utility: 'm',
+          value: '4',
+          className: 'm-4'
+        })?.value
+      ).toBe('1rem')
     })
 
     it('should handle custom variant plugins', () => {
@@ -249,14 +244,14 @@ describe('TenoxUI Plugin Ecosystem', () => {
 
       tx.use(darkModePlugin)
 
-      const result = tx.processUtility({
-        variant: 'dark',
-        utility: 'bg',
-        value: 'black',
-        className: 'dark:bg-black'
-      })
-
-      expect(result?.variant).toBe('@media (prefers-color-scheme: dark)')
+      expect(
+        tx.processUtility({
+          variant: 'dark',
+          utility: 'bg',
+          value: 'black',
+          className: 'dark:bg-black'
+        })?.variant
+      ).toBe('@media (prefers-color-scheme: dark)')
     })
   })
 
@@ -278,8 +273,7 @@ describe('TenoxUI Plugin Ecosystem', () => {
 
       tx.use(specialPlugin)
 
-      const result = tx.process('special-test')
-      expect(result[0]).toEqual({
+      expect(tx.process('special-test')[0]).toEqual({
         className: 'special-test',
         type: 'special',
         value: 'test'
@@ -287,16 +281,14 @@ describe('TenoxUI Plugin Ecosystem', () => {
     })
 
     it('should return null for non-existent plugin', () => {
-      const result = tx.process('test-class')
-      expect(result).toBeNull()
+      expect(tx.process('test-class')).toBeNull()
     })
 
     it('should return null for plugin without process method', () => {
       const plugin: Plugin = { name: 'no-process' }
       tx.use(plugin)
 
-      const result = tx.process('test-class')
-      expect(result).toBeNull()
+      expect(tx.process('test-class')).toBeNull()
     })
 
     it('should handle plugin process errors gracefully', () => {
@@ -310,8 +302,7 @@ describe('TenoxUI Plugin Ecosystem', () => {
 
       tx.use(errorPlugin)
 
-      const result = tx.process('test')
-      expect(result).toBeNull()
+      expect(tx.process('test')).toBeNull()
       expect(consoleSpy).toHaveBeenCalledWith(
         'Plugin "error-plugin" process failed:',
         expect.any(Error)
@@ -340,8 +331,8 @@ describe('TenoxUI Plugin Ecosystem', () => {
       expect(receivedContext.process).toHaveProperty('utility')
       expect(receivedContext.process).toHaveProperty('value')
       expect(receivedContext.process).toHaveProperty('variant')
-      expect(receivedContext).toHaveProperty('utilities')
-      expect(receivedContext).toHaveProperty('variants')
+      expect(receivedContext).toHaveProperty('getUtilities')
+      expect(receivedContext).toHaveProperty('getVariants')
 
       expect(typeof receivedContext.regexp).toBe('function')
       expect(typeof receivedContext.parser).toBe('function')
@@ -370,7 +361,6 @@ describe('TenoxUI Plugin Ecosystem', () => {
       tx.use(errorPlugin, workingPlugin) // error plugin has higher default priority (0)
 
       const result = tx.parse('test-class')
-
       expect(consoleSpy).toHaveBeenCalled()
       expect(result).toEqual(['working-result'])
 
@@ -392,7 +382,7 @@ describe('TenoxUI Plugin Ecosystem', () => {
       // Should not crash and should still work
       const result = tx.regexp()
       expect(result).toBeDefined()
-      expect(result.matcher).toBeInstanceOf(RegExp)
+      expect(result.regexp).toBeInstanceOf(RegExp)
 
       consoleSpy.mockRestore()
     })
@@ -419,14 +409,14 @@ describe('TenoxUI Plugin Ecosystem', () => {
 
       tx.use(responsivePlugin)
 
-      const result = tx.processUtility({
-        variant: 'xl',
-        utility: 'w',
-        value: 'full',
-        className: 'xl:w-full'
-      })
-
-      expect(result?.variant).toBe('@media (min-width: 1280px)')
+      expect(
+        tx.processUtility({
+          variant: 'xl',
+          utility: 'w',
+          value: 'full',
+          className: 'xl:w-full'
+        })?.variant
+      ).toBe('@media (min-width: 1280px)')
     })
 
     it('should handle a color system plugin', () => {
@@ -444,13 +434,13 @@ describe('TenoxUI Plugin Ecosystem', () => {
 
       tx.use(colorPlugin)
 
-      const result = tx.processUtility({
-        utility: 'bg',
-        value: 'primary',
-        className: 'bg-primary'
-      })
-
-      expect(result?.value).toBe('#3b82f6')
+      expect(
+        tx.processUtility({
+          utility: 'bg',
+          value: 'primary',
+          className: 'bg-primary'
+        })?.value
+      ).toBe('#3b82f6')
     })
 
     it('should handle a typography plugin with multiple utilities', () => {
@@ -483,9 +473,7 @@ describe('TenoxUI Plugin Ecosystem', () => {
 
       tx.use(typographyPlugin)
 
-      const result = tx.process('text-lg')
-
-      expect(result[0]).toEqual({
+      expect(tx.process('text-lg')[0]).toEqual({
         className: 'text-lg',
         properties: { fontSize: '1.125rem', lineHeight: '1.75rem' },
         type: 'typography'
