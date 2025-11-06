@@ -1,6 +1,6 @@
 {
   "name": "@tenoxui/core",
-  "version": "3.1.1",
+  "version": "3.2.0",
   "description": "A powerful and extensible utility-first css framework engine",
   "author": "NOuSantx <nousantx@gmail.com>",
   "license": "MIT",
@@ -14,6 +14,7 @@
     "css-framework",
     "atomic-css-engine"
   ],
+  "type": "module",
   "homepage": "https://tenoxui.web.app",
   "repository": {
     "type": "git",
@@ -41,8 +42,8 @@
     }
   },
   "scripts": {
-    "dev": "vite build --watch",
-    "build": "vite build",
+    "dev": "tsdown --watch",
+    "build": "tsdown",
     "test": "vitest run",
     "test:watch": "vitest",
     "type:check": "tsc -b --noEmit",
@@ -52,7 +53,7 @@
   "devDependencies": {
     "@types/node": "catalog:",
     "typescript": "catalog:",
-    "vite": "catalog:",
+    "tsdown": "catalog:",
     "vitest": "catalog:"
   }
 }
