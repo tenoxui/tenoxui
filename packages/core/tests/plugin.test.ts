@@ -151,7 +151,7 @@ describe('TenoxUI Plugin Ecosystem', () => {
               utility: 'display',
               value: 'flex',
               variant: null,
-              raw: null
+              match: null
             }
           }
 
@@ -162,7 +162,7 @@ describe('TenoxUI Plugin Ecosystem', () => {
               utility: 'align-items',
               value,
               variant: null,
-              raw: null
+              match: null
             }
           }
 
@@ -189,7 +189,7 @@ describe('TenoxUI Plugin Ecosystem', () => {
         utility: 'display',
         value: 'flex',
         variant: null,
-        raw: null
+        match: null
       })
 
       expect(itemsResult).toEqual({
@@ -197,7 +197,7 @@ describe('TenoxUI Plugin Ecosystem', () => {
         utility: 'align-items',
         value: 'center',
         variant: null,
-        raw: null
+        match: null
       })
     })
 
@@ -281,14 +281,14 @@ describe('TenoxUI Plugin Ecosystem', () => {
     })
 
     it('should return null for non-existent plugin', () => {
-      expect(tx.process('test-class')).toBeNull()
+      expect(tx.process('test-class')).toStrictEqual([])
     })
 
     it('should return null for plugin without process method', () => {
       const plugin: Plugin = { name: 'no-process' }
       tx.use(plugin)
 
-      expect(tx.process('test-class')).toBeNull()
+      expect(tx.process('test-class')).toStrictEqual([])
     })
 
     it('should handle plugin process errors gracefully', () => {
@@ -302,7 +302,7 @@ describe('TenoxUI Plugin Ecosystem', () => {
 
       tx.use(errorPlugin)
 
-      expect(tx.process('test')).toBeNull()
+      expect(tx.process('test')).toStrictEqual([])
       expect(consoleSpy).toHaveBeenCalledWith(
         'Plugin "error-plugin" process failed:',
         expect.any(Error)

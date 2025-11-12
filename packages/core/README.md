@@ -10,7 +10,7 @@ A powerful, extensible utility-first CSS framework engine with plugin architectu
 - **Utility Management**: Dynamic utility and variant addition/removal
 - **Plugin Architecture**: Extend functionality with custom plugins at multiple execution stages
 - **Type-Safe**: Full TypeScript support with generic types
-- **Caching**: Optimized performance with intelligent regexp caching
+- **Caching**: Optimized performance with intelligent caching
 
 ## Installation
 

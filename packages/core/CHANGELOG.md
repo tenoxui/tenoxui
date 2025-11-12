@@ -5,17 +5,25 @@
 ### **Changed**
 
 - Better `TenoxUI.matcher` instance
-- Changed `matcher` to `regexp` on `TenoxUI.regexp()` method and related instances
+- Renaming `matcher` to `regexp` on `TenoxUI.regexp()` method and related instances
+- Renaming `raw` to `match` in `processUtility` result and plugin context
 - Changed plugin `init` hook context : `utilities` => `getUtilities()`, `variants` => `getVariants`
+
+### **Removed**
+
+- All exports from `src/utils`
 
 ### Added
 
-- New `TenoxUI.processClassName()` method to process singular class name
+- Better caching
+- New `processClassName()` method to process singular class name
+- New plugin hook `done`, for final transformation of the `process` method results
 - New plugin `init` hook contexts: `process.className` and `process.classNames`
+- Add support for `Array` of string on `patterns` on `Plugin.regexp()` and `createMatcher`
 
 ### Fixed
 
-- `addUtility`, `addVariant`, `addUtilities`, and `addVariants` shouldn't return anything
+- `addUtility`, `addVariant`, `addUtilities`, and `addVariants` hooks on `init()` plugin hook shouldn't return anything
 
 ### Development
 

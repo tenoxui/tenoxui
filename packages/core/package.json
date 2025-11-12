@@ -1,6 +1,6 @@
 {
   "name": "@tenoxui/core",
-  "version": "3.2.0",
+  "version": "3.2.0-rc.1",
   "description": "A powerful and extensible utility-first css framework engine",
   "author": "NOuSantx <nousantx@gmail.com>",
   "license": "MIT",
@@ -30,16 +30,17 @@
     "README.md",
     "LICENSE"
   ],
-  "types": "./dist/index.d.ts",
-  "main": "./dist/index.cjs.js",
-  "module": "./dist/index.es.js",
+  "types": "./dist/index.d.mts",
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
   "browser": "./dist/index.iife.js",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "require": "./dist/index.cjs.js",
-      "import": "./dist/index.es.js"
-    }
+      "types": "./dist/index.d.mts",
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.mjs"
+    },
+    "./package.json": "./package.json"
   },
   "scripts": {
     "dev": "tsdown --watch",
@@ -47,8 +48,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "type:check": "tsc -b --noEmit",
-    "type:build": "tsc -b",
-    "build:prod": "pnpm type:check && pnpm build --minify --sourcemap && pnpm type:build"
+    "build:prod": "pnpm type:check && pnpm build --minify --sourcemap"
   },
   "devDependencies": {
     "@types/node": "catalog:",

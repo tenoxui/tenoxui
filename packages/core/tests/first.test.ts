@@ -70,7 +70,7 @@ describe('Core', () => {
         utility: 'padding',
         value: '4',
         variant: null,
-        raw: expect.any(Array)
+        match: expect.any(Array)
       })
     })
 
@@ -87,7 +87,7 @@ describe('Core', () => {
         utility: 'background-color',
         value: 'blue',
         variant: '&:hover',
-        raw: expect.any(Array)
+        match: expect.any(Array)
       })
     })
   })
@@ -208,15 +208,15 @@ describe('Core', () => {
       expect(result).toHaveLength(2)
 
       const emptyResult = tenox.process('')
-      expect(emptyResult).toBeNull()
+      expect(emptyResult).toStrictEqual([])
 
       const whitespaceResult = tenox.process('   ')
-      expect(whitespaceResult).toBeNull()
+      expect(whitespaceResult).toStrictEqual([])
     })
 
     it('should return null for empty class lists', () => {
       const result = tenox.process([])
-      expect(result).toBeNull()
+      expect(result).toStrictEqual([])
     })
   })
 

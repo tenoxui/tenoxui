@@ -2,11 +2,9 @@ export type CSSProperty = Extract<keyof CSSStyleDeclaration, string>
 export type CSSVariable = `--${string}`
 export type CSSPropertyOrVariable = CSSProperty | CSSVariable
 
-export type RegexPatterns = {
-  variant?: string
-  utility?: string
-  value?: string
-}
+export type RegexPatterns = Partial<
+  Record<'variant' | 'utility' | 'value', string | (string | string[])[]>
+>
 
 export type BaseProcessResult<TClassName = string> = {
   className: TClassName
@@ -16,7 +14,7 @@ export type DefaultProcessUtilityResult = {
   variant: string | null
   utility: CSSPropertyOrVariable | string
   value: string | null
-  raw: (undefined | string)[]
+  match: (undefined | string)[]
 }
 
 export type ProcessResult<
@@ -34,7 +32,7 @@ export type ProcessUtilityContext = Partial<{
   utility: string
   variant: string | null
   value: string | null
-  raw: (string | undefined)[]
+  match: (string | undefined)[]
 }>
 
 export type InitContext<
@@ -84,6 +82,8 @@ export interface Plugin<
   variant?: (variant: string) => string | null
 
   process?: (className: string) => TProcessResult | null | undefined | void
+
+  done?: (results: any) => unknown
 }
 
 export type Utilities<T = any> = Record<string, T>
@@ -98,6 +98,7 @@ export interface Config<
   utilities?: TUtilities
   variants?: TVariants
   plugins?: Plugin<TProcessResult, TProcessUtilityResult, TUtilities, TVariants>[]
+  cacheSize?: number
 }
 
 export type PluginFactory<
