@@ -279,7 +279,6 @@ describe('Core', () => {
         priority: 1,
         value: (value) => {
           executionOrder.push('low')
-          return null // Let other plugins handle it
         }
       }
 
@@ -288,7 +287,6 @@ describe('Core', () => {
         priority: 10,
         value: (value) => {
           executionOrder.push('high')
-          return null // Let other plugins handle it
         }
       }
 

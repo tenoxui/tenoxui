@@ -15,6 +15,7 @@ import {
   LRUCache,
   escapeRegex,
   createMatcher,
+  isValidResult,
   flattenPlugins,
   createPluginError,
   DEFAULT_GLOBAL_PATTERN
@@ -29,16 +30,16 @@ export class TenoxUI<
   private utilities: TUtilities
   private variants: TVariants
   private plugins: Plugin[]
-  private _cachedRegexp: ParseContext | null = null
   public matcher: ParseContext | null
 
+  private _matcherCache: ParseContext | null = null
   private _parseCache: LRUCache<string, any>
-  private _processValueCache: LRUCache<string, string | null>
-  private _processVariantCache: LRUCache<string, string | null>
-  private _processUtilityCache: LRUCache<string, any>
-  private _processClassNameCache: LRUCache<string, any>
+  private _valueCache: LRUCache<string, string | null>
+  private _variantCache: LRUCache<string, string | null>
+  private _utilityCache: LRUCache<string, any>
+  private _cnCache: LRUCache<string, any>
 
-  private _pluginsByHook: Map<string, Plugin[]>
+  private _hooks: Map<string, Plugin[]>
 
   constructor({
     variants,
@@ -54,32 +55,32 @@ export class TenoxUI<
     this.matcher = null
 
     this._parseCache = new LRUCache(cacheSize)
-    this._processValueCache = new LRUCache(cacheSize)
-    this._processVariantCache = new LRUCache(cacheSize)
-    this._processUtilityCache = new LRUCache(cacheSize * 2)
-    this._processClassNameCache = new LRUCache(cacheSize * 2)
-    this._pluginsByHook = new Map()
+    this._valueCache = new LRUCache(cacheSize)
+    this._variantCache = new LRUCache(cacheSize)
+    this._utilityCache = new LRUCache(cacheSize * 2)
+    this._cnCache = new LRUCache(cacheSize * 2)
+    this._hooks = new Map()
 
     this._initializePlugins()
     this._initializeMatcher()
   }
 
   private sanitizePlugin(name: Exclude<keyof Plugin, 'name' | 'priority'>): Plugin[] {
-    if (!this._pluginsByHook.has(name)) {
+    if (!this._hooks.has(name)) {
       const filtered = this.plugins
         .filter((p) => p[name])
         .sort((a, b) => (b.priority || 0) - (a.priority || 0))
-      this._pluginsByHook.set(name, filtered)
+      this._hooks.set(name, filtered)
     }
-    return this._pluginsByHook.get(name)!
+    return this._hooks.get(name)!
   }
 
   public use(...plugin: (Plugin | PluginFactory | PluginLike)[]): this {
     const newPlugins = flattenPlugins(plugin)
     this.plugins.push(...newPlugins)
     this.plugins.sort((a, b) => (b.priority || 0) - (a.priority || 0))
-    this._cachedRegexp = null
-    this._pluginsByHook.clear()
+    this._matcherCache = null
+    this._hooks.clear()
     this.clearCache()
     this._initializePlugins()
     this._initializeMatcher()
@@ -92,7 +93,7 @@ export class TenoxUI<
         try {
           const hookFn = plugin[hook] as (...args: any[]) => any
           const result = hookFn(...context)
-          if (result) return result
+          if (typeof result !== 'undefined') return result
         } catch (err) {
           createPluginError(hook, plugin.name, err)
         }
@@ -172,32 +173,32 @@ export class TenoxUI<
   }
 
   public invalidateCache(): void {
-    this._cachedRegexp = null
-    this._pluginsByHook.clear()
+    this._matcherCache = null
+    this._hooks.clear()
     this.clearCache()
     this._initializeMatcher()
   }
 
   public clearCache(): void {
     this._parseCache.clear()
-    this._processValueCache.clear()
-    this._processVariantCache.clear()
-    this._processUtilityCache.clear()
-    this._processClassNameCache.clear()
+    this._valueCache.clear()
+    this._variantCache.clear()
+    this._utilityCache.clear()
+    this._cnCache.clear()
   }
 
   public getCacheStats() {
     return {
       parse: this._parseCache.size,
-      processValue: this._processValueCache.size,
-      processVariant: this._processVariantCache.size,
-      processUtility: this._processUtilityCache.size,
-      processClassName: this._processClassNameCache.size
+      processValue: this._valueCache.size,
+      processVariant: this._variantCache.size,
+      processUtility: this._utilityCache.size,
+      processClassName: this._cnCache.size
     }
   }
 
   public regexp() {
-    if (this._cachedRegexp) return this._cachedRegexp
+    if (this._matcherCache) return this._matcherCache
 
     const sanitize = (obj: Record<string, any> = {}) => Object.keys(obj).map(escapeRegex).join('|')
 
@@ -233,8 +234,8 @@ export class TenoxUI<
       }
     }
 
-    this._cachedRegexp = { patterns, regexp }
-    return this._cachedRegexp
+    this._matcherCache = { patterns, regexp }
+    return this._matcherCache
   }
 
   public parse(className: string): (undefined | string)[] | any | null {
@@ -245,8 +246,8 @@ export class TenoxUI<
 
     let { patterns, regexp } = this.regexp()
 
-    const result =
-      this.processPlugin('parse', className, { patterns, regexp }) || className.match(regexp)
+    const pluginResult = this.processPlugin('parse', className, { patterns, regexp })
+    const result = isValidResult(pluginResult) ? pluginResult : className.match(regexp)
     this._parseCache.set(className, result)
     return result
   }
@@ -254,26 +255,22 @@ export class TenoxUI<
   public processAny(member: 'value' | 'variant', value: string): string | null {
     if (!['value', 'variant'].includes(member) || !value) return null
 
-    const cacheStorage = member === 'value' ? this._processValueCache : this._processVariantCache
+    const cacheStorage = member === 'value' ? this._valueCache : this._variantCache
 
     const cached = cacheStorage.get(value)
     if (cached) return cached
 
-    const sanitized =
-      this.processPlugin(member, value) ||
-      (member === 'variant' ? this.variants[value] || null : value)
+    const pluginResult = this.processPlugin(member, value)
+    const variantOrValue = member === 'variant' ? this.variants[value] || null : value
 
-    cacheStorage.set(value, sanitized)
-    return sanitized
+    const result = isValidResult(pluginResult) ? pluginResult : variantOrValue
+    cacheStorage.set(value, result)
+    return result
   }
 
-  public processValue(value: string): string | null {
-    return this.processAny('value', value)
-  }
+  public processValue = (value: string): string | null => this.processAny('value', value)
 
-  public processVariant(variant: string): string | null {
-    return this.processAny('variant', variant)
-  }
+  public processVariant = (variant: string): string | null => this.processAny('variant', variant)
 
   public processUtility<T = BaseProcessResult>({
     variant = null,
@@ -288,10 +285,10 @@ export class TenoxUI<
   } = {}): T | (BaseProcessResult & DefaultProcessUtilityResult) | unknown {
     const cacheKey = `${variant || ''}:${utility}:${value}:${className}`
 
-    const cached = this._processUtilityCache.get(cacheKey)
+    const cached = this._utilityCache.get(cacheKey)
     if (cached) return cached
 
-    const context = {
+    const mainContext = {
       className,
       utility: this.utilities[utility],
       value: this.processValue(value),
@@ -299,37 +296,45 @@ export class TenoxUI<
       match: this.parse(className)
     }
 
-    const result =
-      this.processPlugin('utility', context) ||
-      (context satisfies BaseProcessResult & DefaultProcessUtilityResult)
+    const context = this.processPlugin('beforeUtility', mainContext) || mainContext
 
-    this._processUtilityCache.set(cacheKey, result)
+    const pluginResult = this.processPlugin('utility', context)
+
+    const beforeResult = isValidResult(pluginResult) ? pluginResult : context
+
+    const afterUtilityResult = this.processPlugin('afterUtility', beforeResult)
+
+    const result = (
+      isValidResult(afterUtilityResult) ? afterUtilityResult : beforeResult
+    ) satisfies BaseProcessResult & DefaultProcessUtilityResult
+
+    this._utilityCache.set(cacheKey, result)
     return result
   }
 
   public processClassName<T>(className: string): T | null {
     if (!className || typeof className !== 'string') return null
 
-    const cached = this._processClassNameCache.get(className)
+    const cached = this._cnCache.get(className)
     if (cached) return cached
 
     const pluginResult = this.processPlugin('process', className)
 
-    if (pluginResult) {
-      this._processClassNameCache.set(className, pluginResult)
+    if (isValidResult(pluginResult)) {
+      this._cnCache.set(className, pluginResult)
       return pluginResult as T
     }
 
     const parsed = this.parse(className)
     if (!parsed) {
-      this._processClassNameCache.set(className, null)
+      this._cnCache.set(className, null)
       return null
     }
 
     const [, variant, utility, value] = parsed
     const processed = this.processUtility({ variant, utility, value, className })
 
-    this._processClassNameCache.set(className, processed)
+    this._cnCache.set(className, processed)
     return processed ? (processed as T) : null
   }
 

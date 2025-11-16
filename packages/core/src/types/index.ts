@@ -75,7 +75,11 @@ export interface Plugin<
 
   regexp?: (context: Partial<ParseContext>) => { patterns?: RegexPatterns; regexp?: RegExp } | null
 
-  utility?: (context: ProcessUtilityContext) => TProcessUtilityResult | null | undefined
+  beforeUtility?: (context: ProcessUtilityContext) => any
+
+  utility?: (context: any) => any
+
+  afterUtility?: (context: any) => TProcessUtilityResult | null | undefined
 
   value?: (value: string) => string | null
 

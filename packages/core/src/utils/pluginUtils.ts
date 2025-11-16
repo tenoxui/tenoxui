@@ -24,3 +24,5 @@ export function flattenPlugins(plugins: (Plugin | PluginFactory | PluginLike)[])
 export function createPluginError(pluginName: string, hooksName: string, err: any): void {
   console.error(`Plugin "${hooksName}" ${pluginName} failed:`, err)
 }
+
+export const isValidResult = (result: any) => typeof result !== 'undefined'

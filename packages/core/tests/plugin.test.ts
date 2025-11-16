@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { TenoxUI } from '../src/index'
+import { TenoxUI } from '../src'
+import { createMatcher } from '../src/utils'
 import type {
   Plugin,
   Utilities,
@@ -142,31 +143,17 @@ describe('TenoxUI Plugin Ecosystem', () => {
             utility: patterns.utility + '|flex|items|justify'
           }
         }),
-        utility: (context) => {
+        utility(context) {
           const { className } = context
-
+          const use = 'flex-plugin'
           if (className.startsWith('flex-')) {
-            return {
-              className,
-              utility: 'display',
-              value: 'flex',
-              variant: null,
-              match: null
-            }
+            return { use, className, utility: 'display', value: 'flex', variant: null, match: null }
           }
 
           if (className.startsWith('items-')) {
             const value = className.replace('items-', '')
-            return {
-              className,
-              utility: 'align-items',
-              value,
-              variant: null,
-              match: null
-            }
+            return { use, className, utility: 'align-items', value, variant: null, match: null }
           }
-
-          return null
         }
       }
 
@@ -185,6 +172,7 @@ describe('TenoxUI Plugin Ecosystem', () => {
       })
 
       expect(flexResult).toEqual({
+        use: 'flex-plugin',
         className: 'flex-row',
         utility: 'display',
         value: 'flex',
@@ -193,12 +181,59 @@ describe('TenoxUI Plugin Ecosystem', () => {
       })
 
       expect(itemsResult).toEqual({
+        use: 'flex-plugin',
         className: 'items-center',
         utility: 'align-items',
         value: 'center',
         variant: null,
         match: null
       })
+
+      expect(
+        tx.processUtility({
+          utility: 'err',
+          value: 'center',
+          className: 'err-center'
+        })
+      ).toEqual({
+        className: 'err-center',
+        utility: undefined,
+        value: 'center',
+        variant: null,
+        match: null
+      })
+
+      tx.use({
+        name: 'should-undefined',
+        utility: (ctx) => !ctx.utility && undefined
+      })
+
+      expect(
+        tx.processUtility({
+          utility: 'err',
+          value: 'center',
+          className: 'err-center'
+        })
+      ).toEqual({
+        className: 'err-center',
+        utility: undefined,
+        value: 'center',
+        variant: null,
+        match: null
+      })
+
+      tx.use({
+        name: 'should-undefined',
+        utility: (ctx) => !ctx.utility && null
+      })
+
+      expect(
+        tx.processUtility({
+          utility: 'err',
+          value: 'center',
+          className: 'err-center'
+        })
+      ).toBeNull()
     })
 
     it('should handle value transformation plugins', () => {
@@ -234,7 +269,7 @@ describe('TenoxUI Plugin Ecosystem', () => {
             variant: patterns.variant + '|dark'
           }
         }),
-        variant: (variant, variants) => {
+        variant: (variant) => {
           if (variant === 'dark') {
             return '@media (prefers-color-scheme: dark)'
           }
@@ -252,6 +287,143 @@ describe('TenoxUI Plugin Ecosystem', () => {
           className: 'dark:bg-black'
         })?.variant
       ).toBe('@media (prefers-color-scheme: dark)')
+      expect(
+        tx.processUtility({
+          variant: 'light',
+          utility: 'bg',
+          value: 'white',
+          className: 'light:bg-white'
+        })?.variant
+      ).toBeNull()
+    })
+
+    it('should handle custom variant plugins by priority', () => {
+      const darkModePlugin: Plugin = [
+        {
+          name: 'variant-plugin-1',
+          priority: 2,
+          regexp: ({ patterns }) => ({
+            patterns: {
+              variant: patterns.variant + '|dark'
+            }
+          }),
+          variant: (variant) => {
+            if (variant === 'dark') {
+              return '@media (prefers-color-scheme: dark)'
+            }
+            return
+          }
+        },
+        {
+          name: 'variant-plugin-2',
+          variant(variant) {
+            if (variant === 'light') {
+              return '@media (prefers-color-scheme: light)'
+            }
+
+            return 'any'
+          }
+        }
+      ]
+
+      tx.use(darkModePlugin)
+
+      expect(
+        tx.processUtility({
+          variant: 'dark',
+          utility: 'bg',
+          value: 'black',
+          className: 'dark:bg-black'
+        })?.variant
+      ).toBe('@media (prefers-color-scheme: dark)')
+      expect(
+        tx.processUtility({
+          variant: 'light',
+          utility: 'bg',
+          value: 'white',
+          className: 'light:bg-white'
+        })?.variant
+      ).toBe('@media (prefers-color-scheme: light)')
+      expect(
+        tx.processUtility({
+          variant: 'tenox',
+          utility: 'bg',
+          value: 'white',
+          className: 'tenox:bg-white'
+        })?.variant
+      ).toBe('any')
+
+      tx.use({
+        name: 'undefined',
+        priority: 1,
+        variant: () => undefined
+      })
+
+      expect(
+        tx.processUtility({
+          variant: 'tenox',
+          utility: 'bg',
+          value: 'white',
+          className: 'tenox:bg-white'
+        })?.variant
+      ).toBe('any')
+
+      tx.use({
+        name: 'nullish',
+        priority: 1,
+        variant: () => null
+      })
+
+      expect(
+        tx.processUtility({
+          variant: 'tenox',
+          utility: 'bg',
+          value: 'white',
+          className: 'tenox:bg-white'
+        })?.variant
+      ).toBeNull()
+
+      tx.addVariant('max', (v) => (v ? `&:${v}` : null))
+
+      tx.use(
+        (() => {
+          let variants
+          return {
+            priority: 2,
+            init(c) {
+              variants = c.getVariants()
+            },
+            variant: (v) => {
+              const regexp = createMatcher('', 'max')
+              const match = v.match(regexp)
+              if (match) {
+                const [, , prop, val] = match
+                const vari = variants[prop]
+                if (typeof vari === 'function') {
+                  return vari(val)
+                }
+              }
+            }
+          }
+        })()
+      )
+
+      expect(
+        tx.processUtility({
+          variant: 'max',
+          utility: 'bg',
+          value: 'white',
+          className: 'max:bg-white'
+        })?.variant
+      ).toBeNull()
+      expect(
+        tx.processUtility({
+          variant: 'max-hover',
+          utility: 'bg',
+          value: 'white',
+          className: 'max-hover:bg-white'
+        })?.variant
+      ).toBe('&:hover')
     })
   })
 
@@ -478,6 +650,45 @@ describe('TenoxUI Plugin Ecosystem', () => {
         properties: { fontSize: '1.125rem', lineHeight: '1.75rem' },
         type: 'typography'
       })
+
+      tx.use({ priority: 10, process: (cn) => !cn === 'text-lg' })
+
+      expect(tx.process('text-lg')).toStrictEqual([])
+    })
+
+    it('should parse class name correctly', () => {
+      let patterns, regexp
+      tx.use({
+        parse(className, ctx) {
+          patterns = ctx.patterns
+          regexp = ctx.regexp
+
+          if (className === 'hello') return ['hello', undefined, 'hello']
+        }
+      })
+      let inita = tx.parse('hello')
+
+      expect(patterns).toBeDefined()
+      expect(regexp).toBeDefined()
+      expect(inita).toStrictEqual(['hello', undefined, 'hello'])
+
+      tx.use({
+        parse(className, ctx) {
+          if (className === 'hello2') return null
+        }
+      })
+
+      inita = tx.parse('hello2')
+      expect(inita).toBeNull()
+
+      tx.use({
+        parse(className, ctx) {
+          if (className === 'hello3') return
+        }
+      })
+
+      inita = tx.parse('hello3')
+      expect(inita).toBeNull()
     })
   })
 })
