@@ -1,5 +1,38 @@
 # Changelog
 
+## `v3.2.0` - `2025-11-16`
+
+### **Changed**
+
+- `value`, `variant`, `utility`, and `process` plugin hooks now can accept any returned value, except `undefined`
+- Better `TenoxUI.matcher` instance
+- Renaming `matcher` to `regexp` on `TenoxUI.regexp()` method and related instances
+- Renaming `raw` to `match` in `processUtility` result and plugin context
+- Changed plugin `init` hook context : `utilities` => `getUtilities()`, `variants` => `getVariants`
+
+### **Removed**
+
+- All exports from `src/utils`
+
+### Added
+
+- Better caching
+- New `processClassName()` method to process singular class name
+- New plugin hook `done`, for final transformation of the `process` method results
+- New plugin hook `beforeUtility`, processing `context` data, run before `utility` hook
+- New plugin hook `afterUtility`, processing `context` data, run after `utility` hook
+- New plugin `init` hook contexts: `process.className` and `process.classNames`
+- Add support for `Array` of string on `patterns` on `Plugin.regexp()` and `createMatcher`
+
+### Fixed
+
+- `addUtility`, `addVariant`, `addUtilities`, and `addVariants` hooks on `init()` plugin hook shouldn't return anything
+
+### Development
+
+- Update `README` file
+- Use `tsdown` for bundler
+
 ## `v3.1.0` - `2025-10-29`
 
 ### **Changed**

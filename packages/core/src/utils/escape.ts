@@ -1,3 +1,1 @@
-export function escapeRegex(str: string): string {
-  return str.replace(/[.*+?^${}()|[\]\\/-]/g, '\\$&')
-}
+export const escapeRegex = (str: string): string => str.replace(/[.*+?^${}()|[\]\\/-]/g, '\\$&')

@@ -24,8 +24,8 @@
   "dependencies": {
     "@types/node": "catalog:",
     "prettier": "^3.5.3",
+    "tsdown": "catalog:",
     "typescript": "catalog:",
-    "vite": "catalog:",
     "vitest": "catalog:"
   }
 }

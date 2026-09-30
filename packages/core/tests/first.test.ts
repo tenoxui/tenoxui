@@ -70,7 +70,7 @@ describe('Core', () => {
         utility: 'padding',
         value: '4',
         variant: null,
-        raw: expect.any(Array)
+        match: expect.any(Array)
       })
     })
 
@@ -87,7 +87,7 @@ describe('Core', () => {
         utility: 'background-color',
         value: 'blue',
         variant: '&:hover',
-        raw: expect.any(Array)
+        match: expect.any(Array)
       })
     })
   })
@@ -208,15 +208,15 @@ describe('Core', () => {
       expect(result).toHaveLength(2)
 
       const emptyResult = tenox.process('')
-      expect(emptyResult).toBeNull()
+      expect(emptyResult).toStrictEqual([])
 
       const whitespaceResult = tenox.process('   ')
-      expect(whitespaceResult).toBeNull()
+      expect(whitespaceResult).toStrictEqual([])
     })
 
     it('should return null for empty class lists', () => {
       const result = tenox.process([])
-      expect(result).toBeNull()
+      expect(result).toStrictEqual([])
     })
   })
 
@@ -236,8 +236,8 @@ describe('Core', () => {
       expect(initSpy).toHaveBeenCalledTimes(1)
       expect(initSpy).toHaveBeenCalledWith(
         expect.objectContaining({
-          utilities: expect.any(Object),
-          variants: expect.any(Object),
+          getUtilities: expect.any(Function),
+          getVariants: expect.any(Function),
           addUtility: expect.any(Function),
           addVariant: expect.any(Function)
         })
@@ -279,7 +279,6 @@ describe('Core', () => {
         priority: 1,
         value: (value) => {
           executionOrder.push('low')
-          return null // Let other plugins handle it
         }
       }
 
@@ -288,7 +287,6 @@ describe('Core', () => {
         priority: 10,
         value: (value) => {
           executionOrder.push('high')
-          return null // Let other plugins handle it
         }
       }
 
@@ -338,7 +336,7 @@ describe('Core', () => {
         utility: expect.stringContaining('p|m|w|h|bg'),
         value: expect.any(String)
       })
-      expect(regexpResult.matcher).toBeInstanceOf(RegExp)
+      expect(regexpResult.regexp).toBeInstanceOf(RegExp)
     })
 
     it('should cache regex patterns for performance', () => {
